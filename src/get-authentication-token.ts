@@ -5,6 +5,9 @@ let octokitInstance: Octokit | null = null;
 
 function getAuthenticationToken(): string {
   const argv = parse(process.argv.slice(2));
+  if (!argv.auth) {
+    throw new Error("No authentication token provided");
+  }
   return argv.auth as string;
 }
 

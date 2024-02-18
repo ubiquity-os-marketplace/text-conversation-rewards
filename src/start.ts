@@ -1,7 +1,9 @@
+import { getOctokitInstance } from "./get-authentication-token";
 import { GitHubIssue } from "./github-types";
 
-function main(gitHubIssueId: GitHubIssue["id"]) {
-  const issue = getIssue(gitHubIssueId);
+async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
+  const issueParams = parseGitHubUrl(gitHubIssueUrl);
+  const issue = await getIssue(issueParams);
   const pullRequest = getLinkedPullRequest(issue);
   const users = getUsers(issue, pullRequest);
 
@@ -33,12 +35,28 @@ function main(gitHubIssueId: GitHubIssue["id"]) {
    */
 }
 
-function getIssue(issueId: GitHubIssue["id"]) {}
+async function getIssue(params: IssueParams): Promise<GitHubIssue> {
+  const octokit = getOctokitInstance();
+  return (await octokit.issues.get(params)).data;
+}
 
 function getLinkedPullRequest(issue: GitHubIssue) {
+  // this needs to see all of the events that happened on the issue and filter for "connected" or "cross-referenced" events
+
+
+}
+
+function getUsers(issue: GitHubIssue, pullRequest: null | GitHubIssue) {
   // ...
 }
 
-function getUsers(issue: GitHubIssue, pullRequest: GitHubIssue) {
-  // ...
+function parseGitHubUrl(url: string): { owner: string; repo: string; issue_number: number } {
+  const path = new URL(url).pathname.split("/");
+  return {
+    owner: path[1],
+    repo: path[2],
+    issue_number: Number(path[4]),
+  };
 }
+
+export type IssueParams = ReturnType<typeof parseGitHubUrl>;
