@@ -7,8 +7,8 @@ import linkPulls from "./link-pulls";
 // import prCrossRepo from "./fixtures/pr-188.json";
 // import issueCrossRepoLink from "./fixtures/issue-89.json"; // pr188 is linked to this issue
 
-import prSameRepo from "./fixtures/pr-91.json";
 import issueSameRepoLink from "./fixtures/issue-90.json"; // pr91 is linked to this issue
+import prSameRepo from "./fixtures/pr-91.json";
 
 config();
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -23,7 +23,7 @@ process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 const issueSameRepoLinkParams = parseGitHubUrl(issueSameRepoLink.html_url); // same repo link
 
 // const prCrossRepoLink = parseGitHubUrl(prCrossRepo.html_url);
-const prSameRepoLink = parseGitHubUrl(prSameRepo.html_url);
+// const prSameRepoLink = parseGitHubUrl(prSameRepo.html_url);
 
 describe("linkPulls", () => {
   // it("should return null if there is no link event on the issue", async () => {
@@ -33,7 +33,12 @@ describe("linkPulls", () => {
 
   it("should find the linked pull request in the current repository", async () => {
     const result = await linkPulls(issueSameRepoLinkParams);
-    expect(result).toEqual(prSameRepoLink);
+    const expected = {
+      issue: {
+        node_id: prSameRepo.node_id,
+      },
+    };
+    expect(result).toMatchObject(expected);
   });
 
   // it("should search across other repositories if linked pull request is not found in the current repository", async () => {
