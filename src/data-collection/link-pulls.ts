@@ -19,7 +19,7 @@ export default async function linkPulls(issue: IssueParams) {
   const issueLinkEvents = await getLinkedEvents(issue);
   const latestIssueLinkEvent = getLatestLinkEvent(issueLinkEvents);
 
-  console.debug({ latestIssueLinkEvent });
+  console.dir({ latestIssueLinkEvent }, { depth: null });
 
   if (latestIssueLinkEvent) {
     const linkedPullRequest = await findMatchingLinkEventFromPullRequests(issue, latestIssueLinkEvent.created_at);
