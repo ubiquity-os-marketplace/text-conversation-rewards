@@ -1,54 +1,22 @@
 import { Octokit } from "@octokit/rest";
-// import fs from 'fs';
-// import path from "path";
 import { getOctokitInstance } from "../get-authentication-token";
-import { GitHubIssueEvent, GitHubLinkEvent, GitHubTimelineEvent } from "../github-types";
+import { GitHubLinkEvent, GitHubTimelineEvent, isGitHubLinkEvent } from "../github-types";
 import { IssueParams } from "../start";
 
 let octokit: Octokit;
 
 export default async function linkPulls(issue: IssueParams) {
   octokit = getOctokitInstance();
-
-  /**
-   * we need to find the linked pull request.
-   * * we first start by checking the current repository.
-   * * for example, if the issue is in repository A and the pull request is opened against repository A,
-   * * then we can look for the pull request events, based on most recently updated pull requests,
-   * * for a timestamp match on a connected event.
-   */
-
   const issueLinkEvents = await getLinkedEvents(issue);
-
-  // console.dir(issueLinkEvents, { depth: null });
-
-  const connected = eliminateDisconnects(issueLinkEvents);
-
-  // Convert the object to a string with indentation
-  // const data = util.inspect(issueLinkEvents, { depth: null, colors: false });
-
-  // Write the data to a file
-  // fs.writeFileSync(path.join(__dirname, 'temp-log.json'), JSON.stringify(issueLinkEvents, null, 2));
-  // console.dir({ issueLinkEvents }, { depth: null });
-
-  const onlyPullRequests = connected.filter((event) => event.source.issue.pull_request);
-
-  // console.dir({ onlyPullRequests }, { depth: 5 });
-  const latestIssueLinkEvent = getLatestLinkEvent(onlyPullRequests);
-  // console.dir({ latestIssueLinkEvent }, { depth: 5 });
-
-  if (latestIssueLinkEvent) {
-    return latestIssueLinkEvent.source;
-  } else {
-    // there is no link event on the issue so no need to search.
-    return null;
-  }
+  const onlyConnected = eliminateDisconnects(issueLinkEvents);
+  const onlyPullRequests = onlyConnected.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request);
+  return onlyPullRequests.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at);
 }
 
 function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
   // Track connections and disconnections
-  const connections = new Map<number, GitHubIssueEvent>(); // Use issue/pr number as key for easy access
-  const disconnections = new Map<number, GitHubIssueEvent>(); // Track disconnections
+  const connections = new Map<number, GitHubLinkEvent>(); // Use issue/pr number as key for easy access
+  const disconnections = new Map<number, GitHubLinkEvent>(); // Track disconnections
 
   issueLinkEvents.forEach((issueEvent: GitHubLinkEvent) => {
     const issueNumber = issueEvent.source.issue.number as number;
@@ -72,26 +40,21 @@ function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
 
 async function getLinkedEvents(params: IssueParams): Promise<GitHubLinkEvent[]> {
   const issueEvents = await fetchEvents(params);
-  const linkEvents = issueEvents.filter(connectedOrCrossReferenced);
-
-  if (linkEvents.length === 0) {
-    return [];
-  }
-  return linkEvents;
+  return issueEvents.filter(isGitHubLinkEvent);
 }
 
-function getLatestLinkEvent(events: GitHubLinkEvent[]) {
-  if (events.length === 0) {
-    return null;
-  } else {
-    const event = events.pop();
-    return event ? event : null;
-  }
-}
+// function getLatestLinkEvent(events: GitHubLinkEvent[]) {
+//   if (events.length === 0) {
+//     return null;
+//   } else {
+//     const event = events.pop();
+//     return event ? event : null;
+//   }
+// }
 
-function connectedOrCrossReferenced(event: GitHubTimelineEvent): event is GitHubLinkEvent {
-  return event.event === "connected" || event.event === "cross-referenced";
-}
+// function connectedOrCrossReferenced(event: GitHubTimelineEvent): event is GitHubLinkEvent {
+//   return event.event === "connected" || event.event === "cross-referenced";
+// }
 
 async function fetchEvents(params: IssueParams, page: number = 1, perPage: number = 100): Promise<GitHubTimelineEvent[]> {
   const response = await octokit.rest.issues.listEventsForTimeline({
