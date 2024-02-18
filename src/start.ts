@@ -5,6 +5,13 @@ function main(gitHubIssueId: GitHubIssue["id"]) {
   const pullRequest = getLinkedPullRequest(issue);
   const users = getUsers(issue, pullRequest);
 
+  const usersByType = {
+    assignees: users.filter((user) => user.isAssignee),
+    authors: users.filter((user) => user.isAuthor),
+    collaborators: users.filter((user) => user.isCollaborator),
+    remainder: users.filter((user) => user.isRemainder),
+  };
+
   /**
    * gather context
    * * this includes:
@@ -21,14 +28,12 @@ function main(gitHubIssueId: GitHubIssue["id"]) {
   * * * the users
    * * * * isAssignee?
    * * * * isAuthor?
-   * * * * isContributor?
+   * * * * isCollaborator?
    * * * * isRemainder?
    */
 }
 
-function getIssue(issueId: GitHubIssue["id"]) {
-  // ...
-}
+function getIssue(issueId: GitHubIssue["id"]) {}
 
 function getLinkedPullRequest(issue: GitHubIssue) {
   // ...

@@ -1,5 +1,9 @@
 name: "Conversation Rewards"
 description: "Compute rewards for contributors' discussion on issues that are closed as complete."
+inputs:
+  authentication_token:
+    description: "The GitHub authentication token"
+    required: true
 outputs:
   result: # id of output
     description: "The result of a event handler"
@@ -9,6 +13,6 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        yarn --cwd ${{ github.action_path }} start
+        yarn --cwd ${{ github.action_path }} start --auth ${{ inputs.authentication_token }}
       id: main
       shell: bash
