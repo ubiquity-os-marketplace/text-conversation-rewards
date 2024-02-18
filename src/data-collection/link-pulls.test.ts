@@ -1,14 +1,18 @@
 import { config } from "dotenv";
-import { parseGitHubUrl } from "../start";
+import { IssueParams, parseGitHubUrl } from "../start";
 import linkPulls from "./link-pulls";
 
-import issueNoLink from "./fixtures/issue-92.json"; // no link
+import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked to this issue
+import ISSUE_SAME_REPO_LINK from "./fixtures/issue-90.json"; // pr91 is linked to this issue
+import ISSUE_NO_LINK from "./fixtures/issue-92.json"; // no link
+import PR_CROSS_REPO_LINK from "./fixtures/pr-188.json";
+import PR_SAME_REPO_LINK from "./fixtures/pr-91.json";
 
-import issueCrossRepoLink from "./fixtures/issue-89.json"; // pr188 is linked to this issue
-import prCrossRepo from "./fixtures/pr-188.json";
-
-import issueSameRepoLink from "./fixtures/issue-90.json"; // pr91 is linked to this issue
-import prSameRepo from "./fixtures/pr-91.json";
+const PARAMS_ISSUE_CROSS_REPO_LINK: IssueParams = parseGitHubUrl(ISSUE_CROSS_REPO_LINK.html_url); // cross repo link
+const PARAMS_ISSUE_SAME_REPO_LINK: IssueParams = parseGitHubUrl(ISSUE_SAME_REPO_LINK.html_url); // same repo link
+const PARAMS_ISSUE_NO_LINK: IssueParams = parseGitHubUrl(ISSUE_NO_LINK.html_url); // no link
+// const PARAMS_PR_CROSS_REPO_LINK: IssueParams = parseGitHubUrl(PR_CROSS_REPO_LINK.html_url);
+// const PARAMS_PR_SAME_REPO_LINK: IssueParams = parseGitHubUrl(PR_SAME_REPO_LINK.html_url);
 
 config();
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -18,28 +22,38 @@ if (!GITHUB_TOKEN) {
 // Mock process.argv
 process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 
-const issueNoLinkParams = parseGitHubUrl(issueNoLink.html_url); // no link
-const issueCrossRepoLinkParams = parseGitHubUrl(issueCrossRepoLink.html_url); // cross repo link
-const issueSameRepoLinkParams = parseGitHubUrl(issueSameRepoLink.html_url); // same repo link
-
-// const prCrossRepoLink = parseGitHubUrl(prCrossRepo.html_url);
-// const prSameRepoLink = parseGitHubUrl(prSameRepo.html_url);
-
 describe("linkPulls", () => {
   it("should return null if there is no link event on the issue", async () => {
-    const result = await linkPulls(issueNoLinkParams);
+    const result = await linkPulls(PARAMS_ISSUE_NO_LINK);
     expect(result).toBeNull();
   });
 
-  it("should find the linked pull request in the current repository", async () => {
-    const result = await linkPulls(issueSameRepoLinkParams);
-    const expected = { issue: { node_id: prSameRepo.node_id } };
+  it("should find the linked PULL REQUEST, starting from the ISSUE, in the SAME REPOSITORY", async () => {
+    const result = await linkPulls(PARAMS_ISSUE_SAME_REPO_LINK);
+    const expected = { issue: { node_id: PR_SAME_REPO_LINK.node_id } };
     expect(result).toMatchObject(expected);
   });
 
-  it("should search across other repositories if linked pull request is not found in the current repository", async () => {
-    const result = await linkPulls(issueCrossRepoLinkParams);
-    const expected = { issue: { node_id: prCrossRepo.node_id } };
+  it("should find the linked PULL REQUEST, starting from the ISSUE, across ANY REPOSITORY (within the organization)", async () => {
+    const result = await linkPulls(PARAMS_ISSUE_CROSS_REPO_LINK);
+    const expected = { issue: { node_id: PR_CROSS_REPO_LINK.node_id } };
     expect(result).toMatchObject(expected);
   });
+
+  // @DEV: no need to over-engineer. We only need to link the pull request from the issue, not the other way around.
+
+  // it("should find the linked ISSUE, starting from the PULL REQUEST, in the SAME REPOSITORY", async () => {
+  //   const result = await linkPulls(PARAMS_PR_SAME_REPO_LINK);
+
+  //   console.dir({ result }, { depth: null });
+
+  //   const expected = { issue: { node_id: ISSUE_SAME_REPO_LINK.node_id } };
+  //   expect(result).toMatchObject(expected);
+  // });
+
+  // it("should find the linked ISSUE, starting from the PULL REQUEST, across ANY REPOSITORY (within the organization)", async () => {
+  //   const result = await linkPulls(PARAMS_PR_CROSS_REPO_LINK);
+  //   const expected = { issue: { node_id: ISSUE_CROSS_REPO_LINK.node_id } };
+  //   expect(result).toMatchObject(expected);
+  // });
 });
