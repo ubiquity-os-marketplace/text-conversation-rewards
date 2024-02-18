@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import { parseGitHubUrl } from "../start";
 import linkPulls from "./link-pulls";
 
-// import issueNoLink from "./fixtures/issue-92.json"; // no link
+import issueNoLink from "./fixtures/issue-92.json"; // no link
 
 import issueCrossRepoLink from "./fixtures/issue-89.json"; // pr188 is linked to this issue
 import prCrossRepo from "./fixtures/pr-188.json";
@@ -18,7 +18,7 @@ if (!GITHUB_TOKEN) {
 // Mock process.argv
 process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 
-// const issueNoLinkParams = parseGitHubUrl(issueNoLink.html_url); // no link
+const issueNoLinkParams = parseGitHubUrl(issueNoLink.html_url); // no link
 const issueCrossRepoLinkParams = parseGitHubUrl(issueCrossRepoLink.html_url); // cross repo link
 const issueSameRepoLinkParams = parseGitHubUrl(issueSameRepoLink.html_url); // same repo link
 
@@ -26,10 +26,10 @@ const issueSameRepoLinkParams = parseGitHubUrl(issueSameRepoLink.html_url); // s
 // const prSameRepoLink = parseGitHubUrl(prSameRepo.html_url);
 
 describe("linkPulls", () => {
-  // it("should return null if there is no link event on the issue", async () => {
-  //   const result = await linkPulls(issueNoLink);
-  //   expect(result).toBeNull();
-  // });
+  it("should return null if there is no link event on the issue", async () => {
+    const result = await linkPulls(issueNoLinkParams);
+    expect(result).toBeNull();
+  });
 
   it("should find the linked pull request in the current repository", async () => {
     const result = await linkPulls(issueSameRepoLinkParams);
