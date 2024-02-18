@@ -1,6 +1,8 @@
 import { Octokit } from "@octokit/rest";
+// import fs from 'fs';
+// import path from "path";
 import { getOctokitInstance } from "../get-authentication-token";
-import { GitHubLinkEvent, GitHubTimelineEvent } from "../github-types";
+import { GitHubIssueEvent, GitHubLinkEvent, GitHubTimelineEvent } from "../github-types";
 import { IssueParams } from "../start";
 
 let octokit: Octokit;
@@ -18,7 +20,17 @@ export default async function linkPulls(issue: IssueParams) {
 
   const issueLinkEvents = await getLinkedEvents(issue);
 
-  const latestIssueLinkEvent = getLatestLinkEvent(issueLinkEvents);
+  const connected = eliminateDisconnects(issueLinkEvents);
+
+  // Convert the object to a string with indentation
+  // const data = util.inspect(issueLinkEvents, { depth: null, colors: false });
+
+  // Write the data to a file
+  // fs.writeFileSync(path.join(__dirname, 'temp-log.json'), JSON.stringify(issueLinkEvents, null, 2));
+  // console.dir({ issueLinkEvents }, { depth: null });
+
+  const onlyPullRequests = connected.filter((event) => event.source.issue.pull_request);
+  const latestIssueLinkEvent = getLatestLinkEvent(onlyPullRequests);
 
   if (latestIssueLinkEvent) {
     return latestIssueLinkEvent.source;
@@ -28,9 +40,35 @@ export default async function linkPulls(issue: IssueParams) {
   }
 }
 
+function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
+  // Track connections and disconnections
+  const connections = new Map<number, GitHubIssueEvent>(); // Use issue/pr number as key for easy access
+  const disconnections = new Map<number, GitHubIssueEvent>(); // Track disconnections
+
+  issueLinkEvents.forEach((issueEvent: GitHubLinkEvent) => {
+    const issueNumber = issueEvent.source.issue.number as number;
+
+    if (issueEvent.event === "connected" || issueEvent.event === "cross-referenced") {
+      // Only add to connections if there is no corresponding disconnected event
+      if (!disconnections.has(issueNumber)) {
+        connections.set(issueNumber, issueEvent);
+      }
+    } else if (issueEvent.event === "disconnected") {
+      disconnections.set(issueNumber, issueEvent);
+      // If a disconnected event is found, remove the corresponding connected event
+      if (connections.has(issueNumber)) {
+        connections.delete(issueNumber);
+      }
+    }
+  });
+
+  return Array.from(connections.values());
+}
+
 async function getLinkedEvents(params: IssueParams): Promise<GitHubLinkEvent[]> {
   const issueEvents = await fetchEvents(params);
-  const linkEvents = issueEvents.filter(connectedOrCrossReferenced);
+  const linkEvents = issueEvents.filter(connectedOrCrossReferenced); // @TODO: make sure to filter out matching disconnected for any connected events
+
   if (linkEvents.length === 0) {
     return [];
   }
