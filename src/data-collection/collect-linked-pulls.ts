@@ -5,7 +5,7 @@ import { IssueParams } from "../start";
 
 let octokit: Octokit;
 
-export default async function linkPulls(issue: IssueParams) {
+export default async function collectLinkedPulls(issue: IssueParams) {
   octokit = getOctokitInstance();
   const issueLinkEvents = await getLinkedEvents(issue);
   const onlyConnected = eliminateDisconnects(issueLinkEvents);

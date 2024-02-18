@@ -1,20 +1,31 @@
 import { getOctokitInstance } from "./get-authentication-token";
-import { GitHubIssue } from "./github-types";
+import { GitHubIssue, GitHubPullRequest, GitHubUser } from "./github-types";
 
-async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
-  const issueParams = parseGitHubUrl(gitHubIssueUrl);
-  const issue = await getIssue(issueParams);
-  const pullRequest = getLinkedPullRequest(issue);
-  const users = getUsers(issue, pullRequest);
+// async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
+// const issueParams = parseGitHubUrl(gitHubIssueUrl);
+// const issue = await getIssue(issueParams);
+// const pullRequestLinks = await collectLinkedPulls(issueParams);
+// const pullRequestDetails = await Promise.all(
+//   pullRequestLinks.map((link) =>
+//     getPullRequest({
+//       owner: link.source.issue.repository.owner.login,
+//       repo: link.source.issue.repository.name,
+//       pull_number: link.source.issue.number,
+//     })
+//   )
+// );
 
-  const usersByType = {
-    assignees: users.filter((user) => user.isAssignee),
-    authors: users.filter((user) => user.isAuthor),
-    collaborators: users.filter((user) => user.isCollaborator),
-    remainder: users.filter((user) => user.isRemainder),
-  };
+// const users = await getTimelineUsers(issueParams);
+// const users = getUsers(issueParams, pullRequestDetails);
 
-  /**
+// const usersByType = {
+//   assignees: users.filter((user) => user.isAssignee),
+//   authors: users.filter((user) => user.isAuthor),
+//   collaborators: users.filter((user) => user.isCollaborator),
+//   remainder: users.filter((user) => user.isRemainder),
+// };
+
+/**
    * gather context
    * * this includes:
 
@@ -33,21 +44,40 @@ async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
    * * * * isCollaborator?
    * * * * isRemainder?
    */
-}
+// }
 
-async function getIssue(params: IssueParams): Promise<GitHubIssue> {
+export async function getIssue(params: IssueParams): Promise<GitHubIssue> {
   const octokit = getOctokitInstance();
   return (await octokit.issues.get(params)).data;
 }
 
-function getLinkedPullRequest(issue: GitHubIssue) {
-  // this needs to see all of the events that happened on the issue and filter for "connected" or "cross-referenced" events
+export async function getIssueEvents(issueParams: IssueParams) {
+  // @DEV: this is very useful for seeing every type of event that has occurred on the issue
+  // in chronological order
+  const octokit = getOctokitInstance();
+  const [issue, events, comments] = await Promise.all([
+    octokit.issues.get(issueParams),
+    octokit.paginate(octokit.issues.listEvents.endpoint.merge(issueParams)),
+    octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams)),
+  ]);
 
-
+  const mixedEventsAndComments = [...events, ...comments];
+  mixedEventsAndComments.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  // Prepend the issue to the events array
+  mixedEventsAndComments.unshift(issue.data);
+  return mixedEventsAndComments;
 }
 
-function getUsers(issue: GitHubIssue, pullRequest: null | GitHubIssue) {
-  // ...
+export async function getTimelineUsers(issueParams: IssueParams): Promise<GitHubUser[]> {
+  const timelineEvents = await getAllTimelineEvents(issueParams);
+  const users = timelineEvents.filter((event) => event.actor).map((event) => event.actor);
+  return [...new Set(users)];
+}
+
+async function getAllTimelineEvents(issueParams: IssueParams) {
+  const octokit = getOctokitInstance();
+  const options = octokit.issues.listEventsForTimeline.endpoint.merge(issueParams);
+  return await octokit.paginate(options);
 }
 
 export function parseGitHubUrl(url: string): { owner: string; repo: string; issue_number: number } {
@@ -60,3 +90,8 @@ export function parseGitHubUrl(url: string): { owner: string; repo: string; issu
 }
 
 export type IssueParams = ReturnType<typeof parseGitHubUrl>;
+type PullParams = { owner: string; repo: string; pull_number: number };
+export async function getPullRequest(pullParams: PullParams): Promise<GitHubPullRequest> {
+  const octokit = getOctokitInstance();
+  return (await octokit.pulls.get(pullParams)).data;
+}

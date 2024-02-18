@@ -1,6 +1,6 @@
 import { config } from "dotenv";
-import { IssueParams, parseGitHubUrl } from "../start";
-import linkPulls from "./link-pulls";
+import { IssueParams, getIssueEvents, parseGitHubUrl } from "../start";
+import collectLinkedPulls from "./collect-linked-pulls";
 
 import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked to this issue
 import ISSUE_SAME_REPO_LINK from "./fixtures/issue-90.json"; // pr91 is linked to this issue
@@ -23,54 +23,54 @@ if (!GITHUB_TOKEN) {
 // Mock process.argv
 process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 
-describe("mock scenarios", () => {
-  it("should return null if there is no link event on the issue", async () => {
-    const result = await linkPulls(PARAMS_ISSUE_NO_LINK);
+describe("Artificial scenarios for linking pull requests to issues", () => {
+  it("should return an empty array when the issue does not have any associated link events", async () => {
+    const result = await collectLinkedPulls(PARAMS_ISSUE_NO_LINK);
     expect(result).toEqual([]);
   });
 
-  it("should find the merged, linked PULL REQUESTS, starting from the ISSUE, in the SAME REPOSITORY", async () => {
-    const result = await linkPulls(PARAMS_ISSUE_SAME_REPO_LINK);
+  it("should identify and return the merged, linked pull requests that originate from the same issue within the same repository", async () => {
+    const result = await collectLinkedPulls(PARAMS_ISSUE_SAME_REPO_LINK);
     const expectedUrl = PR_SAME_REPO_LINK.html_url;
     const matchingLinks = result.filter((link) => link.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBe(1);
   });
 
-  it("should find the merged, linked PULL REQUESTS, starting from the ISSUE, across ANY REPOSITORY (within the organization)", async () => {
-    const result = await linkPulls(PARAMS_ISSUE_CROSS_REPO_LINK);
+  it("should identify and return the merged, linked pull requests that originate from a specific issue, regardless of the repository they are located in within the organization", async () => {
+    const result = await collectLinkedPulls(PARAMS_ISSUE_CROSS_REPO_LINK);
     const expectedUrl = PR_CROSS_REPO_LINK.html_url;
     const matchingLinks = result.filter((link) => link.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBe(1);
   });
 });
 
-describe("real scenarios", () => {
-  it("ubiquibot/comment-incentives/issues/22: should find the merged, linked PULL REQUESTS, starting from the ISSUE, in the SAME REPOSITORY", async () => {
-    const result = await linkPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22"));
+describe("Real-world scenarios for linking pull requests to issues", () => {
+  it("For the issue 'ubiquibot/comment-incentives/issues/22', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
+    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22"));
     const expectedUrl = "https://github.com/ubiquibot/comment-incentives/pull/25";
     result.forEach((res) => expect(res.source.issue.html_url).toMatch(/\/pull\/\d+$/));
     const matchingLinks = result.filter((res) => res.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBeGreaterThan(0);
   });
 
-  it("ubiquibot/comment-incentives/issues/3: should find the merged, linked PULL REQUESTS, starting from the ISSUE, in the SAME REPOSITORY", async () => {
-    const result = await linkPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/3"));
+  it("For the issue 'ubiquibot/comment-incentives/issues/3', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
+    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/3"));
     const expectedUrl = "https://github.com/ubiquibot/comment-incentives/pull/4";
     result.forEach((res) => expect(res.source.issue.html_url).toMatch(/\/pull\/\d+$/));
     const matchingLinks = result.filter((res) => res.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBeGreaterThan(0);
   });
 
-  it("ubiquibot/comment-incentives/issues/15: should find the merged, linked PULL REQUESTS, starting from the ISSUE, in the SAME REPOSITORY", async () => {
-    const result = await linkPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/15"));
+  it("For the issue 'ubiquibot/comment-incentives/issues/15', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
+    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/15"));
     const expectedUrl = "https://github.com/ubiquibot/comment-incentives/pull/16";
     result.forEach((res) => expect(res.source.issue.html_url).toMatch(/\/pull\/\d+$/));
     const matchingLinks = result.filter((res) => res.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBeGreaterThan(0);
   });
 
-  it("ubiquibot/comment-incentives/issues/19: should find the merged, linked PULL REQUESTS, starting from the ISSUE, in the SAME REPOSITORY", async () => {
-    const result = await linkPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/19"));
+  it("For the issue 'ubiquibot/comment-incentives/issues/19', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
+    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/19"));
     const expectedUrls = ["https://github.com/ubiquibot/comment-incentives/pull/21", "https://github.com/ubiquibot/comment-incentives/pull/23"];
     expectedUrls.forEach((url) => {
       const matchingLinks = result.filter((res) => res.source.issue.html_url === url);
@@ -93,3 +93,12 @@ describe("real scenarios", () => {
 //   const expected = [{ issue: { node_id: ISSUE_CROSS_REPO_LINK.node_id } }];
 //   expect(result).toMatchObject(expected);
 // });
+
+describe("Collect users", () => {
+  it("should collect users from the issue and linked pull requests", async () => {
+    const issueParams = parseGitHubUrl("https://github.com/ubiquibot/production/issues/92");
+    const issueEvents = await getIssueEvents(issueParams);
+    const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
+    console.dir(userEvents, { depth: null });
+  });
+});
