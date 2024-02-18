@@ -2,6 +2,7 @@ import { config } from "dotenv";
 import { parseGitHubUrl } from "../start";
 import issue89 from "./fixtures/issue-89.json";
 import issue90 from "./fixtures/issue-90.json";
+import issue92 from "./fixtures/issue-92.json";
 import pr188 from "./fixtures/pr-188.json";
 import pr91 from "./fixtures/pr-91.json";
 import linkPulls from "./link-pulls";
@@ -15,10 +16,11 @@ process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 
 const i89Params = parseGitHubUrl(issue89.html_url); // cross repo link
 const i90Params = parseGitHubUrl(issue90.html_url); // same repo link
+const i92Params = parseGitHubUrl(issue92.html_url); // no link
 
 describe("linkPulls", () => {
   it("should return null if there is no link event on the issue", async () => {
-    const result = await linkPulls(i90Params);
+    const result = await linkPulls(i92Params);
     expect(result).toBeNull();
   });
 
