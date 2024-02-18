@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import { getOctokitInstance } from "../get-authentication-token";
-import { GitHubIssueEvent } from "../github-types";
+import { GitHubIssueTimelineEvent } from "../github-types";
 import { IssueParams } from "../start";
 
 let octokit: Octokit;
@@ -18,6 +18,9 @@ export default async function linkPulls(issue: IssueParams) {
 
   const issueLinkEvents = await getLinkedEvents(issue);
   const latestIssueLinkEvent = getLatestLinkEvent(issueLinkEvents);
+
+  console.debug({ latestIssueLinkEvent });
+
   if (latestIssueLinkEvent) {
     const linkedPullRequest = await findMatchingLinkEventFromPullRequests(issue, latestIssueLinkEvent.created_at);
     if (!linkedPullRequest) {
@@ -48,7 +51,10 @@ async function findMatchingLinkEventFromOtherRepositories(issue: IssueParams, ti
     for (const pullRequest of otherRepoPullRequests.data) {
       const pullRequestLinkEvents = await getLinkedEvents({ owner: issue.owner, repo: repo.name, issue_number: pullRequest.number });
       const latestPullRequestLinkEvent = getLatestLinkEvent(pullRequestLinkEvents);
-      if (latestPullRequestLinkEvent && latestPullRequestLinkEvent.created_at === timestamp) {
+
+      console.debug({ latestPullRequestLinkEvent });
+
+      if (latestPullRequestLinkEvent?.created_at === timestamp) {
         return pullRequest;
       }
     }
@@ -59,19 +65,19 @@ async function findMatchingLinkEventFromOtherRepositories(issue: IssueParams, ti
 
 async function getLinkedEvents(params: IssueParams) {
   const issueEvents = await fetchEvents(params);
-  console.dir(`==========`, { depth: null });
+  console.dir(`===== start =====`, { depth: null });
   const linkEvents = issueEvents.filter((event) => {
     console.dir({ event: event.event }, { depth: null });
     return connectedOrCrossReferenced(event);
   });
-  console.dir(`==========`, { depth: null });
+  console.dir(`===== finish =====`, { depth: null });
   if (linkEvents.length === 0) {
     return [];
   }
   return linkEvents;
 }
 
-function getLatestLinkEvent(events: GitHubIssueEvent[]) {
+function getLatestLinkEvent(events: GitHubIssueTimelineEvent[]) {
   if (events.length === 0) {
     return null;
   } else {
@@ -101,12 +107,12 @@ async function findMatchingLinkEventFromPullRequests(params: IssueParams, timest
   return null;
 }
 
-function connectedOrCrossReferenced(event: GitHubIssueEvent) {
+function connectedOrCrossReferenced(event: GitHubIssueTimelineEvent) {
   return event.event === "connected" || event.event === "cross-referenced";
 }
 
-async function fetchEvents(params: IssueParams): Promise<GitHubIssueEvent[]> {
-  const response = await octokit.rest.issues.listEvents(params);
+async function fetchEvents(params: IssueParams): Promise<GitHubIssueTimelineEvent[]> {
+  const response = await octokit.rest.issues.listEventsForTimeline(params);
   return response.data;
 }
 
