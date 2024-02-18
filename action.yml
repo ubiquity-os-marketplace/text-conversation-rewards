@@ -1,0 +1,14 @@
+name: "Conversation Rewards"
+description: "Compute rewards for contributors' discussion on issues that are closed as complete."
+outputs:
+  result: # id of output
+    description: "The result of a event handler"
+    value: ${{ steps.main.outputs.result}}
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        yarn --cwd ${{ github.action_path }} --production=true
+        yarn --cwd ${{ github.action_path }} start
+      id: main
+      shell: bash
