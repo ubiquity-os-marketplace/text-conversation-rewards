@@ -1,10 +1,12 @@
+import { Octokit } from "@octokit/rest";
 import { getOctokitInstance } from "../get-authentication-token";
 import { GitHubIssueEvent } from "../github-types";
 import { IssueParams } from "../start";
 
-const octokit = getOctokitInstance();
+let octokit: Octokit | null = null;
 
 export default async function linkPulls(issue: IssueParams) {
+  octokit = getOctokitInstance();
   /**
    * we need to find the linked pull request.
    * * we first start by checking the current repository.
