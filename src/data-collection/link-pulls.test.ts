@@ -25,7 +25,7 @@ if (!GITHUB_TOKEN) {
 // Mock process.argv
 process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 
-describe("linkPulls", () => {
+describe("mock scenarios", () => {
   it("should return null if there is no link event on the issue", async () => {
     const result = await linkPulls(PARAMS_ISSUE_NO_LINK);
     expect(result).toBeNull();
@@ -42,7 +42,9 @@ describe("linkPulls", () => {
     const expected = { issue: { html_url: PR_CROSS_REPO_LINK.html_url } };
     expect(result).toMatchObject(expected);
   });
+});
 
+describe("real scenarios", () => {
   it("ubiquibot/comment-incentives/issues/22: should find the linked PULL REQUEST, starting from the ISSUE, in the SAME REPOSITORY", async () => {
     const result = await linkPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22"));
     const expected = { issue: { html_url: expect.stringMatching(/\/pull\/\d+$/) } };
