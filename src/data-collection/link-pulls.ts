@@ -35,7 +35,7 @@ export default async function linkPulls(issue: IssueParams) {
 
   // console.dir({ onlyPullRequests }, { depth: 5 });
   const latestIssueLinkEvent = getLatestLinkEvent(onlyPullRequests);
-  console.dir({ latestIssueLinkEvent }, { depth: 5 });
+  // console.dir({ latestIssueLinkEvent }, { depth: 5 });
 
   if (latestIssueLinkEvent) {
     return latestIssueLinkEvent.source;
@@ -51,12 +51,6 @@ function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
   const disconnections = new Map<number, GitHubIssueEvent>(); // Track disconnections
 
   issueLinkEvents.forEach((issueEvent: GitHubLinkEvent) => {
-    if (!issueEvent.source) {
-      console.warn("issueEvent.source is undefined:");
-      console.dir(issueEvent, { depth: null });
-      console.warn("/issueEvent.source is undefined");
-    }
-
     const issueNumber = issueEvent.source.issue.number as number;
 
     if (issueEvent.event === "connected" || issueEvent.event === "cross-referenced") {
