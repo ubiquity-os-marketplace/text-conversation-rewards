@@ -6,7 +6,7 @@ import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked
 import ISSUE_SAME_REPO_LINK from "./fixtures/issue-90.json"; // pr91 is linked to this issue
 import ISSUE_NO_LINK from "./fixtures/issue-92.json"; // no link
 
-import pr21 from "./fixtures/pr-21.json";
+import pr23 from "./fixtures/pr-23.json";
 
 import PR_CROSS_REPO_LINK from "./fixtures/pr-188.json";
 import PR_SAME_REPO_LINK from "./fixtures/pr-91.json";
@@ -68,7 +68,7 @@ describe("real scenarios", () => {
 
     // console.dir(result, { depth: null });
 
-    const expected = { issue: { html_url: pr21.html_url } };
+    const expected = { issue: { html_url: pr23.html_url } };
     expect(result).toMatchObject(expected);
   });
 

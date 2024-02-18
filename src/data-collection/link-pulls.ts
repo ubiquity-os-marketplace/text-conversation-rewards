@@ -32,7 +32,10 @@ export default async function linkPulls(issue: IssueParams) {
   // console.dir({ issueLinkEvents }, { depth: null });
 
   const onlyPullRequests = connected.filter((event) => event.source.issue.pull_request);
+
+  // console.dir({ onlyPullRequests }, { depth: 5 });
   const latestIssueLinkEvent = getLatestLinkEvent(onlyPullRequests);
+  console.dir({ latestIssueLinkEvent }, { depth: 5 });
 
   if (latestIssueLinkEvent) {
     return latestIssueLinkEvent.source;
@@ -96,7 +99,11 @@ function connectedOrCrossReferenced(event: GitHubTimelineEvent): event is GitHub
   return event.event === "connected" || event.event === "cross-referenced";
 }
 
-async function fetchEvents(params: IssueParams): Promise<GitHubTimelineEvent[]> {
-  const response = await octokit.rest.issues.listEventsForTimeline(params);
+async function fetchEvents(params: IssueParams, page: number = 1, perPage: number = 100): Promise<GitHubTimelineEvent[]> {
+  const response = await octokit.rest.issues.listEventsForTimeline({
+    ...params,
+    page,
+    per_page: perPage,
+  });
   return response.data;
 }
