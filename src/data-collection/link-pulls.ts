@@ -20,6 +20,8 @@ export default async function linkPulls(issue: IssueParams) {
 
   const issueLinkEvents = await getLinkedEvents(issue);
 
+  // console.dir(issueLinkEvents, { depth: null });
+
   const connected = eliminateDisconnects(issueLinkEvents);
 
   // Convert the object to a string with indentation
@@ -46,6 +48,12 @@ function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
   const disconnections = new Map<number, GitHubIssueEvent>(); // Track disconnections
 
   issueLinkEvents.forEach((issueEvent: GitHubLinkEvent) => {
+    if (!issueEvent.source) {
+      console.warn("issueEvent.source is undefined:");
+      console.dir(issueEvent, { depth: null });
+      console.warn("/issueEvent.source is undefined");
+    }
+
     const issueNumber = issueEvent.source.issue.number as number;
 
     if (issueEvent.event === "connected" || issueEvent.event === "cross-referenced") {
@@ -67,7 +75,7 @@ function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
 
 async function getLinkedEvents(params: IssueParams): Promise<GitHubLinkEvent[]> {
   const issueEvents = await fetchEvents(params);
-  const linkEvents = issueEvents.filter(connectedOrCrossReferenced); // @TODO: make sure to filter out matching disconnected for any connected events
+  const linkEvents = issueEvents.filter(connectedOrCrossReferenced);
 
   if (linkEvents.length === 0) {
     return [];
