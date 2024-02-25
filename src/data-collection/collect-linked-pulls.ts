@@ -1,12 +1,7 @@
-import { Octokit } from "@octokit/rest";
-import { getOctokitInstance } from "../get-authentication-token";
-import { GitHubLinkEvent, GitHubTimelineEvent, isGitHubLinkEvent } from "../github-types";
-import { IssueParams } from "../start";
-
-let octokit: Octokit;
+import { GitHubLinkEvent, isGitHubLinkEvent } from "../github-types";
+import { IssueParams, getAllTimelineEvents } from "../start";
 
 export default async function collectLinkedPulls(issue: IssueParams) {
-  octokit = getOctokitInstance();
   const issueLinkEvents = await getLinkedEvents(issue);
   const onlyConnected = eliminateDisconnects(issueLinkEvents);
   const onlyPullRequests = onlyConnected.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request);
@@ -39,7 +34,7 @@ function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
 }
 
 async function getLinkedEvents(params: IssueParams): Promise<GitHubLinkEvent[]> {
-  const issueEvents = await fetchEvents(params);
+  const issueEvents = await getAllTimelineEvents(params);
   return issueEvents.filter(isGitHubLinkEvent);
 }
 
@@ -56,11 +51,12 @@ async function getLinkedEvents(params: IssueParams): Promise<GitHubLinkEvent[]> 
 //   return event.event === "connected" || event.event === "cross-referenced";
 // }
 
-async function fetchEvents(params: IssueParams, page: number = 1, perPage: number = 100): Promise<GitHubTimelineEvent[]> {
-  const response = await octokit.rest.issues.listEventsForTimeline({
-    ...params,
-    page,
-    per_page: perPage,
-  });
-  return response.data;
-}
+// async function fetchEvents(params: IssueParams, page: number = 1, perPage: number = 100): Promise<GitHubTimelineEvent[]> {
+//   const octokit = getOctokitInstance();
+//   const response = await octokit.rest.issues.listEventsForTimeline({
+//     ...params,
+//     page,
+//     per_page: perPage,
+//   });
+//   return response.data;
+// }

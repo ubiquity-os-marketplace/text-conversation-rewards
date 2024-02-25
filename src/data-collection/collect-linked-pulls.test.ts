@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { IssueParams, getIssueEvents, parseGitHubUrl } from "../start";
+import { IssueParams, getIssue, getIssueComments, getIssueEvents, parseGitHubUrl } from "../start";
 import collectLinkedPulls from "./collect-linked-pulls";
 
 import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked to this issue
@@ -94,11 +94,31 @@ describe("Real-world scenarios for linking pull requests to issues", () => {
 //   expect(result).toMatchObject(expected);
 // });
 
-describe("Collect users", () => {
-  it("should collect users from the issue and linked pull requests", async () => {
-    const issueParams = parseGitHubUrl("https://github.com/ubiquibot/production/issues/92");
+describe("Collect activity", () => {
+  const ISSUE_92_URL = "https://github.com/ubiquibot/production/issues/92";
+
+  // it("should collect all user activity from the issue and linked pull requests", async () => {
+  //   const issueParams = parseGitHubUrl("https://github.com/ubiquibot/production/issues/92");
+  //   const issueEvents = await getIssueEvents(issueParams);
+  //   const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
+  //   console.dir(userEvents, { depth: null });
+  // });
+
+  it("should collect the issue", async () => {
+    const issueParams = parseGitHubUrl(ISSUE_92_URL);
+    const issue = await getIssue(issueParams);
+    console.dir(issue, { depth: null });
+  });
+
+  it("should collect the issue events", async () => {
+    const issueParams = parseGitHubUrl(ISSUE_92_URL);
     const issueEvents = await getIssueEvents(issueParams);
-    const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
-    console.dir(userEvents, { depth: null });
+    console.dir(issueEvents, { depth: null });
+  });
+
+  it("should collect the issue comments", async () => {
+    const issueParams = parseGitHubUrl(ISSUE_92_URL);
+    const issueComments = await getIssueComments(issueParams);
+    console.dir(issueComments, { depth: null });
   });
 });
