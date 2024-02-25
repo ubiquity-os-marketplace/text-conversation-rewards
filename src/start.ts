@@ -1,5 +1,5 @@
 import { getOctokitInstance } from "./get-authentication-token";
-import { GitHubIssue, GitHubPullRequest, GitHubUser } from "./github-types";
+import { GitHubIssue, GitHubPullRequest, GitHubTimelineEvent, GitHubUser } from "./github-types";
 
 // async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
 // const issueParams = parseGitHubUrl(gitHubIssueUrl);
@@ -52,6 +52,16 @@ export async function getIssue(params: IssueParams): Promise<GitHubIssue> {
 }
 
 export async function getIssueEvents(issueParams: IssueParams) {
+  const octokit = getOctokitInstance();
+  return await octokit.paginate(octokit.issues.listEvents.endpoint.merge(issueParams));
+}
+
+export async function getIssueComments(issueParams: IssueParams) {
+  const octokit = getOctokitInstance();
+  return await octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams));
+}
+
+export async function getAllIssueActivity(issueParams: IssueParams) {
   // @DEV: this is very useful for seeing every type of event that has occurred on the issue
   // in chronological order
   const octokit = getOctokitInstance();
@@ -74,7 +84,7 @@ export async function getTimelineUsers(issueParams: IssueParams): Promise<GitHub
   return [...new Set(users)];
 }
 
-async function getAllTimelineEvents(issueParams: IssueParams) {
+export async function getAllTimelineEvents(issueParams: IssueParams): Promise<GitHubTimelineEvent[]> {
   const octokit = getOctokitInstance();
   const options = octokit.issues.listEventsForTimeline.endpoint.merge(issueParams);
   return await octokit.paginate(options);
@@ -91,6 +101,7 @@ export function parseGitHubUrl(url: string): { owner: string; repo: string; issu
 
 export type IssueParams = ReturnType<typeof parseGitHubUrl>;
 type PullParams = { owner: string; repo: string; pull_number: number };
+
 export async function getPullRequest(pullParams: PullParams): Promise<GitHubPullRequest> {
   const octokit = getOctokitInstance();
   return (await octokit.pulls.get(pullParams)).data;
