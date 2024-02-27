@@ -4,8 +4,8 @@ import {
   GitHubIssueComment,
   GitHubIssueEvent,
   GitHubPullRequest,
-  GitHubPullRequestReview,
   GitHubPullRequestReviewComment,
+  GitHubPullRequestReviewState,
   GitHubTimelineEvent,
   GitHubUser,
 } from "./github-types";
@@ -76,7 +76,7 @@ export async function getIssueComments(issueParams: IssueParams): Promise<GitHub
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams));
 }
-export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReview[]> {
+export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReviewState[]> {
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.pulls.listReviews.endpoint.merge(pullParams));
 }

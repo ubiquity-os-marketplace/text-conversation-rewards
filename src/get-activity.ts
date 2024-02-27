@@ -1,5 +1,12 @@
 import collectLinkedPulls from "./data-collection/collect-linked-pulls";
-import { GitHubIssue, GitHubIssueComment, GitHubIssueEvent, GitHubPullRequest, GitHubPullRequestReview, GitHubPullRequestReviewComment } from "./github-types";
+import {
+  GitHubIssue,
+  GitHubIssueComment,
+  GitHubIssueEvent,
+  GitHubPullRequest,
+  GitHubPullRequestReviewComment,
+  GitHubPullRequestReviewState,
+} from "./github-types";
 import {
   IssueParams,
   PullParams,
@@ -12,12 +19,11 @@ import {
 } from "./start";
 
 export class GetActivity {
+  constructor(private _issueParams: IssueParams) {}
   self: Promise<GitHubIssue> | GitHubIssue | null = null;
   events: Promise<GitHubIssueEvent[]> | GitHubIssueEvent[] | null = null;
   comments: Promise<GitHubIssueComment[]> | GitHubIssueComment[] | null = null;
   linkedReviews: Promise<Review[]> | Review[] | null = null;
-
-  constructor(private _issueParams: IssueParams) {}
 
   async init() {
     this.self = getIssue(this._issueParams);
@@ -50,7 +56,7 @@ export class GetActivity {
 
 class Review {
   self: Promise<GitHubPullRequest> | GitHubPullRequest | null = null;
-  reviews: Promise<GitHubPullRequestReview[]> | GitHubPullRequestReview[] | null = null;
+  reviews: Promise<GitHubPullRequestReviewState[]> | GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
   reviewComments: Promise<GitHubPullRequestReviewComment[]> | GitHubPullRequestReviewComment[] | null = null;
 
   constructor(private _pullParams: PullParams) {}

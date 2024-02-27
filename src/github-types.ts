@@ -8,7 +8,7 @@ export type GitHubIssueEvent = RestEndpointMethodTypes["issues"]["listEvents"]["
 export type GitHubTimelineEvent = RestEndpointMethodTypes["issues"]["listEventsForTimeline"]["response"]["data"][0];
 export type GitHubRepository = RestEndpointMethodTypes["repos"]["get"]["response"]["data"];
 export type GitHubUser = RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"];
-export type GitHubPullRequestReview = RestEndpointMethodTypes["pulls"]["listReviews"]["response"]["data"][0];
+export type GitHubPullRequestReviewState = RestEndpointMethodTypes["pulls"]["listReviews"]["response"]["data"][0];
 export type GitHubPullRequestReviewComment = RestEndpointMethodTypes["pulls"]["listReviewComments"]["response"]["data"][0];
 
 type LinkPullRequestDetail = {
