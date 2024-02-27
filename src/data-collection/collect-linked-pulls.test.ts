@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { IssueParams, getIssue, getIssueComments, getIssueEvents, parseGitHubUrl } from "../start";
+import { IssueParams, getIssueEvents, parseGitHubUrl } from "../start";
 import collectLinkedPulls from "./collect-linked-pulls";
 
 import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked to this issue
@@ -53,6 +53,14 @@ describe("Real-world scenarios for linking pull requests to issues", () => {
     expect(matchingLinks.length).toBeGreaterThan(0);
   });
 
+  it("For the issue 'ubiquity/pay.ubq.fi/issues/138', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquity/pay.ubq.fi'", async () => {
+    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquity/pay.ubq.fi/issues/138"));
+    const expectedUrl = "https://github.com/https://github.com/ubiquity/pay.ubq.fi/pull/173";
+    result.forEach((res) => expect(res.source.issue.html_url).toMatch(/\/pull\/\d+$/));
+    const matchingLinks = result.filter((res) => res.source.issue.html_url === expectedUrl);
+    expect(matchingLinks.length).toBeGreaterThan(0);
+  });
+
   it("For the issue 'ubiquibot/comment-incentives/issues/3', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
     const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/3"));
     const expectedUrl = "https://github.com/ubiquibot/comment-incentives/pull/4";
@@ -94,34 +102,34 @@ describe("Real-world scenarios for linking pull requests to issues", () => {
 //   expect(result).toMatchObject(expected);
 // });
 
-describe("Collect activity from issue 'https://github.com/ubiquibot/production/issues/92'", () => {
-  const ISSUE_92_URL = "https://github.com/ubiquibot/production/issues/92";
+// describe("Collect activity from issue 'https://github.com/ubiquibot/production/issues/92'", () => {
+//   const ISSUE_92_URL = "https://github.com/ubiquibot/production/issues/92";
 
-  // it("should collect all user activity from the issue and linked pull requests", async () => {
-  //   const issueParams = parseGitHubUrl("https://github.com/ubiquibot/production/issues/92");
-  //   const issueEvents = await getIssueEvents(issueParams);
-  //   const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
-  //   console.dir(userEvents, { depth: null , colors: true });
-  // });
+//   // it("should collect all user activity from the issue and linked pull requests", async () => {
+//   //   const issueParams = parseGitHubUrl("https://github.com/ubiquibot/production/issues/92");
+//   //   const issueEvents = await getIssueEvents(issueParams);
+//   //   const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
+//   //   console.dir(userEvents, { depth: null , colors: true });
+//   // });
 
-  it("should collect the issue", async () => {
-    const issueParams = parseGitHubUrl(ISSUE_92_URL);
-    const issue = await getIssue(issueParams);
-    console.dir(issue, { depth: null, colors: true });
-  });
+//   it("should collect the issue", async () => {
+//     const issueParams = parseGitHubUrl(ISSUE_92_URL);
+//     const issue = await getIssue(issueParams);
+//     console.dir(issue, { depth: null, colors: true });
+//   });
 
-  it("should collect the issue events", async () => {
-    const issueParams = parseGitHubUrl(ISSUE_92_URL);
-    const issueEvents = await getIssueEvents(issueParams);
-    console.dir(issueEvents, { depth: null, colors: true });
-  });
+//   it("should collect the issue events", async () => {
+//     const issueParams = parseGitHubUrl(ISSUE_92_URL);
+//     const issueEvents = await getIssueEvents(issueParams);
+//     console.dir(issueEvents, { depth: null, colors: true });
+//   });
 
-  it("should collect the issue comments", async () => {
-    const issueParams = parseGitHubUrl(ISSUE_92_URL);
-    const issueComments = await getIssueComments(issueParams);
-    console.dir(issueComments, { depth: null, colors: true });
-  });
-});
+//   it("should collect the issue comments", async () => {
+//     const issueParams = parseGitHubUrl(ISSUE_92_URL);
+//     const issueComments = await getIssueComments(issueParams);
+//     console.dir(issueComments, { depth: null, colors: true });
+//   });
+// });
 
 describe("Categorize users based on their contributions", () => {
   const ISSUE_92_URL = "https://github.com/ubiquibot/production/issues/92";
