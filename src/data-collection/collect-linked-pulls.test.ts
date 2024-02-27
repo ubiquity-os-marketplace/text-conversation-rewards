@@ -94,31 +94,42 @@ describe("Real-world scenarios for linking pull requests to issues", () => {
 //   expect(result).toMatchObject(expected);
 // });
 
-describe("Collect activity", () => {
+describe("Collect activity from issue 'https://github.com/ubiquibot/production/issues/92'", () => {
   const ISSUE_92_URL = "https://github.com/ubiquibot/production/issues/92";
 
   // it("should collect all user activity from the issue and linked pull requests", async () => {
   //   const issueParams = parseGitHubUrl("https://github.com/ubiquibot/production/issues/92");
   //   const issueEvents = await getIssueEvents(issueParams);
   //   const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
-  //   console.dir(userEvents, { depth: null });
+  //   console.dir(userEvents, { depth: null , colors: true });
   // });
 
   it("should collect the issue", async () => {
     const issueParams = parseGitHubUrl(ISSUE_92_URL);
     const issue = await getIssue(issueParams);
-    console.dir(issue, { depth: null });
+    console.dir(issue, { depth: null, colors: true });
   });
 
   it("should collect the issue events", async () => {
     const issueParams = parseGitHubUrl(ISSUE_92_URL);
     const issueEvents = await getIssueEvents(issueParams);
-    console.dir(issueEvents, { depth: null });
+    console.dir(issueEvents, { depth: null, colors: true });
   });
 
   it("should collect the issue comments", async () => {
     const issueParams = parseGitHubUrl(ISSUE_92_URL);
     const issueComments = await getIssueComments(issueParams);
-    console.dir(issueComments, { depth: null });
+    console.dir(issueComments, { depth: null, colors: true });
+  });
+});
+
+describe("Categorize users based on their contributions", () => {
+  const ISSUE_92_URL = "https://github.com/ubiquibot/production/issues/92";
+
+  it("should categorize users based on their contributions to the issue and linked pull requests", async () => {
+    const issueParams = parseGitHubUrl(ISSUE_92_URL);
+    const issueEvents = await getIssueEvents(issueParams);
+    const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
+    console.dir(userEvents, { depth: null, colors: true });
   });
 });

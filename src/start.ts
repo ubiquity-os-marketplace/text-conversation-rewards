@@ -45,10 +45,17 @@ import { GitHubIssue, GitHubPullRequest, GitHubTimelineEvent, GitHubUser } from 
    * * * * isRemainder?
    */
 // }
+export type IssueParams = ReturnType<typeof parseGitHubUrl>;
+export type PullParams = { owner: string; repo: string; pull_number: number };
 
 export async function getIssue(params: IssueParams): Promise<GitHubIssue> {
   const octokit = getOctokitInstance();
   return (await octokit.issues.get(params)).data;
+}
+
+export async function getPullRequest(pullParams: PullParams): Promise<GitHubPullRequest> {
+  const octokit = getOctokitInstance();
+  return (await octokit.pulls.get(pullParams)).data;
 }
 
 export async function getIssueEvents(issueParams: IssueParams) {
@@ -60,10 +67,20 @@ export async function getIssueComments(issueParams: IssueParams) {
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams));
 }
+export async function getPullRequestComments(pullParams: PullParams) {
+  const octokit = getOctokitInstance();
+  return await octokit.paginate(octokit.pulls.listCommentsForReview.endpoint.merge(pullParams));
+}
+export async function getPullRequestReviewComments(pullParams: PullParams) {
+  const octokit = getOctokitInstance();
+  return await octokit.paginate(octokit.pulls.listReviewComments.endpoint.merge(pullParams));
+}
 
 export async function getAllIssueActivity(issueParams: IssueParams) {
-  // @DEV: this is very useful for seeing every type of event that has occurred on the issue
-  // in chronological order
+  // @DEV: this is very useful for seeing every type of event,
+  // which includes the issue specification, any events, and all conversation
+  //  that has occurred on the issue in chronological order
+
   const octokit = getOctokitInstance();
   const [issue, events, comments] = await Promise.all([
     octokit.issues.get(issueParams),
@@ -97,12 +114,4 @@ export function parseGitHubUrl(url: string): { owner: string; repo: string; issu
     repo: path[2],
     issue_number: Number(path[4]),
   };
-}
-
-export type IssueParams = ReturnType<typeof parseGitHubUrl>;
-type PullParams = { owner: string; repo: string; pull_number: number };
-
-export async function getPullRequest(pullParams: PullParams): Promise<GitHubPullRequest> {
-  const octokit = getOctokitInstance();
-  return (await octokit.pulls.get(pullParams)).data;
 }
