@@ -1,5 +1,14 @@
 import { getOctokitInstance } from "./get-authentication-token";
-import { GitHubIssue, GitHubPullRequest, GitHubPullRequestReview, GitHubTimelineEvent, GitHubUser } from "./github-types";
+import {
+  GitHubIssue,
+  GitHubIssueComment,
+  GitHubIssueEvent,
+  GitHubPullRequest,
+  GitHubPullRequestReview,
+  GitHubPullRequestReviewComment,
+  GitHubTimelineEvent,
+  GitHubUser,
+} from "./github-types";
 
 // async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
 // const issueParams = parseGitHubUrl(gitHubIssueUrl);
@@ -58,12 +67,12 @@ export async function getPullRequest(pullParams: PullParams): Promise<GitHubPull
   return (await octokit.pulls.get(pullParams)).data;
 }
 
-export async function getIssueEvents(issueParams: IssueParams) {
+export async function getIssueEvents(issueParams: IssueParams): Promise<GitHubIssueEvent[]> {
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.issues.listEvents.endpoint.merge(issueParams));
 }
 
-export async function getIssueComments(issueParams: IssueParams) {
+export async function getIssueComments(issueParams: IssueParams): Promise<GitHubIssueComment[]> {
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams));
 }
@@ -71,7 +80,7 @@ export async function getPullRequestReviews(pullParams: PullParams): Promise<Git
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.pulls.listReviews.endpoint.merge(pullParams));
 }
-export async function getPullRequestReviewComments(pullParams: PullParams) {
+export async function getPullRequestReviewComments(pullParams: PullParams): Promise<GitHubPullRequestReviewComment[]> {
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.pulls.listReviewComments.endpoint.merge(pullParams));
 }

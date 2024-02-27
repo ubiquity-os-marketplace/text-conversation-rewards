@@ -16,8 +16,7 @@ describe("GetActivity class", () => {
   beforeAll(async () => {
     const issue22 = parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22");
     activity = new GetActivity(issue22);
-    // Wait for all promises to resolve
-    await Promise.all([activity.self, activity.events, activity.comments, activity.linkedReviews]);
+    await activity.init();
     console.dir(activity, { depth: null, colors: true });
   });
 
