@@ -1,8 +1,17 @@
 import collectLinkedPulls from "./data-collection/collect-linked-pulls";
-import { GitHubComment, GitHubPullRequest } from "./github-types";
-import { IssueParams, getIssue, getIssueComments, getIssueEvents, getPullRequest, getPullRequestComments, getPullRequestReviewComments } from "./start";
+import { GitHubPullRequest, GitHubPullRequestComment, GitHubPullRequestReview } from "./github-types";
+import {
+  IssueParams,
+  PullParams,
+  getIssue,
+  getIssueComments,
+  getIssueEvents,
+  getPullRequest,
+  getPullRequestReviewComments,
+  getPullRequestReviews,
+} from "./start";
 
-export class GetIssue {
+export class GetActivity {
   self: null;
   events: null;
   comments: null;
@@ -29,11 +38,11 @@ export class GetIssue {
 
 class Review {
   self: GitHubPullRequest;
-  comments: GitHubComment[];
-  reviewComments: [];
-  constructor(pullParams: pullParams) {
-    self = getPullRequest(pullParams).catch(console.error);
-    comments = getPullRequestComments(pullParams).catch(console.error);
-    reviewComments = getPullRequestReviewComments(pullParams).catch(console.error);
+  reviews: GitHubPullRequestReview[];
+  reviewComments: GitHubPullRequestComment[];
+  constructor(pullParams: PullParams) {
+    this.self = getPullRequest(pullParams).catch(console.error);
+    this.reviews = getPullRequestReviews(pullParams).catch(console.error);
+    this.reviewComments = getPullRequestReviewComments(pullParams).catch(console.error);
   }
 }

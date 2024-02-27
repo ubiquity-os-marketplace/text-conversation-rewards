@@ -8,6 +8,8 @@ export type GitHubIssueEvent = RestEndpointMethodTypes["issues"]["listEvents"]["
 export type GitHubTimelineEvent = RestEndpointMethodTypes["issues"]["listEventsForTimeline"]["response"]["data"][0];
 export type GitHubRepository = RestEndpointMethodTypes["repos"]["get"]["response"]["data"];
 export type GitHubUser = RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"];
+export type GitHubPullRequestReview = RestEndpointMethodTypes["pulls"]["listReviews"]["response"]["data"][0];
+export type GitHubPullRequestComment = RestEndpointMethodTypes["pulls"]["listReviewComments"]["response"]["data"][0];
 
 type LinkPullRequestDetail = {
   url: "https://api.github.com/repos/ubiquibot/comment-incentives/pulls/25";
