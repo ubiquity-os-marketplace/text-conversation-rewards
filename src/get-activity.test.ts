@@ -1,6 +1,6 @@
+import { config } from "dotenv";
 import { GetActivity } from "./get-activity";
 import { parseGitHubUrl } from "./start";
-import { config } from "dotenv";
 
 config();
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -11,13 +11,20 @@ if (!GITHUB_TOKEN) {
 process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 
 describe("GetActivity class", () => {
-  let activity: GetActivity;
+  const issue22 = parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22");
+  const activity = new GetActivity(issue22);
 
   beforeAll(async () => {
-    const issue22 = parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22");
-    activity = new GetActivity(issue22);
     await activity.init();
-    console.dir(activity, { depth: null, colors: true });
+  });
+
+  it("should resolve all promises", async () => {
+    await activity.init();
+
+    expect(activity.self).toBeTruthy();
+    expect(activity.events).toBeTruthy();
+    expect(activity.comments).toBeTruthy();
+    expect(Array.isArray(activity.linkedReviews)).toBeTruthy();
   });
 
   it("should create an instance of GetActivity", () => {
