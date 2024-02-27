@@ -1,4 +1,4 @@
-import collectLinkedPulls from "./data-collection/collect-linked-pulls";
+import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -34,7 +34,7 @@ export class GetActivity {
   }
 
   private async _getLinkedReviews(): Promise<Review[]> {
-    const pulls = await collectLinkedPulls(this._issueParams);
+    const pulls = await collectLinkedMergedPulls(this._issueParams);
     const promises = pulls.map((pull) => {
       const repository = pull.source.issue.repository;
 

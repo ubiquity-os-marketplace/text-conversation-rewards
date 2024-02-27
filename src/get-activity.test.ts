@@ -22,7 +22,6 @@ describe("GetActivity class", () => {
     expect(activity.events).toBeTruthy();
     expect(activity.comments).toBeTruthy();
     expect(Array.isArray(activity.linkedReviews)).toBeTruthy();
-    console.dir(activity.linkedReviews, { depth: 5, colors: true });
   });
 
   it("should create an instance of GetActivity", () => {

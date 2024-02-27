@@ -1,11 +1,11 @@
 import { config } from "dotenv";
-import { IssueParams, getIssueEvents, parseGitHubUrl } from "../start";
-import { collectLinkedMergedPulls, collectLinkedPulls } from "./collect-linked-pulls";
+import { IssueParams, parseGitHubUrl } from "../start";
 
 import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked to this issue
 import ISSUE_SAME_REPO_LINK from "./fixtures/issue-90.json"; // pr91 is linked to this issue
 import ISSUE_NO_LINK from "./fixtures/issue-92.json"; // no link
 
+import { collectLinkedMergedPulls, collectLinkedPulls } from "./collect-linked-pulls";
 import PR_CROSS_REPO_LINK from "./fixtures/pr-188.json";
 import PR_SAME_REPO_LINK from "./fixtures/pr-91.json";
 
@@ -131,13 +131,13 @@ describe("Real-world scenarios for linking pull requests to issues", () => {
 //   });
 // });
 
-describe("Categorize users based on their contributions", () => {
-  const ISSUE_92_URL = "https://github.com/ubiquibot/production/issues/92";
+// describe("Categorize users based on their contributions", () => {
+//   const ISSUE_92_URL = "https://github.com/ubiquibot/production/issues/92";
 
-  it("should categorize users based on their contributions to the issue and linked pull requests", async () => {
-    const issueParams = parseGitHubUrl(ISSUE_92_URL);
-    const issueEvents = await getIssueEvents(issueParams);
-    const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
-    console.dir(userEvents, { depth: null, colors: true });
-  });
-});
+//   it("should categorize users based on their contributions to the issue and linked pull requests", async () => {
+//     const issueParams = parseGitHubUrl(ISSUE_92_URL);
+//     const issueEvents = await getIssueEvents(issueParams);
+//     const userEvents = issueEvents.filter((event) => event.user?.type === "User" || event.actor?.type === "User");
+//     console.dir(userEvents, { depth: null, colors: true });
+//   });
+// });
