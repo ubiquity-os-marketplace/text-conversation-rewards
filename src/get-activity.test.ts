@@ -12,13 +12,12 @@ process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
 
 describe("GetActivity class", () => {
-  const issue22 = parseGitHubUrl(issueUrl);
-  const activity = new GetActivity(issue22);
+  const issue = parseGitHubUrl(issueUrl);
+  const activity = new GetActivity(issue);
+
   beforeAll(async () => await activity.init());
 
   it("should resolve all promises", async () => {
-    await activity.init();
-
     expect(activity.self).toBeTruthy();
     expect(activity.events).toBeTruthy();
     expect(activity.comments).toBeTruthy();
@@ -30,19 +29,19 @@ describe("GetActivity class", () => {
     expect(activity).toBeInstanceOf(GetActivity);
   });
 
-  it("should initialize self as an object", () => {
+  it("should initialize `activity.self` as an object", () => {
     expect(typeof activity.self).toBe("object");
   });
 
-  it("should initialize events as an object", () => {
+  it("should initialize `activity.events` as an object", () => {
     expect(typeof activity.events).toBe("object");
   });
 
-  it("should initialize comments as an object", () => {
+  it("should initialize `activity.comments` as an object", () => {
     expect(typeof activity.comments).toBe("object");
   });
 
-  it("should initialize linkedReviews as an array", () => {
+  it("should initialize `activity.linkedReviews` as an array", () => {
     expect(Array.isArray(activity.linkedReviews)).toBe(true);
   });
 });
