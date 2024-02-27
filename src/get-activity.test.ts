@@ -13,10 +13,7 @@ process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 describe("GetActivity class", () => {
   const issue22 = parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22");
   const activity = new GetActivity(issue22);
-
-  beforeAll(async () => {
-    await activity.init();
-  });
+  beforeAll(async () => await activity.init());
 
   it("should resolve all promises", async () => {
     await activity.init();
@@ -25,6 +22,7 @@ describe("GetActivity class", () => {
     expect(activity.events).toBeTruthy();
     expect(activity.comments).toBeTruthy();
     expect(Array.isArray(activity.linkedReviews)).toBeTruthy();
+    console.dir(activity.linkedReviews, { depth: 4, colors: true });
   });
 
   it("should create an instance of GetActivity", () => {

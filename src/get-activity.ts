@@ -49,9 +49,9 @@ export class GetActivity {
 }
 
 class Review {
-  self: Promise<GitHubPullRequest> | null = null;
-  reviews: Promise<GitHubPullRequestReview[]> | null = null;
-  reviewComments: Promise<GitHubPullRequestReviewComment[]> | null = null;
+  self: Promise<GitHubPullRequest> | GitHubPullRequest | null = null;
+  reviews: Promise<GitHubPullRequestReview[]> | GitHubPullRequestReview[] | null = null;
+  reviewComments: Promise<GitHubPullRequestReviewComment[]> | GitHubPullRequestReviewComment[] | null = null;
 
   constructor(private _pullParams: PullParams) {}
 
@@ -59,5 +59,8 @@ class Review {
     this.self = getPullRequest(this._pullParams);
     this.reviews = getPullRequestReviews(this._pullParams);
     this.reviewComments = getPullRequestReviewComments(this._pullParams);
+
+    // Wait for all promises to resolve
+    [this.self, this.reviews, this.reviewComments] = await Promise.all([this.self, this.reviews, this.reviewComments]);
   }
 }
