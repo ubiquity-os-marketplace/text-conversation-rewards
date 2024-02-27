@@ -37,18 +37,10 @@
   "merged_at": "2024-02-16T17:38:36Z",
   "merge_commit_sha": "d764c2afe70950b859c063777c15977421a38e2d",
   "assignee": null,
-  "assignees": [
-
-  ],
-  "requested_reviewers": [
-
-  ],
-  "requested_teams": [
-
-  ],
-  "labels": [
-
-  ],
+  "assignees": [],
+  "requested_reviewers": [],
+  "requested_teams": [],
+  "labels": [],
   "milestone": null,
   "draft": false,
   "commits_url": "https://api.github.com/repos/ubiquibot/comment-incentives/pulls/23/commits",
@@ -173,9 +165,7 @@
       "allow_forking": true,
       "is_template": false,
       "web_commit_signoff_required": false,
-      "topics": [
-
-      ],
+      "topics": [],
       "visibility": "public",
       "forks": 7,
       "open_issues": 12,
@@ -300,9 +290,7 @@
       "allow_forking": true,
       "is_template": false,
       "web_commit_signoff_required": false,
-      "topics": [
-
-      ],
+      "topics": [],
       "visibility": "public",
       "forks": 7,
       "open_issues": 12,

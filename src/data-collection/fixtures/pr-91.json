@@ -37,18 +37,10 @@
   "merged_at": null,
   "merge_commit_sha": "75514b7c081e6063e801d8ad6fd2a579e680abf1",
   "assignee": null,
-  "assignees": [
-
-  ],
-  "requested_reviewers": [
-
-  ],
-  "requested_teams": [
-
-  ],
-  "labels": [
-
-  ],
+  "assignees": [],
+  "requested_reviewers": [],
+  "requested_teams": [],
+  "labels": [],
   "milestone": null,
   "draft": false,
   "commits_url": "https://api.github.com/repos/ubiquibot/production/pulls/91/commits",
@@ -173,9 +165,7 @@
       "allow_forking": true,
       "is_template": false,
       "web_commit_signoff_required": false,
-      "topics": [
-
-      ],
+      "topics": [],
       "visibility": "public",
       "forks": 0,
       "open_issues": 35,
@@ -300,9 +290,7 @@
       "allow_forking": true,
       "is_template": false,
       "web_commit_signoff_required": false,
-      "topics": [
-
-      ],
+      "topics": [],
       "visibility": "public",
       "forks": 0,
       "open_issues": 35,
