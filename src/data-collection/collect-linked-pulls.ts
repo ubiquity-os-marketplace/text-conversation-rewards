@@ -1,11 +1,16 @@
 import { GitHubLinkEvent, isGitHubLinkEvent } from "../github-types";
 import { IssueParams, getAllTimelineEvents } from "../start";
 
-export default async function collectLinkedPulls(issue: IssueParams) {
+export async function collectLinkedMergedPulls(issue: IssueParams) {
+  // normally we should only use this one to calculate incentives, because this specifies that the pull requests are merged (accepted)
+  const onlyPullRequests = await collectLinkedPulls(issue);
+  return onlyPullRequests.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at);
+}
+export async function collectLinkedPulls(issue: IssueParams) {
+  // this one was created to help with tests, but probably should not be used in the main code
   const issueLinkEvents = await getLinkedEvents(issue);
   const onlyConnected = eliminateDisconnects(issueLinkEvents);
-  const onlyPullRequests = onlyConnected.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request);
-  return onlyPullRequests.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at);
+  return onlyConnected.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request);
 }
 
 function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
@@ -37,26 +42,3 @@ async function getLinkedEvents(params: IssueParams): Promise<GitHubLinkEvent[]> 
   const issueEvents = await getAllTimelineEvents(params);
   return issueEvents.filter(isGitHubLinkEvent);
 }
-
-// function getLatestLinkEvent(events: GitHubLinkEvent[]) {
-//   if (events.length === 0) {
-//     return null;
-//   } else {
-//     const event = events.pop();
-//     return event ? event : null;
-//   }
-// }
-
-// function connectedOrCrossReferenced(event: GitHubTimelineEvent): event is GitHubLinkEvent {
-//   return event.event === "connected" || event.event === "cross-referenced";
-// }
-
-// async function fetchEvents(params: IssueParams, page: number = 1, perPage: number = 100): Promise<GitHubTimelineEvent[]> {
-//   const octokit = getOctokitInstance();
-//   const response = await octokit.rest.issues.listEventsForTimeline({
-//     ...params,
-//     page,
-//     per_page: perPage,
-//   });
-//   return response.data;
-// }

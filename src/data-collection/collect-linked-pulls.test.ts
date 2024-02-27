@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { IssueParams, getIssueEvents, parseGitHubUrl } from "../start";
-import collectLinkedPulls from "./collect-linked-pulls";
+import { collectLinkedMergedPulls, collectLinkedPulls } from "./collect-linked-pulls";
 
 import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked to this issue
 import ISSUE_SAME_REPO_LINK from "./fixtures/issue-90.json"; // pr91 is linked to this issue
@@ -25,19 +25,19 @@ process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 
 describe("Artificial scenarios for linking pull requests to issues", () => {
   it("should return an empty array when the issue does not have any associated link events", async () => {
-    const result = await collectLinkedPulls(PARAMS_ISSUE_NO_LINK);
+    const result = await collectLinkedMergedPulls(PARAMS_ISSUE_NO_LINK);
     expect(result).toEqual([]);
   });
 
   it("should identify and return the merged, linked pull requests that originate from the same issue within the same repository", async () => {
-    const result = await collectLinkedPulls(PARAMS_ISSUE_SAME_REPO_LINK);
+    const result = await collectLinkedMergedPulls(PARAMS_ISSUE_SAME_REPO_LINK);
     const expectedUrl = PR_SAME_REPO_LINK.html_url;
     const matchingLinks = result.filter((link) => link.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBe(1);
   });
 
   it("should identify and return the merged, linked pull requests that originate from a specific issue, regardless of the repository they are located in within the organization", async () => {
-    const result = await collectLinkedPulls(PARAMS_ISSUE_CROSS_REPO_LINK);
+    const result = await collectLinkedMergedPulls(PARAMS_ISSUE_CROSS_REPO_LINK);
     const expectedUrl = PR_CROSS_REPO_LINK.html_url;
     const matchingLinks = result.filter((link) => link.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBe(1);
@@ -46,23 +46,23 @@ describe("Artificial scenarios for linking pull requests to issues", () => {
 
 describe("Real-world scenarios for linking pull requests to issues", () => {
   it("For the issue 'ubiquibot/comment-incentives/issues/22', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
-    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22"));
+    const result = await collectLinkedMergedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/22"));
     const expectedUrl = "https://github.com/ubiquibot/comment-incentives/pull/25";
     result.forEach((res) => expect(res.source.issue.html_url).toMatch(/\/pull\/\d+$/));
     const matchingLinks = result.filter((res) => res.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBeGreaterThan(0);
   });
 
-  it("For the issue 'ubiquity/pay.ubq.fi/issues/138', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquity/pay.ubq.fi'", async () => {
+  it("For the issue 'ubiquity/pay.ubq.fi/issues/138', the test should identify and return all the linked pull requests that originate from this issue within the same repository 'ubiquity/pay.ubq.fi'", async () => {
     const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquity/pay.ubq.fi/issues/138"));
-    const expectedUrl = "https://github.com/https://github.com/ubiquity/pay.ubq.fi/pull/173";
+    const expectedUrl = "https://github.com/ubiquity/pay.ubq.fi/pull/173";
     result.forEach((res) => expect(res.source.issue.html_url).toMatch(/\/pull\/\d+$/));
     const matchingLinks = result.filter((res) => res.source.issue.html_url === expectedUrl);
     expect(matchingLinks.length).toBeGreaterThan(0);
   });
 
   it("For the issue 'ubiquibot/comment-incentives/issues/3', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
-    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/3"));
+    const result = await collectLinkedMergedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/3"));
     const expectedUrl = "https://github.com/ubiquibot/comment-incentives/pull/4";
     result.forEach((res) => expect(res.source.issue.html_url).toMatch(/\/pull\/\d+$/));
     const matchingLinks = result.filter((res) => res.source.issue.html_url === expectedUrl);
@@ -70,7 +70,7 @@ describe("Real-world scenarios for linking pull requests to issues", () => {
   });
 
   it("For the issue 'ubiquibot/comment-incentives/issues/15', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
-    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/15"));
+    const result = await collectLinkedMergedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/15"));
     const expectedUrl = "https://github.com/ubiquibot/comment-incentives/pull/16";
     result.forEach((res) => expect(res.source.issue.html_url).toMatch(/\/pull\/\d+$/));
     const matchingLinks = result.filter((res) => res.source.issue.html_url === expectedUrl);
@@ -78,7 +78,7 @@ describe("Real-world scenarios for linking pull requests to issues", () => {
   });
 
   it("For the issue 'ubiquibot/comment-incentives/issues/19', the test should identify and return all the merged, linked pull requests that originate from this issue within the same repository 'ubiquibot/comment-incentives'", async () => {
-    const result = await collectLinkedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/19"));
+    const result = await collectLinkedMergedPulls(parseGitHubUrl("https://github.com/ubiquibot/comment-incentives/issues/19"));
     const expectedUrls = ["https://github.com/ubiquibot/comment-incentives/pull/21", "https://github.com/ubiquibot/comment-incentives/pull/23"];
     expectedUrls.forEach((url) => {
       const matchingLinks = result.filter((res) => res.source.issue.html_url === url);
