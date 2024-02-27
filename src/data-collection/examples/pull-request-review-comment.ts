@@ -1,5 +1,5 @@
+// cspell:disable
 import { GitHubPullRequestReviewComment } from "../../github-types";
-
 export const pullRequestReviewComment: GitHubPullRequestReviewComment = {
   url: "https://api.github.com/repos/ubiquity/ubiquity-dollar/pulls/comments/1502796553",
   pull_request_review_id: 1901175611,
