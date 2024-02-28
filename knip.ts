@@ -1,6 +1,6 @@
 import type { KnipConfig } from "knip";
 
-const config: KnipConfig = {
+export const config: KnipConfig = {
   entry: ["build/index.ts"],
   project: ["src/**/*.ts"],
   ignore: ["src/types/config.ts"],
