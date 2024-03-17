@@ -35,21 +35,25 @@ export class GetActivity {
 
   private async _getLinkedReviews(): Promise<Review[]> {
     const pulls = await collectLinkedMergedPulls(this._issueParams);
-    const promises = pulls.map((pull) => {
-      const repository = pull.source.issue.repository;
+    const promises = pulls
+      .map(async (pull) => {
+        const repository = pull.source.issue.repository;
 
-      if (!repository) {
-        throw new Error("No repository found");
-      }
-
-      const pullParams = {
-        owner: repository.owner.login,
-        repo: repository.name,
-        pull_number: pull.source.issue.number,
-      };
-      const review = new Review(pullParams);
-      return review.init().then(() => review);
-    });
+        if (!repository) {
+          console.error(`No repository found for [${pull.source.issue.repository}]`);
+          return null;
+        } else {
+          const pullParams = {
+            owner: repository.owner.login,
+            repo: repository.name,
+            pull_number: pull.source.issue.number,
+          };
+          const review = new Review(pullParams);
+          await review.init();
+          return review;
+        }
+      })
+      .filter((o) => o !== null) as Promise<Review>[];
     return Promise.all(promises);
   }
 }
