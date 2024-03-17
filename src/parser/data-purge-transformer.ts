@@ -9,13 +9,14 @@ export class DataPurgeTransformer implements Transformer {
     const purgedResult: Result = {};
     for (const [key, value] of Object.entries(result)) {
       if (value) {
-        const sanitizedComments = value.comments.map((o) =>
-          o
+        const sanitizedComments = value.comments.map(({ content, ...rest }) => ({
+          ...rest,
+          content: content
             .replace(/^>.*$/gm, "")
             .replace(/[\r\n]+/g, " ")
             .replace(/\[.*?\]\(.*?\)/g, "")
-            .trim()
-        );
+            .trim(),
+        }));
         purgedResult[key] = {
           ...value,
           comments: sanitizedComments,

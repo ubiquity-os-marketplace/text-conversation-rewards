@@ -27,7 +27,14 @@ export interface Transformer {
 
 export interface Result {
   [k: string]: {
-    comments: Array<string>;
-    amount: number;
+    comments: Array<Comment>;
+    totalReward: number;
   };
+}
+
+export interface Comment {
+  content: string;
+  formatting: number;
+  relevance: number;
+  reward: number;
 }

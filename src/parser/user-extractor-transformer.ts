@@ -6,8 +6,12 @@ import { Result, Transformer } from "./processor";
  * Creates entries for each bounty hunter with its associated comments.
  */
 export class UserExtractorTransformer implements Transformer {
+  /**
+   * Checks if the comment is made by a human user, and if it not a command.
+   * @param comment
+   */
   _checkCommentValidity(comment: GitHubIssueComment) {
-    return comment.user && comment.body && comment.user?.type === "User" && !/^\/s+/.test(comment.body);
+    return !!comment.user && !!comment.body && comment.user?.type === "User" && !/^\/s+/.test(comment.body);
   }
 
   transform(data: Readonly<GetActivity>, result: Result): Result {
@@ -16,7 +20,7 @@ export class UserExtractorTransformer implements Transformer {
         if (comment.user && comment.body && this._checkCommentValidity(comment)) {
           result[comment.user.login] = {
             ...result[comment.user.login],
-            comments: [...(result[comment.user.login]?.comments ?? []), comment.body],
+            comments: [...(result[comment.user.login]?.comments ?? []), { content: comment.body, formatting: 0, relevance: 0, reward: 0 }],
           };
         }
       }

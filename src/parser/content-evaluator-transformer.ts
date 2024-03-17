@@ -7,7 +7,13 @@ import { Result, Transformer } from "./processor";
 export class ContentEvaluatorTransformer implements Transformer {
   transform(data: Readonly<GetActivity>, result: Result): Result {
     for (const key of Object.keys(result)) {
-      result[key].amount = 1;
+      const currentElement = result[key];
+      currentElement.totalReward = currentElement.comments.reduce((acc, curr) => {
+        curr.relevance = 5;
+        curr.formatting = 2;
+        curr.reward = curr.relevance * curr.formatting;
+        return acc + curr.reward;
+      }, 0);
     }
     return result;
   }
