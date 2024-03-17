@@ -5,26 +5,29 @@ export class Processor {
   private _result: Result = {};
 
   add(transformer: Transformer, enabled = true) {
-    console.log("Adding elem");
     if (enabled) {
       this._transformers.push(transformer);
     }
     return this;
   }
-  run(data: GetActivity) {
+  run(data: Readonly<GetActivity>) {
     for (const transformer of this._transformers) {
-      transformer.transform(data, this._result);
+      this._result = transformer.transform(data, this._result);
     }
     return this._result;
+  }
+  dump() {
+    console.log(JSON.stringify(this._result, undefined, 2));
   }
 }
 
 export interface Transformer {
-  transform(data: GetActivity, result: Result): Result;
+  transform(data: Readonly<GetActivity>, result: Result): Result;
 }
 
 export interface Result {
   [k: string]: {
-    comment: string;
+    comments: Array<string>;
+    amount: number;
   };
 }

@@ -1,7 +1,9 @@
 import { config } from "dotenv";
 import { GetActivity } from "./get-activity";
-import { DataPurgeTransformer } from "./parser/data-purge";
+import { ContentEvaluatorTransformer } from "./parser/content-evaluator-transformer";
+import { DataPurgeTransformer } from "./parser/data-purge-transformer";
 import { Processor } from "./parser/processor";
+import { UserExtractorTransformer } from "./parser/user-extractor-transformer";
 import { parseGitHubUrl } from "./start";
 
 config();
@@ -24,9 +26,9 @@ describe("GetActivity class", () => {
     expect(activity.comments).toBeTruthy();
     expect(Array.isArray(activity.linkedReviews)).toBeTruthy();
     const processor = new Processor();
-    processor.add(new DataPurgeTransformer());
-    const res = processor.run(activity);
-    console.log(res);
+    processor.add(new UserExtractorTransformer()).add(new DataPurgeTransformer()).add(new ContentEvaluatorTransformer());
+    processor.run(activity);
+    processor.dump();
   });
 
   it("should create an instance of GetActivity", () => {
