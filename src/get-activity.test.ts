@@ -1,5 +1,7 @@
 import { config } from "dotenv";
 import { GetActivity } from "./get-activity";
+import { DataPurgeTransformer } from "./parser/data-purge";
+import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 
 config();
@@ -16,12 +18,15 @@ describe("GetActivity class", () => {
   const activity = new GetActivity(issue);
 
   beforeAll(async () => await activity.init());
-
   it("should resolve all promises", async () => {
     expect(activity.self).toBeTruthy();
     expect(activity.events).toBeTruthy();
     expect(activity.comments).toBeTruthy();
     expect(Array.isArray(activity.linkedReviews)).toBeTruthy();
+    const processor = new Processor();
+    processor.add(new DataPurgeTransformer());
+    const res = processor.run(activity);
+    console.log(res);
   });
 
   it("should create an instance of GetActivity", () => {
