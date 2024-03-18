@@ -1,14 +1,14 @@
 import { Octokit } from "@octokit/rest";
-import { parse } from "yargs";
+import program from "./parser/command-line";
 
 let octokitInstance: Octokit | null = null;
 
 function getAuthenticationToken(): string {
-  const argv = parse(process.argv.slice(2));
-  if (!argv.auth) {
+  const { auth } = program.opts();
+  if (!auth) {
     throw new Error("No authentication token provided");
   }
-  return argv.auth as string;
+  return auth;
 }
 
 function getOctokitInstance(): Octokit {

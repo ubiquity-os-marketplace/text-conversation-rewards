@@ -1,4 +1,6 @@
+import * as fs from "fs";
 import { GetActivity } from "../get-activity";
+import program from "./command-line";
 
 export class Processor {
   private _transformers: Array<Transformer> = [];
@@ -17,7 +19,13 @@ export class Processor {
     return this._result;
   }
   dump() {
-    console.log(JSON.stringify(this._result, undefined, 2));
+    const { file } = program.opts();
+    const data = JSON.stringify(this._result, undefined, 2);
+    if (!file) {
+      console.log(data);
+    } else {
+      fs.writeFileSync(file, data);
+    }
   }
 }
 
