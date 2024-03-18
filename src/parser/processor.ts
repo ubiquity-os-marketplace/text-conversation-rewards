@@ -12,9 +12,9 @@ export class Processor {
     }
     return this;
   }
-  run(data: Readonly<GetActivity>) {
+  async run(data: Readonly<GetActivity>) {
     for (const transformer of this._transformers) {
-      this._result = transformer.transform(data, this._result);
+      this._result = await transformer.transform(data, this._result);
     }
     return this._result;
   }
@@ -30,7 +30,7 @@ export class Processor {
 }
 
 export interface Transformer {
-  transform(data: Readonly<GetActivity>, result: Result): Result;
+  transform(data: Readonly<GetActivity>, result: Result): Result | Promise<Result>;
 }
 
 export interface Result {

@@ -25,7 +25,7 @@ describe("GetActivity class", () => {
       .add(new UserExtractorTransformer())
       .add(new DataPurgeTransformer())
       .add(new ContentEvaluatorTransformer());
-    processor.run(activity);
+    await processor.run(activity);
     processor.dump();
   });
 
