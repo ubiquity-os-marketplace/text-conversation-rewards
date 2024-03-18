@@ -15,13 +15,20 @@ export class DataPurgeTransformer implements Transformer {
 
   transform(data: Readonly<GetActivity>, result: Result): Result {
     for (const value of Object.values(data.comments as GitHubIssueComment[])) {
-      if (value.body) {
-        value.body = value.body
-          .replace(/^>.*$/gm, "")
-          .replace(/[\r\n]+/g, " ")
-          .replace(/\[.*?\]\(.*?\)/g, "")
-          .replace(/^\/\S+/g, "")
-          .trim();
+      if (value.body && value.user?.login && result[value.user.login]) {
+        result[value.user.login].comments = [
+          ...(result[value.user.login].comments ?? []),
+          {
+            content: value.body
+              .replace(/^>.*$/gm, "")
+              .replace(/[\r\n]+/g, " ")
+              .replace(/\[.*?\]\(.*?\)/g, "")
+              .replace(/^\/\S+/g, "")
+              .trim(),
+            url: value.html_url,
+            contentHtml: value.body_html,
+          },
+        ];
       }
     }
     return result;

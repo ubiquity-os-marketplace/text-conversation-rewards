@@ -1,6 +1,7 @@
 content-evaluator:
   enabled: true
 user-extractor:
-  enabled: true
+  redeem-bounty: true
 data-purge:
   enabled: true
+#disabled: true

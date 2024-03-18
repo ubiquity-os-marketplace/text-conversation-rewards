@@ -1,8 +1,8 @@
 import OpenAI from "openai";
-import { GetActivity } from "../get-activity";
-import { GitHubIssue, GitHubIssueComment } from "../github-types";
-import { Result, Transformer } from "./processor";
 import configuration from "../configuration/config-reader";
+import { GetActivity } from "../get-activity";
+import { GitHubIssue } from "../github-types";
+import { Result, Transformer } from "./processor";
 
 /**
  * Evaluates and rates comments.
@@ -18,20 +18,22 @@ export class ContentEvaluatorTransformer implements Transformer {
   async transform(data: Readonly<GetActivity>, result: Result): Promise<Result> {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
-      const comments = (data.comments as GitHubIssueComment[]).filter((o) => o.user?.login === key);
-      currentElement.comments = [];
-      for (const comment of comments) {
+      const comments = currentElement.comments || [];
+      for (let i = 0; i < comments.length; i++) {
+        const comment = comments[i];
         const body = (data.self as GitHubIssue)?.body;
-        const commentBody = comment?.body;
+        const commentBody = comment.content;
         if (body && commentBody) {
-          const { formatting, relevance } = await this._evaluateComment(body, commentBody);
-          currentElement.comments.push({
-            relevance,
-            formatting,
-            reward: relevance * formatting,
-            content: commentBody,
-          });
-          currentElement.totalReward += relevance * formatting;
+          const { relevance } = await this._evaluateComment(body, commentBody);
+          comments[i] = {
+            ...comment,
+            score: {
+              relevance,
+              reward: relevance,
+              // TODO: add config for formatting score
+            },
+          };
+          currentElement.totalReward += relevance;
         }
       }
     }
@@ -40,6 +42,12 @@ export class ContentEvaluatorTransformer implements Transformer {
 
   async _evaluateComment(specification: string, comment: string) {
     const prompt = this._generatePrompt(specification, comment);
+
+    if (process.env.NODE_ENV === "test") {
+      return {
+        relevance: 1,
+      };
+    }
 
     try {
       const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
@@ -57,12 +65,11 @@ export class ContentEvaluatorTransformer implements Transformer {
         presence_penalty: 0,
       });
 
-      return { relevance: Number(response.choices[0].message.content), formatting: 1 };
+      return { relevance: Number(response.choices[0].message.content) };
     } catch (error) {
       console.error("Failed to evaluate comment", error);
       return {
         relevance: 0,
-        formatting: 0,
       };
     }
   }

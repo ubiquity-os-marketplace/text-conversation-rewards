@@ -27,6 +27,9 @@ describe("GetActivity class", () => {
       .add(new ContentEvaluatorTransformer());
     await processor.run(activity);
     processor.dump();
+    // TODO: the data purge should add more details about the comment
+    // a GithubComment module could be added
+    // an event action module should be applied
   });
 
   // it("should create an instance of GetActivity", () => {
