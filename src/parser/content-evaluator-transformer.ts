@@ -1,76 +1,76 @@
-import axios from "axios";
+import OpenAI from "openai";
 import { GetActivity } from "../get-activity";
-import { GitHubIssue } from "../github-types";
+import { GitHubIssue, GitHubIssueComment } from "../github-types";
 import { Result, Transformer } from "./processor";
+import configuration from "../configuration/config-reader";
 
 /**
  * Evaluates and rates comments.
  */
 export class ContentEvaluatorTransformer implements Transformer {
+  readonly _openAi = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  readonly configuration = configuration["content-evaluator"];
+
+  get enabled(): boolean {
+    return this.configuration.enabled;
+  }
+
   async transform(data: Readonly<GetActivity>, result: Result): Promise<Result> {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
-      let totalReward = currentElement.totalReward;
-      for (const comment of currentElement.comments) {
+      const comments = (data.comments as GitHubIssueComment[]).filter((o) => o.user?.login === key);
+      currentElement.comments = [];
+      for (const comment of comments) {
         const body = (data.self as GitHubIssue)?.body;
-        if (body) {
-          const { formatting, relevance } = await this._evaluateComments(body, comment.content);
-          comment.relevance = relevance;
-          comment.formatting = formatting;
-          comment.reward = relevance * formatting;
-          totalReward += comment.reward;
+        const commentBody = comment?.body;
+        if (body && commentBody) {
+          const { formatting, relevance } = await this._evaluateComment(body, commentBody);
+          currentElement.comments.push({
+            relevance,
+            formatting,
+            reward: relevance * formatting,
+            content: commentBody,
+          });
+          currentElement.totalReward += relevance * formatting;
         }
       }
-      currentElement.totalReward = totalReward;
     }
     return result;
   }
 
-  async _evaluateComments(specification: string, comment: string) {
-    console.log("Will compare");
-    console.log(specification);
-    console.log(comment);
-    return {
-      relevance: 0.75,
-      formatting: 1,
-    };
+  async _evaluateComment(specification: string, comment: string) {
+    const prompt = this._generatePrompt(specification, comment);
+
     try {
-      const baseUrl = "https://api.openai.com/v1/completions";
-      const apiKey = process.env.CHATGPT_KEY;
-      const parameters = {
+      const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
         model: "gpt-3.5-turbo",
-        prompt: "",
-        max_tokens: 150,
-        n: 1,
-        stop: ["\n"],
-        temperature: 0.7,
-      };
-
-      parameters.prompt = comment;
-      const response = await axios.post(baseUrl, parameters, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        messages: [
+          {
+            role: "system",
+            content: prompt,
+          },
+        ],
+        temperature: 1,
+        max_tokens: 128,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
       });
-      const generatedText = response.data.choices[0].text.trim();
-      const wordCount = generatedText.split(/\s+/).length;
-      const relevance = 1;
-      const clarity = 1;
 
-      console.log(`Comment: ${comment}`);
-      console.log(`Generated Text: ${generatedText}`);
-      console.log(`Word Count: ${wordCount}`);
-      console.log(`Relevance: ${relevance}`);
-      console.log(`Clarity: ${clarity}`);
-      console.log("------------------------");
-      return {
-        relevance,
-        formatting: clarity,
-      };
+      return { relevance: Number(response.choices[0].message.content), formatting: 1 };
     } catch (error) {
-      console.error("Error:", error);
-      throw error;
+      console.error("Failed to evaluate comment", error);
+      return {
+        relevance: 0,
+        formatting: 0,
+      };
     }
+  }
+
+  _generatePrompt(issue: string, comments: string) {
+    if (!issue?.length) {
+      throw new Error("Issue specification comment is missing or empty");
+    }
+    return `I need to evaluate the relevance of GitHub contributors' comments to a specific issue specification. Specifically, I'm interested in how much the comment helps to further define the issue specification or contributes new information or research relevant to the issue. Please provide a float between 0 and 1 to represent the degree of relevance. A score of 1 indicates that the comment is entirely relevant and adds significant value to the issue, whereas a score of 0 indicates no relevance or added value.\n\nIssue Specification:\n\`\`\`\n${issue}\n\`\`\`\n\nConversation:\n\`\`\`\n${comments}\n\`\`\`\n\n\nTo what degree is of the comment in the conversation relevant and valuable to further defining the issue specification? Please reply ONLY with a float number between 0 and 1. The float should represent the degree of relevance and added value of the comment to the issue.`;
   }
 }

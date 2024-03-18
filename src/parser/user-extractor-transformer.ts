@@ -1,3 +1,4 @@
+import configuration from "../configuration/config-reader";
 import { GetActivity } from "../get-activity";
 import { GitHubIssue, GitHubIssueComment } from "../github-types";
 import { Result, Transformer } from "./processor";
@@ -6,35 +7,40 @@ import { Result, Transformer } from "./processor";
  * Creates entries for each bounty hunter with its associated comments.
  */
 export class UserExtractorTransformer implements Transformer {
+  readonly configuration = configuration["user-extractor"];
+
+  get enabled(): boolean {
+    return true;
+  }
+
   /**
    * Checks if the comment is made by a human user, and if it not a command.
    * @param comment
    */
   _checkCommentValidity(comment: GitHubIssueComment) {
-    return !!comment.user && !!comment.body && comment.user?.type === "User" && !/^\/s+/.test(comment.body);
+    return !!comment.user && !!comment.body && comment.user?.type === "User";
   }
 
   _extractBountyPrice(issue: GitHubIssue) {
-    const priceLabels = issue.labels.filter((label) => label.name.startsWith("Price: "));
-    if (!priceLabels.length) {
+    const sortedPriceLabels = issue.labels
+      .reduce((acc, label) => {
+        const labelName = typeof label === "string" ? label : label.name;
+        if (labelName?.startsWith("Price: ")) {
+          const price = parseFloat(labelName.replace("Price: ", ""));
+          if (!isNaN(price)) {
+            acc.push(price);
+          }
+        }
+        return acc;
+      }, [] as Array<number>)
+      .sort((a, b) => {
+        return a - b;
+      });
+    if (!sortedPriceLabels.length) {
       console.warn("There are no price labels in this repository.");
       return 0;
     }
-    const sortedPriceLabels = priceLabels.sort((a, b) => {
-      const priceA = parseFloat(a.name.replace("Price: ", ""));
-      const priceB = parseFloat(b.name.replace("Price: ", ""));
-      return priceA - priceB;
-    });
-    const smallestPriceLabel = sortedPriceLabels[0];
-    const priceLabelName = smallestPriceLabel.name;
-    const priceLabelMatch = priceLabelName.match(/\d+(\.\d+)?/);
-    const priceLabel = priceLabelMatch?.shift();
-
-    if (!priceLabel) {
-      console.warn("Price label is undefined");
-      return 0;
-    }
-    return Number(priceLabel);
+    return sortedPriceLabels[0];
   }
 
   transform(data: Readonly<GetActivity>, result: Result): Result {
@@ -47,10 +53,6 @@ export class UserExtractorTransformer implements Transformer {
               (data.self as GitHubIssue)?.user?.id === comment.user.id
                 ? this._extractBountyPrice(data.self as GitHubIssue)
                 : 0,
-            comments: [
-              ...(result[comment.user.login]?.comments ?? []),
-              { content: comment.body, formatting: 0, relevance: 0, reward: 0 },
-            ],
           };
         }
       }

@@ -1,2 +1,6 @@
 content-evaluator:
-contributions-overview:
+  enabled: true
+user-extractor:
+  enabled: true
+data-purge:
+  enabled: true

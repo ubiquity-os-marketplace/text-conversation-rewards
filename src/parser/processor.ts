@@ -6,36 +6,37 @@ export class Processor {
   private _transformers: Array<Transformer> = [];
   private _result: Result = {};
 
-  add(transformer: Transformer, enabled = true) {
-    if (enabled) {
-      this._transformers.push(transformer);
-    }
+  add(transformer: Transformer) {
+    this._transformers.push(transformer);
     return this;
   }
   async run(data: Readonly<GetActivity>) {
     for (const transformer of this._transformers) {
-      this._result = await transformer.transform(data, this._result);
+      if (transformer.enabled) {
+        this._result = await transformer.transform(data, this._result);
+      }
     }
     return this._result;
   }
   dump() {
     const { file } = program.opts();
-    const data = JSON.stringify(this._result, undefined, 2);
+    const result = JSON.stringify(this._result, undefined, 2);
     if (!file) {
-      console.log(data);
+      console.log(result);
     } else {
-      fs.writeFileSync(file, data);
+      fs.writeFileSync(file, result);
     }
   }
 }
 
 export interface Transformer {
   transform(data: Readonly<GetActivity>, result: Result): Result | Promise<Result>;
+  get enabled(): boolean;
 }
 
 export interface Result {
   [k: string]: {
-    comments: Array<Comment>;
+    comments?: Array<Comment>;
     totalReward: number;
   };
 }

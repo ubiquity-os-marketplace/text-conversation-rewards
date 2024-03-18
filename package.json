@@ -30,7 +30,8 @@
     "@octokit/rest": "20.0.2",
     "commander": "12.0.0",
     "dotenv": "16.4.5",
-    "openai": "4.29.1"
+    "openai": "4.29.1",
+    "yaml": "2.4.1"
   },
   "devDependencies": {
     "@babel/core": "7.23.9",
