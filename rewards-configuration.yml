@@ -5,3 +5,5 @@ user-extractor:
 data-purge:
   enabled: true
 #disabled: true
+formatting-evaluator:
+  enabled: true

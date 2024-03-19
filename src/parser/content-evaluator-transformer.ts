@@ -15,7 +15,7 @@ export class ContentEvaluatorTransformer implements Transformer {
     return this.configuration.enabled;
   }
 
-  async transform(data: Readonly<GetActivity>, result: Result): Promise<Result> {
+  async transform(data: Readonly<GetActivity>, result: Result) {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
@@ -25,15 +25,15 @@ export class ContentEvaluatorTransformer implements Transformer {
         const commentBody = comment.content;
         if (body && commentBody) {
           const { relevance } = await this._evaluateComment(body, commentBody);
+          const reward = comment.score?.reward ? comment.score.reward * relevance : relevance;
           comments[i] = {
             ...comment,
             score: {
+              ...comment.score,
               relevance,
-              reward: relevance,
-              // TODO: add config for formatting score
+              reward,
             },
           };
-          currentElement.totalReward += relevance;
         }
       }
     }
@@ -45,7 +45,7 @@ export class ContentEvaluatorTransformer implements Transformer {
 
     if (process.env.NODE_ENV === "test") {
       return {
-        relevance: 1,
+        relevance: 0.5,
       };
     }
 

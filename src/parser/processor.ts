@@ -22,6 +22,10 @@ export class Processor {
         this._result = await transformer.transform(data, this._result);
       }
     }
+    // Aggregate total result
+    for (const item of Object.keys(this._result)) {
+      this._result[item].total = this._sumRewards(this._result[item]);
+    }
     return this._result;
   }
   dump() {
@@ -33,6 +37,21 @@ export class Processor {
       fs.writeFileSync(file, result);
     }
   }
+  _sumRewards(obj: Record<string, object | number>) {
+    let totalReward = 0;
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (key === "reward" && typeof value === "number") {
+          totalReward += value;
+        } else if (typeof value === "object") {
+          totalReward += this._sumRewards(value as Record<string, object>);
+        }
+      }
+    }
+
+    return totalReward;
+  }
 }
 
 export interface Transformer {
@@ -43,7 +62,10 @@ export interface Transformer {
 export interface Result {
   [k: string]: {
     comments?: Array<Comment>;
-    totalReward: number;
+    total: number;
+    bounty?: {
+      reward: number;
+    };
   };
 }
 
@@ -53,7 +75,7 @@ export interface Comment {
   url: string;
   score?: {
     formatting?: number;
-    relevance: number;
+    relevance?: number;
     reward: number;
   };
 }

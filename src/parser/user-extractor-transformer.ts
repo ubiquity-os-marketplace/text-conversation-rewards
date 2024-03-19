@@ -50,12 +50,15 @@ export class UserExtractorTransformer implements Transformer {
     if (data.comments) {
       for (const comment of data.comments as GitHubIssueComment[]) {
         if (comment.user && comment.body && this._checkEntryValidity(comment)) {
+          const bounty =
+            (data.self as GitHubIssue)?.assignee?.id === comment.user.id
+              ? {
+                  reward: this._extractBountyPrice(data.self as GitHubIssue),
+                }
+              : undefined;
           result[comment.user.login] = {
             ...result[comment.user.login],
-            totalReward:
-              (data.self as GitHubIssue)?.user?.id === comment.user.id
-                ? this._extractBountyPrice(data.self as GitHubIssue)
-                : 0,
+            bounty,
           };
         }
       }
