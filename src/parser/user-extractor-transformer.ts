@@ -18,7 +18,7 @@ export class UserExtractorTransformer implements Transformer {
    * @param comment
    */
   _checkEntryValidity(comment: GitHubIssueComment) {
-    return !!comment.user && !!comment.body && comment.user.type === "User";
+    return comment.body && comment.user?.type === "User";
   }
 
   _extractBountyPrice(issue: GitHubIssue) {
