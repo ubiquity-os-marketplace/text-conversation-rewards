@@ -63,14 +63,17 @@ export class GetActivity {
   }
 
   get allComments() {
-    const comments: Array<GitHubIssueComment | GitHubPullRequestReviewComment> = [
-      ...(this.comments as GitHubIssueComment[]),
-    ];
+    const comments: Array<(GitHubIssueComment | GitHubPullRequestReviewComment) & { type: string }> = (
+      this.comments as GitHubIssueComment[]
+    ).map((comment) => ({
+      ...comment,
+      type: "ISSUE_ASSIGNEE_TASK",
+    }));
     if (this.linkedReviews) {
       for (const linkedReview of this.linkedReviews as Review[]) {
         if (linkedReview.reviewComments) {
           for (const reviewComment of linkedReview.reviewComments as GitHubPullRequestReviewComment[]) {
-            comments.push(reviewComment);
+            comments.push({ ...reviewComment, type: "REVIEW_ASSIGNEE_TASK" });
           }
         }
       }

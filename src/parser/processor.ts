@@ -87,6 +87,7 @@ export interface Comment {
   content: string;
   contentHtml?: string;
   url: string;
+  type: string;
   score?: {
     formatting?: Record<string, { count: number; score: number; multiplier: number; value: number }>;
     relevance?: number;

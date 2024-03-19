@@ -7,7 +7,7 @@ import { Module, Result } from "./processor";
  * Creates entries for each user with its associated comments.
  */
 export class UserExtractorModule implements Module {
-  private readonly _configuration = configuration["user-extractor"];
+  private readonly _configuration = configuration.userExtractor;
 
   get enabled(): boolean {
     return true;
@@ -20,8 +20,11 @@ export class UserExtractorModule implements Module {
     return comment.body && comment.user?.type === "User";
   }
 
+  /**
+   * Gets the price from the labels, except if the configuration disables the redeem
+   */
   _extractTaskPrice(issue: GitHubIssue) {
-    if (this._configuration["redeem-task"] === false) {
+    if (this._configuration.redeemTask === false) {
       return 0;
     }
     const sortedPriceLabels = issue.labels
@@ -44,21 +47,19 @@ export class UserExtractorModule implements Module {
   }
 
   transform(data: Readonly<GetActivity>, result: Result) {
-    if (data.allComments) {
-      for (const comment of data.allComments) {
-        if (comment.user && comment.body && this._checkEntryValidity(comment)) {
-          const task =
-            (data.self as GitHubIssue)?.assignee?.id === comment.user.id
-              ? {
-                  reward: this._extractTaskPrice(data.self as GitHubIssue),
-                }
-              : undefined;
-          result[comment.user.login] = {
-            ...result[comment.user.login],
-            total: 0,
-            task,
-          };
-        }
+    for (const comment of data.allComments) {
+      if (comment.user && comment.body && this._checkEntryValidity(comment)) {
+        const task =
+          (data.self as GitHubIssue)?.assignee?.id === comment.user.id
+            ? {
+                reward: this._extractTaskPrice(data.self as GitHubIssue),
+              }
+            : undefined;
+        result[comment.user.login] = {
+          ...result[comment.user.login],
+          total: 0,
+          task,
+        };
       }
     }
     return Promise.resolve(result);

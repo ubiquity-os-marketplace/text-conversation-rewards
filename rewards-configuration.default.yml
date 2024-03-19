@@ -1,11 +1,11 @@
-content-evaluator:
-  enabled: true
-user-extractor:
-  redeem-task: true
-data-purge:
-  enabled: true
 #disabled: true
-formatting-evaluator:
+contentEvaluator:
+  enabled: true
+userExtractor:
+  redeemTask: true
+dataPurge:
+  enabled: true
+formattingEvaluator:
   enabled: true
   scores:
     br: 1

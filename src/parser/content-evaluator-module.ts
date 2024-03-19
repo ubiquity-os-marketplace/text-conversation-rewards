@@ -9,7 +9,7 @@ import { Result, Module } from "./processor";
  */
 export class ContentEvaluatorModule implements Module {
   readonly _openAi = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  readonly configuration = configuration["content-evaluator"];
+  readonly configuration = configuration.contentEvaluator;
 
   get enabled(): boolean {
     return this.configuration.enabled;

@@ -6,7 +6,7 @@ import { Module, Result } from "./processor";
  * Removes the data in the comments that we do not want to be processed.
  */
 export class DataPurgeModule implements Module {
-  readonly configuration = configuration["data-purge"];
+  readonly configuration = configuration.dataPurge;
 
   get enabled(): boolean {
     return this.configuration.enabled;
@@ -28,6 +28,7 @@ export class DataPurgeModule implements Module {
               content: newContent,
               url: value.html_url,
               contentHtml: value.body_html,
+              type: value.type,
             },
           ];
         }

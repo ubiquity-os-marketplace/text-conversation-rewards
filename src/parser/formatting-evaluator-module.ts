@@ -5,7 +5,7 @@ import MarkdownIt from "markdown-it";
 import { JSDOM } from "jsdom";
 
 export class FormattingEvaluatorModule implements Module {
-  private readonly _configuration = configuration["formatting-evaluator"];
+  private readonly _configuration = configuration.formattingEvaluator;
   private readonly _md = new MarkdownIt();
 
   transform(data: Readonly<GetActivity>, result: Result) {
