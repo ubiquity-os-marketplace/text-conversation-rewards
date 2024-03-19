@@ -36,9 +36,7 @@ export class UserExtractorTransformer implements Transformer {
         }
         return acc;
       }, [] as Array<number>)
-      .sort((a, b) => {
-        return a - b;
-      });
+      .sort((a, b) => a - b);
     if (!sortedPriceLabels.length) {
       console.warn("There are no price labels in this repository.");
       return 0;
