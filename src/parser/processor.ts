@@ -51,7 +51,7 @@ export class Processor {
     }
   }
 
-  _sumRewards(obj: Record<string, object | number>) {
+  _sumRewards(obj: Record<string, unknown>) {
     let totalReward = 0;
 
     for (const [key, value] of Object.entries(obj)) {
@@ -59,7 +59,7 @@ export class Processor {
         if (key === "reward" && typeof value === "number") {
           totalReward += value;
         } else if (typeof value === "object") {
-          totalReward += this._sumRewards(value as Record<string, object>);
+          totalReward += this._sumRewards(value as Record<string, unknown>);
         }
       }
     }
@@ -69,7 +69,7 @@ export class Processor {
 }
 
 export interface Module {
-  transform(data: Readonly<GetActivity>, result: Result): Result | Promise<Result>;
+  transform(data: Readonly<GetActivity>, result: Result): Promise<Result>;
   get enabled(): boolean;
 }
 
@@ -77,7 +77,7 @@ export interface Result {
   [k: string]: {
     comments?: Comment[];
     total: number;
-    bounty?: {
+    task?: {
       reward: number;
     };
   };

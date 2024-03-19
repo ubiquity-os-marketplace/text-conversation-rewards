@@ -29,7 +29,7 @@ export class FormattingEvaluatorModule implements Module {
         };
       }
     }
-    return result;
+    return Promise.resolve(result);
   }
 
   get enabled(): boolean {

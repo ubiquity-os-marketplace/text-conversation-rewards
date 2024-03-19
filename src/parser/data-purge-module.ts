@@ -12,7 +12,7 @@ export class DataPurgeModule implements Module {
     return this.configuration.enabled;
   }
 
-  transform(data: Readonly<GetActivity>, result: Result): Result {
+  transform(data: Readonly<GetActivity>, result: Result) {
     for (const value of data.allComments) {
       if (value.body && value.user?.login && result[value.user.login]) {
         const newContent = value.body
@@ -33,6 +33,6 @@ export class DataPurgeModule implements Module {
         }
       }
     }
-    return result;
+    return Promise.resolve(result);
   }
 }

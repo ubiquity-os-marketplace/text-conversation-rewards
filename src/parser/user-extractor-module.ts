@@ -4,7 +4,7 @@ import { GitHubIssue, GitHubIssueComment, GitHubPullRequestReviewComment } from 
 import { Module, Result } from "./processor";
 
 /**
- * Creates entries for each bounty hunter with its associated comments.
+ * Creates entries for each user with its associated comments.
  */
 export class UserExtractorModule implements Module {
   private readonly _configuration = configuration["user-extractor"];
@@ -14,15 +14,14 @@ export class UserExtractorModule implements Module {
   }
 
   /**
-   * Checks if the comment is made by a human user, and if it not a command.
-   * @param comment
+   * Checks if the comment is made by a human user, and not empty.
    */
   _checkEntryValidity(comment: GitHubIssueComment | GitHubPullRequestReviewComment) {
     return comment.body && comment.user?.type === "User";
   }
 
-  _extractBountyPrice(issue: GitHubIssue) {
-    if (this._configuration["redeem-bounty"] === false) {
+  _extractTaskPrice(issue: GitHubIssue) {
+    if (this._configuration["redeem-task"] === false) {
       return 0;
     }
     const sortedPriceLabels = issue.labels
@@ -44,24 +43,24 @@ export class UserExtractorModule implements Module {
     return sortedPriceLabels[0];
   }
 
-  transform(data: Readonly<GetActivity>, result: Result): Result {
+  transform(data: Readonly<GetActivity>, result: Result) {
     if (data.allComments) {
       for (const comment of data.allComments) {
         if (comment.user && comment.body && this._checkEntryValidity(comment)) {
-          const bounty =
+          const task =
             (data.self as GitHubIssue)?.assignee?.id === comment.user.id
               ? {
-                  reward: this._extractBountyPrice(data.self as GitHubIssue),
+                  reward: this._extractTaskPrice(data.self as GitHubIssue),
                 }
               : undefined;
           result[comment.user.login] = {
             ...result[comment.user.login],
             total: 0,
-            bounty,
+            task,
           };
         }
       }
     }
-    return result;
+    return Promise.resolve(result);
   }
 }
