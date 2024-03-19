@@ -1,9 +1,0 @@
-content-evaluator:
-  enabled: true
-user-extractor:
-  redeem-bounty: true
-data-purge:
-  enabled: true
-#disabled: true
-formatting-evaluator:
-  enabled: true

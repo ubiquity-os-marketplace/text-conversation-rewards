@@ -2,12 +2,12 @@ import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { GetActivity } from "../get-activity";
 import { GitHubIssue } from "../github-types";
-import { Result, Transformer } from "./processor";
+import { Result, Module } from "./processor";
 
 /**
  * Evaluates and rates comments.
  */
-export class ContentEvaluatorTransformer implements Transformer {
+export class ContentEvaluatorModule implements Module {
   readonly _openAi = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   readonly configuration = configuration["content-evaluator"];
 
@@ -21,10 +21,10 @@ export class ContentEvaluatorTransformer implements Transformer {
       const comments = currentElement.comments || [];
       for (let i = 0; i < comments.length; i++) {
         const comment = comments[i];
-        const body = (data.self as GitHubIssue)?.body;
+        const specificationBody = (data.self as GitHubIssue)?.body;
         const commentBody = comment.content;
-        if (body && commentBody) {
-          const { relevance } = await this._evaluateComment(body, commentBody);
+        if (specificationBody && commentBody) {
+          const { relevance } = await this._evaluateComment(specificationBody, commentBody);
           const reward = comment.score?.reward ? comment.score.reward * relevance : relevance;
           comments[i] = {
             ...comment,

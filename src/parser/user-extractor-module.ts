@@ -1,12 +1,12 @@
 import configuration from "../configuration/config-reader";
 import { GetActivity } from "../get-activity";
-import { GitHubIssue, GitHubIssueComment } from "../github-types";
-import { Result, Transformer } from "./processor";
+import { GitHubIssue, GitHubIssueComment, GitHubPullRequestReviewComment } from "../github-types";
+import { Module, Result } from "./processor";
 
 /**
  * Creates entries for each bounty hunter with its associated comments.
  */
-export class UserExtractorTransformer implements Transformer {
+export class UserExtractorModule implements Module {
   private readonly _configuration = configuration["user-extractor"];
 
   get enabled(): boolean {
@@ -17,7 +17,7 @@ export class UserExtractorTransformer implements Transformer {
    * Checks if the comment is made by a human user, and if it not a command.
    * @param comment
    */
-  _checkEntryValidity(comment: GitHubIssueComment) {
+  _checkEntryValidity(comment: GitHubIssueComment | GitHubPullRequestReviewComment) {
     return comment.body && comment.user?.type === "User";
   }
 
@@ -35,7 +35,7 @@ export class UserExtractorTransformer implements Transformer {
           }
         }
         return acc;
-      }, [] as Array<number>)
+      }, [] as number[])
       .sort((a, b) => a - b);
     if (!sortedPriceLabels.length) {
       console.warn("There are no price labels in this repository.");
@@ -45,8 +45,8 @@ export class UserExtractorTransformer implements Transformer {
   }
 
   transform(data: Readonly<GetActivity>, result: Result): Result {
-    if (data.comments) {
-      for (const comment of data.comments as GitHubIssueComment[]) {
+    if (data.allComments) {
+      for (const comment of data.allComments) {
         if (comment.user && comment.body && this._checkEntryValidity(comment)) {
           const bounty =
             (data.self as GitHubIssue)?.assignee?.id === comment.user.id
@@ -56,6 +56,7 @@ export class UserExtractorTransformer implements Transformer {
               : undefined;
           result[comment.user.login] = {
             ...result[comment.user.login],
+            total: 0,
             bounty,
           };
         }

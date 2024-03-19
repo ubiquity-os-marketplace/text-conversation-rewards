@@ -1,0 +1,31 @@
+content-evaluator:
+  enabled: true
+user-extractor:
+  redeem-bounty: true
+data-purge:
+  enabled: true
+#disabled: true
+formatting-evaluator:
+  enabled: true
+  scores:
+    br: 1
+    code: 1
+    p: 0.1
+    em: 0
+    img: 0
+    strong: 0
+    blockquote: 0
+    h1: 1
+    h2: 1
+    h3: 1
+    h4: 1
+    h5: 1
+    h6: 1
+    a: 1
+    li: 1
+    td: 1
+    hr: 1
+  multipliers:
+    issue-assignee-task:
+      formatting-multiplier: 0
+      word-value: 0

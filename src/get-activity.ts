@@ -30,7 +30,12 @@ export class GetActivity {
     this.events = getIssueEvents(this._issueParams);
     this.comments = getIssueComments(this._issueParams);
     this.linkedReviews = this._getLinkedReviews();
-    [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([this.self, this.events, this.comments, this.linkedReviews]);
+    [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
+      this.self,
+      this.events,
+      this.comments,
+      this.linkedReviews,
+    ]);
   }
 
   private async _getLinkedReviews(): Promise<Review[]> {
@@ -56,9 +61,25 @@ export class GetActivity {
       .filter((o) => o !== null) as Promise<Review>[];
     return Promise.all(promises);
   }
+
+  get allComments() {
+    const comments: Array<GitHubIssueComment | GitHubPullRequestReviewComment> = [
+      ...(this.comments as GitHubIssueComment[]),
+    ];
+    if (this.linkedReviews) {
+      for (const linkedReview of this.linkedReviews as Review[]) {
+        if (linkedReview.reviewComments) {
+          for (const reviewComment of linkedReview.reviewComments as GitHubPullRequestReviewComment[]) {
+            comments.push(reviewComment);
+          }
+        }
+      }
+    }
+    return comments;
+  }
 }
 
-class Review {
+export class Review {
   self: Promise<GitHubPullRequest> | GitHubPullRequest | null = null;
   reviews: Promise<GitHubPullRequestReviewState[]> | GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
   reviewComments: Promise<GitHubPullRequestReviewComment[]> | GitHubPullRequestReviewComment[] | null = null;

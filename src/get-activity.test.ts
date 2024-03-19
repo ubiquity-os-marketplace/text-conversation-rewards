@@ -1,9 +1,5 @@
 import { GetActivity } from "./get-activity";
-import { ContentEvaluatorTransformer } from "./parser/content-evaluator-transformer";
-import { DataPurgeTransformer } from "./parser/data-purge-transformer";
-import { FormattingEvaluatorTransformer } from "./parser/formatting-evaluator-transformer";
 import { Processor } from "./parser/processor";
-import { UserExtractorTransformer } from "./parser/user-extractor-transformer";
 import { parseGitHubUrl } from "./start";
 
 // Mock process.argv
@@ -22,11 +18,6 @@ describe("GetActivity class", () => {
     expect(activity.comments).toBeTruthy();
     expect(Array.isArray(activity.linkedReviews)).toBeTruthy();
     const processor = new Processor();
-    processor
-      .add(new UserExtractorTransformer())
-      .add(new DataPurgeTransformer())
-      .add(new FormattingEvaluatorTransformer())
-      .add(new ContentEvaluatorTransformer());
     await processor.run(activity);
     processor.dump();
     // TODO: the data purge should add more details about the comment
