@@ -26,6 +26,12 @@ formattingEvaluator:
     td: 1
     hr: 1
   multipliers:
-    issue-assignee-task:
-      formatting-multiplier: 0
-      word-value: 0
+    - types: [ISSUE, ISSUER, COLLABORATOR]:
+      formattingMultiplier: 1
+      wordValue: 0.2
+    - types: [ISSUE, ISSUER, CONTRIBUTOR]:
+      formattingMultiplier: 1
+      wordValue: 0.2
+    - types: [ISSUE, ASSIGNEE, CONTRIBUTOR]:
+      formattingMultiplier: 1
+      wordValue: 0.2

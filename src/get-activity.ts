@@ -18,6 +18,15 @@ import {
   getPullRequestReviews,
 } from "./start";
 
+enum CommentType {
+  REVIEW = 0b1,
+  ISSUE = 0b10,
+  ASSIGNEE = 0b100,
+  ISSUER = 0b1000,
+  COLLABORATOR = 0b10000,
+  CONTRIBUTOR = 0b100000,
+}
+
 export class GetActivity {
   constructor(private _issueParams: IssueParams) {}
   self: Promise<GitHubIssue> | GitHubIssue | null = null;
@@ -62,18 +71,34 @@ export class GetActivity {
     return Promise.all(promises);
   }
 
+  _getTypeFromComment(
+    comment: GitHubIssueComment | GitHubPullRequestReviewComment,
+    self: GitHubPullRequest | GitHubIssue | null
+  ) {
+    let ret = 0;
+    ret |= "pull_request_review_id" in comment ? CommentType.REVIEW : CommentType.ISSUE;
+    ret |= comment.author_association === "MEMBER" ? CommentType.COLLABORATOR : 0;
+    ret |= comment.author_association === "CONTRIBUTOR" ? CommentType.CONTRIBUTOR : 0;
+    ret |= comment.user?.id === self?.user?.id ? CommentType.ISSUER : 0;
+    ret |= comment.user?.id === self?.assignee?.id ? CommentType.ASSIGNEE : 0;
+    return ret;
+  }
+
   get allComments() {
-    const comments: Array<(GitHubIssueComment | GitHubPullRequestReviewComment) & { type: string }> = (
+    const comments: Array<(GitHubIssueComment | GitHubPullRequestReviewComment) & { type: CommentType }> = (
       this.comments as GitHubIssueComment[]
     ).map((comment) => ({
       ...comment,
-      type: "ISSUE_ASSIGNEE_TASK",
+      type: this._getTypeFromComment(comment, this.self as GitHubIssue),
     }));
     if (this.linkedReviews) {
       for (const linkedReview of this.linkedReviews as Review[]) {
         if (linkedReview.reviewComments) {
           for (const reviewComment of linkedReview.reviewComments as GitHubPullRequestReviewComment[]) {
-            comments.push({ ...reviewComment, type: "REVIEW_ASSIGNEE_TASK" });
+            comments.push({
+              ...reviewComment,
+              type: this._getTypeFromComment(reviewComment, linkedReview.self as GitHubPullRequest),
+            });
           }
         }
       }
