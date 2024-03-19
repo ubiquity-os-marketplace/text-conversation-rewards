@@ -1,7 +1,7 @@
 {
   "name": "@ubiquibot/conversation-rewards",
   "version": "1.0.0",
-  "description": "Parse conversations in pull-request and issues a corresponding reward.",
+  "description": "Generate rewards for on topic conversation for closing issues as complete.",
   "author": "Ubiquity DAO",
   "license": "MIT",
   "engines": {
