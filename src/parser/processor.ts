@@ -75,7 +75,7 @@ export interface Module {
 
 export interface Result {
   [k: string]: {
-    comments?: Comment[];
+    comments?: GithubComment[];
     total: number;
     task?: {
       reward: number;
@@ -83,13 +83,17 @@ export interface Result {
   };
 }
 
-export interface Comment {
+export interface GithubComment {
   content: string;
   contentHtml?: string;
   url: string;
   type: string;
   score?: {
-    formatting?: Record<string, { count: number; score: number; multiplier: number; value: number }>;
+    formatting?: {
+      content: Record<string, { count: number; score: number }>;
+      formattingMultiplier: number;
+      wordValue: number;
+    };
     relevance?: number;
     clarity?: number;
     reward: number;

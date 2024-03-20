@@ -77,10 +77,15 @@ export class GetActivity {
   ) {
     let ret = 0;
     ret |= "pull_request_review_id" in comment ? CommentType.REVIEW : CommentType.ISSUE;
-    ret |= comment.author_association === "MEMBER" ? CommentType.COLLABORATOR : 0;
-    ret |= comment.author_association === "CONTRIBUTOR" ? CommentType.CONTRIBUTOR : 0;
-    ret |= comment.user?.id === self?.user?.id ? CommentType.ISSUER : 0;
-    ret |= comment.user?.id === self?.assignee?.id ? CommentType.ASSIGNEE : 0;
+    if (comment.user?.id === self?.user?.id) {
+      ret |= CommentType.ISSUER;
+    } else if (comment.user?.id === self?.assignee?.id) {
+      ret |= CommentType.ASSIGNEE;
+    } else if (comment.author_association === "MEMBER") {
+      ret |= CommentType.COLLABORATOR;
+    } else if (comment.author_association === "CONTRIBUTOR") {
+      ret |= CommentType.CONTRIBUTOR;
+    }
     return ret;
   }
 

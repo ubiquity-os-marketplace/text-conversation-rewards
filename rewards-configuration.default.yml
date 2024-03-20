@@ -10,7 +10,7 @@ formattingEvaluator:
   scores:
     br: 1
     code: 1
-    p: 0.1
+    p: 1
     em: 0
     img: 0
     strong: 0
@@ -26,12 +26,27 @@ formattingEvaluator:
     td: 1
     hr: 1
   multipliers:
-    - types: [ISSUE, ISSUER, COLLABORATOR]:
+    - type: [ISSUE, ISSUER]:
       formattingMultiplier: 1
       wordValue: 0.2
-    - types: [ISSUE, ISSUER, CONTRIBUTOR]:
+    - type: [ISSUE, ASSIGNEE]:
+      formattingMultiplier: 0
+      wordValue: 0
+    - type: [ISSUE, COLLABORATOR]:
       formattingMultiplier: 1
+      wordValue: 0.1
+    - type: [ISSUE, CONTRIBUTOR]:
+      formattingMultiplier: 0.25
+      wordValue: 0.1
+    - type: [REVIEW, ISSUER]:
+      formattingMultiplier: 2
       wordValue: 0.2
-    - types: [ISSUE, ASSIGNEE, CONTRIBUTOR]:
+    - type: [REVIEW, ASSIGNEE]:
       formattingMultiplier: 1
-      wordValue: 0.2
+      wordValue: 0.1
+    - type: [REVIEW, COLLABORATOR]:
+      formattingMultiplier: 1
+      wordValue: 0.1
+    - type: [REVIEW, CONTRIBUTOR]:
+      formattingMultiplier: 0.25
+      wordValue: 0.1
