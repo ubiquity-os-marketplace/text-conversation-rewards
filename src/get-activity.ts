@@ -18,7 +18,7 @@ import {
   getPullRequestReviews,
 } from "./start";
 
-enum CommentType {
+export enum CommentType {
   REVIEW = 0b1,
   ISSUE = 0b10,
   ASSIGNEE = 0b100,
