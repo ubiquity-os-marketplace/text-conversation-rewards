@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import configuration from "../configuration/config-reader";
-import { GetActivity } from "../get-activity";
+import { CommentType, GetActivity } from "../get-activity";
 import program from "./command-line";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
@@ -85,9 +85,8 @@ export interface Result {
 
 export interface GithubComment {
   content: string;
-  contentHtml?: string;
   url: string;
-  type: string;
+  type: CommentType;
   score?: {
     formatting?: {
       content: Record<string, { count: number; score: number }>;

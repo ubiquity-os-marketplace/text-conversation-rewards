@@ -27,7 +27,6 @@ export class DataPurgeModule implements Module {
             {
               content: newContent,
               url: value.html_url,
-              contentHtml: value.body_html,
               type: value.type,
             },
           ];

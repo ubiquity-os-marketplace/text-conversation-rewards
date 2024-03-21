@@ -1,6 +1,6 @@
 import configuration from "../configuration/config-reader";
 import { GetActivity } from "../get-activity";
-import { GitHubIssue, GitHubIssueComment, GitHubPullRequestReviewComment } from "../github-types";
+import { GitHubIssue } from "../github-types";
 import { Module, Result } from "./processor";
 
 /**
@@ -16,7 +16,7 @@ export class UserExtractorModule implements Module {
   /**
    * Checks if the comment is made by a human user, and not empty.
    */
-  _checkEntryValidity(comment: GitHubIssueComment | GitHubPullRequestReviewComment) {
+  _checkEntryValidity(comment: (typeof GetActivity.prototype.allComments)[0]) {
     return comment.body && comment.user?.type === "User";
   }
 
