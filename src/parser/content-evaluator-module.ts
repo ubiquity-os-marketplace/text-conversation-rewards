@@ -42,13 +42,6 @@ export class ContentEvaluatorModule implements Module {
 
   async _evaluateComment(specification: string, comment: string) {
     const prompt = this._generatePrompt(specification, comment);
-
-    if (process.env.NODE_ENV === "test") {
-      return {
-        relevance: 0.5,
-      };
-    }
-
     try {
       const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
         model: "gpt-3.5-turbo",
