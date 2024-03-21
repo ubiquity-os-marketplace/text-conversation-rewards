@@ -11,6 +11,11 @@ const cfg: Config = {
     "^.+\\.tsx?$": "babel-jest",
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  coveragePathIgnorePatterns: ["node_modules", "mocks"],
+  collectCoverage: true,
+  coverageReporters: ["json", "lcov", "text", "clover", "json-summary"],
+  reporters: ["default", "jest-junit"],
+  coverageDirectory: "coverage",
 };
 
 export default cfg;
