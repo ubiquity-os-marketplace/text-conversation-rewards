@@ -8,7 +8,7 @@ dataPurge:
 formattingEvaluator:
   enabled: true
   scores:
-    br: 1
+    br: 0
     code: 1
     p: 1
     em: 0
