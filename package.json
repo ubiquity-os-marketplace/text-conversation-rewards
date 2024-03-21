@@ -8,7 +8,7 @@
     "node": ">=20.10.0"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --setupFiles dotenv/config --coverage",
     "start": "tsx src/start.ts",
     "format": "run-s format:lint format:prettier format:cspell",
     "format:lint": "eslint --fix .",

@@ -1,5 +1,13 @@
 import { Command } from "@commander-js/extra-typings";
+import { config } from "dotenv";
 import packageJson from "../../package.json";
+
+if (process.env.NODE_ENV === "test") {
+  config();
+  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  process.argv = ["path/to/node", "path/to/script", `--auth`, `${GITHUB_TOKEN}`, "--open-ai", `${OPENAI_API_KEY}`];
+}
 
 const program = new Command()
   .requiredOption("-a, --auth <token>", "GitHub authentication token")
