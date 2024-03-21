@@ -24,7 +24,7 @@ formattingEvaluator:
     a: 1
     li: 1
     td: 1
-    hr: 1
+    hr: 0
   multipliers:
     - type: [ISSUE, ISSUER]:
       formattingMultiplier: 1
