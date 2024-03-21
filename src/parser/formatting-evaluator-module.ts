@@ -4,14 +4,19 @@ import configuration from "../configuration/config-reader";
 import { CommentType, GetActivity } from "../get-activity";
 import { GithubComment, Module, Result } from "./processor";
 
+interface Multiplier {
+  formattingMultiplier: number;
+  wordValue: number;
+}
+
 export class FormattingEvaluatorModule implements Module {
   private readonly _configuration: {
     enabled: boolean;
-    multipliers: { type: (keyof typeof CommentType)[]; formattingMultiplier: number; wordValue: number }[];
+    multipliers: ({ type: (keyof typeof CommentType)[] } & Multiplier)[];
     scores: { [key: string]: number };
   } = configuration.formattingEvaluator;
   private readonly _md = new MarkdownIt();
-  private readonly _multipliers: { [k: string]: { formattingMultiplier: number; wordValue: number } } = {};
+  private readonly _multipliers: { [k: string]: Multiplier } = {};
 
   constructor() {
     if (this._configuration.multipliers) {

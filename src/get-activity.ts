@@ -72,7 +72,7 @@ export class GetActivity {
   }
 
   _getTypeFromComment(
-    comment: GitHubIssueComment | GitHubPullRequestReviewComment,
+    comment: GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest,
     self: GitHubPullRequest | GitHubIssue | null
   ) {
     let ret = 0;
@@ -90,14 +90,29 @@ export class GetActivity {
   }
 
   get allComments() {
-    const comments: Array<(GitHubIssueComment | GitHubPullRequestReviewComment) & { type: CommentType }> = (
-      this.comments as GitHubIssueComment[]
-    ).map((comment) => ({
+    const comments: Array<
+      (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & { type: CommentType }
+    > = (this.comments as GitHubIssueComment[]).map((comment) => ({
       ...comment,
       type: this._getTypeFromComment(comment, this.self as GitHubIssue),
     }));
+    if (this.self) {
+      comments.push({
+        ...(this.self as GitHubIssue),
+        type: this._getTypeFromComment(this.self as GitHubIssue, this.self as GitHubIssue),
+      });
+    }
     if (this.linkedReviews) {
       for (const linkedReview of this.linkedReviews as Review[]) {
+        if (linkedReview.self) {
+          comments.push({
+            ...(linkedReview.self as GitHubPullRequest),
+            type: this._getTypeFromComment(
+              linkedReview.self as GitHubPullRequest,
+              linkedReview.self as GitHubPullRequest
+            ),
+          });
+        }
         if (linkedReview.reviewComments) {
           for (const reviewComment of linkedReview.reviewComments as GitHubPullRequestReviewComment[]) {
             comments.push({
