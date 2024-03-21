@@ -20,28 +20,25 @@ describe("GetActivity class", () => {
     const processor = new Processor();
     await processor.run(activity);
     processor.dump();
-    // TODO: the data purge should add more details about the comment
-    // a GithubComment module could be added
-    // an event action module should be applied
   });
 
-  // it("should create an instance of GetActivity", () => {
-  //   expect(activity).toBeInstanceOf(GetActivity);
-  // });
-  //
-  // it("should initialize `activity.self` as an object", () => {
-  //   expect(typeof activity.self).toBe("object");
-  // });
-  //
-  // it("should initialize `activity.events` as an object", () => {
-  //   expect(typeof activity.events).toBe("object");
-  // });
-  //
-  // it("should initialize `activity.comments` as an object", () => {
-  //   expect(typeof activity.comments).toBe("object");
-  // });
-  //
-  // it("should initialize `activity.linkedReviews` as an array", () => {
-  //   expect(Array.isArray(activity.linkedReviews)).toBe(true);
-  // });
+  it("should create an instance of GetActivity", () => {
+    expect(activity).toBeInstanceOf(GetActivity);
+  });
+
+  it("should initialize `activity.self` as an object", () => {
+    expect(typeof activity.self).toBe("object");
+  });
+
+  it("should initialize `activity.events` as an object", () => {
+    expect(typeof activity.events).toBe("object");
+  });
+
+  it("should initialize `activity.comments` as an object", () => {
+    expect(typeof activity.comments).toBe("object");
+  });
+
+  it("should initialize `activity.linkedReviews` as an array", () => {
+    expect(Array.isArray(activity.linkedReviews)).toBe(true);
+  });
 });
