@@ -3,7 +3,7 @@ import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { GetActivity } from "../get-activity";
 import { GitHubIssue } from "../github-types";
-import { Result, Module } from "./processor";
+import { Result, Module, GithubComment } from "./processor";
 
 /**
  * Evaluates and rates comments.
@@ -17,29 +17,37 @@ export class ContentEvaluatorModule implements Module {
   }
 
   async transform(data: Readonly<GetActivity>, result: Result) {
+    const promises: Promise<void>[] = [];
+
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
+
       for (let i = 0; i < comments.length; i++) {
         const comment = comments[i];
         const specificationBody = (data.self as GitHubIssue)?.body;
         const commentBody = comment.content;
+
         if (specificationBody && commentBody) {
-          const relevance = await this._sampleRelevanceScoreResults(specificationBody, commentBody);
-          const currentReward = new Decimal(comment.score?.reward ? comment.score.reward : 0);
-          const reward = currentReward.mul(relevance).toNumber();
-          comments[i] = {
-            ...comment,
-            score: {
-              ...comment.score,
-              relevance: relevance.toNumber(),
-              reward,
-            },
-          };
+          promises.push(this._processComment(comment, specificationBody, commentBody));
         }
       }
     }
+
+    await Promise.all(promises);
     return result;
+  }
+
+  async _processComment(comment: GithubComment, specificationBody: string, commentBody: string): Promise<void> {
+    const relevance = await this._sampleRelevanceScoreResults(specificationBody, commentBody);
+    const currentReward = new Decimal(comment.score?.reward ? comment.score.reward : 0);
+    const reward = currentReward.mul(relevance).toNumber();
+
+    comment.score = {
+      ...(comment.score || {}),
+      relevance: relevance.toNumber(),
+      reward,
+    };
   }
 
   async _evaluateComment(specification: string, comment: string) {
@@ -72,10 +80,15 @@ export class ContentEvaluatorModule implements Module {
   async _sampleRelevanceScoreResults(specification: string, comment: string) {
     const BATCH_SIZE = 10;
     let averageScore = new Decimal(0);
+    const evaluationPromises: ReturnType<typeof this._evaluateComment>[] = [];
 
     for (let i = 0; i < BATCH_SIZE; ++i) {
-      averageScore = averageScore.add((await this._evaluateComment(specification, comment)).relevance);
+      evaluationPromises.push(this._evaluateComment(specification, comment));
     }
+    const results = await Promise.all(evaluationPromises);
+    results.forEach((result) => {
+      averageScore = averageScore.add(result.relevance);
+    });
 
     return averageScore.div(BATCH_SIZE);
   }
