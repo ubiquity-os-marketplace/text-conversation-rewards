@@ -25,7 +25,7 @@ export class ContentEvaluatorModule implements Module {
         const specificationBody = (data.self as GitHubIssue)?.body;
         const commentBody = comment.content;
         if (specificationBody && commentBody) {
-          const { relevance } = await this._evaluateComment(specificationBody, commentBody);
+          const relevance = await this._sampleRelevanceScoreResults(specificationBody, commentBody);
           const currentReward = new Decimal(comment.score?.reward ? comment.score.reward : 0);
           const reward = currentReward.mul(relevance).toNumber();
           comments[i] = {
@@ -64,9 +64,20 @@ export class ContentEvaluatorModule implements Module {
     } catch (error) {
       console.error("Failed to evaluate comment", error);
       return {
-        relevance: relevance,
+        relevance: new Decimal(0),
       };
     }
+  }
+
+  async _sampleRelevanceScoreResults(specification: string, comment: string) {
+    const BATCH_SIZE = 10;
+    let averageScore = new Decimal(0);
+
+    for (let i = 0; i < BATCH_SIZE; ++i) {
+      averageScore = averageScore.add((await this._evaluateComment(specification, comment)).relevance);
+    }
+
+    return averageScore.div(BATCH_SIZE);
   }
 
   _generatePrompt(issue: string, comments: string) {
