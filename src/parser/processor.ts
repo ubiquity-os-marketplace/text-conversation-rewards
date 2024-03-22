@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import * as fs from "fs";
 import configuration from "../configuration/config-reader";
 import { CommentType, GetActivity } from "../get-activity";
@@ -52,19 +53,19 @@ export class Processor {
   }
 
   _sumRewards(obj: Record<string, unknown>) {
-    let totalReward = 0;
+    let totalReward = new Decimal(0);
 
     for (const [key, value] of Object.entries(obj)) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
         if (key === "reward" && typeof value === "number") {
-          totalReward += value;
+          totalReward = totalReward.add(value);
         } else if (typeof value === "object") {
-          totalReward += this._sumRewards(value as Record<string, unknown>);
+          totalReward = totalReward.add(this._sumRewards(value as Record<string, unknown>));
         }
       }
     }
 
-    return totalReward;
+    return totalReward.toNumber();
   }
 }
 

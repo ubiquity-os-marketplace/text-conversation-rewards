@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { GetActivity } from "../get-activity";
@@ -25,12 +26,13 @@ export class ContentEvaluatorModule implements Module {
         const commentBody = comment.content;
         if (specificationBody && commentBody) {
           const { relevance } = await this._evaluateComment(specificationBody, commentBody);
-          const reward = comment.score?.reward ? comment.score.reward * relevance : relevance;
+          const currentReward = new Decimal(comment.score?.reward ? comment.score.reward : 0);
+          const reward = currentReward.mul(relevance).toNumber();
           comments[i] = {
             ...comment,
             score: {
               ...comment.score,
-              relevance,
+              relevance: relevance.toNumber(),
               reward,
             },
           };
@@ -58,11 +60,11 @@ export class ContentEvaluatorModule implements Module {
         presence_penalty: 0,
       });
 
-      return { relevance: Number(response.choices[0].message.content) };
+      return { relevance: new Decimal(Number(response.choices[0].message.content)) };
     } catch (error) {
       console.error("Failed to evaluate comment", error);
       return {
-        relevance: 0,
+        relevance: relevance,
       };
     }
   }

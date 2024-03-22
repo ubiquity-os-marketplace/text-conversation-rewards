@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
 import configuration from "../configuration/config-reader";
@@ -44,17 +45,22 @@ export class FormattingEvaluatorModule implements Module {
         const formattingTotal = formatting
           ? Object.values(formatting).reduce(
               (acc, curr) =>
-                acc + curr.score * multiplierFactor.formattingMultiplier * (curr.count * multiplierFactor.wordValue),
-              0
+                acc.add(
+                  new Decimal(curr.score)
+                    .mul(multiplierFactor.formattingMultiplier)
+                    .mul(curr.count)
+                    .mul(multiplierFactor.wordValue)
+                ),
+              new Decimal(0)
             )
-          : 0;
+          : new Decimal(0);
         comment.score = {
           ...comment.score,
           formatting: {
             content: formatting,
             ...multiplierFactor,
           },
-          reward: comment.score?.reward ? comment.score.reward + formattingTotal : formattingTotal,
+          reward: (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber(),
         };
       }
     }

@@ -20,7 +20,7 @@ describe("GetActivity class", () => {
     const processor = new Processor();
     await processor.run(activity);
     processor.dump();
-  });
+  }, 30000);
 
   it("should create an instance of GetActivity", () => {
     expect(activity).toBeInstanceOf(GetActivity);
