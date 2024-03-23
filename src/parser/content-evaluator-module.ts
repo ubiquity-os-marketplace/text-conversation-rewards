@@ -43,6 +43,11 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: GithubComment[], specificationBody: string, commentsBody: string[]) {
     const relevance = await this._sampleRelevanceScoreResults(specificationBody, commentsBody);
 
+    if (relevance.length !== comments.length) {
+      console.error("Relevance / Comment length mismatch! Skipping.");
+      return;
+    }
+
     for (let i = 0; i < relevance.length; i++) {
       const currentComment = comments[i];
       const currentRelevance = relevance[i];
