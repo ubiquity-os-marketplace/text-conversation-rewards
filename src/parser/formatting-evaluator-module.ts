@@ -3,7 +3,7 @@ import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
 import configuration from "../configuration/config-reader";
 import { CommentType, GetActivity } from "../get-activity";
-import { GithubComment, Module, Result } from "./processor";
+import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {
   formattingMultiplier: number;
@@ -71,7 +71,7 @@ export class FormattingEvaluatorModule implements Module {
     return this._configuration?.enabled;
   }
 
-  _getFormattingScore(comment: GithubComment) {
+  _getFormattingScore(comment: GithubCommentScore) {
     const html = this._md.render(comment.content);
     const temp = new JSDOM(html);
     if (temp.window.document.body) {

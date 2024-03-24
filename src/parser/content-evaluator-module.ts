@@ -4,7 +4,7 @@ import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { GetActivity } from "../get-activity";
 import { GitHubIssue } from "../github-types";
-import { GithubComment, Module, Result } from "./processor";
+import { GithubCommentScore, Module, Result } from "./processor";
 
 /**
  * Evaluates and rates comments.
@@ -40,7 +40,7 @@ export class ContentEvaluatorModule implements Module {
     return result;
   }
 
-  async _processComment(comments: GithubComment[], specificationBody: string, commentsBody: string[]) {
+  async _processComment(comments: GithubCommentScore[], specificationBody: string, commentsBody: string[]) {
     const relevance = await this._sampleRelevanceScoreResults(specificationBody, commentsBody);
 
     if (relevance.length !== comments.length) {
@@ -98,7 +98,7 @@ export class ContentEvaluatorModule implements Module {
       return "gpt-3.5-turbo-16k";
     } else {
       console.warn("Backup plan for development purposes only, but using gpt-4 due to huge context size");
-      return "gpt-4";
+      return "gpt-4-turbo-preview";
     }
   }
 

@@ -93,7 +93,7 @@ export interface Module {
 
 export interface Result {
   [k: string]: {
-    comments?: GithubComment[];
+    comments?: GithubCommentScore[];
     total: number;
     task?: {
       reward: number;
@@ -101,7 +101,7 @@ export interface Result {
   };
 }
 
-export interface GithubComment {
+export interface GithubCommentScore {
   content: string;
   url: string;
   type: CommentType;
