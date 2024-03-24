@@ -13,21 +13,21 @@ export class DataPurgeModule implements Module {
   }
 
   transform(data: Readonly<GetActivity>, result: Result) {
-    for (const value of data.allComments) {
-      if (value.body && value.user?.login && result[value.user.login]) {
-        const newContent = value.body
+    for (const comment of data.allComments) {
+      if (comment.body && comment.user?.login && result[comment.user.login]) {
+        const newContent = comment.body
           .replace(/^>.*$/gm, "")
           .replace(/[\r\n]+/g, " ")
           .replace(/\[.*?\]\(.*?\)/g, "")
           .replace(/^\/\S+/g, "")
           .trim();
         if (newContent.length) {
-          result[value.user.login].comments = [
-            ...(result[value.user.login].comments ?? []),
+          result[comment.user.login].comments = [
+            ...(result[comment.user.login].comments ?? []),
             {
               content: newContent,
-              url: value.html_url,
-              type: value.type,
+              url: comment.html_url,
+              type: comment.type,
             },
           ];
         }
