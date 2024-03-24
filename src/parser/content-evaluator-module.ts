@@ -26,13 +26,7 @@ export class ContentEvaluatorModule implements Module {
       const specificationBody = (data.self as GitHubIssue)?.body;
 
       if (specificationBody && comments.length) {
-        promises.push(
-          this._processComment(
-            comments,
-            specificationBody,
-            comments.map((comment) => comment.content)
-          )
-        );
+        promises.push(this._processComment(comments, specificationBody));
       }
     }
 
@@ -40,7 +34,8 @@ export class ContentEvaluatorModule implements Module {
     return result;
   }
 
-  async _processComment(comments: GithubCommentScore[], specificationBody: string, commentsBody: string[]) {
+  async _processComment(comments: GithubCommentScore[], specificationBody: string) {
+    const commentsBody = comments.map((comment) => comment.content);
     const relevance = await this._sampleRelevanceScoreResults(specificationBody, commentsBody);
 
     if (relevance.length !== comments.length) {
@@ -51,7 +46,7 @@ export class ContentEvaluatorModule implements Module {
     for (let i = 0; i < relevance.length; i++) {
       const currentComment = comments[i];
       const currentRelevance = relevance[i];
-      const currentReward = new Decimal(currentComment.score?.reward ? currentComment.score.reward : 0);
+      const currentReward = new Decimal(currentComment.score?.reward || 0);
       currentComment.score = {
         ...(currentComment.score || {}),
         relevance: currentRelevance.toNumber(),
