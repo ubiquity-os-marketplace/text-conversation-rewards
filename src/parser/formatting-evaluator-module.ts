@@ -2,7 +2,7 @@ import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
 import configuration from "../configuration/config-reader";
-import { CommentType, GetActivity } from "../get-activity";
+import { CommentType, IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {
@@ -33,7 +33,7 @@ export class FormattingEvaluatorModule implements Module {
     }
   }
 
-  transform(data: Readonly<GetActivity>, result: Result) {
+  transform(data: Readonly<IssueActivity>, result: Result) {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];

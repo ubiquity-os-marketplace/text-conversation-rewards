@@ -1,4 +1,4 @@
-import { GetActivity } from "./get-activity";
+import { IssueActivity } from "./issue-activity";
 import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 
@@ -7,7 +7,7 @@ const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/com
 
 describe("GetActivity class", () => {
   const issue = parseGitHubUrl(issueUrl);
-  const activity = new GetActivity(issue);
+  const activity = new IssueActivity(issue);
   beforeAll(async () => {
     await activity.init();
   });
@@ -23,7 +23,7 @@ describe("GetActivity class", () => {
   }, 30000);
 
   it("should create an instance of GetActivity", () => {
-    expect(activity).toBeInstanceOf(GetActivity);
+    expect(activity).toBeInstanceOf(IssueActivity);
   });
 
   it("should initialize `activity.self` as an object", () => {

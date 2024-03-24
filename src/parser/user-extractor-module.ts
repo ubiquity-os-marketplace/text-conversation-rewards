@@ -1,5 +1,5 @@
 import configuration from "../configuration/config-reader";
-import { GetActivity } from "../get-activity";
+import { IssueActivity } from "../issue-activity";
 import { GitHubIssue } from "../github-types";
 import { Module, Result } from "./processor";
 
@@ -16,7 +16,7 @@ export class UserExtractorModule implements Module {
   /**
    * Checks if the comment is made by a human user, and not empty.
    */
-  _checkEntryValidity(comment: (typeof GetActivity.prototype.allComments)[0]) {
+  _checkEntryValidity(comment: (typeof IssueActivity.prototype.allComments)[0]) {
     return comment.body && comment.user?.type === "User";
   }
 
@@ -46,7 +46,7 @@ export class UserExtractorModule implements Module {
     return sortedPriceLabels[0];
   }
 
-  transform(data: Readonly<GetActivity>, result: Result) {
+  transform(data: Readonly<IssueActivity>, result: Result) {
     for (const comment of data.allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
         const task =

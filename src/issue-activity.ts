@@ -27,7 +27,7 @@ export enum CommentType {
   CONTRIBUTOR = 0b100000,
 }
 
-export class GetActivity {
+export class IssueActivity {
   constructor(private _issueParams: IssueParams) {}
   self: Promise<GitHubIssue> | GitHubIssue | null = null;
   events: Promise<GitHubIssueEvent[]> | GitHubIssueEvent[] | null = null;

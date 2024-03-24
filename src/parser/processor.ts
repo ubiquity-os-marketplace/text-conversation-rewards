@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import configuration from "../configuration/config-reader";
-import { CommentType, GetActivity } from "../get-activity";
+import { CommentType, IssueActivity } from "../issue-activity";
 import program from "./command-line";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
@@ -25,7 +25,7 @@ export class Processor {
     return this;
   }
 
-  async run(data: Readonly<GetActivity>) {
+  async run(data: Readonly<IssueActivity>) {
     if (this._configuration.disabled) {
       console.log("Module is disabled. Skipping...");
       return;
@@ -87,7 +87,7 @@ export class Processor {
 }
 
 export interface Module {
-  transform(data: Readonly<GetActivity>, result: Result): Promise<Result>;
+  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
   get enabled(): boolean;
 }
 

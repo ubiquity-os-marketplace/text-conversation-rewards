@@ -1,5 +1,5 @@
 import configuration from "../configuration/config-reader";
-import { GetActivity } from "../get-activity";
+import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
 
 /**
@@ -12,7 +12,7 @@ export class DataPurgeModule implements Module {
     return this.configuration.enabled;
   }
 
-  transform(data: Readonly<GetActivity>, result: Result) {
+  transform(data: Readonly<IssueActivity>, result: Result) {
     for (const comment of data.allComments) {
       if (comment.body && comment.user?.login && result[comment.user.login]) {
         const newContent = comment.body
