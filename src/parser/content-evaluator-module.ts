@@ -4,7 +4,6 @@ import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
 import { IssueActivity } from "../issue-activity";
-import { GitHubIssue } from "../github-types";
 import { GithubCommentScore, Module, Result } from "./processor";
 
 /**
@@ -24,7 +23,7 @@ export class ContentEvaluatorModule implements Module {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
-      const specificationBody = (data.self as GitHubIssue)?.body;
+      const specificationBody = data.self?.body;
 
       if (specificationBody && comments.length) {
         promises.push(this._processComment(comments, specificationBody));

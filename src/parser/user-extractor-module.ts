@@ -50,9 +50,9 @@ export class UserExtractorModule implements Module {
     for (const comment of data.allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
         const task =
-          (data.self as GitHubIssue)?.assignee?.id === comment.user.id
+          data.self?.assignee?.id === comment.user.id
             ? {
-                reward: this._extractTaskPrice(data.self as GitHubIssue),
+                reward: this._extractTaskPrice(data.self),
               }
             : undefined;
         result[comment.user.login] = {
