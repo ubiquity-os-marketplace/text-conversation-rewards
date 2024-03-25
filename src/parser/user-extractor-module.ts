@@ -1,4 +1,5 @@
 import configuration from "../configuration/config-reader";
+import { UserExtractorConfiguration } from "../configuration/user-extractor-config";
 import { IssueActivity } from "../issue-activity";
 import { GitHubIssue } from "../github-types";
 import { Module, Result } from "./processor";
@@ -7,7 +8,7 @@ import { Module, Result } from "./processor";
  * Creates entries for each user with its associated comments.
  */
 export class UserExtractorModule implements Module {
-  private readonly _configuration = configuration.userExtractor;
+  private readonly _configuration: UserExtractorConfiguration = configuration.userExtractor;
 
   get enabled(): boolean {
     return true;

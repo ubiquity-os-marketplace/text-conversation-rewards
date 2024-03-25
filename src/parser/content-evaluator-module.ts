@@ -3,6 +3,7 @@ import { encodingForModel } from "js-tiktoken";
 import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
+import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
@@ -11,10 +12,10 @@ import { GithubCommentScore, Module, Result } from "./processor";
  */
 export class ContentEvaluatorModule implements Module {
   readonly _openAi = new OpenAI({ apiKey: OPENAI_API_KEY });
-  readonly configuration = configuration.contentEvaluator;
+  readonly _configuration: ContentEvaluatorConfiguration = configuration.contentEvaluator;
 
   get enabled(): boolean {
-    return this.configuration.enabled;
+    return this._configuration.enabled;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {

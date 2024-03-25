@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
 import configuration from "../configuration/config-reader";
+import { FormattingEvaluatorConfiguration } from "../configuration/formatting-evaluator-config";
 import { CommentType, IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
@@ -11,11 +12,7 @@ interface Multiplier {
 }
 
 export class FormattingEvaluatorModule implements Module {
-  private readonly _configuration: {
-    enabled: boolean;
-    multipliers: ({ type: (keyof typeof CommentType)[] } & Multiplier)[];
-    scores: { [key: string]: number };
-  } = configuration.formattingEvaluator;
+  private readonly _configuration: FormattingEvaluatorConfiguration = configuration.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: string]: Multiplier } = {};
 
