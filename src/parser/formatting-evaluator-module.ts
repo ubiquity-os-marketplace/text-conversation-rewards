@@ -1,8 +1,11 @@
+import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
 import configuration from "../configuration/config-reader";
-import { FormattingEvaluatorConfiguration } from "../configuration/formatting-evaluator-config";
+import formattingEvaluatorConfig, {
+  FormattingEvaluatorConfiguration,
+} from "../configuration/formatting-evaluator-config";
 import { CommentType, IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
@@ -65,6 +68,10 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   get enabled(): boolean {
+    if (!Value.Check(formattingEvaluatorConfig, this._configuration)) {
+      console.warn("Invalid configuration detected for FormattingEvaluatorModule, disabling.");
+      return false;
+    }
     return this._configuration?.enabled;
   }
 

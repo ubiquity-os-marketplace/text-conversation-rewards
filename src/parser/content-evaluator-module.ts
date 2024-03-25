@@ -3,9 +3,10 @@ import { encodingForModel } from "js-tiktoken";
 import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
-import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import contentEvaluatorConfig, { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
+import { Value } from "@sinclair/typebox/value";
 
 /**
  * Evaluates and rates comments.
@@ -15,6 +16,10 @@ export class ContentEvaluatorModule implements Module {
   readonly _configuration: ContentEvaluatorConfiguration = configuration.contentEvaluator;
 
   get enabled(): boolean {
+    if (!Value.Check(contentEvaluatorConfig, this._configuration)) {
+      console.warn("Invalid configuration detected for ContentEvaluatorModule, disabling.");
+      return false;
+    }
     return this._configuration.enabled;
   }
 
