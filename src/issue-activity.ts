@@ -29,21 +29,18 @@ export enum CommentType {
 
 export class IssueActivity {
   constructor(private _issueParams: IssueParams) {}
-  self: Promise<GitHubIssue> | GitHubIssue | null = null;
-  events: Promise<GitHubIssueEvent[]> | GitHubIssueEvent[] | null = null;
-  comments: Promise<GitHubIssueComment[]> | GitHubIssueComment[] | null = null;
-  linkedReviews: Promise<Review[]> | Review[] | null = null;
+
+  self: GitHubIssue | null = null;
+  events: GitHubIssueEvent[] = [];
+  comments: GitHubIssueComment[] = [];
+  linkedReviews: Review[] = [];
 
   async init() {
-    this.self = getIssue(this._issueParams);
-    this.events = getIssueEvents(this._issueParams);
-    this.comments = getIssueComments(this._issueParams);
-    this.linkedReviews = this._getLinkedReviews();
     [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
-      this.self,
-      this.events,
-      this.comments,
-      this.linkedReviews,
+      getIssue(this._issueParams),
+      getIssueEvents(this._issueParams),
+      getIssueComments(this._issueParams),
+      this._getLinkedReviews(),
     ]);
   }
 
@@ -92,32 +89,29 @@ export class IssueActivity {
   get allComments() {
     const comments: Array<
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & { type: CommentType }
-    > = (this.comments as GitHubIssueComment[]).map((comment) => ({
+    > = this.comments.map((comment) => ({
       ...comment,
-      type: this._getTypeFromComment(comment, this.self as GitHubIssue),
+      type: this._getTypeFromComment(comment, this.self),
     }));
     if (this.self) {
       comments.push({
-        ...(this.self as GitHubIssue),
-        type: this._getTypeFromComment(this.self as GitHubIssue, this.self as GitHubIssue),
+        ...this.self,
+        type: this._getTypeFromComment(this.self, this.self),
       });
     }
     if (this.linkedReviews) {
-      for (const linkedReview of this.linkedReviews as Review[]) {
+      for (const linkedReview of this.linkedReviews) {
         if (linkedReview.self) {
           comments.push({
-            ...(linkedReview.self as GitHubPullRequest),
-            type: this._getTypeFromComment(
-              linkedReview.self as GitHubPullRequest,
-              linkedReview.self as GitHubPullRequest
-            ),
+            ...linkedReview.self,
+            type: this._getTypeFromComment(linkedReview.self, linkedReview.self),
           });
         }
         if (linkedReview.reviewComments) {
-          for (const reviewComment of linkedReview.reviewComments as GitHubPullRequestReviewComment[]) {
+          for (const reviewComment of linkedReview.reviewComments) {
             comments.push({
               ...reviewComment,
-              type: this._getTypeFromComment(reviewComment, linkedReview.self as GitHubPullRequest),
+              type: this._getTypeFromComment(reviewComment, linkedReview.self),
             });
           }
         }
@@ -128,18 +122,17 @@ export class IssueActivity {
 }
 
 export class Review {
-  self: Promise<GitHubPullRequest> | GitHubPullRequest | null = null;
-  reviews: Promise<GitHubPullRequestReviewState[]> | GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
-  reviewComments: Promise<GitHubPullRequestReviewComment[]> | GitHubPullRequestReviewComment[] | null = null;
+  self: GitHubPullRequest | null = null;
+  reviews: GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
+  reviewComments: GitHubPullRequestReviewComment[] | null = null;
 
   constructor(private _pullParams: PullParams) {}
 
   async init() {
-    this.self = getPullRequest(this._pullParams);
-    this.reviews = getPullRequestReviews(this._pullParams);
-    this.reviewComments = getPullRequestReviewComments(this._pullParams);
-
-    // Wait for all promises to resolve
-    [this.self, this.reviews, this.reviewComments] = await Promise.all([this.self, this.reviews, this.reviewComments]);
+    [this.self, this.reviews, this.reviewComments] = await Promise.all([
+      getPullRequest(this._pullParams),
+      getPullRequestReviews(this._pullParams),
+      getPullRequestReviewComments(this._pullParams),
+    ]);
   }
 }
