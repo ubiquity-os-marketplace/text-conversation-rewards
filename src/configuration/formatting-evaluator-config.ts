@@ -12,7 +12,7 @@ const formattingEvaluatorConfigurationType = Type.Object({
       wordValue: Type.Number(),
     })
   ),
-  scores: Type.Object(Type.Number()),
+  scores: Type.Record(Type.String(), Type.Number()),
 });
 
 export type FormattingEvaluatorConfiguration = Static<typeof formattingEvaluatorConfigurationType>;

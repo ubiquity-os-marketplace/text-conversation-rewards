@@ -2,6 +2,7 @@
 contentEvaluator:
   enabled: true
 userExtractor:
+  enabled: true
   redeemTask: true
 dataPurge:
   enabled: true
