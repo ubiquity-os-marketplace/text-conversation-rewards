@@ -18,7 +18,7 @@ export class ContentEvaluatorModule implements Module {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    const promises: Promise<void>[] = [];
+    const promises: Promise<GithubCommentScore[]>[] = [];
 
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
@@ -26,7 +26,11 @@ export class ContentEvaluatorModule implements Module {
       const specificationBody = data.self?.body;
 
       if (specificationBody && comments.length) {
-        promises.push(this._processComment(comments, specificationBody));
+        promises.push(
+          this._processComment(comments, specificationBody).then(
+            (commentsWithScore) => (currentElement.comments = commentsWithScore)
+          )
+        );
       }
     }
 
@@ -34,17 +38,18 @@ export class ContentEvaluatorModule implements Module {
     return result;
   }
 
-  async _processComment(comments: GithubCommentScore[], specificationBody: string) {
-    const commentsBody = comments.map((comment) => comment.content);
+  async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
+    const commentsWithScore: GithubCommentScore[] = [...comments];
+    const commentsBody = commentsWithScore.map((comment) => comment.content);
     const relevance = await this._sampleRelevanceScoreResults(specificationBody, commentsBody);
 
-    if (relevance.length !== comments.length) {
+    if (relevance.length !== commentsWithScore.length) {
       console.error("Relevance / Comment length mismatch! Skipping.");
-      return;
+      return [];
     }
 
     for (let i = 0; i < relevance.length; i++) {
-      const currentComment = comments[i];
+      const currentComment = commentsWithScore[i];
       const currentRelevance = relevance[i];
       const currentReward = new Decimal(currentComment.score?.reward || 0);
       currentComment.score = {
@@ -53,6 +58,8 @@ export class ContentEvaluatorModule implements Module {
         reward: currentReward.mul(currentRelevance).toNumber(),
       };
     }
+
+    return commentsWithScore;
   }
 
   async _evaluateComments(specification: string, comments: string[]) {
