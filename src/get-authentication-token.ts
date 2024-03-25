@@ -1,10 +1,10 @@
 import { Octokit } from "@octokit/rest";
-import program from "./parser/command-line";
+import { GITHUB_TOKEN } from "./configuration/constants";
 
 let octokitInstance: Octokit | null = null;
 
 function getAuthenticationToken(): string {
-  const { auth } = program.opts();
+  const auth = GITHUB_TOKEN;
   if (!auth) {
     throw new Error("No authentication token provided");
   }

@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
 import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
+import { OPENAI_API_KEY } from "../configuration/constants";
 import { IssueActivity } from "../issue-activity";
 import { GitHubIssue } from "../github-types";
 import { GithubCommentScore, Module, Result } from "./processor";
@@ -10,7 +11,7 @@ import { GithubCommentScore, Module, Result } from "./processor";
  * Evaluates and rates comments.
  */
 export class ContentEvaluatorModule implements Module {
-  readonly _openAi = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  readonly _openAi = new OpenAI({ apiKey: OPENAI_API_KEY });
   readonly configuration = configuration.contentEvaluator;
 
   get enabled(): boolean {

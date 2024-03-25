@@ -73,12 +73,10 @@ export class Processor {
     let totalReward = new Decimal(0);
 
     for (const [key, value] of Object.entries(obj)) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        if (key === "reward" && typeof value === "number") {
-          totalReward = totalReward.add(value);
-        } else if (typeof value === "object") {
-          totalReward = totalReward.add(this._sumRewards(value as Record<string, unknown>));
-        }
+      if (key === "reward" && typeof value === "number") {
+        totalReward = totalReward.add(value);
+      } else if (typeof value === "object") {
+        totalReward = totalReward.add(this._sumRewards(value as Record<string, unknown>));
       }
     }
 
