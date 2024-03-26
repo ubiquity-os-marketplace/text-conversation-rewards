@@ -1,31 +1,29 @@
-import { config } from "dotenv";
-import { GetActivity } from "./get-activity";
+import { IssueActivity } from "./issue-activity";
+import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 
-config();
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-if (!GITHUB_TOKEN) {
-  console.warn("GITHUB_TOKEN is not set");
-}
 // Mock process.argv
-process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
 
 describe("GetActivity class", () => {
   const issue = parseGitHubUrl(issueUrl);
-  const activity = new GetActivity(issue);
-
-  beforeAll(async () => await activity.init());
+  const activity = new IssueActivity(issue);
+  beforeAll(async () => {
+    await activity.init();
+  });
 
   it("should resolve all promises", async () => {
     expect(activity.self).toBeTruthy();
     expect(activity.events).toBeTruthy();
     expect(activity.comments).toBeTruthy();
     expect(Array.isArray(activity.linkedReviews)).toBeTruthy();
-  });
+    const processor = new Processor();
+    await processor.run(activity);
+    processor.dump();
+  }, 30000);
 
   it("should create an instance of GetActivity", () => {
-    expect(activity).toBeInstanceOf(GetActivity);
+    expect(activity).toBeInstanceOf(IssueActivity);
   });
 
   it("should initialize `activity.self` as an object", () => {

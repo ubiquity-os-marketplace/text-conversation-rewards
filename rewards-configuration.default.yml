@@ -1,0 +1,53 @@
+#disabled: true
+contentEvaluator:
+  enabled: true
+userExtractor:
+  enabled: true
+  redeemTask: true
+dataPurge:
+  enabled: true
+formattingEvaluator:
+  enabled: true
+  scores:
+    br: 0
+    code: 1
+    p: 1
+    em: 0
+    img: 0
+    strong: 0
+    blockquote: 0
+    h1: 1
+    h2: 1
+    h3: 1
+    h4: 1
+    h5: 1
+    h6: 1
+    a: 1
+    li: 1
+    td: 1
+    hr: 0
+  multipliers:
+    - type: [ISSUE, ISSUER]:
+      formattingMultiplier: 1
+      wordValue: 0.2
+    - type: [ISSUE, ASSIGNEE]:
+      formattingMultiplier: 0
+      wordValue: 0
+    - type: [ISSUE, COLLABORATOR]:
+      formattingMultiplier: 1
+      wordValue: 0.1
+    - type: [ISSUE, CONTRIBUTOR]:
+      formattingMultiplier: 0.25
+      wordValue: 0.1
+    - type: [REVIEW, ISSUER]:
+      formattingMultiplier: 2
+      wordValue: 0.2
+    - type: [REVIEW, ASSIGNEE]:
+      formattingMultiplier: 1
+      wordValue: 0.1
+    - type: [REVIEW, COLLABORATOR]:
+      formattingMultiplier: 1
+      wordValue: 0.1
+    - type: [REVIEW, CONTRIBUTOR]:
+      formattingMultiplier: 0.25
+      wordValue: 0.1

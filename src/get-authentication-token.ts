@@ -1,14 +1,14 @@
 import { Octokit } from "@octokit/rest";
-import { parse } from "yargs";
+import { GITHUB_TOKEN } from "./configuration/constants";
 
 let octokitInstance: Octokit | null = null;
 
 function getAuthenticationToken(): string {
-  const argv = parse(process.argv.slice(2));
-  if (!argv.auth) {
+  const auth = GITHUB_TOKEN;
+  if (!auth) {
     throw new Error("No authentication token provided");
   }
-  return argv.auth as string;
+  return auth;
 }
 
 function getOctokitInstance(): Octokit {

@@ -7,3 +7,38 @@ As of 28 February: test driven development to aggregate all necessary informatio
 - most importantly: this can inherit bot authentication and link pull requests to issues in private repositories. 
 
 Be sure to review all `*.test.*` files for implementation details. 
+
+## Data structure
+
+```json
+{
+  "userName": {
+    "total": 40.5,
+    "task": {
+      "reward": 37.5
+    },
+    "comments": [
+      {
+        "content": "comment content",
+        "url": "https://url-to-item",
+        "type": 18,
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 16,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 1
+          },
+          "reward": 0.8,
+          "relevance": 0.5
+      }
+    }]
+  }
+}
+```
+
+Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * relevance + task.reward = total`
