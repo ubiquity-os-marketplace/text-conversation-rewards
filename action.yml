@@ -13,6 +13,7 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        yarn --cwd ${{ github.action_path }} start --issue ${{ inputs.issue_url }}
+        output=$(yarn --cwd ${{ github.action_path }} start --issue ${{ inputs.issue_url }})
+        echo $output >> "$GITHUB_OUTPUT"
       id: main
       shell: bash
