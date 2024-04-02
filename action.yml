@@ -1,18 +1,18 @@
 name: "Conversation Rewards"
 description: "Compute rewards for contributors' discussion on issues that are closed as complete."
 inputs:
-  authentication_token:
-    description: "The GitHub authentication token"
+  issue_url:
+    description: "The URL the the issue needing to be parsed"
     required: true
 outputs:
-  result: # id of output
-    description: "The result of a event handler"
-    value: ${{ steps.main.outputs.result}}
+  result:
+    description: "The result containing all the rewards of the users"
+    value: ${{ steps.main.outputs.result }}
 runs:
   using: "composite"
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        yarn --cwd ${{ github.action_path }} start --auth ${{ inputs.authentication_token }}
+        yarn --cwd ${{ github.action_path }} start --issue ${{ inputs.issue_url }}
       id: main
       shell: bash
