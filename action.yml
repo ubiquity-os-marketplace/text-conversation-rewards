@@ -13,8 +13,7 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        result=$(yarn --cwd ${{ github.action_path }} start --issue ${{ inputs.issue_url }} | jq -c '.')
-        echo "::set-output name=result::$result"
+        result=$(yarn --cwd ${{ github.action_path }} start --issue ${{ inputs.issue_url }} | awk 'NF' | jq -c '.')
         echo "$result"
       id: main
       shell: bash
