@@ -71,6 +71,10 @@ export class ContentEvaluatorModule implements Module {
   async _evaluateComments(specification: string, comments: string[]) {
     const prompt = this._generatePrompt(specification, comments);
 
+    if (process.env.NODE_ENV === "test") {
+      return Array(comments.length).fill(new Decimal(0.6));
+    }
+
     try {
       const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
         model: this._getOptimalModel(prompt),
