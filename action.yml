@@ -11,9 +11,15 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: |
-        yarn --cwd ${{ github.action_path }} --production=true
-        output=$(yarn --cwd ${{ github.action_path }} start --issue ${{ inputs.issue_url }})
-        echo "$output" >> "$GITHUB_OUTPUT"
+    - run: yarn --cwd ${{ github.action_path }} --production=true
+      id: install
+      shell: bash
+
+    - name: Compute Rewards
       id: main
+      run: yarn start --issue ${{ inputs.issue_url }}
+      shell: bash
+
+    - name: Set output
+      run: echo "::set-output name=result::${{ steps.main.outputs.result }}"
       shell: bash
