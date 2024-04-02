@@ -44,26 +44,22 @@ export class Processor {
 
   dump() {
     const { file } = program.opts();
-    const result = JSON.stringify(
-      this._result,
-      (key: string, value: string | number) => {
-        // Changes "type" to be human-readable
-        if (key === "type" && typeof value === "number") {
-          const typeNames: string[] = [];
-          const types = Object.values(CommentType) as number[];
-          types.forEach((typeValue) => {
-            if (value & typeValue) {
-              typeNames.push(CommentType[typeValue]);
-            }
-          });
-          return typeNames.join("|");
-        }
-        return value;
-      },
-      2
-    );
+    const result = JSON.stringify(this._result, (key: string, value: string | number) => {
+      // Changes "type" to be human-readable
+      if (key === "type" && typeof value === "number") {
+        const typeNames: string[] = [];
+        const types = Object.values(CommentType) as number[];
+        types.forEach((typeValue) => {
+          if (value & typeValue) {
+            typeNames.push(CommentType[typeValue]);
+          }
+        });
+        return typeNames.join("|");
+      }
+      return value;
+    });
     if (!file) {
-      console.log(result);
+      console.log(JSON.stringify(result));
     } else {
       fs.writeFileSync(file, result);
     }
