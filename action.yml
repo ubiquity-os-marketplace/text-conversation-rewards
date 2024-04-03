@@ -13,7 +13,10 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}" --file results.json
+        touch results.json
+        ls
+        yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}" --file "./results.json"
+        ls
         output=$(cat results.json)
         echo "Output of calculations:"
         echo "$output"
