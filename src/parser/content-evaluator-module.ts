@@ -111,6 +111,8 @@ export class ContentEvaluatorModule implements Module {
   }
 
   async _sampleRelevanceScoreResults(specification: string, comments: string[]) {
+    console.log("Will sample results for", comments);
+    console.log("Is Open key preset", !!process.env.OPENAI_API_KEY);
     const BATCH_SIZE = 10;
     const evaluationPromises: ReturnType<typeof this._evaluateComments>[] = [];
 
