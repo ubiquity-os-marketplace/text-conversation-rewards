@@ -13,13 +13,8 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        touch results.json
-        pwd
-        ls
         yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}" --file "${{ github.action_path }}/results.json"
-        ls
-        find . -name "results.json"
-        output=$(cat ${{ github.action_path }}/results.json)
+        output=$(cat ${{ github.action_path }}/results.json | tr -s ' ' | tr -d '\n')
         echo "Output of calculations:"
         echo "$output"
         echo "Pushing results to REWARDS output"
