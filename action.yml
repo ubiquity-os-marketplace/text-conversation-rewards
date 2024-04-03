@@ -16,10 +16,10 @@ runs:
         touch results.json
         pwd
         ls
-        yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}" --file "~/results.json"
+        yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}" --file "${{ github.action_path }}/results.json"
         ls
         find . -name "results.json"
-        output=$(cat results.json)
+        output=$(cat ${{ github.action_path }}/results.json)
         echo "Output of calculations:"
         echo "$output"
         echo "Pushing results to REWARDS output"
