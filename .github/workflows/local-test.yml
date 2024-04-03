@@ -21,3 +21,5 @@ jobs:
         uses: gentlementlegen/conversation-rewards@feat/cli-issue-url
         with:
           issue_url: "https://github.com/ubiquibot/comment-incentives/issues/22"
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

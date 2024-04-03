@@ -13,7 +13,7 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        result=$(yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}")
+        result=$(yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}" | grep -oP "^{.*}$")
         echo "::set-output name=result::$result"
         echo "$result"
       id: main
