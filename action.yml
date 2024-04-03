@@ -13,8 +13,9 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        result=$(yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}" | grep -oP "^{.*}$")
-        echo "name=$result" >> $GITHUB_OUTPUT
-        echo "$result"
+        output=$(yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}")
+        echo "$output"
+        rewards=$(echo $output |  | grep -oP "^{.*}$")
+        echo "REWARDS=$rewards" >> $GITHUB_OUTPUT
       id: main
       shell: bash
