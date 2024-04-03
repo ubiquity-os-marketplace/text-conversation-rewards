@@ -59,7 +59,7 @@ export class Processor {
       return value;
     });
     if (!file) {
-      console.log(JSON.stringify(result));
+      console.log(result);
     } else {
       fs.writeFileSync(file, result);
     }
