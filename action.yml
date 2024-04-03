@@ -16,7 +16,7 @@ runs:
         output=$(yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}")
         echo "Output of calculations:"
         echo "$output"
-        rewards=$(echo $output | grep -oP "^{.*}$")
+        rewards=$(echo $output | pcregrep -M "^{[\s\S]*?}$")
         echo "Pushing results to REWARDS output"
         echo "REWARDS=$rewards" >> $GITHUB_OUTPUT
       id: main
