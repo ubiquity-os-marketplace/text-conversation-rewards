@@ -13,11 +13,11 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        output=$(yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}")
+        yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issue_url }}" --file results.json
+        output=$(cat results.json)
         echo "Output of calculations:"
         echo "$output"
-        rewards=$(echo $output | pcregrep -M "^{[\s\S]*?}$")
         echo "Pushing results to REWARDS output"
-        echo "REWARDS=$rewards" >> $GITHUB_OUTPUT
+        echo "REWARDS=$output" >> $GITHUB_OUTPUT
       id: main
       shell: bash
