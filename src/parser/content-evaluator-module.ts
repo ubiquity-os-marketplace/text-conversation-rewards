@@ -125,7 +125,7 @@ export class ContentEvaluatorModule implements Module {
     for (let j = 0; j < results[0].length; j++) {
       let sum = new Decimal(0);
       for (let i = 0; i < results.length; i++) {
-        sum = sum.plus(results[i][j]);
+        sum = sum.plus(results[i][j] || 0);
       }
       columnSums.push(sum);
     }

@@ -2,9 +2,8 @@ name: Run Jest Tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - development
+  pull_request:
+
 jobs:
   test:
     permissions: write-all
