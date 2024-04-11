@@ -6,6 +6,7 @@ import program from "./command-line";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
+import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
 
 export class Processor {
@@ -17,7 +18,8 @@ export class Processor {
     this.add(new UserExtractorModule())
       .add(new DataPurgeModule())
       .add(new FormattingEvaluatorModule())
-      .add(new ContentEvaluatorModule());
+      .add(new ContentEvaluatorModule())
+      .add(new PermitGenerationModule());
   }
 
   add(transformer: Module) {
@@ -96,6 +98,8 @@ export interface Result {
     task?: {
       reward: number;
     };
+    permitUrl?: string;
+    userId: number;
   };
 }
 

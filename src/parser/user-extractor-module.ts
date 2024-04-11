@@ -65,6 +65,7 @@ export class UserExtractorModule implements Module {
           ...result[comment.user.login],
           total: 0,
           task,
+          userId: comment.user.id,
         };
       }
     }
