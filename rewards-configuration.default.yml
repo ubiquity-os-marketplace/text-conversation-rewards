@@ -51,3 +51,5 @@ formattingEvaluator:
     - type: [REVIEW, CONTRIBUTOR]:
       formattingMultiplier: 0.25
       wordValue: 0.1
+permitGeneration:
+  enabled: true

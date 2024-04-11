@@ -18,6 +18,6 @@ jobs:
           node-version: "20.10.0"
 
       - name: Action Test
-        uses: gentlementlegen/conversation-rewards@feat/cli-issue-url
+        uses: gentlementlegen/conversation-rewards@feat/permit-generation
         with:
-          issue_url: "https://github.com/ubiquibot/comment-incentives/issues/22"
+          issueUrl: "https://github.com/ubiquibot/comment-incentives/issues/22"
