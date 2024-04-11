@@ -22,6 +22,7 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      X25519_PRIVATE_KEY: ${{ secrets.X25519_PRIVATE_KEY }}
 
     steps:
       - name: Set up Node.js
