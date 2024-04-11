@@ -1,11 +1,15 @@
 import type { KnipConfig } from "knip";
 
 const config: KnipConfig = {
-  entry: ["build/index.ts"],
+  entry: ["src/index.ts"],
   project: ["src/**/*.ts"],
-  ignore: ["src/types/config.ts"],
+  ignore: ["src/data-collection/examples/*.ts"],
   ignoreExportsUsedInFile: true,
   ignoreDependencies: [],
+  jest: {
+    config: ["jest.config.ts"],
+    entry: ["src/**/*.test.ts"],
+  },
 };
 
 export default config;
