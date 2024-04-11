@@ -35,3 +35,5 @@ jobs:
         uses: gentlementlegen/conversation-rewards@feat/permit-generation
         with:
           issueUrl: ${{ inputs.issueUrl }}
+          evmNetworkId: ${{ inputs.evmNetworkId }}
+          evmPrivateEncrypted: ${{ inputs.evmPrivateEncrypted }}
