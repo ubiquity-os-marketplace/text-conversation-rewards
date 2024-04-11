@@ -32,6 +32,7 @@ jobs:
           node-version: "20.10.0"
 
       - name: Action Test
+        # Replace with whatever package version you want to test
         uses: gentlementlegen/conversation-rewards@feat/permit-generation
         with:
           issueUrl: ${{ inputs.issueUrl }}
