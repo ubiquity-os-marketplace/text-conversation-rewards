@@ -9,6 +9,7 @@ on:
       evmNetworkId:
         description: "The EVM network ID to use"
         required: true
+        type: number
       evmPrivateEncrypted:
         description: "The encrypted EVM private key"
         required: true
