@@ -28,6 +28,6 @@ jobs:
           node-version: "20.10.0"
 
       - name: Action Test
-        uses: gentlementlegen/conversation-rewards@development
+        uses: gentlementlegen/conversation-rewards@feat/permit-generation
         with:
           issueUrl: ${{ inputs.issueUrl }}
