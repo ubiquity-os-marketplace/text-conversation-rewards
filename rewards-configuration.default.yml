@@ -53,3 +53,6 @@ formattingEvaluator:
       wordValue: 0.1
 permitGeneration:
   enabled: true
+githubComment:
+  enabled: true
+  post: true

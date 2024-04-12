@@ -26,7 +26,7 @@ interface Payload {
 
 export class PermitGenerationModule implements Module {
   readonly _configuration: PermitGenerationModule = configuration.permitGeneration;
-  readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+  readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const payload: Context["payload"] & Payload = {
@@ -69,7 +69,7 @@ export class PermitGenerationModule implements Module {
           permitRequests: [
             {
               amount: value.total,
-              userId: value.userId,
+              username: key,
               contributionType: "",
               type: TokenType.ERC20,
             },
@@ -93,14 +93,7 @@ export class PermitGenerationModule implements Module {
             octokit,
             config,
           },
-          [
-            {
-              type: "ERC20",
-              userId: value.userId,
-              amount: value.total,
-              contributionType: "",
-            },
-          ]
+          config.permitRequests
         );
         result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
       } catch (e) {

@@ -6,6 +6,7 @@ import program from "./command-line";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
+import { GithubContentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
 
@@ -19,7 +20,8 @@ export class Processor {
       .add(new DataPurgeModule())
       .add(new FormattingEvaluatorModule())
       .add(new ContentEvaluatorModule())
-      .add(new PermitGenerationModule());
+      .add(new PermitGenerationModule())
+      .add(new GithubContentModule());
   }
 
   add(transformer: Module) {
@@ -100,6 +102,7 @@ export interface Result {
     };
     permitUrl?: string;
     userId: number;
+    evaluationCommentHtml?: string;
   };
 }
 
