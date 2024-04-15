@@ -89,14 +89,7 @@ export class PermitGenerationModule implements Module {
             octokit,
             config,
           },
-          [
-            {
-              type: "ERC20",
-              username: key,
-              amount: value.total,
-              contributionType: "",
-            },
-          ]
+          config.permitRequests
         );
         result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
       } catch (e) {
