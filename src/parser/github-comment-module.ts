@@ -113,31 +113,39 @@ export class GithubContentModule implements Module {
       if (!sorted) {
         return "";
       }
-      for (const issueComment of sorted.issues.comments) {
-        content += `
+
+      function buildIncentiveRow(commentScore: GithubCommentScore) {
+        return `
           <tr>
             <td>
               <h6>
-                <a href="${issueComment.url}" target="_blank" rel="noopener">${issueComment.content}</a>
+                <a href="${commentScore.url}" target="_blank" rel="noopener">${commentScore.content}</a>
               </h6>
             </td>
             <td>
             <details>
               <summary>
-                ${Object.values(issueComment.score?.formatting?.content || {}).reduce((acc, curr) => {
+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
                   return acc.add(curr.score * curr.count);
                 }, new Decimal(0))}
               </summary>
               <pre>
-                ${Object.entries(issueComment.score?.formatting?.content || {}).reduce((acc, curr) => {
+                ${Object.entries(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
                   return acc + stringify(curr);
                 }, "")}
               </pre>
              </details>
             </td>
-            <td>${issueComment.score?.relevance ?? "-"}</td>
-            <td>${issueComment.score?.reward ?? "-"}</td>
+            <td>${commentScore.score?.relevance ?? "-"}</td>
+            <td>${commentScore.score?.reward ?? "-"}</td>
           </tr>`;
+      }
+
+      for (const issueComment of sorted.issues.comments) {
+        content += buildIncentiveRow(issueComment);
+      }
+      for (const reviewComment of sorted.reviews) {
+        content += buildIncentiveRow(reviewComment);
       }
       return content;
     }
