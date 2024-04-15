@@ -1,6 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import * as fs from "fs";
+import { stringify } from "yaml";
 import configuration from "../configuration/config-reader";
 import githubCommentConfig, { GithubCommentConfiguration } from "../configuration/github-comment-config";
 import { CommentType, IssueActivity } from "../issue-activity";
@@ -15,6 +16,9 @@ export class GithubContentModule implements Module {
   private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;
 
   transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    if (this._configuration.debug) {
+      fs.writeFileSync("./output.html", "");
+    }
     for (const [key, value] of Object.entries(result)) {
       result[key].evaluationCommentHtml = this._generateHtml(key, value);
       if (this._configuration.debug) {
@@ -105,7 +109,37 @@ export class GithubContentModule implements Module {
     }
 
     function createIncentiveRows() {
-      return "";
+      let content = "";
+      if (!sorted) {
+        return "";
+      }
+      for (const issueComment of sorted.issues.comments) {
+        content += `
+          <tr>
+            <td>
+              <h6>
+                <a href="${issueComment.url}" target="_blank" rel="noopener">${issueComment.content}</a>
+              </h6>
+            </td>
+            <td>
+            <details>
+              <summary>
+                ${Object.values(issueComment.score?.formatting?.content || {}).reduce((acc, curr) => {
+                  return acc.add(curr.score * curr.count);
+                }, new Decimal(0))}
+              </summary>
+              <pre>
+                ${Object.entries(issueComment.score?.formatting?.content || {}).reduce((acc, curr) => {
+                  return acc + stringify(curr);
+                }, "")}
+              </pre>
+             </details>
+            </td>
+            <td>${issueComment.score?.relevance ?? "-"}</td>
+            <td>${issueComment.score?.reward ?? "-"}</td>
+          </tr>`;
+      }
+      return content;
     }
 
     return `
