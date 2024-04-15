@@ -27,7 +27,7 @@ interface Payload {
 
 export class PermitGenerationModule implements Module {
   readonly _configuration: PermitGenerationConfiguration = configuration.permitGeneration;
-  readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+  readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const payload: Context["payload"] & Payload = context.payload.inputs;
@@ -65,7 +65,7 @@ export class PermitGenerationModule implements Module {
           permitRequests: [
             {
               amount: value.total,
-              userId: value.userId,
+              username: key,
               contributionType: "",
               type: TokenType.ERC20,
             },
@@ -92,7 +92,7 @@ export class PermitGenerationModule implements Module {
           [
             {
               type: "ERC20",
-              userId: value.userId,
+              username: key,
               amount: value.total,
               contributionType: "",
             },
