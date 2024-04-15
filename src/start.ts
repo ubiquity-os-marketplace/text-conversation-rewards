@@ -85,7 +85,8 @@ export async function getPullRequestReviewComments(pullParams: PullParams): Prom
   return await octokit.paginate(octokit.pulls.listReviewComments.endpoint.merge(pullParams));
 }
 
-export async function getAllIssueActivity(issueParams: IssueParams) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getAllIssueActivity(issueParams: IssueParams) {
   // @DEV: this is very useful for seeing every type of event,
   // which includes the issue specification, any events, and all conversation
   //  that has occurred on the issue in chronological order
@@ -104,7 +105,8 @@ export async function getAllIssueActivity(issueParams: IssueParams) {
   return mixedEventsAndComments;
 }
 
-export async function getTimelineUsers(issueParams: IssueParams): Promise<GitHubUser[]> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getTimelineUsers(issueParams: IssueParams): Promise<GitHubUser[]> {
   const timelineEvents = await getAllTimelineEvents(issueParams);
   const users = timelineEvents.filter((event) => event.actor).map((event) => event.actor);
   return [...new Set(users)];

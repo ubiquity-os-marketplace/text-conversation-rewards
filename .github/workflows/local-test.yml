@@ -2,16 +2,6 @@ name: Run Local Tests
 
 on:
   workflow_dispatch:
-    inputs:
-      issueUrl:
-        description: "The URL the the issue needing to be parsed"
-        required: true
-      evmNetworkId:
-        description: "The EVM network ID to use"
-        required: true
-      evmPrivateEncrypted:
-        description: "The encrypted EVM private key"
-        required: true
 
 jobs:
   test:
@@ -30,4 +20,4 @@ jobs:
       - name: Action Test
         uses: gentlementlegen/conversation-rewards@feat/permit-generation
         with:
-          issueUrl: ${{ inputs.issueUrl }}
+          issueUrl: "https://github.com/ubiquibot/comment-incentives/issues/22"

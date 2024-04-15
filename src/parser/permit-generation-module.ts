@@ -15,7 +15,6 @@ import contentEvaluatorConfig from "../configuration/content-evaluator-config";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
-import program from "./command-line";
 
 interface Payload {
   evmNetworkId: number;
@@ -29,12 +28,7 @@ export class PermitGenerationModule implements Module {
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const payload: Context["payload"] & Payload = {
-      ...context.payload.inputs,
-      issueUrl: program.opts().issue,
-      evmPrivateEncrypted: program.opts().evmPrivateEncrypted,
-      evmNetworkId: program.opts().evmNetworkId,
-    };
+    const payload: Context["payload"] & Payload = context.payload.inputs;
     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);
     payload.issue = {
       id: issueId,
