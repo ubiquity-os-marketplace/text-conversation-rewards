@@ -27,28 +27,34 @@ formattingEvaluator:
     td: 1
     hr: 0
   multipliers:
-    - type: [ISSUE, ISSUER]:
+    - type: [ISSUE, ISSUER, TASK]:
+      formattingMultiplier: 1
+      wordValue: 0.1
+    - type: [ISSUE, ISSUER, COMMENT]:
       formattingMultiplier: 1
       wordValue: 0.2
-    - type: [ISSUE, ASSIGNEE]:
+    - type: [ISSUE, ASSIGNEE, COMMENT]:
       formattingMultiplier: 0
       wordValue: 0
-    - type: [ISSUE, COLLABORATOR]:
+    - type: [ISSUE, COLLABORATOR, COMMENT]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [ISSUE, CONTRIBUTOR]:
+    - type: [ISSUE, CONTRIBUTOR, COMMENT]:
       formattingMultiplier: 0.25
       wordValue: 0.1
-    - type: [REVIEW, ISSUER]:
+    - type: [REVIEW, ISSUER, SPECIFICATION]:
+      formattingMultiplier: 0
+      wordValue: 0
+    - type: [REVIEW, ISSUER, COMMENT]:
       formattingMultiplier: 2
       wordValue: 0.2
-    - type: [REVIEW, ASSIGNEE]:
+    - type: [REVIEW, ASSIGNEE, COMMENT]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [REVIEW, COLLABORATOR]:
+    - type: [REVIEW, COLLABORATOR, COMMENT]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [REVIEW, CONTRIBUTOR]:
+    - type: [REVIEW, CONTRIBUTOR, COMMENT]:
       formattingMultiplier: 0.25
       wordValue: 0.1
 permitGeneration:

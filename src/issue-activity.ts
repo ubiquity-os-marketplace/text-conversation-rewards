@@ -25,6 +25,9 @@ export enum CommentType {
   ISSUER = 0b1000,
   COLLABORATOR = 0b10000,
   CONTRIBUTOR = 0b100000,
+  COMMENT = 0b1000000,
+  TASK = 0b10000000,
+  SPECIFICATION = 0b100000000,
 }
 
 export class IssueActivity {
@@ -73,7 +76,12 @@ export class IssueActivity {
     self: GitHubPullRequest | GitHubIssue | null
   ) {
     let ret = 0;
-    ret |= "pull_request_review_id" in comment ? CommentType.REVIEW : CommentType.ISSUE;
+    ret |= "pull_request_review_id" in comment || "draft" in comment ? CommentType.REVIEW : CommentType.ISSUE;
+    if (comment.id === self?.id) {
+      ret |= ret & CommentType.ISSUE ? CommentType.TASK : CommentType.SPECIFICATION;
+    } else {
+      ret |= CommentType.COMMENT;
+    }
     if (comment.user?.id === self?.user?.id) {
       ret |= CommentType.ISSUER;
     } else if (comment.user?.id === self?.assignee?.id) {
