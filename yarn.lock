@@ -2488,10 +2488,10 @@
   resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-21.2.0.tgz#d699a060dd6814fae4e5b601a5d530b6edd94136"
   integrity sha512-xx+Xd6I7rYvul/hgUDqv6TeGX0IOGnhSg9IOeYgd/uI7IAqUy6DE2B6Ipv2M4mWoxaMcWjIzgTIcv8pMO3F3vw==
 
-"@octokit/openapi-webhooks-types@8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@octokit/openapi-webhooks-types/-/openapi-webhooks-types-8.0.0.tgz#04a741cbc6bf1c7695f4a17dd42ebaaf21dd1652"
-  integrity sha512-5ms2KAKemeo4JATXYY6pT0gVEFQFPZ3dEIfsHoS7/oly3tQXwl6AD0GWy3Y3TAakT69mqsjPaPErRO0KmMV1hA==
+"@octokit/openapi-webhooks-types@8.1.1":
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-webhooks-types/-/openapi-webhooks-types-8.1.1.tgz#708adc46337edb3875196325a54defb87ac2cfd6"
+  integrity sha512-cfavqtPS5W1vy2JGXODIL4LsoXYoaXIhiNbil53wb9sLsTFuSBl+r1L6nNiVq/Ie8j0MSB2rCAGrGKJTfjqVEw==
 
 "@octokit/plugin-paginate-rest@^9.0.0":
   version "9.1.5"
@@ -2594,11 +2594,11 @@
   integrity sha512-oFypF1oD0z1x4qi+Ff4ienJ/iZ3GBXoht+0B+x8gMIWiNhRJZADYO+2KOh03ZGOX8WF6iJELZWw+giHieBO7rg==
 
 "@octokit/webhooks@^13.1.0":
-  version "13.2.2"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.2.2.tgz#91bcf2ce6c71a088776498a6a75461e9d0ec0a48"
-  integrity sha512-2ZqUHvAKxq5sljcqGSMZZ4l3fwo283X2nPiWKpHyu6BUk5NpIh9aGBBxb3hy9Nk/cWoooitOt+InBxLviKBdfA==
+  version "13.2.3"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.2.3.tgz#5df56aedfdb0ecf96d73162b2d33eaefba5081a3"
+  integrity sha512-sj3sR4SMpGO+nzQXZANuSnukDB3GfmbGz9TfgVlBsmA8HzqmikwsyMdpUv5STNPFpAOulP0OtrIeNQiUAOBdcA==
   dependencies:
-    "@octokit/openapi-webhooks-types" "8.0.0"
+    "@octokit/openapi-webhooks-types" "8.1.1"
     "@octokit/request-error" "^6.0.1"
     "@octokit/webhooks-methods" "^5.0.0"
     aggregate-error "^5.0.0"
@@ -2763,6 +2763,13 @@
   dependencies:
     "@supabase/node-fetch" "^2.6.14"
 
+"@supabase/functions-js@2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@supabase/functions-js/-/functions-js-2.3.0.tgz#1aeef35cfb5ea608e5ac23e8b1f0614ffe3008a4"
+  integrity sha512-GPXzSl4MXdc0P7q+TvE8XgaPdvGBeAJ0p6AN0tbKcezpkp32mpsDf58JXaWOJGyiWSVJn6z1W73eKxf6NZNaFA==
+  dependencies:
+    "@supabase/node-fetch" "^2.6.14"
+
 "@supabase/node-fetch@2.6.15", "@supabase/node-fetch@^2.6.14":
   version "2.6.15"
   resolved "https://registry.yarnpkg.com/@supabase/node-fetch/-/node-fetch-2.6.15.tgz#731271430e276983191930816303c44159e7226c"
@@ -2777,10 +2784,27 @@
   dependencies:
     "@supabase/node-fetch" "^2.6.14"
 
+"@supabase/postgrest-js@1.15.2":
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/@supabase/postgrest-js/-/postgrest-js-1.15.2.tgz#c0a725706e3d534570d014d7b713cea12553ab98"
+  integrity sha512-9/7pUmXExvGuEK1yZhVYXPZnLEkDTwxgMQHXLrN5BwPZZm4iUCL1YEyep/Z2lIZah8d8M433mVAUEGsihUj5KQ==
+  dependencies:
+    "@supabase/node-fetch" "^2.6.14"
+
 "@supabase/realtime-js@2.9.3":
   version "2.9.3"
   resolved "https://registry.yarnpkg.com/@supabase/realtime-js/-/realtime-js-2.9.3.tgz#f822401aed70883dca5d538179b11089d6d1b6ed"
   integrity sha512-lAp50s2n3FhGJFq+wTSXLNIDPw5Y0Wxrgt44eM5nLSA3jZNUUP3Oq2Ccd1CbZdVntPCWLZvJaU//pAd2NE+QnQ==
+  dependencies:
+    "@supabase/node-fetch" "^2.6.14"
+    "@types/phoenix" "^1.5.4"
+    "@types/ws" "^8.5.10"
+    ws "^8.14.2"
+
+"@supabase/realtime-js@2.9.4":
+  version "2.9.4"
+  resolved "https://registry.yarnpkg.com/@supabase/realtime-js/-/realtime-js-2.9.4.tgz#fcadfc167aad8e3798d7188f1c1506326b051bf0"
+  integrity sha512-wdq+2hZpgw0r2ldRs87d3U08Y8BrsO1bZxPNqbImpYshAEkusDz4vufR8KaqujKxqewmXS6YnUhuRVdvSEIKCA==
   dependencies:
     "@supabase/node-fetch" "^2.6.14"
     "@types/phoenix" "^1.5.4"
@@ -2794,7 +2818,7 @@
   dependencies:
     "@supabase/node-fetch" "^2.6.14"
 
-"@supabase/supabase-js@2.42.0", "@supabase/supabase-js@^2.39.7":
+"@supabase/supabase-js@2.42.0":
   version "2.42.0"
   resolved "https://registry.yarnpkg.com/@supabase/supabase-js/-/supabase-js-2.42.0.tgz#9e739cd96989acb0cbaab16da3717400b2ac92fa"
   integrity sha512-1PDqJiA4iG45w3AAu6xkccJ3wPqlGJUoz9CPhScRLLTStxhewYhz0mjryTpXz1kgtNHdUAsirALreezn8UZMjA==
@@ -2804,6 +2828,18 @@
     "@supabase/node-fetch" "2.6.15"
     "@supabase/postgrest-js" "1.15.0"
     "@supabase/realtime-js" "2.9.3"
+    "@supabase/storage-js" "2.5.5"
+
+"@supabase/supabase-js@^2.39.7":
+  version "2.42.4"
+  resolved "https://registry.yarnpkg.com/@supabase/supabase-js/-/supabase-js-2.42.4.tgz#1d0cdf8f8d3a1832a74fbf7e5b0ecc148a5a984c"
+  integrity sha512-tRn3wloKnnFdmEr3O2VIaxqzKACpyJ3ymLDmeq0V5lvhkJ+B4VH+QmDrnBbJJUkO2t+IHg65j5jombZxU4yMyw==
+  dependencies:
+    "@supabase/auth-js" "2.63.0"
+    "@supabase/functions-js" "2.3.0"
+    "@supabase/node-fetch" "2.6.15"
+    "@supabase/postgrest-js" "1.15.2"
+    "@supabase/realtime-js" "2.9.4"
     "@supabase/storage-js" "2.5.5"
 
 "@tsconfig/node10@^1.0.7":
@@ -3099,10 +3135,10 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
-"@ubiquibot/permit-generation@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.0.0.tgz#c1e05288a6c76bc42edafc6dda8d8f64e3f6c1e0"
-  integrity sha512-rk7JpgdGMN71dVoh0eXthVuHMwxgthN3w/gu1jNb0Tn4FxO6G8Vw2++qBEqO5mbP8zG0LzWWpN9OqxYjiEEtCg==
+"@ubiquibot/permit-generation@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.0.1.tgz#3a3b75eaf46f16bd3f6eb8ed914afd01ed69556c"
+  integrity sha512-YUnQqHN8bzfW/xWqvcI/bBJOEsauKcKSOmVphg6HBk8vpbh/HOJ912WObRbKBrugQ5z1qsL9O1hBOPxFTgjtwQ==
   dependencies:
     "@actions/core" "^1.10.1"
     "@actions/github" "^6.0.0"
