@@ -4,7 +4,9 @@ import * as fs from "fs";
 import { stringify } from "yaml";
 import configuration from "../configuration/config-reader";
 import githubCommentConfig, { GithubCommentConfiguration } from "../configuration/github-comment-config";
+import { getOctokitInstance } from "../get-authentication-token";
 import { CommentType, IssueActivity } from "../issue-activity";
+import { parseGitHubUrl } from "../start";
 import { getPayoutConfigByNetworkId } from "../types/payout";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
@@ -14,19 +16,32 @@ import { GithubCommentScore, Module, Result } from "./processor";
  */
 export class GithubContentModule implements Module {
   private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;
+  private readonly _debugFilePath = "./output.html";
 
-  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    if (this._configuration.debug) {
-      fs.writeFileSync("./output.html", "");
-    }
+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    let body = "";
+
     for (const [key, value] of Object.entries(result)) {
       result[key].evaluationCommentHtml = this._generateHtml(key, value);
-      if (this._configuration.debug) {
-        fs.appendFileSync("./output.html", result[key].evaluationCommentHtml as string);
-      }
+      body += result[key].evaluationCommentHtml;
+    }
+    if (this._configuration.debug) {
+      fs.writeFileSync(this._debugFilePath, body);
     }
     if (this._configuration.post) {
-      console.log("post comment");
+      try {
+        const octokit = getOctokitInstance();
+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);
+
+        await octokit.issues.createComment({
+          body,
+          repo,
+          owner,
+          issue_number,
+        });
+      } catch (e) {
+        console.error(`Could not post GitHub comment: ${e}`);
+      }
     }
     return Promise.resolve(result);
   }
@@ -41,13 +56,13 @@ export class GithubContentModule implements Module {
 
   _generateHtml(username: string, result: Result[0]) {
     const sorted = result.comments?.reduce<{
-      issues: { task: GithubCommentScore[]; comments: GithubCommentScore[] };
+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };
       reviews: GithubCommentScore[];
     }>(
       (acc, curr) => {
         if (curr.type & CommentType.ISSUE) {
           if (curr.type & CommentType.TASK) {
-            acc.issues.task.push(curr);
+            acc.issues.task = curr;
           } else {
             acc.issues.comments.push(curr);
           }
@@ -56,7 +71,7 @@ export class GithubContentModule implements Module {
         }
         return acc;
       },
-      { issues: { task: [], comments: [] }, reviews: [] }
+      { issues: { task: null, comments: [] }, reviews: [] }
     );
 
     function createContributionRows() {
@@ -70,19 +85,17 @@ export class GithubContentModule implements Module {
           <tr>
             <td>Issue</td>
             <td>Task</td>
-            <td>Count</td>
             <td>1</td>
             <td>${result.task.reward}</td>
           </tr>`;
       }
-      for (const issue of sorted.issues.task) {
+      if (sorted.issues.task) {
         content += `
           <tr>
             <td>Issue</td>
             <td>Specification</td>
-            <td>Count</td>
             <td>1</td>
-            <td>${issue.score?.reward ?? "-"}</td>
+            <td>${sorted.issues.task.score?.reward || "-"}</td>
           </tr>`;
       }
       if (sorted.issues.comments.length) {
@@ -90,9 +103,8 @@ export class GithubContentModule implements Module {
           <tr>
             <td>Issue</td>
             <td>Comment</td>
-            <td>Count</td>
             <td>${sorted.issues.comments.length}</td>
-            <td>${sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ?? "-"}</td>
+            <td>${sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) || "-"}</td>
           </tr>`;
       }
       if (sorted.reviews.length) {
@@ -100,9 +112,8 @@ export class GithubContentModule implements Module {
           <tr>
             <td>Review</td>
             <td>Comment</td>
-            <td>Count</td>
             <td>${sorted.reviews.length}</td>
-            <td>${sorted.reviews.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) ?? "-"}</td>
+            <td>${sorted.reviews.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) || "-"}</td>
           </tr>`;
       }
       return content;
@@ -110,6 +121,7 @@ export class GithubContentModule implements Module {
 
     function createIncentiveRows() {
       let content = "";
+
       if (!sorted) {
         return "";
       }
@@ -119,7 +131,7 @@ export class GithubContentModule implements Module {
           <tr>
             <td>
               <h6>
-                <a href="${commentScore.url}" target="_blank" rel="noopener">${commentScore.content}</a>
+                <a href="${commentScore.url}" target="_blank" rel="noopener">${commentScore.content.replace(/(.{64})..+/, "$1…")}</a>
               </h6>
             </td>
             <td>
@@ -136,8 +148,8 @@ export class GithubContentModule implements Module {
               </pre>
              </details>
             </td>
-            <td>${commentScore.score?.relevance ?? "-"}</td>
-            <td>${commentScore.score?.reward ?? "-"}</td>
+            <td>${commentScore.score?.relevance || "-"}</td>
+            <td>${commentScore.score?.reward || "-"}</td>
           </tr>`;
       }
 
@@ -189,7 +201,7 @@ export class GithubContentModule implements Module {
           </tr>
         </thead>
         <tbody>
-            ${createIncentiveRows()}
+          ${createIncentiveRows()}
         </tbody>
       </table>
     </details>
