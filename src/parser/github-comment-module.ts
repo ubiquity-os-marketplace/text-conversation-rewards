@@ -1,4 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
+import Decimal from "decimal.js";
+import * as fs from "fs";
 import configuration from "../configuration/config-reader";
 import githubCommentConfig, { GithubCommentConfiguration } from "../configuration/github-comment-config";
 import { CommentType, IssueActivity } from "../issue-activity";
@@ -15,7 +17,9 @@ export class GithubContentModule implements Module {
   transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     for (const [key, value] of Object.entries(result)) {
       result[key].evaluationCommentHtml = this._generateHtml(key, value);
-      console.log(result[key].evaluationCommentHtml);
+      if (this._configuration.debug) {
+        fs.appendFileSync("./output.html", result[key].evaluationCommentHtml as string);
+      }
     }
     if (this._configuration.post) {
       console.log("post comment");
@@ -33,13 +37,13 @@ export class GithubContentModule implements Module {
 
   _generateHtml(username: string, result: Result[0]) {
     const sorted = result.comments?.reduce<{
-      issues: { issuer: GithubCommentScore[]; comments: GithubCommentScore[] };
+      issues: { task: GithubCommentScore[]; comments: GithubCommentScore[] };
       reviews: GithubCommentScore[];
     }>(
       (acc, curr) => {
         if (curr.type & CommentType.ISSUE) {
-          if (curr.type & CommentType.ISSUER) {
-            acc.issues.issuer.push(curr);
+          if (curr.type & CommentType.TASK) {
+            acc.issues.task.push(curr);
           } else {
             acc.issues.comments.push(curr);
           }
@@ -48,7 +52,7 @@ export class GithubContentModule implements Module {
         }
         return acc;
       },
-      { issues: { issuer: [], comments: [] }, reviews: [] }
+      { issues: { task: [], comments: [] }, reviews: [] }
     );
 
     function createContributionRows() {
@@ -67,7 +71,7 @@ export class GithubContentModule implements Module {
             <td>${result.task.reward}</td>
           </tr>`;
       }
-      for (const issue of sorted.issues.issuer) {
+      for (const issue of sorted.issues.task) {
         content += `
           <tr>
             <td>Issue</td>
@@ -77,14 +81,26 @@ export class GithubContentModule implements Module {
             <td>${issue.score?.reward ?? "-"}</td>
           </tr>`;
       }
-      content += `
+      if (sorted.issues.comments.length) {
+        content += `
           <tr>
             <td>Issue</td>
             <td>Comment</td>
             <td>Count</td>
             <td>${sorted.issues.comments.length}</td>
-            <td>${sorted.issues.comments.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) ?? "-"}</td>
+            <td>${sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ?? "-"}</td>
           </tr>`;
+      }
+      if (sorted.reviews.length) {
+        content += `
+          <tr>
+            <td>Review</td>
+            <td>Comment</td>
+            <td>Count</td>
+            <td>${sorted.reviews.length}</td>
+            <td>${sorted.reviews.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) ?? "-"}</td>
+          </tr>`;
+      }
       return content;
     }
 
