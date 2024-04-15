@@ -12,6 +12,7 @@ import {
 } from "@ubiquibot/permit-generation";
 import configuration from "../configuration/config-reader";
 import contentEvaluatorConfig from "../configuration/content-evaluator-config";
+import { PermitGenerationConfiguration } from "../configuration/permit-generation-configuration";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
@@ -24,7 +25,7 @@ interface Payload {
 }
 
 export class PermitGenerationModule implements Module {
-  readonly _configuration: PermitGenerationModule = configuration.permitGeneration;
+  readonly _configuration: PermitGenerationConfiguration = configuration.permitGeneration;
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
