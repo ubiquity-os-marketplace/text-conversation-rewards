@@ -127,6 +127,8 @@ export class GithubContentModule implements Module {
       }
 
       function buildIncentiveRow(commentScore: GithubCommentScore) {
+        // Properly escape carriage returns for HTML rendering
+        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\n\r]/g, "&#13;");
         return `
           <tr>
             <td>
@@ -141,11 +143,7 @@ export class GithubContentModule implements Module {
                   return acc.add(curr.score * curr.count);
                 }, new Decimal(0))}
               </summary>
-              <pre>
-                ${Object.entries(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
-                  return acc + stringify(curr);
-                }, "")}
-              </pre>
+              <pre>${formatting}</pre>
              </details>
             </td>
             <td>${commentScore.score?.relevance || "-"}</td>
