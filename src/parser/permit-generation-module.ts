@@ -9,7 +9,7 @@ import {
   generatePayoutPermit,
   SupportedEvents,
   TokenType,
-} from "@ubiquibot/permit-generation";
+} from "@ubiquibot/permit-generation/core";
 import configuration from "../configuration/config-reader";
 import permitGenerationConfigurationType, {
   PermitGenerationConfiguration,

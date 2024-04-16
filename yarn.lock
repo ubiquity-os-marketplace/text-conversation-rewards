@@ -3110,10 +3110,10 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
-"@ubiquibot/permit-generation@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.0.3.tgz#1f47a090b600f2ab9f0a298abbd0d0cda0aaedff"
-  integrity sha512-ATsWYPsMauMrYY+xAZmMsxB57y/8L5bnsUfpYdwGqSlYgDL+8kaLfkGDJH3EVTssZa5asmh7tcU7RP75FZRM+g==
+"@ubiquibot/permit-generation@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.2.0.tgz#17e5cf71099ce22ef1b5f0ea5a19ac1e7bca1844"
+  integrity sha512-29qzOtC50NBRZLOIepqOoqPGsyr7ig6XPTE/Fcyj0Nb+0hHrWYA6VfLtGBFBH72EgKbGLV3dXwz68J8Cz9uKOw==
   dependencies:
     "@actions/core" "^1.10.1"
     "@actions/github" "^6.0.0"
@@ -3378,7 +3378,7 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-babel-jest@^29.7.0:
+babel-jest@29.7.0, babel-jest@^29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-29.7.0.tgz#f4369919225b684c56085998ac63dbd05be020d5"
   integrity sha512-BrvGY3xZSwEcCzKvKsCi2GgHqDqsYkOP4/by5xCgIwGXQxIEh+8ew3gmrE1y7XRR6LHZIj6yLYnUi/mm2KXKBg==
