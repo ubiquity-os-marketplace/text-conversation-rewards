@@ -11,11 +11,12 @@ import {
   TokenType,
 } from "@ubiquibot/permit-generation";
 import configuration from "../configuration/config-reader";
-import contentEvaluatorConfig from "../configuration/content-evaluator-config";
+import permitGenerationConfigurationType, {
+  PermitGenerationConfiguration,
+} from "../configuration/permit-generation-configuration";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
-import program from "./command-line";
 
 interface Payload {
   evmNetworkId: number;
@@ -25,16 +26,11 @@ interface Payload {
 }
 
 export class PermitGenerationModule implements Module {
-  readonly _configuration: PermitGenerationModule = configuration.permitGeneration;
+  readonly _configuration: PermitGenerationConfiguration = configuration.permitGeneration;
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const payload: Context["payload"] & Payload = {
-      ...context.payload.inputs,
-      issueUrl: program.opts().issue,
-      evmPrivateEncrypted: program.opts().evmPrivateEncrypted,
-      evmNetworkId: program.opts().evmNetworkId,
-    };
+    const payload: Context["payload"] & Payload = context.payload.inputs;
     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);
     payload.issue = {
       id: issueId,
@@ -104,7 +100,7 @@ export class PermitGenerationModule implements Module {
   }
 
   get enabled(): boolean {
-    if (!Value.Check(contentEvaluatorConfig, this._configuration)) {
+    if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for PermitGenerationModule, disabling.");
       return false;
     }
