@@ -14,7 +14,7 @@ import { GithubCommentScore, Module, Result } from "./processor";
 /**
  * Posts a GitHub comment according to the given results.
  */
-export class GithubContentModule implements Module {
+export class GithubCommentModule implements Module {
   private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;
   private readonly _debugFilePath = "./output.html";
 
@@ -80,41 +80,43 @@ export class GithubContentModule implements Module {
       if (!sorted) {
         return "";
       }
-      if (result.task?.reward) {
-        content += `
+
+      function generateContributionRow(
+        view: string,
+        contribution: string,
+        count: number,
+        reward: number | Decimal | undefined
+      ) {
+        return `
           <tr>
-            <td>Issue</td>
-            <td>Task</td>
-            <td>1</td>
-            <td>${result.task.reward}</td>
+            <td>${view}</td>
+            <td>${contribution}</td>
+            <td>${count}</td>
+            <td>${reward || "-"}</td>
           </tr>`;
+      }
+
+      if (result.task?.reward) {
+        content += generateContributionRow("Issue", "Task", 1, result.task.reward);
       }
       if (sorted.issues.task) {
-        content += `
-          <tr>
-            <td>Issue</td>
-            <td>Specification</td>
-            <td>1</td>
-            <td>${sorted.issues.task.score?.reward || "-"}</td>
-          </tr>`;
+        content += generateContributionRow("Issue", "Specification", 1, sorted.issues.task.score?.reward);
       }
       if (sorted.issues.comments.length) {
-        content += `
-          <tr>
-            <td>Issue</td>
-            <td>Comment</td>
-            <td>${sorted.issues.comments.length}</td>
-            <td>${sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) || "-"}</td>
-          </tr>`;
+        content += generateContributionRow(
+          "Issue",
+          "Comment",
+          sorted.issues.comments.length,
+          sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+        );
       }
       if (sorted.reviews.length) {
-        content += `
-          <tr>
-            <td>Review</td>
-            <td>Comment</td>
-            <td>${sorted.reviews.length}</td>
-            <td>${sorted.reviews.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) || "-"}</td>
-          </tr>`;
+        content += generateContributionRow(
+          "Review",
+          "Comment",
+          sorted.reviews.length,
+          sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+        );
       }
       return content;
     }
