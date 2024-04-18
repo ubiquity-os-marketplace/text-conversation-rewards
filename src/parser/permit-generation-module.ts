@@ -16,7 +16,7 @@ import permitGenerationConfigurationType, {
 } from "../configuration/permit-generation-configuration";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
-import envConfigSchema from "../types/env-type";
+import envConfigSchema, { EnvConfigType } from "../types/env-type";
 import program from "./command-line";
 import { Module, Result } from "./processor";
 
@@ -42,7 +42,7 @@ export class PermitGenerationModule implements Module {
     payload.issue = {
       id: issueId,
     };
-    const env = process.env;
+    const env: EnvConfigType = process.env;
     if (!Value.Check(envConfigSchema, env)) {
       console.warn("[PermitGenerationModule] Invalid env detected, skipping.");
       return Promise.resolve(result);

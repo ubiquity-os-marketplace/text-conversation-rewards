@@ -30,31 +30,31 @@ formattingEvaluator:
     - type: [ISSUE, ISSUER, TASK]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [ISSUE, ISSUER, COMMENT]:
+    - type: [ISSUE, ISSUER, COMMENTED]:
       formattingMultiplier: 1
       wordValue: 0.2
-    - type: [ISSUE, ASSIGNEE, COMMENT]:
+    - type: [ISSUE, ASSIGNEE, COMMENTED]:
       formattingMultiplier: 0
       wordValue: 0
-    - type: [ISSUE, COLLABORATOR, COMMENT]:
+    - type: [ISSUE, COLLABORATOR, COMMENTED]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [ISSUE, CONTRIBUTOR, COMMENT]:
+    - type: [ISSUE, CONTRIBUTOR, COMMENTED]:
       formattingMultiplier: 0.25
       wordValue: 0.1
     - type: [REVIEW, ISSUER, SPECIFICATION]:
       formattingMultiplier: 0
       wordValue: 0
-    - type: [REVIEW, ISSUER, COMMENT]:
+    - type: [REVIEW, ISSUER, COMMENTED]:
       formattingMultiplier: 2
       wordValue: 0.2
-    - type: [REVIEW, ASSIGNEE, COMMENT]:
+    - type: [REVIEW, ASSIGNEE, COMMENTED]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [REVIEW, COLLABORATOR, COMMENT]:
+    - type: [REVIEW, COLLABORATOR, COMMENTED]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [REVIEW, CONTRIBUTOR, COMMENT]:
+    - type: [REVIEW, CONTRIBUTOR, COMMENTED]:
       formattingMultiplier: 0.25
       wordValue: 0.1
 permitGeneration:
