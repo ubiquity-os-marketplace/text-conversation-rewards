@@ -9,11 +9,12 @@ import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { GithubCommentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
+import { BaseConfiguration } from "../configuration/common-config-type";
 
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
-  private readonly _configuration = configuration;
+  private readonly _configuration: BaseConfiguration = configuration;
 
   constructor() {
     this.add(new UserExtractorModule())
@@ -30,7 +31,7 @@ export class Processor {
   }
 
   async run(data: Readonly<IssueActivity>) {
-    if (this._configuration.disabled) {
+    if (!this._configuration.enabled) {
       console.log("Module is disabled. Skipping...");
       return;
     }

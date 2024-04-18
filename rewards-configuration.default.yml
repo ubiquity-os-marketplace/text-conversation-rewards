@@ -1,4 +1,4 @@
-#disabled: true
+enabled: true
 contentEvaluator:
   enabled: true
 userExtractor:
@@ -61,5 +61,5 @@ permitGeneration:
   enabled: true
 githubComment:
   enabled: true
-  post: true
+  post: false
   debug: true
