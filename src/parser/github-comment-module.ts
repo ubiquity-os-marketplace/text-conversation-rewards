@@ -78,7 +78,7 @@ export class GithubCommentModule implements Module {
       let content = "";
 
       if (!sorted) {
-        return "";
+        return content;
       }
 
       function generateContributionRow(
@@ -125,7 +125,7 @@ export class GithubCommentModule implements Module {
       let content = "";
 
       if (!sorted) {
-        return "";
+        return content;
       }
 
       function buildIncentiveRow(commentScore: GithubCommentScore) {
