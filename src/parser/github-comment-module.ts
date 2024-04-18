@@ -75,10 +75,10 @@ export class GithubCommentModule implements Module {
     );
 
     function createContributionRows() {
-      let content = "";
+      const content: string[] = [];
 
       if (!sorted) {
-        return content;
+        return content.join("");
       }
 
       function generateContributionRow(
@@ -97,35 +97,39 @@ export class GithubCommentModule implements Module {
       }
 
       if (result.task?.reward) {
-        content += generateContributionRow("Issue", "Task", 1, result.task.reward);
+        content.push(generateContributionRow("Issue", "Task", 1, result.task.reward));
       }
       if (sorted.issues.task) {
-        content += generateContributionRow("Issue", "Specification", 1, sorted.issues.task.score?.reward);
+        content.push(generateContributionRow("Issue", "Specification", 1, sorted.issues.task.score?.reward));
       }
       if (sorted.issues.comments.length) {
-        content += generateContributionRow(
-          "Issue",
-          "Comment",
-          sorted.issues.comments.length,
-          sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+        content.push(
+          generateContributionRow(
+            "Issue",
+            "Comment",
+            sorted.issues.comments.length,
+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+          )
         );
       }
       if (sorted.reviews.length) {
-        content += generateContributionRow(
-          "Review",
-          "Comment",
-          sorted.reviews.length,
-          sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+        content.push(
+          generateContributionRow(
+            "Review",
+            "Comment",
+            sorted.reviews.length,
+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+          )
         );
       }
-      return content;
+      return content.join("");
     }
 
     function createIncentiveRows() {
-      let content = "";
+      const content: string[] = [];
 
       if (!sorted) {
-        return content;
+        return content.join("");
       }
 
       function buildIncentiveRow(commentScore: GithubCommentScore) {
@@ -154,12 +158,12 @@ export class GithubCommentModule implements Module {
       }
 
       for (const issueComment of sorted.issues.comments) {
-        content += buildIncentiveRow(issueComment);
+        content.push(buildIncentiveRow(issueComment));
       }
       for (const reviewComment of sorted.reviews) {
-        content += buildIncentiveRow(reviewComment);
+        content.push(buildIncentiveRow(reviewComment));
       }
-      return content;
+      return content.join("");
     }
 
     return `
