@@ -1,11 +1,11 @@
 import { http, HttpResponse } from "msw";
-import issueGet from "./issue-get.json";
-import issueEventsGet from "./issue-events-get.json";
-import issueCommentsGet from "./issue-comments-get.json";
-import issueTimelineGet from "./issue-timeline-get.json";
-import pullsGet from "./pulls-get.json";
-import pullsReviewsGet from "./pulls-reviews-get.json";
-import pullsCommentsGet from "./pulls-comments-get.json";
+import issueGet from "./routes/issue-get.json";
+import issueEventsGet from "./routes/issue-events-get.json";
+import issueCommentsGet from "./routes/issue-comments-get.json";
+import issueTimelineGet from "./routes/issue-timeline-get.json";
+import pullsGet from "./routes/pulls-get.json";
+import pullsReviewsGet from "./routes/pulls-reviews-get.json";
+import pullsCommentsGet from "./routes/pulls-comments-get.json";
 
 /**
  * Intercepts the routes and returns a custom payload
