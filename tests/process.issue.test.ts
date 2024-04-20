@@ -6,6 +6,8 @@ import { server } from "./__mocks__/node";
 import { DataPurgeModule } from "../src/parser/data-purge-module";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
+import contentFormattingResults from "./__mocks__/results/content-formatting-results.json";
+import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
 
@@ -37,5 +39,14 @@ describe("Modules tests", () => {
     await processor.run(activity);
     processor.dump();
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(dataPurgeResults, undefined, 2));
+  });
+
+  it("Should evaluate formatting", async () => {
+    const logSpy = jest.spyOn(console, "log");
+    const processor = new Processor();
+    processor["_transformers"] = [new UserExtractorModule(), new DataPurgeModule(), new FormattingEvaluatorModule()];
+    await processor.run(activity);
+    processor.dump();
+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(contentFormattingResults, undefined, 2));
   });
 });
