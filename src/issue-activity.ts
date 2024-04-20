@@ -115,7 +115,7 @@ export class IssueActivity {
       ret |= CommentType.ASSIGNEE;
     } else if (comment.author_association === "MEMBER" || comment.author_association === "COLLABORATOR") {
       ret |= CommentType.COLLABORATOR;
-    } else if (comment.author_association === "CONTRIBUTOR") {
+    } else {
       ret |= CommentType.CONTRIBUTOR;
     }
     return ret;
