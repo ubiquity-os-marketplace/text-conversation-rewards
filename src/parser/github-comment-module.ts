@@ -19,12 +19,13 @@ export class GithubCommentModule implements Module {
   private readonly _debugFilePath = "./output.html";
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    let body = "";
+    const bodyArray: (string | undefined)[] = [];
 
     for (const [key, value] of Object.entries(result)) {
       result[key].evaluationCommentHtml = this._generateHtml(key, value);
-      body += result[key].evaluationCommentHtml;
+      bodyArray.push(result[key].evaluationCommentHtml);
     }
+    const body = bodyArray.join("");
     if (this._configuration.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
