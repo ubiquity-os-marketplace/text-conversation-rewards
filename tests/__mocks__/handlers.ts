@@ -6,6 +6,7 @@ import issueTimelineGet from "./routes/issue-timeline-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
+import { db } from "./db";
 
 /**
  * Intercepts the routes and returns a custom payload
@@ -31,5 +32,42 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/pulls/25/comments", () => {
     return HttpResponse.json(pullsCommentsGet);
+  }),
+  http.get("https://api.github.com/users/:login", ({ params: { login } }) => {
+    const user = db.users.findFirst({
+      where: {
+        login: {
+          equals: login.toString(),
+        },
+      },
+    });
+    if (!user) {
+      return HttpResponse.json("User was not found", { status: 404 });
+    }
+    return HttpResponse.json(user);
+  }),
+  http.get(`${process.env.SUPABASE_URL}/rest/v1/users`, ({ request }) => {
+    const url = new URL(request.url);
+    const select = url.searchParams.get("select");
+    const userId = url.searchParams.get("id");
+    if (!select || !userId || !select?.includes("wallets")) {
+      return HttpResponse.json("Wrong params.", { status: 400 });
+    }
+    const id = Number(userId.split(".")[1]);
+    const wallet = db.wallets.findFirst({
+      where: {
+        userId: {
+          equals: id,
+        },
+      },
+    });
+    if (!wallet) {
+      return HttpResponse.json("Wallet was not found", { status: 404 });
+    }
+    return HttpResponse.json([
+      {
+        wallets: wallet,
+      },
+    ]);
   }),
 ];
