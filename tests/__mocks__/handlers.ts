@@ -46,28 +46,4 @@ export const handlers = [
     }
     return HttpResponse.json(user);
   }),
-  http.get(`${process.env.SUPABASE_URL}/rest/v1/users`, ({ request }) => {
-    const url = new URL(request.url);
-    const select = url.searchParams.get("select");
-    const userId = url.searchParams.get("id");
-    if (!select || !userId || !select?.includes("wallets")) {
-      return HttpResponse.json("Wrong params.", { status: 400 });
-    }
-    const id = Number(userId.split(".")[1]);
-    const wallet = db.wallets.findFirst({
-      where: {
-        userId: {
-          equals: id,
-        },
-      },
-    });
-    if (!wallet) {
-      return HttpResponse.json("Wallet was not found", { status: 404 });
-    }
-    return HttpResponse.json([
-      {
-        wallets: wallet,
-      },
-    ]);
-  }),
 ];

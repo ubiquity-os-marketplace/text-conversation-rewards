@@ -7,18 +7,49 @@ import { DataPurgeModule } from "../src/parser/data-purge-module";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
+import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dbSeed from "./__mocks__/db-seed.json";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
 import Decimal from "decimal.js";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
-import { db } from "./__mocks__/db";
+import { db as mockDb } from "./__mocks__/db";
 
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
   return Promise.resolve(comments.map(() => new Decimal(0.8)));
+});
+
+jest.mock("@ubiquibot/permit-generation/core", () => {
+  const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
+
+  return {
+    __esModule: true,
+    ...originalModule,
+    createAdapters: jest.fn(() => {
+      return {
+        supabase: {
+          wallet: {
+            getWalletByUserId: jest.fn((userId: number) => {
+              const wallet = mockDb.wallets.findFirst({
+                where: {
+                  userId: {
+                    equals: userId,
+                  },
+                },
+              });
+              if (!wallet) {
+                return Promise.resolve(null);
+              }
+              return Promise.resolve(wallet.address);
+            }),
+          },
+        },
+      };
+    }),
+  };
 });
 
 beforeAll(() => server.listen());
@@ -32,10 +63,10 @@ describe("Modules tests", () => {
   beforeAll(async () => {
     await activity.init();
     for (const item of dbSeed.users) {
-      db.users.create(item);
+      mockDb.users.create(item);
     }
     for (const item of dbSeed.wallets) {
-      db.wallets.create(item);
+      mockDb.wallets.create(item);
     }
   });
 
@@ -92,6 +123,6 @@ describe("Modules tests", () => {
     ];
     await processor.run(activity);
     processor.dump();
-    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(contentEvaluatorResults, undefined, 2));
+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(permitGenerationResults, undefined, 2));
   });
 });

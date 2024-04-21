@@ -50,18 +50,14 @@ export class PermitGenerationModule implements Module {
     const eventName = context.eventName as SupportedEvents;
     const octokit = getOctokitInstance();
     const logger = {
-      debug(message: unknown, optionalParams: unknown) {
-        console.log(message, optionalParams);
-      },
+      debug() {},
       error(message: unknown, optionalParams: unknown) {
         console.error(message, optionalParams);
       },
       fatal(message: unknown, optionalParams: unknown) {
         console.error(message, optionalParams);
       },
-      info(message: unknown, optionalParams: unknown) {
-        console.log(message, optionalParams);
-      },
+      info() {},
       warn(message: unknown, optionalParams: unknown) {
         console.warn(message, optionalParams);
       },
