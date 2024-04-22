@@ -11,6 +11,11 @@ import { getPayoutConfigByNetworkId } from "../types/payout";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
 
+interface SortedTasks {
+  issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };
+  reviews: GithubCommentScore[];
+}
+
 /**
  * Posts a GitHub comment according to the given results.
  */
@@ -56,10 +61,7 @@ export class GithubCommentModule implements Module {
   }
 
   _generateHtml(username: string, result: Result[0]) {
-    const sorted = result.comments?.reduce<{
-      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };
-      reviews: GithubCommentScore[];
-    }>(
+    const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
         if (curr.type & CommentType.ISSUE) {
           if (curr.type & CommentType.TASK) {
@@ -74,98 +76,6 @@ export class GithubCommentModule implements Module {
       },
       { issues: { task: null, comments: [] }, reviews: [] }
     );
-
-    function createContributionRows() {
-      const content: string[] = [];
-
-      if (!sorted) {
-        return content.join("");
-      }
-
-      function generateContributionRow(
-        view: string,
-        contribution: string,
-        count: number,
-        reward: number | Decimal | undefined
-      ) {
-        return `
-          <tr>
-            <td>${view}</td>
-            <td>${contribution}</td>
-            <td>${count}</td>
-            <td>${reward || "-"}</td>
-          </tr>`;
-      }
-
-      if (result.task?.reward) {
-        content.push(generateContributionRow("Issue", "Task", 1, result.task.reward));
-      }
-      if (sorted.issues.task) {
-        content.push(generateContributionRow("Issue", "Specification", 1, sorted.issues.task.score?.reward));
-      }
-      if (sorted.issues.comments.length) {
-        content.push(
-          generateContributionRow(
-            "Issue",
-            "Comment",
-            sorted.issues.comments.length,
-            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
-          )
-        );
-      }
-      if (sorted.reviews.length) {
-        content.push(
-          generateContributionRow(
-            "Review",
-            "Comment",
-            sorted.reviews.length,
-            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
-          )
-        );
-      }
-      return content.join("");
-    }
-
-    function createIncentiveRows() {
-      const content: string[] = [];
-
-      if (!sorted) {
-        return content.join("");
-      }
-
-      function buildIncentiveRow(commentScore: GithubCommentScore) {
-        // Properly escape carriage returns for HTML rendering
-        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\n\r]/g, "&#13;");
-        return `
-          <tr>
-            <td>
-              <h6>
-                <a href="${commentScore.url}" target="_blank" rel="noopener">${commentScore.content.replace(/(.{64})..+/, "$1…")}</a>
-              </h6>
-            </td>
-            <td>
-            <details>
-              <summary>
-                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
-                  return acc.add(curr.score * curr.count);
-                }, new Decimal(0))}
-              </summary>
-              <pre>${formatting}</pre>
-             </details>
-            </td>
-            <td>${commentScore.score?.relevance || "-"}</td>
-            <td>${commentScore.score?.reward || "-"}</td>
-          </tr>`;
-      }
-
-      for (const issueComment of sorted.issues.comments) {
-        content.push(buildIncentiveRow(issueComment));
-      }
-      for (const reviewComment of sorted.reviews) {
-        content.push(buildIncentiveRow(reviewComment));
-      }
-      return content.join("");
-    }
 
     return `
     <details>
@@ -192,7 +102,7 @@ export class GithubCommentModule implements Module {
           </tr>
         </thead>
         <tbody>
-          ${createContributionRows()}
+          ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
       <h6>Conversation Incentives</h6>
@@ -206,12 +116,104 @@ export class GithubCommentModule implements Module {
           </tr>
         </thead>
         <tbody>
-          ${createIncentiveRows()}
+          ${this._createIncentiveRows(sortedTasks)}
         </tbody>
       </table>
     </details>
     `
       .replace(/\s+/g, " ")
       .trim();
+  }
+
+  _createContributionRows(result: Result[0], sortedTasks: SortedTasks | undefined) {
+    const content: string[] = [];
+
+    if (!sortedTasks) {
+      return content.join("");
+    }
+
+    function buildContributionRow(
+      view: string,
+      contribution: string,
+      count: number,
+      reward: number | Decimal | undefined
+    ) {
+      return `
+          <tr>
+            <td>${view}</td>
+            <td>${contribution}</td>
+            <td>${count}</td>
+            <td>${reward || "-"}</td>
+          </tr>`;
+    }
+
+    if (result.task?.reward) {
+      content.push(buildContributionRow("Issue", "Task", 1, result.task.reward));
+    }
+    if (sortedTasks.issues.task) {
+      content.push(buildContributionRow("Issue", "Specification", 1, sortedTasks.issues.task.score?.reward));
+    }
+    if (sortedTasks.issues.comments.length) {
+      content.push(
+        buildContributionRow(
+          "Issue",
+          "Comment",
+          sortedTasks.issues.comments.length,
+          sortedTasks.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+        )
+      );
+    }
+    if (sortedTasks.reviews.length) {
+      content.push(
+        buildContributionRow(
+          "Review",
+          "Comment",
+          sortedTasks.reviews.length,
+          sortedTasks.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+        )
+      );
+    }
+    return content.join("");
+  }
+
+  _createIncentiveRows(sortedTasks: SortedTasks | undefined) {
+    const content: string[] = [];
+
+    if (!sortedTasks) {
+      return content.join("");
+    }
+
+    function buildIncentiveRow(commentScore: GithubCommentScore) {
+      // Properly escape carriage returns for HTML rendering
+      const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\n\r]/g, "&#13;");
+      return `
+          <tr>
+            <td>
+              <h6>
+                <a href="${commentScore.url}" target="_blank" rel="noopener">${commentScore.content.replace(/(.{64})..+/, "$1…")}</a>
+              </h6>
+            </td>
+            <td>
+            <details>
+              <summary>
+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
+                  return acc.add(curr.score * curr.count);
+                }, new Decimal(0))}
+              </summary>
+              <pre>${formatting}</pre>
+             </details>
+            </td>
+            <td>${commentScore.score?.relevance || "-"}</td>
+            <td>${commentScore.score?.reward || "-"}</td>
+          </tr>`;
+    }
+
+    for (const issueComment of sortedTasks.issues.comments) {
+      content.push(buildIncentiveRow(issueComment));
+    }
+    for (const reviewComment of sortedTasks.reviews) {
+      content.push(buildIncentiveRow(reviewComment));
+    }
+    return content.join("");
   }
 }
