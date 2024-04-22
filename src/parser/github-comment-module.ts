@@ -44,7 +44,7 @@ export class GithubCommentModule implements Module {
         console.error(`Could not post GitHub comment: ${e}`);
       }
     }
-    return Promise.resolve(result);
+    return result;
   }
 
   get enabled(): boolean {
