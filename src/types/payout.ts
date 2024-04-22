@@ -1,7 +1,7 @@
 // available tokens for payouts
 export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {
   "1": {
-    rpc: "https://rpc.gnosischain.com",
+    rpc: "https://rpc.mevblocker.io/",
     token: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
     symbol: "DAI",
   },
