@@ -1,5 +1,4 @@
 import { IssueActivity } from "../src/issue-activity";
-import { Processor } from "../src/parser/processor";
 import { parseGitHubUrl } from "../src/start";
 
 // Mock process.argv
@@ -17,10 +16,7 @@ describe("GetActivity class", () => {
     expect(activity.events).toBeTruthy();
     expect(activity.comments).toBeTruthy();
     expect(Array.isArray(activity.linkedReviews)).toBeTruthy();
-    const processor = new Processor();
-    await processor.run(activity);
-    processor.dump();
-  }, 30000);
+  });
 
   it("should create an instance of GetActivity", () => {
     expect(activity).toBeInstanceOf(IssueActivity);

@@ -140,7 +140,7 @@ export class GithubCommentModule implements Module {
           <tr>
             <td>
               <h6>
-                <a href="${commentScore.url}" target="_blank" rel="noopener">${commentScore.content.replace(/(.{64})..+/, "$1…")}</a>
+                <a href="${commentScore.url}" target="_blank" rel="noopener">${commentScore.content.replace(/(.{64})..+/, "$1&hellip;")}</a>
               </h6>
             </td>
             <td>

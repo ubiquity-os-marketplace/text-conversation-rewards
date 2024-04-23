@@ -99,11 +99,12 @@ export class IssueActivity {
   }
 
   _getTypeFromComment(
+    issueType: CommentType.ISSUE | CommentType.REVIEW,
     comment: GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest,
     self: GitHubPullRequest | GitHubIssue | null
   ) {
     let ret = 0;
-    ret |= "pull_request_review_id" in comment || "draft" in comment ? CommentType.REVIEW : CommentType.ISSUE;
+    ret |= issueType;
     if (comment.id === self?.id) {
       ret |= ret & CommentType.ISSUE ? CommentType.TASK : CommentType.SPECIFICATION;
     } else {
@@ -121,36 +122,50 @@ export class IssueActivity {
     return ret;
   }
 
+  _getLinkedReviewComments() {
+    const comments = [];
+    for (const linkedReview of this.linkedReviews) {
+      if (linkedReview.self) {
+        comments.push({
+          ...linkedReview.self,
+          type: this._getTypeFromComment(CommentType.REVIEW, linkedReview.self, linkedReview.self),
+        });
+      }
+      if (linkedReview.reviewComments) {
+        for (const reviewComment of linkedReview.reviewComments) {
+          comments.push({
+            ...reviewComment,
+            type: this._getTypeFromComment(CommentType.REVIEW, reviewComment, linkedReview.self),
+          });
+        }
+      }
+      if (linkedReview.comments) {
+        for (const comment of linkedReview.comments) {
+          comments.push({
+            ...comment,
+            type: this._getTypeFromComment(CommentType.REVIEW, comment, linkedReview.self),
+          });
+        }
+      }
+    }
+    return comments;
+  }
+
   get allComments() {
     const comments: Array<
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & { type: CommentType }
     > = this.comments.map((comment) => ({
       ...comment,
-      type: this._getTypeFromComment(comment, this.self),
+      type: this._getTypeFromComment(CommentType.ISSUE, comment, this.self),
     }));
     if (this.self) {
       comments.push({
         ...this.self,
-        type: this._getTypeFromComment(this.self, this.self),
+        type: this._getTypeFromComment(CommentType.ISSUE, this.self, this.self),
       });
     }
     if (this.linkedReviews) {
-      for (const linkedReview of this.linkedReviews) {
-        if (linkedReview.self) {
-          comments.push({
-            ...linkedReview.self,
-            type: this._getTypeFromComment(linkedReview.self, linkedReview.self),
-          });
-        }
-        if (linkedReview.reviewComments) {
-          for (const reviewComment of linkedReview.reviewComments) {
-            comments.push({
-              ...reviewComment,
-              type: this._getTypeFromComment(reviewComment, linkedReview.self),
-            });
-          }
-        }
-      }
+      comments.push(...this._getLinkedReviewComments());
     }
     return comments;
   }
@@ -160,14 +175,21 @@ export class Review {
   self: GitHubPullRequest | null = null;
   reviews: GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
   reviewComments: GitHubPullRequestReviewComment[] | null = null;
+  comments: GitHubIssueComment[] | null = null;
 
   constructor(private _pullParams: PullParams) {}
 
   async init() {
-    [this.self, this.reviews, this.reviewComments] = await Promise.all([
+    [this.self, this.reviews, this.reviewComments, this.comments] = await Promise.all([
       getPullRequest(this._pullParams),
       getPullRequestReviews(this._pullParams),
       getPullRequestReviewComments(this._pullParams),
+      // This fetches all the comments inside the Pull Request that were not created in a reviewing context
+      getIssueComments({
+        owner: this._pullParams.owner,
+        repo: this._pullParams.repo,
+        issue_number: this._pullParams.pull_number,
+      }),
     ]);
   }
 }
