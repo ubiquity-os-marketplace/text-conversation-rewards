@@ -135,7 +135,7 @@ export class GithubCommentModule implements Module {
 
       function buildIncentiveRow(commentScore: GithubCommentScore) {
         // Properly escape carriage returns for HTML rendering
-        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\n\r]/g, "&#13;");
+        const formatting = stringify(commentScore.score?.formatting).replace(/[\n\r]/g, "&#13;");
         // Makes sure any HTML injected in the templated is not rendered itself
         const sanitizedContent = commentScore.content.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         return `
@@ -149,7 +149,12 @@ export class GithubCommentModule implements Module {
             <details>
               <summary>
                 ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
-                  return acc.add(curr.score * curr.count);
+                  const multiplier = new Decimal(
+                    commentScore.score?.formatting
+                      ? commentScore.score.formatting.formattingMultiplier * commentScore.score.formatting.wordValue
+                      : 0
+                  );
+                  return acc.add(multiplier.mul(curr.score * curr.count));
                 }, new Decimal(0))}
               </summary>
               <pre>${formatting}</pre>
@@ -213,7 +218,7 @@ export class GithubCommentModule implements Module {
       </table>
     </details>
     `
-      .replace(/\s+/g, " ")
+      .replace(/[\n\r]+/g, " ")
       .trim();
   }
 }
