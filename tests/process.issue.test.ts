@@ -80,6 +80,7 @@ describe("Modules tests", () => {
     await processor.run(activity);
     processor.dump();
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));
+    logSpy.mockReset();
   });
 
   it("Should purge data", async () => {
@@ -89,6 +90,7 @@ describe("Modules tests", () => {
     await processor.run(activity);
     processor.dump();
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(dataPurgeResults, undefined, 2));
+    logSpy.mockReset();
   });
 
   it("Should evaluate formatting", async () => {
@@ -98,6 +100,7 @@ describe("Modules tests", () => {
     await processor.run(activity);
     processor.dump();
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(formattingEvaluatorResults, undefined, 2));
+    logSpy.mockReset();
   });
 
   it("Should evaluate content", async () => {
@@ -112,6 +115,7 @@ describe("Modules tests", () => {
     await processor.run(activity);
     processor.dump();
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(contentEvaluatorResults, undefined, 2));
+    logSpy.mockReset();
   });
 
   it("Should generate permits", async () => {
@@ -127,6 +131,7 @@ describe("Modules tests", () => {
     await processor.run(activity);
     processor.dump();
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(permitGenerationResults, undefined, 2));
+    logSpy.mockReset();
   });
 
   it("Should generate GitHub comment", async () => {
@@ -144,5 +149,6 @@ describe("Modules tests", () => {
     processor.dump();
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(githubCommentResults, undefined, 2));
     expect(fs.readFileSync("./output.html")).toEqual(fs.readFileSync("./tests/__mocks__/results/output.html"));
+    logSpy.mockReset();
   });
 });

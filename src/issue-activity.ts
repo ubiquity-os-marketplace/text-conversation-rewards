@@ -100,7 +100,12 @@ export class IssueActivity {
 
   _getTypeFromComment(
     issueType: CommentType.ISSUE | CommentType.REVIEW,
-    comment: GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest,
+    comment:
+      | GitHubIssueComment
+      | GitHubPullRequestReviewComment
+      | GitHubPullRequestReviewState
+      | GitHubIssue
+      | GitHubPullRequest,
     self: GitHubPullRequest | GitHubIssue | null
   ) {
     let ret = 0;
@@ -125,25 +130,18 @@ export class IssueActivity {
   _getLinkedReviewComments() {
     const comments = [];
     for (const linkedReview of this.linkedReviews) {
-      if (linkedReview.self) {
-        comments.push({
-          ...linkedReview.self,
-          type: this._getTypeFromComment(CommentType.REVIEW, linkedReview.self, linkedReview.self),
-        });
-      }
-      if (linkedReview.reviewComments) {
-        for (const reviewComment of linkedReview.reviewComments) {
+      for (const value of Object.values(linkedReview)) {
+        if (Array.isArray(value)) {
+          for (const review of value) {
+            comments.push({
+              ...review,
+              type: this._getTypeFromComment(CommentType.REVIEW, review, linkedReview.self),
+            });
+          }
+        } else if (value) {
           comments.push({
-            ...reviewComment,
-            type: this._getTypeFromComment(CommentType.REVIEW, reviewComment, linkedReview.self),
-          });
-        }
-      }
-      if (linkedReview.comments) {
-        for (const comment of linkedReview.comments) {
-          comments.push({
-            ...comment,
-            type: this._getTypeFromComment(CommentType.REVIEW, comment, linkedReview.self),
+            ...value,
+            type: this._getTypeFromComment(CommentType.REVIEW, value, value),
           });
         }
       }
