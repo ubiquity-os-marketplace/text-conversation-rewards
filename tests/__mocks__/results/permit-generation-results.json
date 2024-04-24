@@ -1,6 +1,6 @@
 {
   "molecula451": {
-    "total": 1.42,
+    "total": 1.8,
     "userId": 41552663,
     "comments": [
       {
@@ -116,12 +116,50 @@
           "reward": 0.04,
           "relevance": 0.8
         }
+      },
+      {
+        "content": "indeed",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949038563",
+        "type": "REVIEW|CONTRIBUTOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 1,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 0.25
+          },
+          "reward": 0.02,
+          "relevance": 0.8
+        }
+      },
+      {
+        "content": "go to go pavlovick, we'll be using this one for test only or test in production (lmao) ?",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855",
+        "type": "REVIEW|CONTRIBUTOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 18,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 0.25
+          },
+          "reward": 0.36,
+          "relevance": 0.8
+        }
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxNDIwMDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiNTU5OTM2MDE0NzcwMzQzMTA4MTU5NDY5ODEzMzcwNTA1MDMxMzkxMzU2MjIzMDMwNTA5MjQyNzA2ODYyOTY3NzAwMDEzODA2OTM3ODEiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjE0MjAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweDBmQzFiOTA5YmE5MjY1QTg0NmI4MkNGNENFMzUyZmMzZTdFZUIyRUQiLCJzaWduYXR1cmUiOiIweDAwZTIwM2ZiNjAzZjNjMjY0YTBjZjRjMzVlYzQ1ZjY4YjY1YTRmM2UyNTAzMjc2MDhhYmRmNmQzODQ5NDgzZWMyZDhiYmU0NThiY2YzNmI5YzM1NDAzZDY1YWYyOTJhYWEzMTM4NzQwZmU3MmU5ZDY0OWQxYTE4YjlmMGQ0ZjYwMWIiLCJuZXR3b3JrSWQiOjEwMH1d"
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxODAwMDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiNTU5OTM2MDE0NzcwMzQzMTA4MTU5NDY5ODEzMzcwNTA1MDMxMzkxMzU2MjIzMDMwNTA5MjQyNzA2ODYyOTY3NzAwMDEzODA2OTM3ODEiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjE4MDAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweDBmQzFiOTA5YmE5MjY1QTg0NmI4MkNGNENFMzUyZmMzZTdFZUIyRUQiLCJzaWduYXR1cmUiOiIweDdjYmNiNzIzODU3NDQwMWIwNDA2YjYxNmYwY2RiYjQzNjM5YjUyMDAwOGYwNGRmY2ZhZWVjNmZlMjg5NjZjZWUxOGQ4NDA5M2RmM2MwZjk3ZWJlMGRiZjYyYjE5ZTE5NzU2ZWNiMGY2YWU2YjAyMThjZGRlOTAxZTA2N2JmM2YzMWIiLCJuZXR3b3JrSWQiOjEwMH1d"
   },
   "0x4007": {
-    "total": 31.92,
+    "total": 33.44,
     "userId": 4975670,
     "comments": [
       {
@@ -268,12 +306,50 @@
           "reward": 4.72,
           "relevance": 0.8
         }
+      },
+      {
+        "content": "Need to document a private key too",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949021356",
+        "type": "REVIEW|COLLABORATOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 7,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 1
+          },
+          "reward": 0.56,
+          "relevance": 0.8
+        }
+      },
+      {
+        "content": "I was editing this right now but was too slow to push.",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196677",
+        "type": "REVIEW|COLLABORATOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 12,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 1
+          },
+          "reward": 0.96,
+          "relevance": 0.8
+        }
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIzMTkyMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjU0MTU2NjczMjEwMTg2MDc2NjY3MDM0MzA4MDMwMzQxMTU2NjMyMTc1NDA0MTE1ODg4NzA3NjM5NTc1ODU0Mzg0MzM3NTUwNzUyMjU2IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIzMTkyMDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4MGZDMWI5MDliYTkyNjVBODQ2YjgyQ0Y0Q0UzNTJmYzNlN0VlQjJFRCIsInNpZ25hdHVyZSI6IjB4ZWVjNzdjNWRiOTUxZWEzMjc5OGVmMTJkODE4ODc1ZjY2MGFmZThmOGExODRhMWE2OWNmMDAxZjBlODE1YzQ2OTRiYWMxMmNmNjY2MTg1Yzc1MzQzY2I0NWM3ODI4M2JkZmQ1MzA2ZmQ2OTU4YzczZmI5MDE3YWFhNmNjZTJkNWUxYyIsIm5ldHdvcmtJZCI6MTAwfV0="
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIzMzQ0MDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjU0MTU2NjczMjEwMTg2MDc2NjY3MDM0MzA4MDMwMzQxMTU2NjMyMTc1NDA0MTE1ODg4NzA3NjM5NTc1ODU0Mzg0MzM3NTUwNzUyMjU2IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIzMzQ0MDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4MGZDMWI5MDliYTkyNjVBODQ2YjgyQ0Y0Q0UzNTJmYzNlN0VlQjJFRCIsInNpZ25hdHVyZSI6IjB4YWUyOWQwNWE1N2EwNDg0NzE5MDc4ZDQ4MWUxMWVmMDBlY2RiYzIwMjczOGJiY2QzZjc5NDFiYjkzNTY2ZDE4ZDUwZTBkY2NjNjkxM2U5OTM2MjJmNTVjZmM4NWNkNmY5YTNhOTYzZWNhNmRhZGY4NzVlYjIxOTg4NmM1MGY4ZTUxYiIsIm5ldHdvcmtJZCI6MTAwfV0="
   },
   "gitcoindev": {
-    "total": 37.5,
+    "total": 45.5,
     "task": {
       "reward": 37.5
     },
@@ -316,8 +392,46 @@
           "reward": 0,
           "relevance": 0.8
         }
+      },
+      {
+        "content": "@pavlovcik @molecula451 please check now again, I added to docs.",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044575",
+        "type": "REVIEW|ISSUER|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 10,
+                "score": 1
+              }
+            },
+            "wordValue": 0.2,
+            "formattingMultiplier": 2
+          },
+          "reward": 3.2,
+          "relevance": 0.8
+        }
+      },
+      {
+        "content": "No way, full details are available in plain sight, only for test in production purposes",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949046925",
+        "type": "REVIEW|ISSUER|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 15,
+                "score": 1
+              }
+            },
+            "wordValue": 0.2,
+            "formattingMultiplier": 2
+          },
+          "reward": 4.8,
+          "relevance": 0.8
+        }
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIzNzUwMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjI1NTAxODE5OTY2NjA1NzQ1MzA1NTE0MTk4MDg3NTY5MTYyMTg1ODQzNzc2NTY0MDgxNzUwODI4NjE5MzMxNjYyNDIzMjAwMTU3MDk1IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIzNzUwMDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4MGZDMWI5MDliYTkyNjVBODQ2YjgyQ0Y0Q0UzNTJmYzNlN0VlQjJFRCIsInNpZ25hdHVyZSI6IjB4NjYxYzEyNDEyNTE0ZmI5NTk0NjU0MmFhMzRkNGU5MDIyYmZhNjIzNGFmNTg0YmYyZjBkN2M3ZGIxNDk3MTJjYjYyZmUxNzIwZTc3ZmIzYjE3YzFjOGRiYjUwM2NlOTQ2ZmIxMmQzYjNjOTc1YjQyNjFjMDgzZWMzZWViNjk2MjYxYyIsIm5ldHdvcmtJZCI6MTAwfV0="
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI0NTUwMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjI1NTAxODE5OTY2NjA1NzQ1MzA1NTE0MTk4MDg3NTY5MTYyMTg1ODQzNzc2NTY0MDgxNzUwODI4NjE5MzMxNjYyNDIzMjAwMTU3MDk1IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiI0NTUwMDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4MGZDMWI5MDliYTkyNjVBODQ2YjgyQ0Y0Q0UzNTJmYzNlN0VlQjJFRCIsInNpZ25hdHVyZSI6IjB4NzQzNWUxMTZlN2FjYTg4OTI0YmI3ODVmZmQ0ZWM4ZjYzNGI4YWNkYmM1NGQ5OTBjOTU5N2VkNzVmYTA0MTE5NDcwZjc2ZGRhMTAzMzVmMGUyMjVmM2Q0YTVkMWEzNDQyYWMxZjkzYTIwMjNlYjY4N2VlZmI3NzIzMGY5MTQzZmYxYiIsIm5ldHdvcmtJZCI6MTAwfV0="
   }
 }

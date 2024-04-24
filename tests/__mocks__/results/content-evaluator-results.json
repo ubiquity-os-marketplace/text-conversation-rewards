@@ -1,6 +1,6 @@
 {
   "molecula451": {
-    "total": 1.42,
+    "total": 1.8,
     "userId": 41552663,
     "comments": [
       {
@@ -116,11 +116,49 @@
           "reward": 0.04,
           "relevance": 0.8
         }
+      },
+      {
+        "content": "indeed",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949038563",
+        "type": "REVIEW|CONTRIBUTOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 1,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 0.25
+          },
+          "reward": 0.02,
+          "relevance": 0.8
+        }
+      },
+      {
+        "content": "go to go pavlovick, we'll be using this one for test only or test in production (lmao) ?",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855",
+        "type": "REVIEW|CONTRIBUTOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 18,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 0.25
+          },
+          "reward": 0.36,
+          "relevance": 0.8
+        }
       }
     ]
   },
   "0x4007": {
-    "total": 31.92,
+    "total": 33.44,
     "userId": 4975670,
     "comments": [
       {
@@ -267,11 +305,49 @@
           "reward": 4.72,
           "relevance": 0.8
         }
+      },
+      {
+        "content": "Need to document a private key too",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949021356",
+        "type": "REVIEW|COLLABORATOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 7,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 1
+          },
+          "reward": 0.56,
+          "relevance": 0.8
+        }
+      },
+      {
+        "content": "I was editing this right now but was too slow to push.",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196677",
+        "type": "REVIEW|COLLABORATOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 12,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 1
+          },
+          "reward": 0.96,
+          "relevance": 0.8
+        }
       }
     ]
   },
   "gitcoindev": {
-    "total": 37.5,
+    "total": 45.5,
     "task": {
       "reward": 37.5
     },
@@ -312,6 +388,44 @@
             "formattingMultiplier": 0
           },
           "reward": 0,
+          "relevance": 0.8
+        }
+      },
+      {
+        "content": "@pavlovcik @molecula451 please check now again, I added to docs.",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044575",
+        "type": "REVIEW|ISSUER|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 10,
+                "score": 1
+              }
+            },
+            "wordValue": 0.2,
+            "formattingMultiplier": 2
+          },
+          "reward": 3.2,
+          "relevance": 0.8
+        }
+      },
+      {
+        "content": "No way, full details are available in plain sight, only for test in production purposes",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949046925",
+        "type": "REVIEW|ISSUER|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 15,
+                "score": 1
+              }
+            },
+            "wordValue": 0.2,
+            "formattingMultiplier": 2
+          },
+          "reward": 4.8,
           "relevance": 0.8
         }
       }

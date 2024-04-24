@@ -3,6 +3,7 @@ import issueGet from "./routes/issue-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
 import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueCommentsGet from "./routes/issue-comments-get.json";
+import issue25CommentsGet from "./routes/issue-25-comments-get.json";
 import issueTimelineGet from "./routes/issue-timeline-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
@@ -21,6 +22,9 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/comments", () => {
     return HttpResponse.json(issueCommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/25/comments", () => {
+    return HttpResponse.json(issue25CommentsGet);
   }),
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/timeline", () => {
     return HttpResponse.json(issueTimelineGet);
