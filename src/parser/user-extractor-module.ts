@@ -1,9 +1,9 @@
 import { Value } from "@sinclair/typebox/value";
 import configuration from "../configuration/config-reader";
-import userExtractorConfig, { UserExtractorConfiguration } from "../configuration/user-extractor-config";
 import { GitHubIssue } from "../github-types";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
+import { UserExtractorConfiguration, userExtractorConfigurationType } from "@ubiquibot/configuration";
 
 /**
  * Creates entries for each user with its associated comments.
@@ -12,7 +12,7 @@ export class UserExtractorModule implements Module {
   private readonly _configuration: UserExtractorConfiguration = configuration.userExtractor;
 
   get enabled(): boolean {
-    if (!Value.Check(userExtractorConfig, this._configuration)) {
+    if (!Value.Check(userExtractorConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for UserExtractorModule, disabling.");
       return false;
     }

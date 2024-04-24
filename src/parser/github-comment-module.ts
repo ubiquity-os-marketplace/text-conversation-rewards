@@ -1,9 +1,9 @@
 import { Value } from "@sinclair/typebox/value";
+import { GithubCommentConfiguration, githubCommentConfigurationType } from "@ubiquibot/configuration";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { stringify } from "yaml";
 import configuration from "../configuration/config-reader";
-import githubCommentConfig, { GithubCommentConfiguration } from "../configuration/github-comment-config";
 import { getOctokitInstance } from "../get-authentication-token";
 import { CommentType, IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
@@ -48,7 +48,7 @@ export class GithubCommentModule implements Module {
   }
 
   get enabled(): boolean {
-    if (!Value.Check(githubCommentConfig, this._configuration)) {
+    if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for GithubContentModule, disabling.");
       return false;
     }

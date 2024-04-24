@@ -1,3 +1,5 @@
+import { Value } from "@sinclair/typebox/value";
+import { DataPurgeConfiguration, dataPurgeConfigurationType } from "@ubiquibot/configuration";
 import configuration from "../configuration/config-reader";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
@@ -6,10 +8,14 @@ import { Module, Result } from "./processor";
  * Removes the data in the comments that we do not want to be processed.
  */
 export class DataPurgeModule implements Module {
-  readonly configuration = configuration.dataPurge;
+  readonly _configuration: DataPurgeConfiguration = configuration.dataPurge;
 
   get enabled(): boolean {
-    return this.configuration.enabled;
+    if (!Value.Check(dataPurgeConfigurationType, this._configuration)) {
+      console.warn("Invalid configuration detected for DataPurgeModule, disabling.");
+      return false;
+    }
+    return this._configuration.enabled;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
