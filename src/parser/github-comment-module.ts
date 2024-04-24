@@ -57,13 +57,13 @@ export class GithubCommentModule implements Module {
 
   _generateHtml(username: string, result: Result[0]) {
     const sorted = result.comments?.reduce<{
-      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };
+      issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
       reviews: GithubCommentScore[];
     }>(
       (acc, curr) => {
         if (curr.type & CommentType.ISSUE) {
-          if (curr.type & CommentType.TASK) {
-            acc.issues.task = curr;
+          if (curr.type & CommentType.SPECIFICATION) {
+            acc.issues.specification = curr;
           } else {
             acc.issues.comments.push(curr);
           }
@@ -72,7 +72,7 @@ export class GithubCommentModule implements Module {
         }
         return acc;
       },
-      { issues: { task: null, comments: [] }, reviews: [] }
+      { issues: { specification: null, comments: [] }, reviews: [] }
     );
 
     function createContributionRows() {
@@ -100,8 +100,8 @@ export class GithubCommentModule implements Module {
       if (result.task?.reward) {
         content.push(generateContributionRow("Issue", "Task", 1, result.task.reward));
       }
-      if (sorted.issues.task) {
-        content.push(generateContributionRow("Issue", "Specification", 1, sorted.issues.task.score?.reward));
+      if (sorted.issues.specification) {
+        content.push(generateContributionRow("Issue", "Specification", 1, sorted.issues.specification.score?.reward));
       }
       if (sorted.issues.comments.length) {
         content.push(

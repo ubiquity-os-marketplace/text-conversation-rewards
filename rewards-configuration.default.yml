@@ -27,7 +27,7 @@ formattingEvaluator:
     td: 1
     hr: 0
   multipliers:
-    - type: [ISSUE, ISSUER, TASK]
+    - type: [ISSUE, ISSUER, SPECIFICATION]
       formattingMultiplier: 1
       wordValue: 0.1
     - type: [ISSUE, ISSUER, COMMENTED]
@@ -42,7 +42,7 @@ formattingEvaluator:
     - type: [ISSUE, CONTRIBUTOR, COMMENTED]
       formattingMultiplier: 0.25
       wordValue: 0.1
-    - type: [REVIEW, ISSUER, SPECIFICATION]
+    - type: [REVIEW, ISSUER, TASK]
       formattingMultiplier: 0
       wordValue: 0
     - type: [REVIEW, ISSUER, COMMENTED]

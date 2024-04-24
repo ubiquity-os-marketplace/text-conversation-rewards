@@ -111,7 +111,7 @@ export class IssueActivity {
     let ret = 0;
     ret |= issueType;
     if (comment.id === self?.id) {
-      ret |= ret & CommentType.ISSUE ? CommentType.TASK : CommentType.SPECIFICATION;
+      ret |= ret & CommentType.ISSUE ? CommentType.SPECIFICATION : CommentType.TASK;
     } else {
       ret |= CommentType.COMMENTED;
     }
