@@ -17,7 +17,7 @@ import Decimal from "decimal.js";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { db as mockDb } from "./__mocks__/db";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
-import * as fs from "node:fs";
+import fs from "fs";
 
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
 
