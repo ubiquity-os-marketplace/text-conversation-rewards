@@ -165,6 +165,9 @@ export class GithubCommentModule implements Module {
           </tr>`;
       }
 
+      if (sorted.issues.specification) {
+        content.push(buildIncentiveRow(sorted.issues.specification));
+      }
       for (const issueComment of sorted.issues.comments) {
         content.push(buildIncentiveRow(issueComment));
       }
