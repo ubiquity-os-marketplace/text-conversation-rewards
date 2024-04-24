@@ -3,8 +3,14 @@ import { IssueParams, getAllTimelineEvents } from "../start";
 
 export async function collectLinkedMergedPulls(issue: IssueParams) {
   // normally we should only use this one to calculate incentives, because this specifies that the pull requests are merged (accepted)
+  // and that are also related to the current issue, no just mentioned by
   const onlyPullRequests = await collectLinkedPulls(issue);
-  return onlyPullRequests.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at);
+  return onlyPullRequests.filter(
+    (event) =>
+      isGitHubLinkEvent(event) &&
+      event.source.issue.pull_request?.merged_at &&
+      event.source.issue.number === issue.issue_number
+  );
 }
 export async function collectLinkedPulls(issue: IssueParams) {
   // this one was created to help with tests, but probably should not be used in the main code
