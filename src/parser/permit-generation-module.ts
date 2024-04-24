@@ -103,7 +103,7 @@ export class PermitGenerationModule implements Module {
         console.error(e);
       }
     }
-    return Promise.resolve(result);
+    return result;
   }
 
   get enabled(): boolean {
