@@ -17,6 +17,8 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - run: cd ${{ github.action_path }}
+      shell: bash
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
         yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issueUrl }}" --file "${{ github.action_path }}/results.json"

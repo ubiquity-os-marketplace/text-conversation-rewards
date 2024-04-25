@@ -43,7 +43,7 @@ jobs:
       - run: echo "${{ inputs.settings }}"
 
       - name: Generate Rewards
-        uses: "../../action.yml"
+        uses: ./
         with:
           issueUrl: ${{ inputs.eventPayload.url }}
           evmPrivateEncrypted: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
