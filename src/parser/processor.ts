@@ -9,12 +9,11 @@ import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { GithubCommentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
-import { BaseConfiguration } from "../configuration/common-config-type";
 
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
-  private readonly _configuration: BaseConfiguration = configuration;
+  private readonly _configuration = configuration.incentives;
 
   constructor() {
     this.add(new UserExtractorModule())
