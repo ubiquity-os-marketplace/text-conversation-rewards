@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === "test") {
   process.argv.push("-n");
   process.argv.push("100");
   process.argv.push("-e");
-  process.argv.push("privateKey");
+  process.argv.push(`${process.env.EVM_PRIVATE_ENCRYPTED}`);
 }
 
 const program = new Command()

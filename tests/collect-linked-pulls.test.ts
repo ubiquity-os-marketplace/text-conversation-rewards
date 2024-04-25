@@ -1,12 +1,12 @@
-import { IssueParams, parseGitHubUrl } from "../start";
+import { IssueParams, parseGitHubUrl } from "../src/start";
 
-import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked to this issue
-import ISSUE_SAME_REPO_LINK from "./fixtures/issue-90.json"; // pr91 is linked to this issue
-import ISSUE_NO_LINK from "./fixtures/issue-92.json"; // no link
+import ISSUE_CROSS_REPO_LINK from "../src/data-collection/fixtures/issue-89.json"; // pr188 is linked to this issue
+import ISSUE_SAME_REPO_LINK from "../src/data-collection/fixtures/issue-90.json"; // pr91 is linked to this issue
+import ISSUE_NO_LINK from "../src/data-collection/fixtures/issue-92.json"; // no link
 
-import { collectLinkedMergedPulls, collectLinkedPulls } from "./collect-linked-pulls";
-import PR_CROSS_REPO_LINK from "./fixtures/pr-188.json";
-import PR_SAME_REPO_LINK from "./fixtures/pr-91.json";
+import { collectLinkedMergedPulls, collectLinkedPulls } from "../src/data-collection/collect-linked-pulls";
+import PR_CROSS_REPO_LINK from "../src/data-collection/fixtures/pr-188.json";
+import PR_SAME_REPO_LINK from "../src/data-collection/fixtures/pr-91.json";
 
 const PARAMS_ISSUE_CROSS_REPO_LINK: IssueParams = parseGitHubUrl(ISSUE_CROSS_REPO_LINK.html_url); // cross repo link
 const PARAMS_ISSUE_SAME_REPO_LINK: IssueParams = parseGitHubUrl(ISSUE_SAME_REPO_LINK.html_url); // same repo link

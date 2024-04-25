@@ -52,7 +52,7 @@ export class UserExtractorModule implements Module {
     return sortedPriceLabels[0];
   }
 
-  transform(data: Readonly<IssueActivity>, result: Result) {
+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     for (const comment of data.allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
         const task =
@@ -69,6 +69,6 @@ export class UserExtractorModule implements Module {
         };
       }
     }
-    return Promise.resolve(result);
+    return result;
   }
 }

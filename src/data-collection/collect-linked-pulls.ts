@@ -1,10 +1,30 @@
 import { GitHubLinkEvent, isGitHubLinkEvent } from "../github-types";
-import { IssueParams, getAllTimelineEvents } from "../start";
+import { IssueParams, getAllTimelineEvents, parseGitHubUrl } from "../start";
 
 export async function collectLinkedMergedPulls(issue: IssueParams) {
   // normally we should only use this one to calculate incentives, because this specifies that the pull requests are merged (accepted)
+  // and that are also related to the current issue, no just mentioned by
   const onlyPullRequests = await collectLinkedPulls(issue);
-  return onlyPullRequests.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at);
+  return onlyPullRequests.filter((event) => {
+    if (!event.source.issue.body) {
+      return false;
+    }
+    const linkedPrUrl = /Resolves[\s:]*(https:\/\/\S+|#\d+)/gim.exec(event.source.issue.body)?.[1];
+    if (!linkedPrUrl) {
+      return false;
+    }
+    let isClosingPr: boolean;
+    if (linkedPrUrl[0] === "#") {
+      isClosingPr = Number(linkedPrUrl.slice(1)) === issue.issue_number;
+    } else {
+      const linkedRepo = parseGitHubUrl(linkedPrUrl);
+      isClosingPr =
+        linkedRepo.issue_number === issue.issue_number &&
+        linkedRepo.repo === issue.repo &&
+        linkedRepo.owner === issue.owner;
+    }
+    return isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at && isClosingPr;
+  });
 }
 export async function collectLinkedPulls(issue: IssueParams) {
   // this one was created to help with tests, but probably should not be used in the main code

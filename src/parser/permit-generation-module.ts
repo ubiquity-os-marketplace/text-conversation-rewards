@@ -9,13 +9,15 @@ import {
   generatePayoutPermit,
   SupportedEvents,
   TokenType,
-} from "@ubiquibot/permit-generation";
+} from "@ubiquibot/permit-generation/core";
 import configuration from "../configuration/config-reader";
 import permitGenerationConfigurationType, {
   PermitGenerationConfiguration,
 } from "../configuration/permit-generation-configuration";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
+import envConfigSchema, { EnvConfigType } from "../types/env-type";
+import program from "./command-line";
 import { Module, Result } from "./processor";
 
 interface Payload {
@@ -30,27 +32,32 @@ export class PermitGenerationModule implements Module {
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const payload: Context["payload"] & Payload = context.payload.inputs;
+    const payload: Context["payload"] & Payload = {
+      ...context.payload.inputs,
+      issueUrl: program.opts().issue,
+      evmPrivateEncrypted: program.opts().evmPrivateEncrypted,
+      evmNetworkId: program.opts().evmNetworkId,
+    };
     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);
     payload.issue = {
       id: issueId,
     };
-    const env = process.env;
+    const env: EnvConfigType = process.env;
+    if (!Value.Check(envConfigSchema, env)) {
+      console.warn("[PermitGenerationModule] Invalid env detected, skipping.");
+      return Promise.resolve(result);
+    }
     const eventName = context.eventName as SupportedEvents;
     const octokit = getOctokitInstance();
     const logger = {
-      debug(message: unknown, optionalParams: unknown) {
-        console.log(message, optionalParams);
-      },
+      debug() {},
       error(message: unknown, optionalParams: unknown) {
         console.error(message, optionalParams);
       },
       fatal(message: unknown, optionalParams: unknown) {
         console.error(message, optionalParams);
       },
-      info(message: unknown, optionalParams: unknown) {
-        console.log(message, optionalParams);
-      },
+      info() {},
       warn(message: unknown, optionalParams: unknown) {
         console.warn(message, optionalParams);
       },
@@ -96,7 +103,7 @@ export class PermitGenerationModule implements Module {
         console.error(e);
       }
     }
-    return Promise.resolve(result);
+    return result;
   }
 
   get enabled(): boolean {

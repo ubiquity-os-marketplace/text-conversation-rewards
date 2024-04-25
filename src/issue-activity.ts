@@ -19,12 +19,42 @@ import {
 } from "./start";
 
 export enum CommentType {
+  /**
+   * Review related item
+   */
   REVIEW = 0b1,
+  /**
+   * Issue related item
+   */
   ISSUE = 0b10,
+  /**
+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}
+   */
   ASSIGNEE = 0b100,
+  /**
+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}
+   */
   ISSUER = 0b1000,
+  /**
+   * A user that is part of the organization or owner of the repo
+   */
   COLLABORATOR = 0b10000,
+  /**
+   * A user that is NOT part of the organization nor owner of the repo
+   */
   CONTRIBUTOR = 0b100000,
+  /**
+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}
+   */
+  COMMENTED = 0b1000000,
+  /**
+   * Pull request opening item
+   */
+  TASK = 0b10000000,
+  /**
+   * Issue opening item
+   */
+  SPECIFICATION = 0b100000000,
 }
 
 export class IssueActivity {
@@ -69,21 +99,54 @@ export class IssueActivity {
   }
 
   _getTypeFromComment(
-    comment: GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest,
+    issueType: CommentType.ISSUE | CommentType.REVIEW,
+    comment:
+      | GitHubIssueComment
+      | GitHubPullRequestReviewComment
+      | GitHubPullRequestReviewState
+      | GitHubIssue
+      | GitHubPullRequest,
     self: GitHubPullRequest | GitHubIssue | null
   ) {
     let ret = 0;
-    ret |= "pull_request_review_id" in comment ? CommentType.REVIEW : CommentType.ISSUE;
+    ret |= issueType;
+    if (comment.id === self?.id) {
+      ret |= ret & CommentType.ISSUE ? CommentType.SPECIFICATION : CommentType.TASK;
+    } else {
+      ret |= CommentType.COMMENTED;
+    }
     if (comment.user?.id === self?.user?.id) {
       ret |= CommentType.ISSUER;
     } else if (comment.user?.id === self?.assignee?.id) {
       ret |= CommentType.ASSIGNEE;
-    } else if (comment.author_association === "MEMBER") {
+    } else if (comment.author_association === "MEMBER" || comment.author_association === "COLLABORATOR") {
       ret |= CommentType.COLLABORATOR;
-    } else if (comment.author_association === "CONTRIBUTOR") {
+    } else {
       ret |= CommentType.CONTRIBUTOR;
     }
     return ret;
+  }
+
+  _getLinkedReviewComments() {
+    const comments = [];
+    for (const linkedReview of this.linkedReviews) {
+      for (const value of Object.values(linkedReview)) {
+        if (Array.isArray(value)) {
+          for (const review of value) {
+            comments.push({
+              ...review,
+              type: this._getTypeFromComment(CommentType.REVIEW, review, linkedReview.self),
+            });
+          }
+        } else if (value) {
+          comments.push({
+            ...value,
+            type: this._getTypeFromComment(CommentType.REVIEW, value, value),
+          });
+        }
+      }
+    }
+    return comments;
   }
 
   get allComments() {
@@ -91,31 +154,16 @@ export class IssueActivity {
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & { type: CommentType }
     > = this.comments.map((comment) => ({
       ...comment,
-      type: this._getTypeFromComment(comment, this.self),
+      type: this._getTypeFromComment(CommentType.ISSUE, comment, this.self),
     }));
     if (this.self) {
       comments.push({
         ...this.self,
-        type: this._getTypeFromComment(this.self, this.self),
+        type: this._getTypeFromComment(CommentType.ISSUE, this.self, this.self),
       });
     }
     if (this.linkedReviews) {
-      for (const linkedReview of this.linkedReviews) {
-        if (linkedReview.self) {
-          comments.push({
-            ...linkedReview.self,
-            type: this._getTypeFromComment(linkedReview.self, linkedReview.self),
-          });
-        }
-        if (linkedReview.reviewComments) {
-          for (const reviewComment of linkedReview.reviewComments) {
-            comments.push({
-              ...reviewComment,
-              type: this._getTypeFromComment(reviewComment, linkedReview.self),
-            });
-          }
-        }
-      }
+      comments.push(...this._getLinkedReviewComments());
     }
     return comments;
   }
@@ -125,14 +173,21 @@ export class Review {
   self: GitHubPullRequest | null = null;
   reviews: GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
   reviewComments: GitHubPullRequestReviewComment[] | null = null;
+  comments: GitHubIssueComment[] | null = null;
 
   constructor(private _pullParams: PullParams) {}
 
   async init() {
-    [this.self, this.reviews, this.reviewComments] = await Promise.all([
+    [this.self, this.reviews, this.reviewComments, this.comments] = await Promise.all([
       getPullRequest(this._pullParams),
       getPullRequestReviews(this._pullParams),
       getPullRequestReviewComments(this._pullParams),
+      // This fetches all the comments inside the Pull Request that were not created in a reviewing context
+      getIssueComments({
+        owner: this._pullParams.owner,
+        repo: this._pullParams.repo,
+        issue_number: this._pullParams.pull_number,
+      }),
     ]);
   }
 }

@@ -6,20 +6,23 @@ import program from "./command-line";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
+import { GithubCommentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
+import { BaseConfiguration } from "../configuration/common-config-type";
 
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
-  private readonly _configuration = configuration;
+  private readonly _configuration: BaseConfiguration = configuration;
 
   constructor() {
     this.add(new UserExtractorModule())
       .add(new DataPurgeModule())
       .add(new FormattingEvaluatorModule())
       .add(new ContentEvaluatorModule())
-      .add(new PermitGenerationModule());
+      .add(new PermitGenerationModule())
+      .add(new GithubCommentModule());
   }
 
   add(transformer: Module) {
@@ -28,7 +31,7 @@ export class Processor {
   }
 
   async run(data: Readonly<IssueActivity>) {
-    if (this._configuration.disabled) {
+    if (!this._configuration.enabled) {
       console.log("Module is disabled. Skipping...");
       return;
     }
@@ -100,6 +103,7 @@ export interface Result {
     };
     permitUrl?: string;
     userId: number;
+    evaluationCommentHtml?: string;
   };
 }
 

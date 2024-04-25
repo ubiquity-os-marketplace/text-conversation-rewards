@@ -12,14 +12,18 @@ export class DataPurgeModule implements Module {
     return this.configuration.enabled;
   }
 
-  transform(data: Readonly<IssueActivity>, result: Result) {
+  async transform(data: Readonly<IssueActivity>, result: Result) {
     for (const comment of data.allComments) {
       if (comment.body && comment.user?.login && result[comment.user.login]) {
         const newContent = comment.body
+          // Remove quoted text
           .replace(/^>.*$/gm, "")
+          // Remove commands such as /start
+          .replace(/^\/.+/g, "")
+          // makes the content single lined
           .replace(/[\r\n]+/g, " ")
+          // Removes URLs
           .replace(/\[.*?\]\(.*?\)/g, "")
-          .replace(/^\/\S+/g, "")
           .trim();
         if (newContent.length) {
           result[comment.user.login].comments = [
@@ -33,6 +37,6 @@ export class DataPurgeModule implements Module {
         }
       }
     }
-    return Promise.resolve(result);
+    return result;
   }
 }
