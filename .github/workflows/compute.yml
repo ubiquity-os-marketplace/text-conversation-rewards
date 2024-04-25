@@ -1,4 +1,4 @@
-name: Run Local Tests
+name: Compute Rewards
 
 on:
   repository_dispatch:
@@ -40,7 +40,10 @@ jobs:
         with:
           node-version: "20.10.0"
 
-      - name: Action Test
-        uses: Meniole/conversation-rewards@main
+      - run:
+          echo "${{ inputs }}"
+
+      - name: Generate Rewards
+        uses: ./
         with:
           issueUrl: ${{ inputs.issueUrl }}
