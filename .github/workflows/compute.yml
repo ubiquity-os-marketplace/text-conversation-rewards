@@ -15,6 +15,16 @@ on:
         required: true
       stateId:
         description: "State ID"
+      eventName:
+        description: ""
+      eventPayload:
+        description: ""
+      settings:
+        description: ""
+      authToken:
+        description: ""
+      ref:
+        description: ""
 
 jobs:
   test:
