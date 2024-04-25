@@ -40,9 +40,9 @@ jobs:
         with:
           node-version: "20.10.0"
 
-      - run: echo "${{ inputs }}"
+      - run: echo "${{ inputs.eventPayload }}"
 
       - name: Generate Rewards
-        uses: ./
+        uses: ./action.yml
         with:
           issueUrl: ${{ inputs.issueUrl }}
