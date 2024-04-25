@@ -50,4 +50,4 @@ jobs:
         with:
           issueUrl: ${{ inputs.eventPayload.url }}
           evmPrivateEncrypted: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
-          evmNetworkId: 100
+          evmNetworkId: ${{ inputs.settings.evmNetworkId }}
