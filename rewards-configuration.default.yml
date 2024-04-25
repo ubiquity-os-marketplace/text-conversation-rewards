@@ -61,5 +61,5 @@ permitGeneration:
   enabled: true
 githubComment:
   enabled: true
-  post: false
-  debug: true
+  post: true
+  debug: false
