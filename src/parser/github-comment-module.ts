@@ -15,7 +15,7 @@ import { GithubCommentScore, Module, Result } from "./processor";
  * Posts a GitHub comment according to the given results.
  */
 export class GithubCommentModule implements Module {
-  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;
+  private readonly _configuration: GithubCommentConfiguration = configuration.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {

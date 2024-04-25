@@ -9,7 +9,7 @@ import { UserExtractorConfiguration, userExtractorConfigurationType } from "@ubi
  * Creates entries for each user with its associated comments.
  */
 export class UserExtractorModule implements Module {
-  private readonly _configuration: UserExtractorConfiguration = configuration.userExtractor;
+  private readonly _configuration: UserExtractorConfiguration = configuration.incentives.userExtractor;
 
   get enabled(): boolean {
     if (!Value.Check(userExtractorConfigurationType, this._configuration)) {
