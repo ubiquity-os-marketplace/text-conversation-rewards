@@ -33,7 +33,7 @@ export class FormattingEvaluatorModule implements Module {
     }
   }
 
-  transform(data: Readonly<IssueActivity>, result: Result) {
+  async transform(data: Readonly<IssueActivity>, result: Result) {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
@@ -64,7 +64,7 @@ export class FormattingEvaluatorModule implements Module {
         };
       }
     }
-    return Promise.resolve(result);
+    return result;
   }
 
   get enabled(): boolean {

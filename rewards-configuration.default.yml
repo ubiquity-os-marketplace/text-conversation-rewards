@@ -1,4 +1,4 @@
-#disabled: true
+enabled: true
 contentEvaluator:
   enabled: true
 userExtractor:
@@ -27,29 +27,39 @@ formattingEvaluator:
     td: 1
     hr: 0
   multipliers:
-    - type: [ISSUE, ISSUER]:
+    - type: [ISSUE, ISSUER, TASK]:
+      formattingMultiplier: 1
+      wordValue: 0.1
+    - type: [ISSUE, ISSUER, COMMENTED]:
       formattingMultiplier: 1
       wordValue: 0.2
-    - type: [ISSUE, ASSIGNEE]:
+    - type: [ISSUE, ASSIGNEE, COMMENTED]:
       formattingMultiplier: 0
       wordValue: 0
-    - type: [ISSUE, COLLABORATOR]:
+    - type: [ISSUE, COLLABORATOR, COMMENTED]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [ISSUE, CONTRIBUTOR]:
+    - type: [ISSUE, CONTRIBUTOR, COMMENTED]:
       formattingMultiplier: 0.25
       wordValue: 0.1
-    - type: [REVIEW, ISSUER]:
+    - type: [REVIEW, ISSUER, SPECIFICATION]:
+      formattingMultiplier: 0
+      wordValue: 0
+    - type: [REVIEW, ISSUER, COMMENTED]:
       formattingMultiplier: 2
       wordValue: 0.2
-    - type: [REVIEW, ASSIGNEE]:
+    - type: [REVIEW, ASSIGNEE, COMMENTED]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [REVIEW, COLLABORATOR]:
+    - type: [REVIEW, COLLABORATOR, COMMENTED]:
       formattingMultiplier: 1
       wordValue: 0.1
-    - type: [REVIEW, CONTRIBUTOR]:
+    - type: [REVIEW, CONTRIBUTOR, COMMENTED]:
       formattingMultiplier: 0.25
       wordValue: 0.1
 permitGeneration:
   enabled: true
+githubComment:
+  enabled: true
+  post: false
+  debug: true
