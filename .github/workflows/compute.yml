@@ -13,6 +13,8 @@ on:
       evmPrivateEncrypted:
         description: "The encrypted EVM private key"
         required: true
+      stateId:
+        description: "State ID"
 
 jobs:
   test:
