@@ -43,6 +43,6 @@ jobs:
 #      - run: echo "${{ inputs.eventPayload }}"
 
       - name: Generate Rewards
-        uses: "./action.yml"
+        uses: "../../action.yml"
         with:
           issueUrl: ${{ inputs.eventPayload.url }}
