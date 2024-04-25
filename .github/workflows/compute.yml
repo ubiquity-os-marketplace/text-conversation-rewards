@@ -1,6 +1,7 @@
 name: Run Local Tests
 
 on:
+  repository_dispatch:
   workflow_dispatch:
     inputs:
       issueUrl:
