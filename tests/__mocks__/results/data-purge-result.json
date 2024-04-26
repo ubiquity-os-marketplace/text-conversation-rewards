@@ -32,6 +32,16 @@
         "content": "sure thing",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639196",
         "type": "ISSUE|CONTRIBUTOR|COMMENTED"
+      },
+      {
+        "content": "indeed",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949038563",
+        "type": "REVIEW|CONTRIBUTOR|COMMENTED"
+      },
+      {
+        "content": "go to go pavlovick, we'll be using this one for test only or test in production (lmao) ?",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855",
+        "type": "REVIEW|CONTRIBUTOR|COMMENTED"
       }
     ]
   },
@@ -73,6 +83,16 @@
         "content": "Can somebody work on generating a new `X25519_PRIVATE_KEY` for the ubiquibot organization? We need to share it for development purposes. 1. Generate a new key 2. Encrypt a new `evmPrivateKeyEncrypted` (no funds!) and add to the org bot config 3. Add the shared test key to the `comment-incentives` readme.  https://github.com/ubiquibot/comment-incentives/pull/21/commits/567419d9688e92edf698f64c697f1a7cafe1d02e _Originally posted by @pavlovcik in https://github.com/ubiquibot/comment-incentives/issues/19#issuecomment-1948876653_",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22",
         "type": "ISSUE|ISSUER|TASK"
+      },
+      {
+        "content": "Need to document a private key too",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949021356",
+        "type": "REVIEW|COLLABORATOR|COMMENTED"
+      },
+      {
+        "content": "I was editing this right now but was too slow to push.",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196677",
+        "type": "REVIEW|COLLABORATOR|COMMENTED"
       }
     ]
   },
@@ -92,6 +112,16 @@
         "content": "The new evmPrivateKeyEncrypted generated for address 0x3a2E44e10AbEf5CB4a6E492c5ba93d30068d2D95 (no funds). Resolves: https://github.com/ubiquibot/comment-incentives/issues/22",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25",
         "type": "REVIEW|ISSUER|SPECIFICATION"
+      },
+      {
+        "content": "@pavlovcik @molecula451 please check now again, I added to docs.",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044575",
+        "type": "REVIEW|ISSUER|COMMENTED"
+      },
+      {
+        "content": "No way, full details are available in plain sight, only for test in production purposes",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949046925",
+        "type": "REVIEW|ISSUER|COMMENTED"
       }
     ]
   }

@@ -2,10 +2,8 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
+import { FormattingEvaluatorConfiguration, formattingEvaluatorConfigurationType } from "@ubiquibot/configuration";
 import configuration from "../configuration/config-reader";
-import formattingEvaluatorConfig, {
-  FormattingEvaluatorConfiguration,
-} from "../configuration/formatting-evaluator-config";
 import { CommentType, IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
@@ -15,7 +13,7 @@ interface Multiplier {
 }
 
 export class FormattingEvaluatorModule implements Module {
-  private readonly _configuration: FormattingEvaluatorConfiguration = configuration.formattingEvaluator;
+  private readonly _configuration: FormattingEvaluatorConfiguration = configuration.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: string]: Multiplier } = {};
 
@@ -68,7 +66,7 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   get enabled(): boolean {
-    if (!Value.Check(formattingEvaluatorConfig, this._configuration)) {
+    if (!Value.Check(formattingEvaluatorConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for FormattingEvaluatorModule, disabling.");
       return false;
     }

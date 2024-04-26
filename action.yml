@@ -19,7 +19,7 @@ runs:
   steps:
     - run: |
         yarn --cwd ${{ github.action_path }} --production=true
-        yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issueUrl }}" --file "${{ github.action_path }}/results.json"
+        yarn --cwd ${{ github.action_path }} start --issue "${{ inputs.issueUrl }}" --file "${{ github.action_path }}/results.json" --evmNetworkId "${{ inputs.evmNetworkId }}" --evmPrivateEncrypted "${{ inputs.evmPrivateEncrypted }}"
         output=$(cat ${{ github.action_path }}/results.json | tr -s ' ' | tr -d '\n')
         echo "Output of calculations:"
         echo "$output"

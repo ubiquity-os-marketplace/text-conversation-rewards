@@ -1,9 +1,9 @@
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
 import OpenAI from "openai";
+import { ContentEvaluatorConfiguration, contentEvaluatorConfigurationType } from "@ubiquibot/configuration";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
-import contentEvaluatorConfig, { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
@@ -13,10 +13,10 @@ import { Value } from "@sinclair/typebox/value";
  */
 export class ContentEvaluatorModule implements Module {
   readonly _openAi = new OpenAI({ apiKey: OPENAI_API_KEY });
-  readonly _configuration: ContentEvaluatorConfiguration = configuration.contentEvaluator;
+  readonly _configuration: ContentEvaluatorConfiguration = configuration.incentives.contentEvaluator;
 
   get enabled(): boolean {
-    if (!Value.Check(contentEvaluatorConfig, this._configuration)) {
+    if (!Value.Check(contentEvaluatorConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for ContentEvaluatorModule, disabling.");
       return false;
     }
