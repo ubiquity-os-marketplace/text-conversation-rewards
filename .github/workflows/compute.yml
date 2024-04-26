@@ -46,7 +46,7 @@ jobs:
       - run:
           echo ${{ inputs.settings }}
           echo "-------"
-          echo ${{ toJson(inputs.settings.evmNetworkId) }}
+          echo ${{ toJson(inputs.settings) }}
           echo "-------"
           echo ${{ inputs.settings.evmNetworkId }}
           echo "-------"
