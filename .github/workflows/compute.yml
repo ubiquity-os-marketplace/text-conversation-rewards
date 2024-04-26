@@ -45,7 +45,8 @@ jobs:
 
       - run:
           echo ${{ inputs.settings }}
-          echo ${{ inputs.eventPayload.issue }}
+          echo "-------"
+          echo ${{ inputs.eventPayload }}
 
       - name: Generate Rewards
         uses: ./
