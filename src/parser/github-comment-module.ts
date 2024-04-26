@@ -36,7 +36,7 @@ export class GithubCommentModule implements Module {
     }
     if (this._configuration.post) {
       try {
-        const octokit = getOctokitInstance();
+        const octokit = await getOctokitInstance();
         const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);
 
         await octokit.issues.createComment({

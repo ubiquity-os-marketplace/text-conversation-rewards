@@ -8,6 +8,8 @@ declare global {
       SUPABASE_URL: string;
       NFT_CONTRACT_ADDRESS: string;
       NFT_MINTER_PRIVATE_KEY: string;
+      APP_ID: string;
+      UBIQUIBOT_APP_PRIVATE_KEY: string;
     }
   }
 }
