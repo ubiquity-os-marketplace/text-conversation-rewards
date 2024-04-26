@@ -46,6 +46,10 @@ jobs:
       - run:
           echo ${{ inputs.settings }}
           echo "-------"
+          echo ${{ inputs.settings.evmNetworkId }}
+          echo "-------"
+          echo ${{ inputs.settings['evmNetworkId'] }}
+          echo "-------"
           echo ${{ inputs.eventPayload }}
 
       - name: Generate Rewards
