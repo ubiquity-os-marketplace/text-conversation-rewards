@@ -11,13 +11,13 @@ async function getAuthenticationToken() {
   const inputs = {
     installationId: INSTALLATION_ID,
   };
+  console.log(JSON.stringify(github.context.payload, null, 2));
+
   const eventPayload = JSON.parse(github.context.payload.inputs);
   console.log("event payload", eventPayload);
   if (eventPayload?.installation) {
     inputs.installationId = eventPayload.installation.id;
   }
-
-  console.log(JSON.stringify(github.context, null, 2));
 
   const auth = createAppAuth({ appId, privateKey, installationId: inputs.installationId });
   const authInstance = await auth({ type: "installation" });
