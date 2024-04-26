@@ -1,19 +1,25 @@
+import * as github from "@actions/github";
+import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/rest";
-import { GITHUB_TOKEN } from "./configuration/constants";
+import { APP_ID, INSTALLATION_ID, UBIQUIBOT_APP_PRIVATE_KEY } from "./configuration/constants";
 
 let octokitInstance: Octokit | null = null;
 
-function getAuthenticationToken(): string {
-  const auth = GITHUB_TOKEN;
-  if (!auth) {
-    throw new Error("No authentication token provided");
-  }
-  return auth;
+async function getAuthenticationToken() {
+  const appId = APP_ID;
+  const privateKey = UBIQUIBOT_APP_PRIVATE_KEY;
+  const inputs = github.context.payload.inputs || {
+    installationId: INSTALLATION_ID,
+  };
+
+  const auth = createAppAuth({ appId, privateKey, installationId: inputs.installationId });
+  const authInstance = await auth({ type: "installation" });
+  return authInstance.token;
 }
 
-function getOctokitInstance(): Octokit {
+async function getOctokitInstance(): Promise<Octokit> {
   if (!octokitInstance) {
-    const auth = getAuthenticationToken();
+    const auth = await getAuthenticationToken();
     octokitInstance = new Octokit({ auth });
   }
   return octokitInstance;

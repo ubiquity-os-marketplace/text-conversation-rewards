@@ -58,30 +58,30 @@ export type IssueParams = ReturnType<typeof parseGitHubUrl>;
 export type PullParams = { owner: string; repo: string; pull_number: number };
 
 export async function getIssue(params: IssueParams): Promise<GitHubIssue> {
-  const octokit = getOctokitInstance();
+  const octokit = await getOctokitInstance();
   return (await octokit.issues.get(params)).data;
 }
 
 export async function getPullRequest(pullParams: PullParams): Promise<GitHubPullRequest> {
-  const octokit = getOctokitInstance();
+  const octokit = await getOctokitInstance();
   return (await octokit.pulls.get(pullParams)).data;
 }
 
 export async function getIssueEvents(issueParams: IssueParams): Promise<GitHubIssueEvent[]> {
-  const octokit = getOctokitInstance();
+  const octokit = await getOctokitInstance();
   return await octokit.paginate(octokit.issues.listEvents.endpoint.merge(issueParams));
 }
 
 export async function getIssueComments(issueParams: IssueParams): Promise<GitHubIssueComment[]> {
-  const octokit = getOctokitInstance();
+  const octokit = await getOctokitInstance();
   return await octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams));
 }
 export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReviewState[]> {
-  const octokit = getOctokitInstance();
+  const octokit = await getOctokitInstance();
   return await octokit.paginate(octokit.pulls.listReviews.endpoint.merge(pullParams));
 }
 export async function getPullRequestReviewComments(pullParams: PullParams): Promise<GitHubPullRequestReviewComment[]> {
-  const octokit = getOctokitInstance();
+  const octokit = await getOctokitInstance();
   return await octokit.paginate(octokit.pulls.listReviewComments.endpoint.merge(pullParams));
 }
 
@@ -91,7 +91,7 @@ async function getAllIssueActivity(issueParams: IssueParams) {
   // which includes the issue specification, any events, and all conversation
   //  that has occurred on the issue in chronological order
 
-  const octokit = getOctokitInstance();
+  const octokit = await getOctokitInstance();
   const [issue, events, comments] = await Promise.all([
     octokit.issues.get(issueParams),
     octokit.paginate(octokit.issues.listEvents.endpoint.merge(issueParams)),
@@ -113,7 +113,7 @@ async function getTimelineUsers(issueParams: IssueParams): Promise<GitHubUser[]>
 }
 
 export async function getAllTimelineEvents(issueParams: IssueParams): Promise<GitHubTimelineEvent[]> {
-  const octokit = getOctokitInstance();
+  const octokit = await getOctokitInstance();
   const options = octokit.issues.listEventsForTimeline.endpoint.merge(issueParams);
   return await octokit.paginate(options);
 }
