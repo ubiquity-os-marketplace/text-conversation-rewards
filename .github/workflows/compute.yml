@@ -43,13 +43,6 @@ jobs:
         with:
           node-version: "20.10.0"
 
-#      - run:
-#          echo "${{ inputs.settings }}"
-#          echo "-------\n"
-#          echo "${{ inputs.eventPayload }}"
-#          echo "-------\n"
-#          echo "${{ inputs.eventPayload }}"
-
       - name: Generate Rewards
         uses: ./
         with:
