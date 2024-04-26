@@ -8,18 +8,18 @@ let octokitInstance: Octokit | null = null;
 async function getAuthenticationToken() {
   const appId = APP_ID;
   const privateKey = UBIQUIBOT_APP_PRIVATE_KEY;
+  // Defaults to the ENV value in case we are not in a GitHub Action context
   const inputs = {
     installationId: INSTALLATION_ID,
   };
-  console.log(JSON.stringify(github.context.payload.inputs, null, 2));
 
-  const eventPayload = JSON.parse(github.context.payload.inputs.eventPayload);
-  console.log("event payload", eventPayload);
-  if (eventPayload?.installation) {
-    inputs.installationId = eventPayload.installation.id;
+  if (github.context.payload.inputs) {
+    const eventPayload = JSON.parse(github.context.payload.inputs.eventPayload);
+    if (eventPayload?.installation) {
+      inputs.installationId = eventPayload.installation.id;
+    }
   }
 
-  console.log("installationId id", inputs);
   const auth = createAppAuth({ appId, privateKey, installationId: inputs.installationId });
   const authInstance = await auth({ type: "installation" });
   return authInstance.token;

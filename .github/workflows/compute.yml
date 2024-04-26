@@ -3,27 +3,18 @@ name: Compute Rewards
 on:
   workflow_dispatch:
     inputs:
-#      issueUrl:
-#        description: "The URL of the issue needing to be parsed"
-#        required: true
-#      evmNetworkId:
-#        description: "The EVM network ID to use"
-#        required: true
-#      evmPrivateEncrypted:
-#        description: "The encrypted EVM private key"
-#        required: true
       stateId:
-        description: ""
+        description: "State Id"
       eventName:
-        description: ""
+        description: "Event Name"
       eventPayload:
-        description: ""
+        description: "Event Payload"
       settings:
-        description: ""
+        description: "Settings"
       authToken:
-        description: ""
+        description: "Auth Token"
       ref:
-        description: ""
+        description: "Ref"
 
 jobs:
   compute:
