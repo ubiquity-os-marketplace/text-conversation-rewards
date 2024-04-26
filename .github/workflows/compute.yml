@@ -43,11 +43,11 @@ jobs:
         with:
           node-version: "20.10.0"
 
-      - run: echo ${{ inputs.eventPayload }}
+      - run: echo ${{ inputs.settings }}
 
       - name: Generate Rewards
         uses: ./
         with:
-          issueUrl: ${{ inputs.eventPayload.url }}
+          issueUrl: ${{ inputs.eventPayload.issue.url }}
           evmPrivateEncrypted: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
           evmNetworkId: ${{ inputs.settings.evmNetworkId }}
