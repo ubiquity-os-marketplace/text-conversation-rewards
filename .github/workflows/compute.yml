@@ -27,12 +27,18 @@ on:
         description: ""
 
 jobs:
-  test:
-    name: Run Local Tests
+  compute:
+    name: Rewards
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      X25519_PRIVATE_KEY: ${{ secrets.X25519_PRIVATE_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
+      NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
+      EVM_PRIVATE_ENCRYPTED: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
 
     steps:
       - name: Checkout code
