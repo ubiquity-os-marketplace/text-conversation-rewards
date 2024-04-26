@@ -44,9 +44,11 @@ jobs:
           node-version: "20.10.0"
 
       - run:
-          echo ${{ inputs.settings }}
+          echo "${{ inputs.settings }}"
           echo "-------"
-          echo ${{ toJson(inputs.settings) }}
+          echo "${{ toJson(inputs.settings) }}"
+          echo "-------"
+          echo "${{ toJson(inputs.settings).evmNetworkId }}"
           echo "-------"
           echo ${{ inputs.settings.evmNetworkId }}
           echo "-------"
