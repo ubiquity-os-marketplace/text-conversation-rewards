@@ -51,6 +51,6 @@ jobs:
       - name: Generate Rewards
         uses: ./
         with:
-          issueUrl: ${{ fromJSON(inputs.eventPayload).issue.url }}
+          issueUrl: ${{ fromJSON(inputs.eventPayload).issue.html_url }}
           evmPrivateEncrypted: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
           evmNetworkId: ${{ fromJSON(inputs.settings).evmNetworkId }}
