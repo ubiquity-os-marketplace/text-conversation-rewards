@@ -44,27 +44,13 @@ jobs:
           node-version: "20.10.0"
 
       - run:
-          echo ${{ github }}
-          echo "---"
-          echo "${{ inputs.settings }}"
-          echo "-------"
-          echo "${{ toJSON(inputs.settings) }}"
-          echo "-------"
           echo "${{ fromJSON(inputs.settings) }}"
-          echo "-------"
-          echo "${{ toJson(inputs.settings).evmNetworkId }}"
-          echo "-------"
-          echo "${{ fromJSON(inputs.settings).evmNetworkId }}"
-          echo "-------"
-          echo ${{ inputs.settings.evmNetworkId }}
-          echo "-------"
-          echo ${{ inputs.settings['evmNetworkId'] }}
-          echo "-------"
-          echo ${{ inputs.eventPayload }}
+          echo "-------\n"
+          echo "${{ fromJSON(inputs.eventPayload) }}"
 
       - name: Generate Rewards
         uses: ./
         with:
-          issueUrl: ${{ inputs.eventPayload.issue.url }}
+          issueUrl: ${{ fromJSON(inputs.eventPayload).issue.url }}
           evmPrivateEncrypted: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
-          evmNetworkId: ${{ inputs.settings.evmNetworkId }}
+          evmNetworkId: ${{ fromJSON(inputs.settings).evmNetworkId }}
