@@ -3342,10 +3342,10 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
-"@ubiquibot/configuration@2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@ubiquibot/configuration/-/configuration-2.0.2.tgz#f0f3b0aa6899c74a152170e7a0a69d154f621154"
-  integrity sha512-YKxkiSNlNEJefMWb5TJIqi07atVFWstN4kzdKAiX+5Y7NDp9YmcrPpO6Jc6J31fISM7uwQJLhif2KrQAdHcxIg==
+"@ubiquibot/configuration@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@ubiquibot/configuration/-/configuration-2.0.3.tgz#2138ead3f38d14f498afb17be92a590b6d48c365"
+  integrity sha512-Seizwvt3kg6biF9DtbqSJ+aLkIgr0iOYBPvTL1x6ueIILdJgnTgf3Mzfsy7G0BUXGT6Jlr/2eAPqQy77CHhpkg==
 
 "@ubiquibot/permit-generation@1.2.2":
   version "1.2.2"
