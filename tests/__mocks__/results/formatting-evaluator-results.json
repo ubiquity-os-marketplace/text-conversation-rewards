@@ -1,24 +1,28 @@
 {
   "molecula451": {
-    "total": 2.25,
+    "total": 2.225,
     "userId": 41552663,
     "comments": [
       {
-        "content": "pavlovcik i think we need to update a bit the readme !   dm what to whom?",
+        "content": "pavlovcik i think we need to update a bit the readme ![image_2024-02-16_131036879](https://github.com/ubiquibot/comment-incentives/assets/41552663/41516d66-4666-47d7-9efe-517fb26293dd)   dm what to whom?",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343",
         "type": "ISSUE|CONTRIBUTOR|COMMENTED",
         "score": {
           "formatting": {
             "content": {
               "p": {
-                "count": 16,
+                "count": 15,
                 "score": 1
+              },
+              "img": {
+                "count": 1,
+                "score": 0
               }
             },
             "wordValue": 0.1,
             "formattingMultiplier": 0.25
           },
-          "reward": 0.4
+          "reward": 0.375
         }
       },
       {
@@ -268,7 +272,7 @@
       {
         "content": "Can somebody work on generating a new `X25519_PRIVATE_KEY` for the ubiquibot organization? We need to share it for development purposes. 1. Generate a new key 2. Encrypt a new `evmPrivateKeyEncrypted` (no funds!) and add to the org bot config 3. Add the shared test key to the `comment-incentives` readme.  https://github.com/ubiquibot/comment-incentives/pull/21/commits/567419d9688e92edf698f64c697f1a7cafe1d02e _Originally posted by @pavlovcik in https://github.com/ubiquibot/comment-incentives/issues/19#issuecomment-1948876653_",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22",
-        "type": "ISSUE|ISSUER|TASK",
+        "type": "ISSUE|ISSUER|SPECIFICATION",
         "score": {
           "formatting": {
             "content": {
@@ -357,7 +361,7 @@
       {
         "content": "The new evmPrivateKeyEncrypted generated for address 0x3a2E44e10AbEf5CB4a6E492c5ba93d30068d2D95 (no funds). Resolves: https://github.com/ubiquibot/comment-incentives/issues/22",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25",
-        "type": "REVIEW|ISSUER|SPECIFICATION",
+        "type": "REVIEW|ISSUER|TASK",
         "score": {
           "formatting": {
             "content": {
