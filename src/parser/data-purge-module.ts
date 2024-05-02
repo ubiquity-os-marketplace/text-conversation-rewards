@@ -28,8 +28,6 @@ export class DataPurgeModule implements Module {
           .replace(/^\/.+/g, "")
           // makes the content single lined
           .replace(/[\r\n]+/g, " ")
-          // Removes URLs
-          .replace(/\[.*?\]\(.*?\)/g, "")
           .trim();
         if (newContent.length) {
           result[comment.user.login].comments = [
