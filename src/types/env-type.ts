@@ -8,7 +8,7 @@ const envConfigSchema = Type.Object({
   OPENAI_API_KEY: Type.String(),
   NFT_MINTER_PRIVATE_KEY: Type.String(),
   NFT_CONTRACT_ADDRESS: Type.String(),
-  APP_ID: Type.String(),
+  UBIQUIBOT_APP_ID: Type.String(),
   UBIQUIBOT_APP_PRIVATE_KEY: Type.String(),
 });
 
