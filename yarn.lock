@@ -2704,7 +2704,7 @@
   dependencies:
     "@octokit/types" "^12.6.0"
 
-"@octokit/request-error@^5.1.0":
+"@octokit/request-error@^5.0.0", "@octokit/request-error@^5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@octokit/request-error/-/request-error-5.1.0.tgz#ee4138538d08c81a60be3f320cd71063064a3b30"
   integrity sha512-GETXfE05J0+7H2STzekpKObFe765O5dlAKUTLNGeH+x47z7JjXHfsHKo5z21D/o/IOZTUEI6nyWyR+bZVP/n5Q==
@@ -2754,10 +2754,30 @@
   dependencies:
     "@octokit/openapi-types" "^22.1.0"
 
+"@octokit/webhooks-methods@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-4.1.0.tgz#681a6c86c9b21d4ec9e29108fb053ae7512be033"
+  integrity sha512-zoQyKw8h9STNPqtm28UGOYFE7O6D4Il8VJwhAtMHFt2C4L0VQT1qGKLeefUOqHNs1mNRYSadVv7x0z8U2yyeWQ==
+
 "@octokit/webhooks-methods@^5.0.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-5.1.0.tgz#13b6c08f89902c1ab0ddf31c6eeeec9c2772cfe6"
   integrity sha512-yFZa3UH11VIxYnnoOYCVoJ3q4ChuSOk2IVBBQ0O3xtKX4x9bmKb/1t+Mxixv2iUhzMdOl1qeWJqEhouXXzB3rQ==
+
+"@octokit/webhooks-types@7.4.0":
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks-types/-/webhooks-types-7.4.0.tgz#7ed15c75908683a34e0079c80f261fe568b87395"
+  integrity sha512-FE2V+QZ2UYlh+9wWd5BPLNXG+J/XUD/PPq0ovS+nCcGX4+3qVbi3jYOmCTW48hg9SBBLtInx9+o7fFt4H5iP0Q==
+
+"@octokit/webhooks@12.2.0":
+  version "12.2.0"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-12.2.0.tgz#ea1ee2d9d9c5a4b7b53ff8bc64a9feb0dac94161"
+  integrity sha512-CyuLJ0/P7bKZ+kIYw+fnkeVdhUzNuDKgNSI7pU/m7Nod0T7kP+s4s2f0pNmG9HL8/RZN1S0ZWTDll3VTMrFLAw==
+  dependencies:
+    "@octokit/request-error" "^5.0.0"
+    "@octokit/webhooks-methods" "^4.1.0"
+    "@octokit/webhooks-types" "7.4.0"
+    aggregate-error "^3.1.0"
 
 "@octokit/webhooks@^13.1.0":
   version "13.2.3"
@@ -3342,10 +3362,10 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
-"@ubiquibot/configuration@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@ubiquibot/configuration/-/configuration-2.0.3.tgz#2138ead3f38d14f498afb17be92a590b6d48c365"
-  integrity sha512-Seizwvt3kg6biF9DtbqSJ+aLkIgr0iOYBPvTL1x6ueIILdJgnTgf3Mzfsy7G0BUXGT6Jlr/2eAPqQy77CHhpkg==
+"@ubiquibot/configuration@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@ubiquibot/configuration/-/configuration-2.1.0.tgz#0333372ea7a261253063f8a17c8318ca350bb7db"
+  integrity sha512-O+WghhnahL+FhijHNHHO94oYDUptP2PbVcypjT+bQ6akdGzUfKUpgjssdnwQWwfdN66TPEx3OM3bPyZdFX7/WA==
 
 "@ubiquibot/permit-generation@1.2.2":
   version "1.2.2"
@@ -3442,7 +3462,7 @@ agentkeepalive@^4.2.1:
   dependencies:
     humanize-ms "^1.2.1"
 
-aggregate-error@^3.0.0:
+aggregate-error@^3.0.0, aggregate-error@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/aggregate-error/-/aggregate-error-3.1.0.tgz#92670ff50f5359bdb7a3e0d40d0ec30c5737687a"
   integrity sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==
@@ -8326,6 +8346,11 @@ type-fest@^4.9.0:
   version "4.15.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.15.0.tgz#21da206b89c15774cc718c4f2d693e13a1a14a43"
   integrity sha512-tB9lu0pQpX5KJq54g+oHOLumOx+pMep4RaM6liXh2PKmVRFF+/vAtUP0ZaJ0kOySfVNjF6doBWPHhBhISKdlIA==
+
+typebox-validators@0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/typebox-validators/-/typebox-validators-0.3.5.tgz#b913bad0a87571ffe0edd01d2b6090a268e1ecc9"
+  integrity sha512-FXrmSUAN6bSGxDANResNCZQ8VRRLr5bSyy73/HyqSXGdiVuogppGAoRocy7NTVZY4Wc2sWUofmWwwIXE6OxS6Q==
 
 typed-array-buffer@^1.0.2:
   version "1.0.2"

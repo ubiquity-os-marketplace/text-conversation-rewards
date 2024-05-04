@@ -20,7 +20,7 @@ if (!Value.Check(baseIncentiveConfiguration, incentivesConfiguration)) {
   console.warn("Invalid bot configuration detected, will use defaults.");
 } else {
   // Merge the default with our own
-  configuration = generateConfiguration({ ...configuration, incentives: incentivesConfiguration });
+  configuration = generateConfiguration({ incentives: incentivesConfiguration } as BotConfig);
 }
 
 export default configuration;
