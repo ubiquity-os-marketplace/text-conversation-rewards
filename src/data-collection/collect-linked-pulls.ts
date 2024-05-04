@@ -9,19 +9,30 @@ export async function collectLinkedMergedPulls(issue: IssueParams) {
     if (!event.source.issue.body) {
       return false;
     }
-    const linkedPrUrl = /Resolves[\s:]*(https:\/\/\S+|#\d+)/gim.exec(event.source.issue.body)?.[1];
-    if (!linkedPrUrl) {
+    // Matches all keywords according to the docs:
+    // https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword
+    // Works on multiple linked issues, and matches #<number> or URL patterns
+    const linkedIssueRegex =
+      /\b(?:Close(?:s|d)?|Fix(?:es|ed)?|Resolve(?:s|d)?):?\s+(?:#(\d+)|https?:\/\/(?:www\.)?github\.com\/(?:[^/\s]+\/[^/\s]+\/(?:issues|pull)\/(\d+)))\b/gi;
+    const linkedPrUrls = event.source.issue.body.match(linkedIssueRegex);
+    if (!linkedPrUrls) {
       return false;
     }
-    let isClosingPr: boolean;
-    if (linkedPrUrl[0] === "#") {
-      isClosingPr = Number(linkedPrUrl.slice(1)) === issue.issue_number;
-    } else {
-      const linkedRepo = parseGitHubUrl(linkedPrUrl);
-      isClosingPr =
-        linkedRepo.issue_number === issue.issue_number &&
-        linkedRepo.repo === issue.repo &&
-        linkedRepo.owner === issue.owner;
+    let isClosingPr = false;
+    for (const linkedPrUrl of linkedPrUrls) {
+      const idx = linkedPrUrl.indexOf("#");
+      if (idx !== -1) {
+        isClosingPr = Number(linkedPrUrl.slice(idx + 1)) === issue.issue_number;
+      } else {
+        const url = linkedPrUrl.match(/https.+/)?.[0];
+        if (url) {
+          const linkedRepo = parseGitHubUrl(url);
+          isClosingPr =
+            linkedRepo.issue_number === issue.issue_number &&
+            linkedRepo.repo === issue.repo &&
+            linkedRepo.owner === issue.owner;
+        }
+      }
     }
     return isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at && isClosingPr;
   });

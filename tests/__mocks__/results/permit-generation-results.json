@@ -1,24 +1,28 @@
 {
   "molecula451": {
-    "total": 1.8,
+    "total": 1.78,
     "userId": 41552663,
     "comments": [
       {
-        "content": "pavlovcik i think we need to update a bit the readme !   dm what to whom?",
+        "content": "pavlovcik i think we need to update a bit the readme ![image_2024-02-16_131036879](https://github.com/ubiquibot/comment-incentives/assets/41552663/41516d66-4666-47d7-9efe-517fb26293dd)   dm what to whom?",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343",
         "type": "ISSUE|CONTRIBUTOR|COMMENTED",
         "score": {
           "formatting": {
             "content": {
               "p": {
-                "count": 16,
+                "count": 15,
                 "score": 1
+              },
+              "img": {
+                "count": 1,
+                "score": 0
               }
             },
             "wordValue": 0.1,
             "formattingMultiplier": 0.25
           },
-          "reward": 0.32,
+          "reward": 0.3,
           "relevance": 0.8
         }
       },
@@ -156,7 +160,7 @@
         }
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxODAwMDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiNTU5OTM2MDE0NzcwMzQzMTA4MTU5NDY5ODEzMzcwNTA1MDMxMzkxMzU2MjIzMDMwNTA5MjQyNzA2ODYyOTY3NzAwMDEzODA2OTM3ODEiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjE4MDAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweDBmQzFiOTA5YmE5MjY1QTg0NmI4MkNGNENFMzUyZmMzZTdFZUIyRUQiLCJzaWduYXR1cmUiOiIweDdjYmNiNzIzODU3NDQwMWIwNDA2YjYxNmYwY2RiYjQzNjM5YjUyMDAwOGYwNGRmY2ZhZWVjNmZlMjg5NjZjZWUxOGQ4NDA5M2RmM2MwZjk3ZWJlMGRiZjYyYjE5ZTE5NzU2ZWNiMGY2YWU2YjAyMThjZGRlOTAxZTA2N2JmM2YzMWIiLCJuZXR3b3JrSWQiOjEwMH1d"
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxNzgwMDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiNTU5OTM2MDE0NzcwMzQzMTA4MTU5NDY5ODEzMzcwNTA1MDMxMzkxMzU2MjIzMDMwNTA5MjQyNzA2ODYyOTY3NzAwMDEzODA2OTM3ODEiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjE3ODAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweDBmQzFiOTA5YmE5MjY1QTg0NmI4MkNGNENFMzUyZmMzZTdFZUIyRUQiLCJzaWduYXR1cmUiOiIweDQyZWI1ZjQ3Y2QzNTlhYWE3MWQ4MGJiZWExNjFkOTAyY2JmODhkMTg4N2M0ZmQ4YTdlMTUwMWVmNWY2NTc3YzY1MmQ1MmYwMGFhYzYyYWE4MDk0MTViYmFiYTZkZWM4MmY5OTMxMTNjY2ZjZTlkOWI4MDgwM2ZmNGExMWYzMzEzMWMiLCJuZXR3b3JrSWQiOjEwMH1d"
   },
   "0x4007": {
     "total": 33.44,
@@ -283,7 +287,7 @@
       {
         "content": "Can somebody work on generating a new `X25519_PRIVATE_KEY` for the ubiquibot organization? We need to share it for development purposes. 1. Generate a new key 2. Encrypt a new `evmPrivateKeyEncrypted` (no funds!) and add to the org bot config 3. Add the shared test key to the `comment-incentives` readme.  https://github.com/ubiquibot/comment-incentives/pull/21/commits/567419d9688e92edf698f64c697f1a7cafe1d02e _Originally posted by @pavlovcik in https://github.com/ubiquibot/comment-incentives/issues/19#issuecomment-1948876653_",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22",
-        "type": "ISSUE|ISSUER|TASK",
+        "type": "ISSUE|ISSUER|SPECIFICATION",
         "score": {
           "formatting": {
             "content": {
@@ -377,7 +381,7 @@
       {
         "content": "The new evmPrivateKeyEncrypted generated for address 0x3a2E44e10AbEf5CB4a6E492c5ba93d30068d2D95 (no funds). Resolves: https://github.com/ubiquibot/comment-incentives/issues/22",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25",
-        "type": "REVIEW|ISSUER|SPECIFICATION",
+        "type": "REVIEW|ISSUER|TASK",
         "score": {
           "formatting": {
             "content": {

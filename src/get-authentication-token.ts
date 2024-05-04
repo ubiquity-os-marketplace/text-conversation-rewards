@@ -1,12 +1,12 @@
 import * as github from "@actions/github";
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/rest";
-import { APP_ID, INSTALLATION_ID, UBIQUIBOT_APP_PRIVATE_KEY } from "./configuration/constants";
+import { UBIQUIBOT_APP_ID, INSTALLATION_ID, UBIQUIBOT_APP_PRIVATE_KEY } from "./configuration/constants";
 
 let octokitInstance: Octokit | null = null;
 
 async function getAuthenticationToken() {
-  const appId = APP_ID;
+  const appId = UBIQUIBOT_APP_ID;
   const privateKey = UBIQUIBOT_APP_PRIVATE_KEY;
   // Defaults to the ENV value in case we are not in a GitHub Action context
   const inputs = {
