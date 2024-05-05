@@ -21,6 +21,9 @@ jobs:
       NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
       NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
       EVM_PRIVATE_ENCRYPTED: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
+      UBIQUIBOT_APP_ID: ${{ secrets.UBIQUIBOT_APP_ID }}
+      UBIQUIBOT_APP_PRIVATE_KEY: ${{ secrets.UBIQUIBOT_APP_PRIVATE_KEY }}
+      INSTALLATION_ID: ${{ secrets.INSTALLATION_ID }}
 
     steps:
       - name: Checkout code
