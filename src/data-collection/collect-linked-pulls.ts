@@ -1,10 +1,41 @@
 import { GitHubLinkEvent, isGitHubLinkEvent } from "../github-types";
-import { IssueParams, getAllTimelineEvents } from "../start";
+import { IssueParams, getAllTimelineEvents, parseGitHubUrl } from "../start";
 
 export async function collectLinkedMergedPulls(issue: IssueParams) {
   // normally we should only use this one to calculate incentives, because this specifies that the pull requests are merged (accepted)
+  // and that are also related to the current issue, no just mentioned by
   const onlyPullRequests = await collectLinkedPulls(issue);
-  return onlyPullRequests.filter((event) => isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at);
+  return onlyPullRequests.filter((event) => {
+    if (!event.source.issue.body) {
+      return false;
+    }
+    // Matches all keywords according to the docs:
+    // https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword
+    // Works on multiple linked issues, and matches #<number> or URL patterns
+    const linkedIssueRegex =
+      /\b(?:Close(?:s|d)?|Fix(?:es|ed)?|Resolve(?:s|d)?):?\s+(?:#(\d+)|https?:\/\/(?:www\.)?github\.com\/(?:[^/\s]+\/[^/\s]+\/(?:issues|pull)\/(\d+)))\b/gi;
+    const linkedPrUrls = event.source.issue.body.match(linkedIssueRegex);
+    if (!linkedPrUrls) {
+      return false;
+    }
+    let isClosingPr = false;
+    for (const linkedPrUrl of linkedPrUrls) {
+      const idx = linkedPrUrl.indexOf("#");
+      if (idx !== -1) {
+        isClosingPr = Number(linkedPrUrl.slice(idx + 1)) === issue.issue_number;
+      } else {
+        const url = linkedPrUrl.match(/https.+/)?.[0];
+        if (url) {
+          const linkedRepo = parseGitHubUrl(url);
+          isClosingPr =
+            linkedRepo.issue_number === issue.issue_number &&
+            linkedRepo.repo === issue.repo &&
+            linkedRepo.owner === issue.owner;
+        }
+      }
+    }
+    return isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at && isClosingPr;
+  });
 }
 export async function collectLinkedPulls(issue: IssueParams) {
   // this one was created to help with tests, but probably should not be used in the main code
