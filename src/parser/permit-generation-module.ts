@@ -1,6 +1,7 @@
 import { context } from "@actions/github";
 import { Value } from "@sinclair/typebox/value";
 import { createClient } from "@supabase/supabase-js";
+import { permitGenerationConfigurationType } from "@ubiquibot/configuration";
 import {
   Context,
   createAdapters,
@@ -10,10 +11,11 @@ import {
   SupportedEvents,
   TokenType,
 } from "@ubiquibot/permit-generation/core";
-import { PermitGenerationConfiguration, permitGenerationConfigurationType } from "@ubiquibot/configuration";
+import { Permit } from "@ubiquibot/permit-generation/types";
 import configuration from "../configuration/config-reader";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
+import { getRepo, parseGitHubUrl } from "../start";
 import envConfigSchema, { EnvConfigType } from "../types/env-type";
 import program from "./command-line";
 import { Module, Result } from "./processor";
@@ -26,7 +28,7 @@ interface Payload {
 }
 
 export class PermitGenerationModule implements Module {
-  readonly _configuration: PermitGenerationConfiguration = configuration.incentives.permitGeneration;
+  readonly _configuration = configuration.incentives.permitGeneration;
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -36,7 +38,7 @@ export class PermitGenerationModule implements Module {
       evmPrivateEncrypted: program.opts().evmPrivateEncrypted,
       evmNetworkId: program.opts().evmNetworkId,
     };
-    const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);
+    const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[0]);
     payload.issue = {
       id: issueId,
     };
@@ -97,11 +99,75 @@ export class PermitGenerationModule implements Module {
           config.permitRequests
         );
         result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+        await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
       } catch (e) {
         console.error(e);
       }
     }
     return result;
+  }
+
+  async _getOrCreateIssueLocation(issue: { issueId: number; issueUrl: string }) {
+    let locationId: number | null = null;
+
+    const { data: locationData } = await this._supabase
+      .from("locations")
+      .select("id")
+      .eq("issue_id", issue.issueId)
+      .eq("node_url", issue.issueUrl)
+      .single();
+
+    if (!locationData) {
+      const issueItem = await getRepo(parseGitHubUrl(issue.issueUrl));
+      const { data: newLocationData, error } = await this._supabase
+        .from("locations")
+        .insert({
+          node_url: issue.issueUrl,
+          issue_id: issue.issueId,
+          node_type: "Issue",
+          repository_id: issueItem.id,
+        })
+        .select("id")
+        .single();
+      if (!newLocationData || error) {
+        console.error("Failed to create a new location", error);
+      } else {
+        locationId = newLocationData.id;
+      }
+    } else {
+      locationId = locationData.id;
+    }
+    if (!locationId) {
+      throw new Error("Failed to retrieve the related location");
+    }
+    return locationId;
+  }
+
+  async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: Permit[]) {
+    for (const permit of permits) {
+      try {
+        const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
+        const locationId = await this._getOrCreateIssueLocation(issue);
+
+        if (userData) {
+          const { error } = await this._supabase.from("permits").insert({
+            amount: permit.amount.toString(),
+            nonce: permit.nonce,
+            deadline: permit.deadline,
+            signature: permit.signature,
+            beneficiary_id: userData.id,
+            location_id: locationId,
+          });
+          if (error) {
+            console.error(error);
+          }
+        } else {
+          console.error(`Failed to save the permit: could not find user ${userId}`);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 
   get enabled(): boolean {

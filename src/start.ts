@@ -6,6 +6,7 @@ import {
   GitHubPullRequest,
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
+  GitHubRepository,
   GitHubTimelineEvent,
   GitHubUser,
 } from "./github-types";
@@ -56,6 +57,11 @@ import {
 // }
 export type IssueParams = ReturnType<typeof parseGitHubUrl>;
 export type PullParams = { owner: string; repo: string; pull_number: number };
+
+export async function getRepo(params: IssueParams): Promise<GitHubRepository> {
+  const octokit = await getOctokitInstance();
+  return (await octokit.repos.get(params)).data;
+}
 
 export async function getIssue(params: IssueParams): Promise<GitHubIssue> {
   const octokit = await getOctokitInstance();
