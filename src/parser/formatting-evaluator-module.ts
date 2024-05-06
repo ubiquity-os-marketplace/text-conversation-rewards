@@ -2,12 +2,13 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
+import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import {
   FormattingEvaluatorConfiguration,
   formattingEvaluatorConfigurationType,
 } from "../configuration/formatting-evaluator-config";
-import { CommentType, IssueActivity } from "../issue-activity";
+import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {

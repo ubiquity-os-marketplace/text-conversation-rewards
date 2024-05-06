@@ -1,7 +1,8 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
+import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
-import { CommentType, IssueActivity } from "../issue-activity";
+import { IssueActivity } from "../issue-activity";
 import program from "./command-line";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
