@@ -1,8 +1,9 @@
 import { Value } from "@sinclair/typebox/value";
-import { baseIncentiveConfiguration, BotConfig, generateConfiguration } from "@ubiquibot/configuration";
+import { BotConfig, generateConfiguration } from "@ubiquibot/configuration";
 import * as fs from "fs";
 import YAML from "yaml";
 import program from "../parser/command-line";
+import { baseIncentiveConfiguration } from "./common-incentive-config-type";
 
 let configuration: BotConfig;
 let incentivesConfiguration: BotConfig["incentives"] | null = null;

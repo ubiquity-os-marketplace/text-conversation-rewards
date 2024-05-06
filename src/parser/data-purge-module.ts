@@ -1,6 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
-import { DataPurgeConfiguration, dataPurgeConfigurationType } from "@ubiquibot/configuration";
 import configuration from "../configuration/config-reader";
+import { DataPurgeConfiguration, dataPurgeConfigurationType } from "../configuration/data-purge-config";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
 

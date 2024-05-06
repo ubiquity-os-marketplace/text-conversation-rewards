@@ -1,9 +1,9 @@
 import { Value } from "@sinclair/typebox/value";
-import { GithubCommentConfiguration, githubCommentConfigurationType } from "@ubiquibot/configuration";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { stringify } from "yaml";
 import configuration from "../configuration/config-reader";
+import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { getOctokitInstance } from "../get-authentication-token";
 import { CommentType, IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
