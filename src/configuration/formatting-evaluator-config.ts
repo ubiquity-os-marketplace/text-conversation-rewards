@@ -5,7 +5,7 @@ const type = Type.Union([...Object.keys(CommentType).map((key) => Type.Literal(k
 
 export const formattingEvaluatorConfigurationType = Type.Object({
   /**
-   * Enables or disabled this module
+   * Enables or disables this module
    */
   enabled: Type.Boolean({ default: true }),
   /**
