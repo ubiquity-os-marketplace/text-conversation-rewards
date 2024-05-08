@@ -11,8 +11,8 @@ if (process.env.NODE_ENV === "test") {
   process.argv.push(`${process.env.TEST_ISSUE_URL}`);
   process.argv.push("-n");
   process.argv.push("100");
-  process.argv.push("-e");
-  process.argv.push(`${process.env.EVM_PRIVATE_ENCRYPTED}`);
+  process.argv.push("-t");
+  process.argv.push(`${process.env.GITHUB_TOKEN}`);
 }
 
 const program = new Command()

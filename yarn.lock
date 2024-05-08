@@ -3362,11 +3362,6 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
-"@ubiquibot/configuration@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@ubiquibot/configuration/-/configuration-2.1.0.tgz#0333372ea7a261253063f8a17c8318ca350bb7db"
-  integrity sha512-O+WghhnahL+FhijHNHHO94oYDUptP2PbVcypjT+bQ6akdGzUfKUpgjssdnwQWwfdN66TPEx3OM3bPyZdFX7/WA==
-
 "@ubiquibot/permit-generation@1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.2.2.tgz#3493b4701e1d9deccd4e4d5c9aef4e3f7b76e4d8"
