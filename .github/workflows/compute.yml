@@ -41,6 +41,9 @@ jobs:
         with:
           node-version: "20.10.0"
 
+      - run: |
+          echo "${{ fromJSON(inputs) }}"
+
       - name: Generate Rewards
         uses: ./
         with:
