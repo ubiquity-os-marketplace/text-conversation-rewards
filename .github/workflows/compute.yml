@@ -49,3 +49,4 @@ jobs:
           evmPrivateEncrypted: "${{ secrets.EVM_PRIVATE_ENCRYPTED }}"
           evmNetworkId: "${{ fromJSON(inputs.settings).evmNetworkId }}"
           token: "${{ inputs.authToken }}"
+          settings: "${{ inputs.settings }}"
