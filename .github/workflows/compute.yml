@@ -29,8 +29,6 @@ jobs:
       NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
       NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
       EVM_PRIVATE_ENCRYPTED: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
-      UBIQUIBOT_APP_ID: ${{ secrets.UBIQUIBOT_APP_ID }}
-      UBIQUIBOT_APP_PRIVATE_KEY: ${{ secrets.UBIQUIBOT_APP_PRIVATE_KEY }}
 
     steps:
       - name: Checkout code
@@ -41,7 +39,7 @@ jobs:
         with:
           node-version: "20.10.0"
 
-      - run: ${{ tojson(inputs) }}
+      - run: ${{ toJSON(inputs) }}
         shell: cat {0}
 
       - name: Generate Rewards
@@ -50,3 +48,4 @@ jobs:
           issueUrl: "${{ fromJSON(inputs.eventPayload).issue.html_url }}"
           evmPrivateEncrypted: "${{ secrets.EVM_PRIVATE_ENCRYPTED }}"
           evmNetworkId: "${{ fromJSON(inputs.settings).evmNetworkId }}"
+          token: "${{ inputs.authToken }}"

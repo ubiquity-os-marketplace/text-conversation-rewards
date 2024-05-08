@@ -18,8 +18,8 @@ if (process.env.NODE_ENV === "test") {
 const program = new Command()
   .requiredOption("-i, --issue <url>", "The url of the issue to parse")
   .requiredOption("-n, --evmNetworkId <number>", "The network ID", parseInt)
-  .requiredOption("-e, --evmPrivateEncrypted <key>", "The EVM private encrypted key")
-  .option("-c, --config <path>", "The path to the desired configuration to use", ".rewards-configuration.default.yml")
+  .requiredOption("-t, --token <key>", "The authentication token")
+  .option("-s, --settings <value>", "The settings to use", "")
   .option("-f, --file <file>", "The target file to store the results in")
   .version(packageJson.version)
   .parse();

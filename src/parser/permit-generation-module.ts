@@ -36,7 +36,7 @@ export class PermitGenerationModule implements Module {
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: program.opts().issue,
-      evmPrivateEncrypted: program.opts().evmPrivateEncrypted,
+      evmPrivateEncrypted: process.env.EVM_PRIVATE_ENCRYPTED,
       evmNetworkId: program.opts().evmNetworkId,
     };
     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);
@@ -49,7 +49,7 @@ export class PermitGenerationModule implements Module {
       return Promise.resolve(result);
     }
     const eventName = context.eventName as SupportedEvents;
-    const octokit = await getOctokitInstance();
+    const octokit = getOctokitInstance();
     const logger = {
       debug() {},
       error(message: unknown, optionalParams: unknown) {
