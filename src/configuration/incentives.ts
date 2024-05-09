@@ -7,20 +7,17 @@ import { githubCommentConfigurationType } from "./github-comment-config";
 import { permitGenerationConfigurationType } from "./permit-generation-configuration";
 import { userExtractorConfigurationType } from "./user-extractor-config";
 
-const incentivesConfigurationSchema = T.Object(
-  {
-    incentives: T.Object({
-      enabled: T.Boolean({ default: true }),
-      contentEvaluator: contentEvaluatorConfigurationType,
-      userExtractor: userExtractorConfigurationType,
-      dataPurge: dataPurgeConfigurationType,
-      formattingEvaluator: formattingEvaluatorConfigurationType,
-      permitGeneration: permitGenerationConfigurationType,
-      githubComment: githubCommentConfigurationType,
-    }),
-  },
-  { default: {} }
-);
+export const incentivesConfigurationSchema = T.Object({
+  incentives: T.Object({
+    enabled: T.Boolean({ default: true }),
+    contentEvaluator: contentEvaluatorConfigurationType,
+    userExtractor: userExtractorConfigurationType,
+    dataPurge: dataPurgeConfigurationType,
+    formattingEvaluator: formattingEvaluatorConfigurationType,
+    permitGeneration: permitGenerationConfigurationType,
+    githubComment: githubCommentConfigurationType,
+  }),
+});
 export const validateIncentivesConfiguration = new StandardValidator(incentivesConfigurationSchema);
 
 export type IncentivesConfiguration = StaticDecode<typeof incentivesConfigurationSchema>;

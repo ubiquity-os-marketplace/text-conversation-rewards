@@ -1,13 +1,12 @@
-import * as fs from "fs";
-import YAML from "yaml";
 import program from "../parser/command-line";
-import { IncentivesConfiguration, validateIncentivesConfiguration } from "./incentives";
+import { IncentivesConfiguration, incentivesConfigurationSchema, validateIncentivesConfiguration } from "./incentives";
+import { Value } from "@sinclair/typebox/value";
 
 let configuration: IncentivesConfiguration | null = null;
 
 try {
-  const file = fs.readFileSync(".rewards-configuration.default.yml", "utf8");
-  configuration = YAML.parse(file);
+  const defaultConf = Value.Create(incentivesConfigurationSchema);
+  configuration = Value.Decode(incentivesConfigurationSchema, defaultConf);
 } catch (e) {
   console.error(e);
 }
