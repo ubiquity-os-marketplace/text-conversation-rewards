@@ -18,11 +18,29 @@ import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { db as mockDb } from "./__mocks__/db";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
 import fs from "fs";
+import configuration from "../src/configuration/config-reader";
+import validConfiguration from "./__mocks__/results/valid-configuration.json";
+import "../src/parser/command-line";
 
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
   return Promise.resolve(comments.map(() => new Decimal(0.8)));
+});
+
+jest.mock("../src/parser/command-line", () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const cfg = require("./__mocks__/results/valid-configuration.json");
+  return {
+    opts: jest.fn(() => {
+      return {
+        settings: JSON.stringify({
+          ...cfg,
+          incentives: { ...cfg.incentives, enabled: false },
+        }),
+      };
+    }),
+  };
 });
 
 jest.mock("@ubiquibot/permit-generation/core", () => {
@@ -150,5 +168,11 @@ describe("Modules tests", () => {
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(githubCommentResults, undefined, 2));
     expect(fs.readFileSync("./output.html")).toEqual(fs.readFileSync("./tests/__mocks__/results/output.html"));
     logSpy.mockReset();
+  });
+
+  it("Should properly generate the configuration", () => {
+    const cfg = configuration;
+
+    expect(cfg).toEqual(validConfiguration);
   });
 });
