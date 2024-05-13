@@ -186,7 +186,7 @@ export class GithubCommentModule implements Module {
         <b>
           <h3>
             <a href="${result.permitUrl}" target="_blank" rel="noopener">
-              [ ${result.total} ${getPayoutConfigByNetworkId(configuration.incentives.evmNetworkId).symbol} ]
+              [ ${result.total} ${getPayoutConfigByNetworkId(configuration.evmNetworkId).symbol} ]
             </a>
           </h3>
           <h6>
