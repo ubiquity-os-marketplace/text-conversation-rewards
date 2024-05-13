@@ -6,7 +6,6 @@ import { parseGitHubUrl } from "./start";
 
 async function main() {
   if (program.eventName === "issues.closed") {
-    console.log(JSON.stringify(program, null, 2));
     const issue = parseGitHubUrl(program.eventPayload.issue.html_url);
     const activity = new IssueActivity(issue);
     await activity.init();
