@@ -11,14 +11,17 @@ async function main() {
     await activity.init();
     const processor = new Processor();
     await processor.run(activity);
-    const result = processor.dump();
-    core?.setOutput("result", result);
+    return processor.dump();
   } else {
     console.warn(`${program.eventName} is not supported, skipping.`);
   }
 }
 
-main().catch((e) => {
-  console.error("Failed to run comment evaluation:", e);
-  core?.setFailed(e.toString());
-});
+main()
+  .then((result) => {
+    core?.setOutput("result", result);
+  })
+  .catch((e) => {
+    console.error("Failed to run comment evaluation:", e);
+    core?.setFailed(e.toString());
+  });

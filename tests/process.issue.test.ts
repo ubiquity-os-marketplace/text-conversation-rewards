@@ -179,4 +179,8 @@ describe("Modules tests", () => {
 
     expect(cfg).toEqual(validConfiguration);
   });
+
+  it("Should do a full run", async () => {
+    require("../src/index.ts");
+  });
 });
