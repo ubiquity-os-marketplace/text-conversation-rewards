@@ -9,9 +9,22 @@ import { userExtractorConfigurationType } from "./user-extractor-config";
 
 export const incentivesConfigurationSchema = T.Object({
   incentives: T.Object({
+    /**
+     * Enables or disables the incentive plugin
+     */
     enabled: T.Boolean({ default: true }),
+    /**
+     * Network ID to run in, default to 100
+     */
     evmNetworkId: T.Number({ default: 100 }),
+    /**
+     * The encrypted key to use for permit generation
+     */
     evmPrivateEncrypted: T.String(),
+    /**
+     * Optionally specify a file to write the results in
+     */
+    file: T.Optional(T.String()),
     contentEvaluator: contentEvaluatorConfigurationType,
     userExtractor: userExtractorConfigurationType,
     dataPurge: dataPurgeConfigurationType,

@@ -29,32 +29,21 @@ jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementa
 });
 
 jest.mock("../src/parser/command-line", () => {
+  // Require is needed because mock cannot access elements out of scope
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("./__mocks__/results/valid-configuration.json");
-  return {
-    opts: jest.fn(() => {
-      return {
-        settings: JSON.stringify({
-          ...cfg,
-          incentives: { ...cfg.incentives, enabled: false },
-        }),
-      };
-    }),
-  };
-});
-
-jest.mock("@actions/github", () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const cfg = require("./__mocks__/results/valid-configuration.json");
+  const dotenv = require("dotenv");
+  dotenv.config();
   return {
-    context: {
-      payload: {
-        inputs: {
-          issueUrl: "https://",
-          settings: JSON.stringify(cfg),
-        },
-      },
+    stateId: 1,
+    eventName: "issues.closed",
+    authToken: process.env.GITHUB_TOKEN,
+    ref: "",
+    eventPayload: {
+      issue: { html_url: "https://github.com/ubiquibot/comment-incentives/issues/22" },
     },
+    settings: JSON.stringify(cfg),
   };
 });
 

@@ -35,7 +35,7 @@ export class PermitGenerationModule implements Module {
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
-      issueUrl: program.opts().issue,
+      issueUrl: program.eventPayload.issue.html_url,
       evmPrivateEncrypted: configuration.incentives.evmPrivateEncrypted,
       evmNetworkId: configuration.incentives.evmNetworkId,
     };

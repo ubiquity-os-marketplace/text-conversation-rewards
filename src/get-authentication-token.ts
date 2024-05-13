@@ -5,7 +5,7 @@ let octokitInstance: Octokit | null = null;
 
 function getOctokitInstance(): Octokit {
   if (!octokitInstance) {
-    octokitInstance = new Octokit({ auth: program.opts().token });
+    octokitInstance = new Octokit({ auth: program.authToken });
   }
   return octokitInstance;
 }

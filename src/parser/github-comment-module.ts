@@ -37,8 +37,8 @@ export class GithubCommentModule implements Module {
     }
     if (this._configuration.post) {
       try {
-        const octokit = await getOctokitInstance();
-        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);
+        const octokit = getOctokitInstance();
+        const { owner, repo, issue_number } = parseGitHubUrl(program.eventPayload.issue.html_url);
 
         await octokit.issues.createComment({
           body,
@@ -186,7 +186,7 @@ export class GithubCommentModule implements Module {
         <b>
           <h3>
             <a href="${result.permitUrl}" target="_blank" rel="noopener">
-              [ ${result.total} ${getPayoutConfigByNetworkId(program.opts().evmNetworkId).symbol} ]
+              [ ${result.total} ${getPayoutConfigByNetworkId(configuration.incentives.evmNetworkId).symbol} ]
             </a>
           </h3>
           <h6>

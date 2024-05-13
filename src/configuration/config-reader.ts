@@ -2,7 +2,6 @@ import program from "../parser/command-line";
 import { IncentivesConfiguration, incentivesConfigurationSchema, validateIncentivesConfiguration } from "./incentives";
 import { Value } from "@sinclair/typebox/value";
 import { merge } from "lodash";
-import * as github from "@actions/github";
 
 let configuration: IncentivesConfiguration | null = null;
 
@@ -13,8 +12,8 @@ try {
   console.error(e);
 }
 
-if (program.opts().settings) {
-  const settings = JSON.parse(github.context.payload.inputs.settings);
+if (program.settings) {
+  const settings = JSON.parse(program.settings);
   if (validateIncentivesConfiguration.test(settings)) {
     configuration = merge(configuration, settings);
   } else {

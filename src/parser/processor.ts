@@ -3,7 +3,6 @@ import * as fs from "fs";
 import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { IssueActivity } from "../issue-activity";
-import program from "./command-line";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
@@ -48,7 +47,7 @@ export class Processor {
   }
 
   dump() {
-    const { file } = program.opts();
+    const { file } = this._configuration;
     const result = JSON.stringify(
       this._result,
       (key: string, value: string | number) => {
@@ -72,6 +71,7 @@ export class Processor {
     } else {
       fs.writeFileSync(file, result);
     }
+    return result;
   }
 
   _sumRewards(obj: Record<string, unknown>) {
