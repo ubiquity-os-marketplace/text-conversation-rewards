@@ -43,6 +43,21 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
+jest.mock("@actions/github", () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const cfg = require("./__mocks__/results/valid-configuration.json");
+  return {
+    context: {
+      payload: {
+        inputs: {
+          issueUrl: "https://",
+          settings: JSON.stringify(cfg),
+        },
+      },
+    },
+  };
+});
+
 jest.mock("@ubiquibot/permit-generation/core", () => {
   const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
 

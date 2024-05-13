@@ -1,6 +1,8 @@
 {
   "incentives": {
-    "enabled": false,
+    "enabled": true,
+    "evmNetworkId": 100,
+    "evmPrivateEncrypted": "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ",
     "contentEvaluator": {
       "enabled": true
     },
@@ -130,8 +132,8 @@
     },
     "githubComment": {
       "enabled": true,
-      "post": true,
-      "debug": false
+      "post": false,
+      "debug": true
     }
   }
 }

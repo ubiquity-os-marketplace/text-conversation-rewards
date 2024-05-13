@@ -36,8 +36,8 @@ export class PermitGenerationModule implements Module {
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: program.opts().issue,
-      evmPrivateEncrypted: process.env.EVM_PRIVATE_ENCRYPTED,
-      evmNetworkId: program.opts().evmNetworkId,
+      evmPrivateEncrypted: configuration.incentives.evmPrivateEncrypted,
+      evmNetworkId: configuration.incentives.evmNetworkId,
     };
     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);
     payload.issue = {

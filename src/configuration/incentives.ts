@@ -10,6 +10,8 @@ import { userExtractorConfigurationType } from "./user-extractor-config";
 export const incentivesConfigurationSchema = T.Object({
   incentives: T.Object({
     enabled: T.Boolean({ default: true }),
+    evmNetworkId: T.Number({ default: 100 }),
+    evmPrivateEncrypted: T.String(),
     contentEvaluator: contentEvaluatorConfigurationType,
     userExtractor: userExtractorConfigurationType,
     dataPurge: dataPurgeConfigurationType,
