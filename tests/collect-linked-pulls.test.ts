@@ -14,6 +14,22 @@ const PARAMS_ISSUE_NO_LINK: IssueParams = parseGitHubUrl(ISSUE_NO_LINK.html_url)
 // const PARAMS_PR_CROSS_REPO_LINK: IssueParams = parseGitHubUrl(PR_CROSS_REPO_LINK.html_url);
 // const PARAMS_PR_SAME_REPO_LINK: IssueParams = parseGitHubUrl(PR_SAME_REPO_LINK.html_url);
 
+jest.mock("../src/parser/command-line", () => {
+  // Require is needed because mock cannot access elements out of scope
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const cfg = require("./__mocks__/results/valid-configuration.json");
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const dotenv = require("dotenv");
+  dotenv.config();
+  return {
+    stateId: 1,
+    eventName: "issues.closed",
+    authToken: process.env.GITHUB_TOKEN,
+    ref: "",
+    eventPayload: JSON.stringify(cfg),
+  };
+});
+
 describe("Artificial scenarios for linking pull requests to issues", () => {
   it("should return an empty array when the issue does not have any associated link events", async () => {
     const result = await collectLinkedMergedPulls(PARAMS_ISSUE_NO_LINK);

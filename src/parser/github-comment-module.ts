@@ -1,11 +1,12 @@
 import { Value } from "@sinclair/typebox/value";
-import { GithubCommentConfiguration, githubCommentConfigurationType } from "@ubiquibot/configuration";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { stringify } from "yaml";
+import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
+import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { getOctokitInstance } from "../get-authentication-token";
-import { CommentType, IssueActivity } from "../issue-activity";
+import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { getPayoutConfigByNetworkId } from "../types/payout";
 import program from "./command-line";
@@ -36,8 +37,8 @@ export class GithubCommentModule implements Module {
     }
     if (this._configuration.post) {
       try {
-        const octokit = await getOctokitInstance();
-        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);
+        const octokit = getOctokitInstance();
+        const { owner, repo, issue_number } = parseGitHubUrl(program.eventPayload.issue.html_url);
 
         await octokit.issues.createComment({
           body,
@@ -185,7 +186,7 @@ export class GithubCommentModule implements Module {
         <b>
           <h3>
             <a href="${result.permitUrl}" target="_blank" rel="noopener">
-              [ ${result.total} ${getPayoutConfigByNetworkId(program.opts().evmNetworkId).symbol} ]
+              [ ${result.total} ${getPayoutConfigByNetworkId(configuration.evmNetworkId).symbol} ]
             </a>
           </h3>
           <h6>

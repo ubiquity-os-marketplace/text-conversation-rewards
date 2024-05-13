@@ -3,6 +3,9 @@ name: Run Jest Tests
 on:
   workflow_dispatch:
   pull_request:
+  push:
+    branches:
+      - development
 
 jobs:
   test:

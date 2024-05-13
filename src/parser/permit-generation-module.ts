@@ -10,8 +10,11 @@ import {
   SupportedEvents,
   TokenType,
 } from "@ubiquibot/permit-generation/core";
-import { PermitGenerationConfiguration, permitGenerationConfigurationType } from "@ubiquibot/configuration";
 import configuration from "../configuration/config-reader";
+import {
+  PermitGenerationConfiguration,
+  permitGenerationConfigurationType,
+} from "../configuration/permit-generation-configuration";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
 import envConfigSchema, { EnvConfigType } from "../types/env-type";
@@ -32,21 +35,21 @@ export class PermitGenerationModule implements Module {
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
-      issueUrl: program.opts().issue,
-      evmPrivateEncrypted: program.opts().evmPrivateEncrypted,
-      evmNetworkId: program.opts().evmNetworkId,
+      issueUrl: program.eventPayload.issue.html_url,
+      evmPrivateEncrypted: configuration.evmPrivateEncrypted,
+      evmNetworkId: configuration.evmNetworkId,
     };
     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);
     payload.issue = {
       id: issueId,
     };
-    const env: EnvConfigType = process.env;
+    const env = Value.Default(envConfigSchema, process.env) as EnvConfigType;
     if (!Value.Check(envConfigSchema, env)) {
       console.warn("[PermitGenerationModule] Invalid env detected, skipping.");
       return Promise.resolve(result);
     }
     const eventName = context.eventName as SupportedEvents;
-    const octokit = await getOctokitInstance();
+    const octokit = getOctokitInstance();
     const logger = {
       debug() {},
       error(message: unknown, optionalParams: unknown) {

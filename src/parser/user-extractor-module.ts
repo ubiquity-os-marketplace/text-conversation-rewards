@@ -1,9 +1,9 @@
 import { Value } from "@sinclair/typebox/value";
 import configuration from "../configuration/config-reader";
+import { UserExtractorConfiguration, userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { GitHubIssue } from "../github-types";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
-import { UserExtractorConfiguration, userExtractorConfigurationType } from "@ubiquibot/configuration";
 
 /**
  * Creates entries for each user with its associated comments.
