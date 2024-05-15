@@ -7,11 +7,15 @@ import {
   Database,
   encodePermits,
   generatePayoutPermit,
+  Permit,
   SupportedEvents,
   TokenType,
 } from "@ubiquibot/permit-generation/core";
 import configuration from "../configuration/config-reader";
-import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
+import {
+  PermitGenerationConfiguration,
+  permitGenerationConfigurationType,
+} from "../configuration/permit-generation-configuration";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
@@ -27,7 +31,7 @@ interface Payload {
 }
 
 export class PermitGenerationModule implements Module {
-  readonly _configuration = configuration.incentives.permitGeneration;
+  readonly _configuration: PermitGenerationConfiguration = configuration.incentives.permitGeneration;
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
