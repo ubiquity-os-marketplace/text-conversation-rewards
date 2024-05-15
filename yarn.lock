@@ -7,7 +7,7 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@actions/core@^1.10.1":
+"@actions/core@1.10.1", "@actions/core@^1.10.1":
   version "1.10.1"
   resolved "https://registry.yarnpkg.com/@actions/core/-/core-1.10.1.tgz#61108e7ac40acae95ee36da074fa5850ca4ced8a"
   integrity sha512-3lBR9EDAY+iYIpTnTIXmWcNbX3T2kCkAEQGIQx4NVQ0575nk2k3GRZDTPQG+vVtS2izSLmINlxXf0uLtnrTP+g==
@@ -1070,11 +1070,6 @@
   integrity sha512-yn7BklA5acgcBr+7w064fGV+SGIFySjCKpqjcWgBAIfrAkY+4GQTJJHQMeT3V/sgz23VTEVV8TtOmkvJAhFVfg==
   dependencies:
     statuses "^2.0.1"
-
-"@commander-js/extra-typings@12.0.1":
-  version "12.0.1"
-  resolved "https://registry.yarnpkg.com/@commander-js/extra-typings/-/extra-typings-12.0.1.tgz#4a74a9ccf1d19ef24e71df59359c6d90a605a469"
-  integrity sha512-OvkMobb1eMqOCuJdbuSin/KJkkZr7n24/UNV+Lcz/0Dhepf3r2p9PaGwpRpAWej7A+gQnny4h8mGhpFl4giKkg==
 
 "@commitlint/cli@18.6.1":
   version "18.6.1"
@@ -2619,6 +2614,11 @@
   resolved "https://registry.yarnpkg.com/@octokit/openapi-webhooks-types/-/openapi-webhooks-types-8.1.1.tgz#708adc46337edb3875196325a54defb87ac2cfd6"
   integrity sha512-cfavqtPS5W1vy2JGXODIL4LsoXYoaXIhiNbil53wb9sLsTFuSBl+r1L6nNiVq/Ie8j0MSB2rCAGrGKJTfjqVEw==
 
+"@octokit/openapi-webhooks-types@8.2.1":
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-webhooks-types/-/openapi-webhooks-types-8.2.1.tgz#08b974f1e83a75c4d3ce23f798c7667b433bf4cd"
+  integrity sha512-msAU1oTSm0ZmvAE0xDemuF4tVs5i0xNnNGtNmr4EuATi+1Rn8cZDetj6NXioSf5LwnxEc209COa/WOSbjuhLUA==
+
 "@octokit/plugin-paginate-rest@^9.0.0", "@octokit/plugin-paginate-rest@^9.1.5":
   version "9.2.1"
   resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-9.2.1.tgz#2e2a2f0f52c9a4b1da1a3aa17dabe3c459b9e401"
@@ -2692,6 +2692,16 @@
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-5.1.0.tgz#13b6c08f89902c1ab0ddf31c6eeeec9c2772cfe6"
   integrity sha512-yFZa3UH11VIxYnnoOYCVoJ3q4ChuSOk2IVBBQ0O3xtKX4x9bmKb/1t+Mxixv2iUhzMdOl1qeWJqEhouXXzB3rQ==
+
+"@octokit/webhooks@13.2.7":
+  version "13.2.7"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.2.7.tgz#03f89b278cd63f271eba3062f0b75ddd18a82252"
+  integrity sha512-sPHCyi9uZuCs1gg0yF53FFocM+GsiiBEhQQV/itGzzQ8gjyv2GMJ1YvgdDY4lC0ePZeiV3juEw4GbS6w1VHhRw==
+  dependencies:
+    "@octokit/openapi-webhooks-types" "8.2.1"
+    "@octokit/request-error" "^6.0.1"
+    "@octokit/webhooks-methods" "^5.0.0"
+    aggregate-error "^5.0.0"
 
 "@octokit/webhooks@^13.1.0":
   version "13.2.3"
@@ -2834,15 +2844,20 @@
     "@pnpm/types" "9.4.2"
     ramda "npm:@pnpm/ramda@0.28.1"
 
-"@sinclair/typebox@0.32.20", "@sinclair/typebox@^0.32.5":
-  version "0.32.20"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.32.20.tgz#32bdeb6b185188622f965ebbc88e1a6d5127d88a"
-  integrity sha512-ziK497ILSIYMxD/thl496idIb03IZPlha04itLQu1xAFQbumWZ+Dj4PMMCkDRpAYhvVSdmRlTjGu2B2MA5RplQ==
+"@sinclair/typebox@0.32.23":
+  version "0.32.23"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.32.23.tgz#18419f3a276da4e7f26300497c1537848727778b"
+  integrity sha512-NiMhEgFo5nDlg39HDEvETDdXmURfyd8ougIjynebGebZti/gZ4LxoCcbVS6jgfNF8Sf7ZvPVl/fV0YsJIW4ltg==
 
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
+
+"@sinclair/typebox@^0.32.5":
+  version "0.32.20"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.32.20.tgz#32bdeb6b185188622f965ebbc88e1a6d5127d88a"
+  integrity sha512-ziK497ILSIYMxD/thl496idIb03IZPlha04itLQu1xAFQbumWZ+Dj4PMMCkDRpAYhvVSdmRlTjGu2B2MA5RplQ==
 
 "@sinonjs/commons@^3.0.0":
   version "3.0.1"
@@ -3913,11 +3928,6 @@ commander@11.1.0, commander@^11.1.0:
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-11.1.0.tgz#62fdce76006a68e5c1ab3314dc92e800eb83d906"
   integrity sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==
-
-commander@12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-12.0.0.tgz#b929db6df8546080adfd004ab215ed48cf6f2592"
-  integrity sha512-MwVNWlYjDTtOjX5PiD7o5pK0UrFU/OYgcJfjjK4RaHZETNtjJqrZa9Y9ds88+A+f+d5lv+561eZ+yCKoS3gbAA==
 
 commander@^4.1.1:
   version "4.1.1"
@@ -6445,7 +6455,7 @@ lodash.upperfirst@^4.3.1:
   resolved "https://registry.yarnpkg.com/lodash.upperfirst/-/lodash.upperfirst-4.3.1.tgz#1365edf431480481ef0d1c68957a5ed99d49f7ce"
   integrity sha512-sReKOYJIJf74dhJONhU4e0/shzi1trVbSWDOhKYE5XV2O+H7Sb2Dihwuc7xWxVl+DgFPyTqIN3zMfT9cq5iWDg==
 
-lodash@^4.17.15, lodash@^4.17.21:
+lodash@4.17.21, lodash@^4.17.15, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -8146,6 +8156,11 @@ type-fest@^4.9.0:
   version "4.15.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.15.0.tgz#21da206b89c15774cc718c4f2d693e13a1a14a43"
   integrity sha512-tB9lu0pQpX5KJq54g+oHOLumOx+pMep4RaM6liXh2PKmVRFF+/vAtUP0ZaJ0kOySfVNjF6doBWPHhBhISKdlIA==
+
+typebox-validators@0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/typebox-validators/-/typebox-validators-0.3.5.tgz#b913bad0a87571ffe0edd01d2b6090a268e1ecc9"
+  integrity sha512-FXrmSUAN6bSGxDANResNCZQ8VRRLr5bSyy73/HyqSXGdiVuogppGAoRocy7NTVZY4Wc2sWUofmWwwIXE6OxS6Q==
 
 typed-array-buffer@^1.0.2:
   version "1.0.2"

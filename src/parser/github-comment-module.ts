@@ -2,10 +2,11 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { stringify } from "yaml";
+import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
-import githubCommentConfig, { GithubCommentConfiguration } from "../configuration/github-comment-config";
+import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { getOctokitInstance } from "../get-authentication-token";
-import { CommentType, IssueActivity } from "../issue-activity";
+import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { getPayoutConfigByNetworkId } from "../types/payout";
 import program from "./command-line";
@@ -20,7 +21,7 @@ interface SortedTasks {
  * Posts a GitHub comment according to the given results.
  */
 export class GithubCommentModule implements Module {
-  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;
+  private readonly _configuration: GithubCommentConfiguration = configuration.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -37,7 +38,7 @@ export class GithubCommentModule implements Module {
     if (this._configuration.post) {
       try {
         const octokit = getOctokitInstance();
-        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);
+        const { owner, repo, issue_number } = parseGitHubUrl(program.eventPayload.issue.html_url);
 
         await octokit.issues.createComment({
           body,
@@ -53,7 +54,7 @@ export class GithubCommentModule implements Module {
   }
 
   get enabled(): boolean {
-    if (!Value.Check(githubCommentConfig, this._configuration)) {
+    if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for GithubContentModule, disabling.");
       return false;
     }
@@ -185,7 +186,7 @@ export class GithubCommentModule implements Module {
         <b>
           <h3>
             <a href="${result.permitUrl}" target="_blank" rel="noopener">
-              [ ${result.total} ${getPayoutConfigByNetworkId(program.opts().evmNetworkId).symbol} ]
+              [ ${result.total} ${getPayoutConfigByNetworkId(configuration.evmNetworkId).symbol} ]
             </a>
           </h3>
           <h6>

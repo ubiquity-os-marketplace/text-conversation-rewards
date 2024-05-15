@@ -1,20 +1,19 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
+import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
-import { CommentType, IssueActivity } from "../issue-activity";
-import program from "./command-line";
+import { IssueActivity } from "../issue-activity";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { GithubCommentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
-import { BaseConfiguration } from "../configuration/common-config-type";
 
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
-  private readonly _configuration: BaseConfiguration = configuration;
+  private readonly _configuration = configuration.incentives;
 
   constructor() {
     this.add(new UserExtractorModule())
@@ -48,7 +47,7 @@ export class Processor {
   }
 
   dump() {
-    const { file } = program.opts();
+    const { file } = this._configuration;
     const result = JSON.stringify(
       this._result,
       (key: string, value: string | number) => {
@@ -72,6 +71,7 @@ export class Processor {
     } else {
       fs.writeFileSync(file, result);
     }
+    return result;
   }
 
   _sumRewards(obj: Record<string, unknown>) {

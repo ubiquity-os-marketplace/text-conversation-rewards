@@ -18,11 +18,33 @@ import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { db as mockDb } from "./__mocks__/db";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
 import fs from "fs";
+import configuration from "../src/configuration/config-reader";
+import validConfiguration from "./__mocks__/results/valid-configuration.json";
+import "../src/parser/command-line";
 
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
   return Promise.resolve(comments.map(() => new Decimal(0.8)));
+});
+
+jest.mock("../src/parser/command-line", () => {
+  // Require is needed because mock cannot access elements out of scope
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const cfg = require("./__mocks__/results/valid-configuration.json");
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const dotenv = require("dotenv");
+  dotenv.config();
+  return {
+    stateId: 1,
+    eventName: "issues.closed",
+    authToken: process.env.GITHUB_TOKEN,
+    ref: "",
+    eventPayload: {
+      issue: { html_url: "https://github.com/ubiquibot/comment-incentives/issues/22" },
+    },
+    settings: JSON.stringify(cfg),
+  };
 });
 
 jest.mock("@ubiquibot/permit-generation/core", () => {
@@ -150,5 +172,15 @@ describe("Modules tests", () => {
     expect(logSpy).toHaveBeenCalledWith(JSON.stringify(githubCommentResults, undefined, 2));
     expect(fs.readFileSync("./output.html")).toEqual(fs.readFileSync("./tests/__mocks__/results/output.html"));
     logSpy.mockReset();
+  });
+
+  it("Should properly generate the configuration", () => {
+    const cfg = configuration;
+
+    expect(cfg).toEqual(validConfiguration);
+  });
+
+  it("Should do a full run", async () => {
+    require("../src/index.ts");
   });
 });
