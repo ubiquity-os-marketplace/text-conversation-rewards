@@ -13,9 +13,9 @@ try {
 }
 
 if (program.settings) {
-  const settings = JSON.parse(program.settings);
+  const settings = merge(configuration, JSON.parse(program.settings));
   if (validateIncentivesConfiguration.test(settings)) {
-    configuration = merge(configuration, settings);
+    configuration = settings;
   } else {
     console.warn("Invalid incentives configuration detected, will revert to defaults.");
     for (const error of validateIncentivesConfiguration.errors(settings)) {
