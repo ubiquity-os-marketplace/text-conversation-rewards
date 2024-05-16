@@ -17,6 +17,9 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22", () => {
     return HttpResponse.json(issueGet);
   }),
+  http.get("https://api.github.com/repos/ubiquibot/comment-incentives", () => {
+    return HttpResponse.json(issueGet);
+  }),
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/events", ({ params: { page } }) => {
     return HttpResponse.json(!page ? issueEventsGet : issueEvents2Get);
   }),
@@ -53,5 +56,62 @@ export const handlers = [
   }),
   http.post("https://api.github.com/app/installations/48381972/access_tokens", () => {
     return HttpResponse.json({});
+  }),
+  http.get("https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/users", ({ request }) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+    const userId = Number((id as string).match(/\d+/)?.[0]);
+    const user = db.users.findFirst({
+      where: {
+        id: {
+          equals: userId,
+        },
+      },
+    });
+    if (!user) {
+      return HttpResponse.json("User not found", { status: 404 });
+    }
+    return HttpResponse.json(user);
+  }),
+  http.get("https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/locations", ({ request }) => {
+    const url = new URL(request.url);
+    const issue = url.searchParams.get("issue_id");
+    const node = url.searchParams.get("node_url");
+    if (!issue) {
+      return HttpResponse.json(db.locations.findMany({}));
+    }
+    const issueId = Number((issue as string).match(/\d+/)?.[0]);
+    const nodeUrl = (node as string).match(/https.+/)?.[0];
+    const location = db.locations.findFirst({
+      where: {
+        node_url: {
+          equals: nodeUrl,
+        },
+        issue_id: {
+          equals: issueId,
+        },
+      },
+    });
+    if (!location) {
+      return HttpResponse.json("Location not found", { status: 404 });
+    }
+    return HttpResponse.json(location);
+  }),
+  http.post("https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/locations", async ({ request }) => {
+    const data = await request.json();
+    if (!data) {
+      return HttpResponse.error();
+    }
+    const createdLocation = db.locations.create(data as Record<string, string>);
+    return HttpResponse.json(createdLocation);
+  }),
+  http.post("https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/permits", async ({ request }) => {
+    const data = (await request.json()) as Record<string, string | number>;
+    if (!data) {
+      return HttpResponse.error();
+    }
+    data.id = db.permits.count() + 1;
+    const createdPermit = db.permits.create(data);
+    return HttpResponse.json(createdPermit);
   }),
 ];

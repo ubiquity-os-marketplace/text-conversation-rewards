@@ -93,6 +93,9 @@ describe("Modules tests", () => {
     for (const item of dbSeed.wallets) {
       mockDb.wallets.create(item);
     }
+    for (const item of dbSeed.locations) {
+      mockDb.locations.create(item);
+    }
   });
 
   it("Should extract users from comments", async () => {

@@ -119,5 +119,14 @@
       "userId": 88761781,
       "address": "0x4D0704f400D57Ba93eEa88765C3FcDBD826dCFc4"
     }
+  ],
+  "locations": [
+    {
+      "id": 1,
+      "issue_id": 22,
+      "node_url": "https://github.com/ubiquibot/comment-incentives/issues/22",
+      "node_type": "Issue",
+      "repository_id": 1
+    }
   ]
 }

@@ -14,4 +14,20 @@ export const db = factory({
     userId: Number,
     address: String,
   },
+  locations: {
+    id: primaryKey(Number),
+    issue_id: Number,
+    node_url: String,
+    node_type: String,
+    repository_id: Number,
+  },
+  permits: {
+    id: primaryKey(Number),
+    amount: String,
+    nonce: String,
+    deadline: String,
+    signature: String,
+    beneficiary_id: Number,
+    location_id: Number,
+  },
 });
