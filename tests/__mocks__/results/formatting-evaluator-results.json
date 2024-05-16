@@ -154,7 +154,7 @@
     ]
   },
   "0x4007": {
-    "total": 41.8,
+    "total": 75.3,
     "userId": 4975670,
     "comments": [
       {
@@ -329,6 +329,32 @@
             "formattingMultiplier": 1
           },
           "reward": 1.2
+        }
+      },
+      {
+        "content": "I am quoting some code! <task-lists sortable=\"\"> <table class=\"d-block user-select-contain\" data-paste-markdown-skip=\"\">   <tbody class=\"d-block\">     <tr class=\"d-block\">       <td class=\"d-block comment-body markdown-body  js-comment-body\">           <details open=\"\">       <summary>         <b>           <h3 dir=\"auto\">             <a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIyODAwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIzODYyOTY0MDg5ODkzNzI1MzYwMjc5MjAyNzMxMjA2NzgzMTY0NDI2OTA3NTY2NTIxNzQ0NDkyNjQ1MTA0NTIyODU4Nzk1MjgzMDk0NCIsImRlYWRsaW5lIjoiNTc4OTYwNDQ2MTg2NTgwOTc3MTE3ODU0OTI1MDQzNDM5NTM5MjY2MzQ5OTIzMzI4MjAyODIwMTk3Mjg3OTIwMDM5NTY1NjQ4MTk5NjcifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHgwZkMxYjkwOWJhOTI2NUE4NDZiODJDRjRDRTM1MmZjM2U3RWVCMkVEIiwicmVxdWVzdGVkQW1vdW50IjoiMjgwMDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHg0NENhMTVEYjEwMWZEMWMxOTQ0NjdEYjZBRjBjNjdDNkJiRjRBQjUxIiwic2lnbmF0dXJlIjoiMHhiMzE4MmIwNjJiMDJmMjEwZTIzN2UzODQxMDNmNGE4YTUwMDNjMmYyODhiMDY5Nzg4MTY1ZDkwOWY4ODZmYTMzNTM4MjJlYjA5MGI1ODdjMWFiNWFiOTNjNTVlZDhkOTdiYzM3YzBmZjZlZDJhMWRkM2U1NjQ4M2JlMzk5MWIwNTFjIiwibmV0d29ya0lkIjoxMDB9XQ==\" rel=\"nofollow\">               [ 0.28 WXDAI ]             </a>           </h3>           <h6 dir=\"auto\">             <a class=\"user-mention notranslate\" data-hovercard-type=\"user\" data-hovercard-url=\"/users/gentlementlegen/hovercard\" data-octo-click=\"hovercard-link-click\" data-octo-dimensions=\"link_type:self\" href=\"https://github.com/gentlementlegen\">@gentlementlegen</a>           </h6>         </b>       </summary>       <h6 dir=\"auto\">Contributions Overview</h6>       <table role=\"table\">         <thead>           <tr>             <th>View</th>             <th>Contribution</th>             <th>Count</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>Issue</td>             <td>Specification</td>             <td>1</td>             <td>0.1</td>           </tr>           <tr>             <td>Issue</td>             <td>Comment</td>             <td>7</td>             <td>0.18</td>           </tr>         </tbody>       </table>       <h6 dir=\"auto\">Conversation Incentives</h6>       <table role=\"table\">         <thead>           <tr>             <th>Comment</th>             <th>Formatting</th>             <th>Relevance</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>               <h6 dir=\"auto\">                 <a href=\"https://github.com/Meniole/bot/issues/3\" data-hovercard-type=\"issue\" data-hovercard-url=\"/Meniole/bot/issues/3/hovercard\">issue 2</a>               </h6>             </td>             <td>             <details>               <summary>                 0.2               </summary>               <pre class=\"notranslate\">p:   count: 2   score: 1 </pre>              </details>             </td>             <td>0.5</td>             <td>0.1</td>           </tr>           <tr>             <td>               <h6 dir=\"auto\">                 <a href=\"https://github.com/Meniole/bot/issues/3#issuecomment-2076607863\" data-hovercard-type=\"issue\" data-hovercard-url=\"/Meniole/bot/issues/3/hovercard\">test</a>               </h6>             </td>             <td>             <details>               <summary>                 0.2               </summary>               <pre class=\"notranslate\">p:   count: 1   score: 1 </pre>              </details>             </td>             <td>-</td>             <td>-</td>           </tr>           <tr>             <td>               <h6 dir=\"auto\">                 <a href=\"https://github.com/Meniole/bot/issues/3#issuecomment-2076628437\" data-hovercard-type=\"issue\" data-hovercard-url=\"/Meniole/bot/issues/3/hovercard\">```hey```</a>               </h6>             </td>             <td>             <details>               <summary>                 0.4               </summary>               <pre class=\"notranslate\">p:   count: 1   score: 1 code:   count: 1   score: 1 </pre>              </details>             </td>             <td>-</td>             <td>-</td>           </tr>           <tr>             <td>               <h6 dir=\"auto\">                 <a href=\"https://github.com/Meniole/bot/issues/3#issuecomment-2076628605\" data-hovercard-type=\"issue\" data-hovercard-url=\"/Meniole/bot/issues/3/hovercard\">``` heyo ```</a>               </h6>             </td>             <td>             <details>               <summary>                 0.4               </summary>               <pre class=\"notranslate\">p:   count: 1   score: 1 code:   count: 1   score: 1 </pre>              </details>             </td>             <td>-</td>             <td>-</td>           </tr>           <tr>             <td>               <h6 dir=\"auto\">                 <a href=\"https://github.com/Meniole/bot/issues/3#issuecomment-2076632071\" data-hovercard-type=\"issue\" data-hovercard-url=\"/Meniole/bot/issues/3/hovercard\">gr</a>               </h6>             </td>             <td>             <details>               <summary>                 0.2               </summary>               <pre class=\"notranslate\">p:   count: 1   score: 1 </pre>              </details>             </td>             <td>-</td>             <td>-</td>           </tr>           <tr>             <td>               <h6 dir=\"auto\">                 <a href=\"https://github.com/Meniole/bot/issues/3#issuecomment-2076960228\" data-hovercard-type=\"issue\" data-hovercard-url=\"/Meniole/bot/issues/3/hovercard\">te</a>               </h6>             </td>             <td>             <details>               <summary>                 0.2               </summary>               <pre class=\"notranslate\">p:   count: 1   score: 1 </pre>              </details>             </td>             <td>-</td>             <td>-</td>           </tr>           <tr>             <td>               <h6 dir=\"auto\">                 <a href=\"https://github.com/Meniole/bot/issues/3#issuecomment-2076964178\" data-hovercard-type=\"issue\" data-hovercard-url=\"/Meniole/bot/issues/3/hovercard\">fwe</a>               </h6>             </td>             <td>             <details>               <summary>                 0.2               </summary>               <pre class=\"notranslate\">p:   count: 1   score: 1 </pre>              </details>             </td>             <td>-</td>             <td>-</td>           </tr>           <tr>             <td>               <h6 dir=\"auto\">                 <a href=\"https://github.com/Meniole/bot/issues/3#issuecomment-2076972544\" data-hovercard-type=\"issue\" data-hovercard-url=\"/Meniole/bot/issues/3/hovercard\">te</a>               </h6>             </td>             <td>             <details>               <summary>                 0.2               </summary>               <pre class=\"notranslate\">p:   count: 1   score: 1 </pre>              </details>             </td>             <td>0.9</td>             <td>0.18</td>           </tr>         </tbody>       </table>     </details>       </td>     </tr>   </tbody> </table> </task-lists> [😂](https://emojipedia.org/face-with-tears-of-joy) - elem 1 - elem 2",
+        "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196678",
+        "type": "REVIEW|COLLABORATOR|COMMENTED",
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "count": 332,
+                "score": 1
+              },
+              "code": {
+                "count": 2,
+                "score": 1
+              },
+              "a": {
+                "count": 1,
+                "score": 1
+              }
+            },
+            "wordValue": 0.1,
+            "formattingMultiplier": 1
+          },
+          "reward": 33.5
         }
       }
     ]

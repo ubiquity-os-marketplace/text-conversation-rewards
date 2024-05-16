@@ -51,4 +51,7 @@ export const handlers = [
     }
     return HttpResponse.json(user);
   }),
+  http.post("https://api.github.com/app/installations/48381972/access_tokens", () => {
+    return HttpResponse.json({});
+  }),
 ];
