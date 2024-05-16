@@ -141,7 +141,7 @@ export class PermitGenerationModule implements Module {
       locationId = locationData.id;
     }
     if (!locationId) {
-      throw new Error("Failed to retrieve the related location");
+      throw new Error(`Failed to retrieve the related location from issue ${issue}`);
     }
     return locationId;
   }
@@ -162,13 +162,13 @@ export class PermitGenerationModule implements Module {
             location_id: locationId,
           });
           if (error) {
-            console.error(error);
+            console.error("Failed to insert a new permit", error);
           }
         } else {
           console.error(`Failed to save the permit: could not find user ${userId}`);
         }
       } catch (e) {
-        console.error(e);
+        console.error("Failed to save permits to the database", e);
       }
     }
   }
