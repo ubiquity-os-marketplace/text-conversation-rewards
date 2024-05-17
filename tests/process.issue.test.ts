@@ -77,6 +77,12 @@ jest.mock("@ubiquibot/permit-generation/core", () => {
   };
 });
 
+jest.mock("@supabase/supabase-js", () => {
+  return {
+    createClient: jest.fn(),
+  };
+});
+
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
