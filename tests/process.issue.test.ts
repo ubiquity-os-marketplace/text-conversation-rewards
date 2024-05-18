@@ -77,6 +77,32 @@ jest.mock("@ubiquibot/permit-generation/core", () => {
   };
 });
 
+jest.mock("@supabase/supabase-js", () => {
+  return {
+    createClient: jest.fn(() => ({
+      from: jest.fn(() => ({
+        insert: jest.fn(() => ({})),
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            single: jest.fn(() => ({
+              data: {
+                id: 1,
+              },
+            })),
+            eq: jest.fn(() => ({
+              single: jest.fn(() => ({
+                data: {
+                  id: 1,
+                },
+              })),
+            })),
+          })),
+        })),
+      })),
+    })),
+  };
+});
+
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -92,6 +118,9 @@ describe("Modules tests", () => {
     }
     for (const item of dbSeed.wallets) {
       mockDb.wallets.create(item);
+    }
+    for (const item of dbSeed.locations) {
+      mockDb.locations.create(item);
     }
   });
 

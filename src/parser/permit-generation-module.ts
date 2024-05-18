@@ -7,6 +7,7 @@ import {
   Database,
   encodePermits,
   generatePayoutPermit,
+  Permit,
   SupportedEvents,
   TokenType,
 } from "@ubiquibot/permit-generation/core";
@@ -17,6 +18,7 @@ import {
 } from "../configuration/permit-generation-configuration";
 import { getOctokitInstance } from "../get-authentication-token";
 import { IssueActivity } from "../issue-activity";
+import { getRepo, parseGitHubUrl } from "../start";
 import envConfigSchema, { EnvConfigType } from "../types/env-type";
 import program from "./command-line";
 import { Module, Result } from "./processor";
@@ -39,7 +41,7 @@ export class PermitGenerationModule implements Module {
       evmPrivateEncrypted: configuration.evmPrivateEncrypted,
       evmNetworkId: configuration.evmNetworkId,
     };
-    const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);
+    const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[0]);
     payload.issue = {
       id: issueId,
     };
@@ -100,11 +102,75 @@ export class PermitGenerationModule implements Module {
           config.permitRequests
         );
         result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+        await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
       } catch (e) {
         console.error(e);
       }
     }
     return result;
+  }
+
+  async _getOrCreateIssueLocation(issue: { issueId: number; issueUrl: string }) {
+    let locationId: number | null = null;
+
+    const { data: locationData } = await this._supabase
+      .from("locations")
+      .select("id")
+      .eq("issue_id", issue.issueId)
+      .eq("node_url", issue.issueUrl)
+      .single();
+
+    if (!locationData) {
+      const issueItem = await getRepo(parseGitHubUrl(issue.issueUrl));
+      const { data: newLocationData, error } = await this._supabase
+        .from("locations")
+        .insert({
+          node_url: issue.issueUrl,
+          issue_id: issue.issueId,
+          node_type: "Issue",
+          repository_id: issueItem.id,
+        })
+        .select("id")
+        .single();
+      if (!newLocationData || error) {
+        console.error("Failed to create a new location", error);
+      } else {
+        locationId = newLocationData.id;
+      }
+    } else {
+      locationId = locationData.id;
+    }
+    if (!locationId) {
+      throw new Error(`Failed to retrieve the related location from issue ${issue}`);
+    }
+    return locationId;
+  }
+
+  async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: Permit[]) {
+    for (const permit of permits) {
+      try {
+        const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
+        const locationId = await this._getOrCreateIssueLocation(issue);
+
+        if (userData) {
+          const { error } = await this._supabase.from("permits").insert({
+            amount: permit.amount.toString(),
+            nonce: permit.nonce,
+            deadline: permit.deadline,
+            signature: permit.signature,
+            beneficiary_id: userData.id,
+            location_id: locationId,
+          });
+          if (error) {
+            console.error("Failed to insert a new permit", error);
+          }
+        } else {
+          console.error(`Failed to save the permit: could not find user ${userId}`);
+        }
+      } catch (e) {
+        console.error("Failed to save permits to the database", e);
+      }
+    }
   }
 
   get enabled(): boolean {
