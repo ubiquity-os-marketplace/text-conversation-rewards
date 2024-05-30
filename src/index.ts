@@ -11,7 +11,7 @@ export async function main() {
     if (eventPayload.issue.state_reason !== "completed") {
       const result = "# Issue was not closed as completed. Skipping.";
       await getOctokitInstance().issues.createComment({
-        body: `\`\`\`text\n${result}\`\`\``,
+        body: `\`\`\`text\n${result}\n\`\`\``,
         repo: eventPayload.repository.name,
         owner: eventPayload.repository.owner.login,
         issue_number: eventPayload.issue.number,
