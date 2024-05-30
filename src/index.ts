@@ -5,21 +5,17 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { getOctokitInstance } from "./get-authentication-token.ts";
 
-async function main() {
+export async function main() {
   const { eventPayload, eventName } = program;
   if (eventName === "issues.closed") {
     if (eventPayload.issue.state_reason !== "completed") {
       const result = "# Issue was not closed as completed. Skipping.";
-      try {
-        await getOctokitInstance().issues.createComment({
-          body: `\`\`\`${result}\`\`\``,
-          repo: eventPayload.repository.name,
-          owner: eventPayload.repository.owner.login,
-          issue_number: eventPayload.issue.number,
-        });
-      } catch (e) {
-        console.error(e);
-      }
+      await getOctokitInstance().issues.createComment({
+        body: `\`\`\`${result}\`\`\``,
+        repo: eventPayload.repository.name,
+        owner: eventPayload.repository.owner.login,
+        issue_number: eventPayload.issue.number,
+      });
       return result;
     }
     const issue = parseGitHubUrl(eventPayload.issue.html_url);
