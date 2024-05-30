@@ -114,4 +114,7 @@ export const handlers = [
     const createdPermit = db.permits.create(data);
     return HttpResponse.json(createdPermit);
   }),
+  http.post("https://api.github.com/repos/:owner/:repo/issues/:id/comments", () => {
+    return HttpResponse.json({});
+  }),
 ];

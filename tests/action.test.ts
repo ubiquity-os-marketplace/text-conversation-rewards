@@ -1,6 +1,11 @@
 /* eslint @typescript-eslint/no-var-requires: 0 */
 import "../src/parser/command-line";
 import { run } from "../src/run";
+import { server } from "./__mocks__/node.ts";
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 jest.mock("../src/parser/command-line", () => {
   const cfg = require("./__mocks__/results/valid-configuration.json");
