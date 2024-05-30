@@ -30,7 +30,7 @@ jest.mock("../src/parser/command-line", () => {
 
 describe("Action tests", () => {
   it("Should skip when the issue is closed without the completed status", async () => {
-    const e = await main();
-    expect(e).toEqual("# Issue was not closed as completed. Skipping.");
+    const result = await main();
+    expect(result).toEqual("# Issue was not closed as completed. Skipping.");
   });
 });
