@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/no-var-requires: 0 */
 import "../src/parser/command-line";
-import { main } from "../src";
+import { run } from "../src/run";
 
 jest.mock("../src/parser/command-line", () => {
   const cfg = require("./__mocks__/results/valid-configuration.json");
@@ -30,7 +30,7 @@ jest.mock("../src/parser/command-line", () => {
 
 describe("Action tests", () => {
   it("Should skip when the issue is closed without the completed status", async () => {
-    const result = await main();
+    const result = await run();
     expect(result).toEqual("# Issue was not closed as completed. Skipping.");
   });
 });
