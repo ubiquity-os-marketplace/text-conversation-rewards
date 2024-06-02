@@ -41,7 +41,17 @@ jest.mock("../src/parser/command-line", () => {
     authToken: process.env.GITHUB_TOKEN,
     ref: "",
     eventPayload: {
-      issue: { html_url: "https://github.com/ubiquibot/comment-incentives/issues/22" },
+      issue: {
+        html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+        number: 1,
+        state_reason: "completed",
+      },
+      repository: {
+        name: "conversation-rewards",
+        owner: {
+          login: "ubiquibot",
+        },
+      },
     },
     settings: JSON.stringify(cfg),
   };
