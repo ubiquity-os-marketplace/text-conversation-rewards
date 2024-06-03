@@ -121,9 +121,13 @@ export class GithubCommentModule implements Module {
 
     function buildIncentiveRow(commentScore: GithubCommentScore) {
       // Properly escape carriage returns for HTML rendering
-      const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\n\r]/g, "&#13;");
+      const formatting = stringify(commentScore.score?.formatting).replace(/[\n\r]/g, "&#13;");
       // Makes sure any HTML injected in the templated is not rendered itself
-      const sanitizedContent = commentScore.content.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      const sanitizedContent = commentScore.content
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("`", "&#96;");
       return `
           <tr>
             <td>
