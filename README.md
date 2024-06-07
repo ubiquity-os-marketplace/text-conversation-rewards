@@ -44,6 +44,7 @@ Be sure to review all `*.test.*` files for implementation details.
 Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * relevance + task.reward = total`
 
 ## Plugin configuration
+
 Here is a possible valid configuration to enable this plugin.
 
 
