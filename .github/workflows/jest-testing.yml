@@ -3,7 +3,7 @@ name: Run Jest Tests
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Build"]
+    workflows: ["Knip"]
     types:
       - completed
 
