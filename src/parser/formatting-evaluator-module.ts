@@ -26,7 +26,7 @@ export class FormattingEvaluatorModule implements Module {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.type.reduce((a, b) => CommentType[b] | a, 0)]: {
+          [curr.targets.reduce((a, b) => CommentType[b] | a, 0)]: {
             wordValue: curr.wordValue,
             formattingMultiplier: curr.formattingMultiplier,
           },
