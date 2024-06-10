@@ -22,7 +22,7 @@ export async function run() {
     const issue = parseGitHubUrl(eventPayload.issue.html_url);
     const activity = new IssueActivity(issue);
     await activity.init();
-    if (!configuration.incentives.generateOnMissingPriceLabel && !getSortedPrices(activity.self?.labels).length) {
+    if (configuration.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
       const result = "! No price label has been set. Skipping permit generation.";
       await getOctokitInstance().issues.createComment({
         body: `\`\`\`text\n${result}\n\`\`\``,

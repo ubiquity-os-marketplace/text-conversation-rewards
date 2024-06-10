@@ -55,7 +55,7 @@ with:
     evmPrivateEncrypted: "encrypted-key"
     incentives:
       enabled: true
-      generateOnMissingPriceLabel: false
+      requirePriceLabel: true
       contentEvaluator:
         enabled: true
       userExtractor:
