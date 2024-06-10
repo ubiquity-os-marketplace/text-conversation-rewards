@@ -84,34 +84,34 @@ with:
           td: 1
           hr: 0
         multipliers:
-          - type: [ ISSUE, ISSUER, SPECIFICATION ]
+          - targets: [ ISSUE, ISSUER, SPECIFICATION ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - type: [ ISSUE, ISSUER, COMMENTED ]
+          - targets: [ ISSUE, ISSUER, COMMENTED ]
             formattingMultiplier: 1
             wordValue: 0.2
-          - type: [ ISSUE, ASSIGNEE, COMMENTED ]
+          - targets: [ ISSUE, ASSIGNEE, COMMENTED ]
             formattingMultiplier: 0
             wordValue: 0
-          - type: [ ISSUE, COLLABORATOR, COMMENTED ]
+          - targets: [ ISSUE, COLLABORATOR, COMMENTED ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - type: [ ISSUE, CONTRIBUTOR, COMMENTED ]
+          - targets: [ ISSUE, CONTRIBUTOR, COMMENTED ]
             formattingMultiplier: 0.25
             wordValue: 0.1
-          - type: [ REVIEW, ISSUER, TASK ]
+          - targets: [ REVIEW, ISSUER, TASK ]
             formattingMultiplier: 0
             wordValue: 0
-          - type: [ REVIEW, ISSUER, COMMENTED ]
+          - targets: [ REVIEW, ISSUER, COMMENTED ]
             formattingMultiplier: 2
             wordValue: 0.2
-          - type: [ REVIEW, ASSIGNEE, COMMENTED ]
+          - targets: [ REVIEW, ASSIGNEE, COMMENTED ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - type: [ REVIEW, COLLABORATOR, COMMENTED ]
+          - targets: [ REVIEW, COLLABORATOR, COMMENTED ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - type: [ REVIEW, CONTRIBUTOR, COMMENTED ]
+          - targets: [ REVIEW, CONTRIBUTOR, COMMENTED ]
             formattingMultiplier: 0.25
             wordValue: 0.1
       permitGeneration:
