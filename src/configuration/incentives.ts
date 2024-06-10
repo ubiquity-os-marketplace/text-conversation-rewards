@@ -25,6 +25,10 @@ export const incentivesConfigurationSchema = T.Object({
      * Optionally specify a file to write the results in
      */
     file: T.Optional(T.String()),
+    /**
+     * If set to true, the plugin runs even if the price label is missing, and will evaluate comments.
+     */
+    generateOnMissingPriceLabel: T.Optional(T.Boolean({ default: false })),
     contentEvaluator: contentEvaluatorConfigurationType,
     userExtractor: userExtractorConfigurationType,
     dataPurge: dataPurgeConfigurationType,
