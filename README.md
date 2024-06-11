@@ -42,3 +42,82 @@ Be sure to review all `*.test.*` files for implementation details.
 ```
 
 Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * relevance + task.reward = total`
+
+## Plugin configuration
+
+Here is a possible valid configuration to enable this plugin.
+
+
+```yaml
+plugin: ubiquibot/conversation-rewards
+with:
+    evmNetworkId: 100
+    evmPrivateEncrypted: "encrypted-key"
+    incentives:
+      enabled: true
+      requirePriceLabel: true
+      contentEvaluator:
+        enabled: true
+      userExtractor:
+        enabled: true
+        redeemTask: true
+      dataPurge:
+        enabled: true
+      formattingEvaluator:
+        enabled: true
+        scores:
+          br: 0
+          code: 1
+          p: 1
+          em: 0
+          img: 0
+          strong: 0
+          blockquote: 0
+          h1: 1
+          h2: 1
+          h3: 1
+          h4: 1
+          h5: 1
+          h6: 1
+          a: 1
+          li: 1
+          td: 1
+          hr: 0
+        multipliers:
+          - targets: [ ISSUE, ISSUER, SPECIFICATION ]
+            formattingMultiplier: 1
+            wordValue: 0.1
+          - targets: [ ISSUE, ISSUER, COMMENTED ]
+            formattingMultiplier: 1
+            wordValue: 0.2
+          - targets: [ ISSUE, ASSIGNEE, COMMENTED ]
+            formattingMultiplier: 0
+            wordValue: 0
+          - targets: [ ISSUE, COLLABORATOR, COMMENTED ]
+            formattingMultiplier: 1
+            wordValue: 0.1
+          - targets: [ ISSUE, CONTRIBUTOR, COMMENTED ]
+            formattingMultiplier: 0.25
+            wordValue: 0.1
+          - targets: [ REVIEW, ISSUER, TASK ]
+            formattingMultiplier: 0
+            wordValue: 0
+          - targets: [ REVIEW, ISSUER, COMMENTED ]
+            formattingMultiplier: 2
+            wordValue: 0.2
+          - targets: [ REVIEW, ASSIGNEE, COMMENTED ]
+            formattingMultiplier: 1
+            wordValue: 0.1
+          - targets: [ REVIEW, COLLABORATOR, COMMENTED ]
+            formattingMultiplier: 1
+            wordValue: 0.1
+          - targets: [ REVIEW, CONTRIBUTOR, COMMENTED ]
+            formattingMultiplier: 0.25
+            wordValue: 0.1
+      permitGeneration:
+        enabled: false
+      githubComment:
+        enabled: true
+        post: true
+        debug: false
+```

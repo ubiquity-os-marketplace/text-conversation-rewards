@@ -2,9 +2,13 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
-import { FormattingEvaluatorConfiguration, formattingEvaluatorConfigurationType } from "@ubiquibot/configuration";
+import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
-import { CommentType, IssueActivity } from "../issue-activity";
+import {
+  FormattingEvaluatorConfiguration,
+  formattingEvaluatorConfigurationType,
+} from "../configuration/formatting-evaluator-config";
+import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {
@@ -22,7 +26,7 @@ export class FormattingEvaluatorModule implements Module {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.type.reduce((a, b) => CommentType[b] | a, 0)]: {
+          [curr.targets.reduce((a, b) => CommentType[b] | a, 0)]: {
             wordValue: curr.wordValue,
             formattingMultiplier: curr.formattingMultiplier,
           },

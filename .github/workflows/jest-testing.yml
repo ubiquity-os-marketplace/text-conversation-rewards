@@ -2,44 +2,41 @@ name: Run Jest Tests
 
 on:
   workflow_dispatch:
-  pull_request:
+  workflow_run:
+    workflows: ["Knip"]
+    types:
+      - completed
+
+env:
+  NODE_ENV: "test"
 
 jobs:
-  test:
+  testing:
     permissions: write-all
-    name: Run Jest Tests
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      X25519_PRIVATE_KEY: ${{ secrets.X25519_PRIVATE_KEY }}
+      # Dummy values, not production ones!
+      X25519_PRIVATE_KEY: "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY"
+      EVM_PRIVATE_ENCRYPTED: "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ"
       NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
       NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
-      EVM_PRIVATE_ENCRYPTED: ${{ secrets.EVM_PRIVATE_ENCRYPTED }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20.10.0"
 
-      - name: Install dependencies
-        run: yarn install
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
 
-      - name: Run tests
-        run: yarn test | tee ./coverage.txt && exit ${PIPESTATUS[0]}
-
-      - name: Jest Coverage Comment
+      - name: Jest With Coverage Comment
         # Ensures this step is run even on previous step failure (e.g. test failed)
         if: always()
-        uses: MishaKav/jest-coverage-comment@main
+        uses: ArtiomTr/jest-coverage-report-action@v2
         with:
-          coverage-summary-path: coverage/coverage-summary.json
-          junitxml-path: junit.xml
-          junitxml-title: JUnit
-          coverage-path: ./coverage.txt
+          package-manager: yarn
+          prnumber: ${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number }}

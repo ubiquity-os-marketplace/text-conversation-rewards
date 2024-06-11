@@ -6,10 +6,8 @@ const envConfigSchema = Type.Object({
   GITHUB_TOKEN: Type.String(),
   X25519_PRIVATE_KEY: Type.String(),
   OPENAI_API_KEY: Type.String(),
-  NFT_MINTER_PRIVATE_KEY: Type.String(),
-  NFT_CONTRACT_ADDRESS: Type.String(),
-  UBIQUIBOT_APP_ID: Type.String(),
-  UBIQUIBOT_APP_PRIVATE_KEY: Type.String(),
+  NFT_MINTER_PRIVATE_KEY: Type.String({ default: "" }),
+  NFT_CONTRACT_ADDRESS: Type.String({ default: "" }),
 });
 
 export type EnvConfigType = Static<typeof envConfigSchema>;

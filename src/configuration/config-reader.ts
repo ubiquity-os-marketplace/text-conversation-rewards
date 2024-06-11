@@ -1,26 +1,27 @@
-import { Value } from "@sinclair/typebox/value";
-import { baseIncentiveConfiguration, BotConfig, generateConfiguration } from "@ubiquibot/configuration";
-import * as fs from "fs";
-import YAML from "yaml";
 import program from "../parser/command-line";
+import { IncentivesConfiguration, incentivesConfigurationSchema, validateIncentivesConfiguration } from "./incentives";
+import { Value } from "@sinclair/typebox/value";
+import { merge } from "lodash";
 
-let configuration: BotConfig;
-let incentivesConfiguration: BotConfig["incentives"] | null = null;
+let configuration: IncentivesConfiguration | null = null;
+
 try {
-  const file = fs.readFileSync(program.opts().config, "utf8");
-  incentivesConfiguration = YAML.parse(file);
+  const defaultConf = Value.Create(incentivesConfigurationSchema);
+  configuration = Value.Decode(incentivesConfigurationSchema, defaultConf);
 } catch (e) {
   console.error(e);
 }
 
-// Get the default configuration
-configuration = generateConfiguration();
-
-if (!Value.Check(baseIncentiveConfiguration, incentivesConfiguration)) {
-  console.warn("Invalid bot configuration detected, will use defaults.");
-} else {
-  // Merge the default with our own
-  configuration = generateConfiguration({ incentives: incentivesConfiguration } as BotConfig);
+if (program.settings) {
+  const settings = merge(configuration, JSON.parse(program.settings));
+  if (validateIncentivesConfiguration.test(settings)) {
+    configuration = settings;
+  } else {
+    console.warn("Invalid incentives configuration detected, will revert to defaults.");
+    for (const error of validateIncentivesConfiguration.errors(settings)) {
+      console.warn(error);
+    }
+  }
 }
 
-export default configuration;
+export default configuration as IncentivesConfiguration;
