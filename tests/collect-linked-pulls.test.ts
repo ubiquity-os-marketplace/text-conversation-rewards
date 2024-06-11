@@ -1,18 +1,34 @@
-import { IssueParams, parseGitHubUrl } from "../start";
+import { IssueParams, parseGitHubUrl } from "../src/start";
 
-import ISSUE_CROSS_REPO_LINK from "./fixtures/issue-89.json"; // pr188 is linked to this issue
-import ISSUE_SAME_REPO_LINK from "./fixtures/issue-90.json"; // pr91 is linked to this issue
-import ISSUE_NO_LINK from "./fixtures/issue-92.json"; // no link
+import ISSUE_CROSS_REPO_LINK from "../src/data-collection/fixtures/issue-89.json"; // pr188 is linked to this issue
+import ISSUE_SAME_REPO_LINK from "../src/data-collection/fixtures/issue-90.json"; // pr91 is linked to this issue
+import ISSUE_NO_LINK from "../src/data-collection/fixtures/issue-92.json"; // no link
 
-import { collectLinkedMergedPulls, collectLinkedPulls } from "./collect-linked-pulls";
-import PR_CROSS_REPO_LINK from "./fixtures/pr-188.json";
-import PR_SAME_REPO_LINK from "./fixtures/pr-91.json";
+import { collectLinkedMergedPulls, collectLinkedPulls } from "../src/data-collection/collect-linked-pulls";
+import PR_CROSS_REPO_LINK from "../src/data-collection/fixtures/pr-188.json";
+import PR_SAME_REPO_LINK from "../src/data-collection/fixtures/pr-91.json";
 
 const PARAMS_ISSUE_CROSS_REPO_LINK: IssueParams = parseGitHubUrl(ISSUE_CROSS_REPO_LINK.html_url); // cross repo link
 const PARAMS_ISSUE_SAME_REPO_LINK: IssueParams = parseGitHubUrl(ISSUE_SAME_REPO_LINK.html_url); // same repo link
 const PARAMS_ISSUE_NO_LINK: IssueParams = parseGitHubUrl(ISSUE_NO_LINK.html_url); // no link
 // const PARAMS_PR_CROSS_REPO_LINK: IssueParams = parseGitHubUrl(PR_CROSS_REPO_LINK.html_url);
 // const PARAMS_PR_SAME_REPO_LINK: IssueParams = parseGitHubUrl(PR_SAME_REPO_LINK.html_url);
+
+jest.mock("../src/parser/command-line", () => {
+  // Require is needed because mock cannot access elements out of scope
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const cfg = require("./__mocks__/results/valid-configuration.json");
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const dotenv = require("dotenv");
+  dotenv.config();
+  return {
+    stateId: 1,
+    eventName: "issues.closed",
+    authToken: process.env.GITHUB_TOKEN,
+    ref: "",
+    eventPayload: JSON.stringify(cfg),
+  };
+});
 
 describe("Artificial scenarios for linking pull requests to issues", () => {
   it("should return an empty array when the issue does not have any associated link events", async () => {

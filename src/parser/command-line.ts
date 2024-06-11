@@ -1,21 +1,28 @@
-import { Command } from "@commander-js/extra-typings";
+import * as github from "@actions/github";
 import { config } from "dotenv";
-import packageJson from "../../package.json";
+import { EmitterWebhookEvent as WebhookEvent, EmitterWebhookEventName as WebhookEventName } from "@octokit/webhooks";
 
 config();
 
-// On test mode pass the env value directly to the CLI
-if (process.env.NODE_ENV === "test") {
-  process.argv.splice(2);
-  process.argv.push("-i");
-  process.argv.push(`${process.env.TEST_ISSUE_URL}`);
+export type SupportedEvents = "issues.closed";
+
+export interface PluginInputs<T extends WebhookEventName = SupportedEvents> {
+  stateId: string;
+  eventName: T;
+  eventPayload: WebhookEvent<T>["payload"];
+  settings: string;
+  authToken: string;
+  ref: string;
 }
 
-const program = new Command()
-  .requiredOption("-i, --issue <url>", "The url of the issue to parse")
-  .option("-c, --config <path>", "The path to the desired configuration to use", "rewards-configuration.default.yml")
-  .option("-f, --file <file>", "The target file to store the results in")
-  .version(packageJson.version)
-  .parse();
+const webhookPayload = github.context.payload.inputs;
+const program: PluginInputs = {
+  stateId: webhookPayload.stateId,
+  eventName: webhookPayload.eventName,
+  authToken: webhookPayload.authToken,
+  ref: webhookPayload.ref,
+  eventPayload: JSON.parse(webhookPayload.eventPayload),
+  settings: webhookPayload.settings,
+};
 
 export default program;

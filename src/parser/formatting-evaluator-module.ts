@@ -2,11 +2,13 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
+import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
-import formattingEvaluatorConfig, {
+import {
   FormattingEvaluatorConfiguration,
+  formattingEvaluatorConfigurationType,
 } from "../configuration/formatting-evaluator-config";
-import { CommentType, IssueActivity } from "../issue-activity";
+import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {
@@ -15,7 +17,7 @@ interface Multiplier {
 }
 
 export class FormattingEvaluatorModule implements Module {
-  private readonly _configuration: FormattingEvaluatorConfiguration = configuration.formattingEvaluator;
+  private readonly _configuration: FormattingEvaluatorConfiguration = configuration.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: string]: Multiplier } = {};
 
@@ -24,7 +26,7 @@ export class FormattingEvaluatorModule implements Module {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.type.reduce((a, b) => CommentType[b] | a, 0)]: {
+          [curr.targets.reduce((a, b) => CommentType[b] | a, 0)]: {
             wordValue: curr.wordValue,
             formattingMultiplier: curr.formattingMultiplier,
           },
@@ -33,7 +35,7 @@ export class FormattingEvaluatorModule implements Module {
     }
   }
 
-  transform(data: Readonly<IssueActivity>, result: Result) {
+  async transform(data: Readonly<IssueActivity>, result: Result) {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
@@ -64,11 +66,11 @@ export class FormattingEvaluatorModule implements Module {
         };
       }
     }
-    return Promise.resolve(result);
+    return result;
   }
 
   get enabled(): boolean {
-    if (!Value.Check(formattingEvaluatorConfig, this._configuration)) {
+    if (!Value.Check(formattingEvaluatorConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for FormattingEvaluatorModule, disabling.");
       return false;
     }

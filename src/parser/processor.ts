@@ -1,23 +1,27 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
+import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
-import { CommentType, IssueActivity } from "../issue-activity";
-import program from "./command-line";
+import { IssueActivity } from "../issue-activity";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
+import { GithubCommentModule } from "./github-comment-module";
+import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
 
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
-  private readonly _configuration = configuration;
+  private readonly _configuration = configuration.incentives;
 
   constructor() {
     this.add(new UserExtractorModule())
       .add(new DataPurgeModule())
       .add(new FormattingEvaluatorModule())
-      .add(new ContentEvaluatorModule());
+      .add(new ContentEvaluatorModule())
+      .add(new PermitGenerationModule())
+      .add(new GithubCommentModule());
   }
 
   add(transformer: Module) {
@@ -26,7 +30,7 @@ export class Processor {
   }
 
   async run(data: Readonly<IssueActivity>) {
-    if (this._configuration.disabled) {
+    if (!this._configuration.enabled) {
       console.log("Module is disabled. Skipping...");
       return;
     }
@@ -34,16 +38,16 @@ export class Processor {
       if (transformer.enabled) {
         this._result = await transformer.transform(data, this._result);
       }
-    }
-    // Aggregate total result
-    for (const item of Object.keys(this._result)) {
-      this._result[item].total = this._sumRewards(this._result[item]);
+      // Aggregate total result
+      for (const item of Object.keys(this._result)) {
+        this._result[item].total = this._sumRewards(this._result[item]);
+      }
     }
     return this._result;
   }
 
   dump() {
-    const { file } = program.opts();
+    const { file } = this._configuration;
     const result = JSON.stringify(
       this._result,
       (key: string, value: string | number) => {
@@ -67,6 +71,7 @@ export class Processor {
     } else {
       fs.writeFileSync(file, result);
     }
+    return result;
   }
 
   _sumRewards(obj: Record<string, unknown>) {
@@ -96,6 +101,9 @@ export interface Result {
     task?: {
       reward: number;
     };
+    permitUrl?: string;
+    userId: number;
+    evaluationCommentHtml?: string;
   };
 }
 
