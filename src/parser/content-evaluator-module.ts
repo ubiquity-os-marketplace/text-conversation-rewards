@@ -71,7 +71,7 @@ export class ContentEvaluatorModule implements Module {
     return commentsWithScore;
   }
 
-  async _evaluateComments(specification: string, comments: string[]) {
+  async _evaluateComments(specification: string, comments: string[]): Promise<number[]> {
     const prompt = this._generatePrompt(specification, comments);
 
     try {
@@ -100,41 +100,21 @@ export class ContentEvaluatorModule implements Module {
   }
 
   _getOptimalModel(prompt: string) {
-    const encoder = encodingForModel("gpt-3.5-turbo");
+    const encoder = encodingForModel("gpt-4o");
     const totalSumOfTokens = encoder.encode(prompt).length;
 
     if (totalSumOfTokens <= 4097) {
       return "gpt-3.5-turbo";
     } else if (totalSumOfTokens <= 16385) {
-      return "gpt-3.5-turbo-16k";
+      return "gpt-3.5-turbo-16k"; // gpt-4o?
     } else {
       console.warn("Backup plan for development purposes only, but using gpt-4 due to huge context size");
-      return "gpt-4-turbo-preview";
+      return "gpt-4o";
     }
   }
 
   async _sampleRelevanceScoreResults(specification: string, comments: string[]) {
-    const BATCH_SIZE = 10;
-    const evaluationPromises: ReturnType<typeof this._evaluateComments>[] = [];
-
-    for (let i = 0; i < BATCH_SIZE; ++i) {
-      evaluationPromises.push(this._evaluateComments(specification, comments));
-    }
-
-    const results = await Promise.all(evaluationPromises);
-
-    // Calculate the sum of each column
-    const columnSums: Decimal[] = [];
-    for (let j = 0; j < results[0].length; j++) {
-      let sum = new Decimal(0);
-      for (let i = 0; i < results.length; i++) {
-        sum = sum.plus(results[i][j] || 0);
-      }
-      columnSums.push(sum);
-    }
-
-    // Return the average of each column
-    return columnSums.map((sum) => sum.dividedBy(results.length));
+    return await this._evaluateComments(specification, comments);
   }
 
   _generatePrompt(issue: string, comments: string[]) {
@@ -145,8 +125,7 @@ export class ContentEvaluatorModule implements Module {
       .map((comment) => comment)
       .join(
         "\n"
-      )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY an array of float numbers between 0 and 1, corresponding to each comment in the order they appear. Each float should represent the degree of relevance and added value of the comment to the issue. The total length of the array in your response should equal exactly ${
-      comments.length
-    } elements.`;
+      )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY an array of float numbers between 0 and 1, corresponding to each comment in the order they appear. Each float should represent the degree of relevance and added value of the comment to the issue. The total length of the array in your response should equal exactly ${comments.length
+      } elements.`;
   }
 }
