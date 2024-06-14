@@ -1,5 +1,4 @@
 import Decimal from "decimal.js";
-import { encodingForModel } from "js-tiktoken";
 import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
@@ -50,7 +49,7 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
     const commentsBody = commentsWithScore.map((comment) => comment.content);
-    const relevance = await this._sampleRelevanceScoreResults(specificationBody, commentsBody);
+    const relevance = await this._evaluateComments(specificationBody, commentsBody);
 
     if (relevance.length !== commentsWithScore.length) {
       console.error("Relevance / Comment length mismatch! Skipping.");
@@ -71,12 +70,12 @@ export class ContentEvaluatorModule implements Module {
     return commentsWithScore;
   }
 
-  async _evaluateComments(specification: string, comments: string[]): Promise<number[]> {
+  async _evaluateComments(specification: string, comments: string[]): Promise<Decimal[]> {
     const prompt = this._generatePrompt(specification, comments);
 
     try {
       const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
-        model: this._getOptimalModel(prompt),
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
@@ -97,24 +96,6 @@ export class ContentEvaluatorModule implements Module {
       console.error(`Failed to evaluate comment`, error);
       return [];
     }
-  }
-
-  _getOptimalModel(prompt: string) {
-    const encoder = encodingForModel("gpt-4o");
-    const totalSumOfTokens = encoder.encode(prompt).length;
-
-    if (totalSumOfTokens <= 4097) {
-      return "gpt-3.5-turbo";
-    } else if (totalSumOfTokens <= 16385) {
-      return "gpt-3.5-turbo-16k"; // gpt-4o?
-    } else {
-      console.warn("Backup plan for development purposes only, but using gpt-4 due to huge context size");
-      return "gpt-4o";
-    }
-  }
-
-  async _sampleRelevanceScoreResults(specification: string, comments: string[]) {
-    return await this._evaluateComments(specification, comments);
   }
 
   _generatePrompt(issue: string, comments: string[]) {
