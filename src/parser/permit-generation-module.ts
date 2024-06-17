@@ -27,6 +27,7 @@ interface Payload {
   evmNetworkId: number;
   issueUrl: string;
   evmPrivateEncrypted: string;
+  erc20RewardToken: string;
   issue: { id: number };
 }
 
@@ -40,6 +41,7 @@ export class PermitGenerationModule implements Module {
       issueUrl: program.eventPayload.issue.html_url,
       evmPrivateEncrypted: configuration.evmPrivateEncrypted,
       evmNetworkId: configuration.evmNetworkId,
+      erc20RewardToken: configuration.erc20RewardToken,
     };
     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[0]);
     payload.issue = {
@@ -78,6 +80,8 @@ export class PermitGenerationModule implements Module {
               username: key,
               contributionType: "",
               type: TokenType.ERC20,
+              // TODO: uncomment when https://github.com/ubiquibot/permit-generation/pull/17 is merged
+              // tokenAddress: payload.erc20RewardToken
             },
           ],
         };
