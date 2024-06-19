@@ -7,7 +7,7 @@ import {
   Database,
   encodePermits,
   generatePayoutPermit,
-  Permit,
+  PermitReward,
   SupportedEvents,
   TokenType,
 } from "@ubiquibot/permit-generation/core";
@@ -80,8 +80,7 @@ export class PermitGenerationModule implements Module {
               username: key,
               contributionType: "",
               type: TokenType.ERC20,
-              // TODO: uncomment when https://github.com/ubiquibot/permit-generation/pull/17 is merged
-              // tokenAddress: payload.erc20RewardToken
+              tokenAddress: payload.erc20RewardToken
             },
           ],
         };
@@ -150,7 +149,7 @@ export class PermitGenerationModule implements Module {
     return locationId;
   }
 
-  async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: Permit[]) {
+  async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: PermitReward[]) {
     for (const permit of permits) {
       try {
         const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
@@ -159,8 +158,8 @@ export class PermitGenerationModule implements Module {
         if (userData) {
           const { error } = await this._supabase.from("permits").insert({
             amount: permit.amount.toString(),
-            nonce: permit.nonce,
-            deadline: permit.deadline,
+            nonce: permit.nonce.toString(),
+            deadline: permit.deadline.toString(),
             signature: permit.signature,
             beneficiary_id: userData.id,
             location_id: locationId,
