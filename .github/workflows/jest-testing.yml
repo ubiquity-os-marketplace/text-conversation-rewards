@@ -10,6 +10,16 @@ jobs:
   testing:
     permissions: write-all
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      # Dummy values, not production ones!
+      X25519_PRIVATE_KEY: "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY"
+      EVM_PRIVATE_ENCRYPTED: "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ"
+      NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
+      NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
     steps:
       - uses: actions/setup-node@v4
         with:
