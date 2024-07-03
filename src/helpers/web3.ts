@@ -21,6 +21,6 @@ export async function getERC20TokenSymbol(networkId: number, tokenAddress: strin
   const provider = await handler.getFastestRpcProvider();
 
   // fetch token symbol
-  const contract = new ethers.Contract(tokenAddress, abi, provider)
+  const contract = new ethers.Contract(tokenAddress, abi, provider);
   return await contract.symbol();
 }
