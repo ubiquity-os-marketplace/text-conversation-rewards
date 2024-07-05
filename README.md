@@ -116,7 +116,7 @@ with:
             formattingMultiplier: 0.25
             wordValue: 0.1
       permitGeneration:
-        enabled: false
+        enabled: true
       githubComment:
         enabled: true
         post: true

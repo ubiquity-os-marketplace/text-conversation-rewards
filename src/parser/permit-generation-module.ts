@@ -80,7 +80,7 @@ export class PermitGenerationModule implements Module {
               username: key,
               contributionType: "",
               type: TokenType.ERC20,
-              tokenAddress: payload.erc20RewardToken
+              tokenAddress: payload.erc20RewardToken,
             },
           ],
         };
