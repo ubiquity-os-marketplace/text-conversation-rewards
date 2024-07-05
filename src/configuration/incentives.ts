@@ -16,6 +16,10 @@ export const incentivesConfigurationSchema = T.Object({
    * The encrypted key to use for permit generation
    */
   evmPrivateEncrypted: T.String(),
+  /**
+   * Reward token for ERC20 permits, default WXDAI for gnosis chain
+   */
+  erc20RewardToken: T.String({ default: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d" }),
   incentives: T.Object({
     /**
      * Enables or disables the incentive plugin
