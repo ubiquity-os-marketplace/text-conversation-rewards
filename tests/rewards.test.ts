@@ -1,5 +1,6 @@
 import { drop } from "@mswjs/data";
 import Decimal from "decimal.js";
+import fs from "fs";
 import { IssueActivity } from "../src/issue-activity.ts";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module.ts";
 import { DataPurgeModule } from "../src/parser/data-purge-module.ts";
@@ -12,6 +13,7 @@ import { parseGitHubUrl } from "../src/start.ts";
 import "../src/parser/command-line";
 import { db, db as mockDb } from "./__mocks__/db.ts";
 import dbSeed from "./__mocks__/db-seed.json";
+import rewardSplitResult from "./__mocks__/results/reward-split.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -129,6 +131,10 @@ describe("Rewards tests", () => {
       new GithubCommentModule(),
     ];
     await processor.run(activity);
-    processor.dump();
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(rewardSplitResult);
+    expect(fs.readFileSync("./output.html")).toEqual(
+      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html")
+    );
   });
 });
