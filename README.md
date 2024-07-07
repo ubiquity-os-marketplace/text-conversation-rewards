@@ -53,6 +53,7 @@ plugin: ubiquibot/conversation-rewards
 with:
     evmNetworkId: 100
     evmPrivateEncrypted: "encrypted-key"
+    erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
     incentives:
       enabled: true
       requirePriceLabel: true
@@ -115,7 +116,7 @@ with:
             formattingMultiplier: 0.25
             wordValue: 0.1
       permitGeneration:
-        enabled: false
+        enabled: true
       githubComment:
         enabled: true
         post: true
