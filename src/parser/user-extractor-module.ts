@@ -42,15 +42,19 @@ export class UserExtractorModule implements Module {
     return sortedPriceLabels[0];
   }
 
+  _getAssigneeCount(issue: GitHubIssue) {
+    return 1 / (issue.assignees?.length || 1);
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     for (const comment of data.allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
-        const task =
-          data.self?.assignee?.id === comment.user.id
-            ? {
-                reward: this._extractTaskPrice(data.self),
-              }
-            : undefined;
+        const task = data.self?.assignees?.some((o) => o.id === comment.user?.id)
+          ? {
+              reward: this._extractTaskPrice(data.self) * this._getAssigneeCount(data.self),
+              multiplier: this._getAssigneeCount(data.self),
+            }
+          : undefined;
         result[comment.user.login] = {
           ...result[comment.user.login],
           total: 0,

@@ -100,6 +100,7 @@ export interface Result {
     total: number;
     task?: {
       reward: number;
+      multiplier: number;
     };
     permitUrl?: string;
     userId: number;
