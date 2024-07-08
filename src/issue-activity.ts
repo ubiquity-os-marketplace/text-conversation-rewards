@@ -82,7 +82,7 @@ export class IssueActivity {
     } else if (comment.user?.id === self?.assignee?.id) {
       ret |= CommentType.ASSIGNEE;
     } else if (comment.author_association === "MEMBER" || comment.author_association === "COLLABORATOR") {
-      ret |= CommentType.CONTRIBUTOR;
+      ret |= CommentType.COLLABORATOR;
     } else {
       ret |= CommentType.CONTRIBUTOR;
     }
