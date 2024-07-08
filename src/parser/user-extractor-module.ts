@@ -44,7 +44,7 @@ export class UserExtractorModule implements Module {
   }
 
   _getAssigneeCount(issue: GitHubIssue) {
-    return new Decimal(1).div(issue.assignees?.length || 1).toNumber();
+    return new Decimal(1).div(issue.assignees?.length || 1);
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -52,8 +52,8 @@ export class UserExtractorModule implements Module {
     data.self?.assignees?.forEach((assignee) => {
       const task = data.self
         ? {
-            reward: this._extractTaskPrice(data.self) * this._getAssigneeCount(data.self),
-            multiplier: this._getAssigneeCount(data.self),
+            reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getAssigneeCount(data.self)).toNumber(),
+            multiplier: this._getAssigneeCount(data.self).toNumber(),
           }
         : undefined;
       result[assignee.login] = {
