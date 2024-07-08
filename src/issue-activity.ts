@@ -77,12 +77,13 @@ export class IssueActivity {
     } else {
       ret |= CommentType.COMMENTED;
     }
+    console.log("author association", comment.author_association);
     if (comment.user?.id === self?.user?.id) {
       ret |= CommentType.ISSUER;
     } else if (comment.user?.id === self?.assignee?.id) {
       ret |= CommentType.ASSIGNEE;
     } else if (comment.author_association === "MEMBER" || comment.author_association === "COLLABORATOR") {
-      ret |= CommentType.COLLABORATOR;
+      ret |= CommentType.CONTRIBUTOR;
     } else {
       ret |= CommentType.CONTRIBUTOR;
     }
