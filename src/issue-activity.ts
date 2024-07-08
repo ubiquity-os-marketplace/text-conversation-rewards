@@ -77,7 +77,6 @@ export class IssueActivity {
     } else {
       ret |= CommentType.COMMENTED;
     }
-    console.log("author association", comment.author_association);
     if (comment.user?.id === self?.user?.id) {
       ret |= CommentType.ISSUER;
     } else if (comment.user?.id === self?.assignee?.id) {
