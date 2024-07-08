@@ -83,7 +83,7 @@
       {
         "content": "@0x4007 So it should be 25 each? I can confirm this is not handled by v2, I didn't know it was the expected behavior.",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186805818",
-        "type": "ISSUE|COLLABORATOR|COMMENTED",
+        "type": "ISSUE|CONTRIBUTOR|COMMENTED",
         "score": {
           "formatting": {
             "content": {
@@ -93,16 +93,16 @@
               }
             },
             "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "formattingMultiplier": 0.25
           },
-          "reward": 1.92,
+          "reward": 0.48,
           "relevance": 0.8
         }
       },
       {
         "content": "Ah yes because it doesn't apply the `0.5` multiplier I see. Will fix that on v2.",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186813200",
-        "type": "ISSUE|COLLABORATOR|COMMENTED",
+        "type": "ISSUE|CONTRIBUTOR|COMMENTED",
         "score": {
           "formatting": {
             "content": {
@@ -118,7 +118,7 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 1.36,
+          "reward": 0.34,
           "relevance": 0.8
         }
       }
