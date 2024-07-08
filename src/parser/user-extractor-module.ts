@@ -47,18 +47,26 @@ export class UserExtractorModule implements Module {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    // First, try to add all assignees as they didn't necessarily add a comment but should receive a reward
+    data.self?.assignees?.forEach((assignee) => {
+      const task = data.self
+        ? {
+            reward: this._extractTaskPrice(data.self) * this._getAssigneeCount(data.self),
+            multiplier: this._getAssigneeCount(data.self),
+          }
+        : undefined;
+      result[assignee.login] = {
+        ...result[assignee.login],
+        userId: assignee.id,
+        total: 0,
+        task,
+      };
+    });
     for (const comment of data.allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
-        const task = data.self?.assignees?.some((o) => o.id === comment.user?.id)
-          ? {
-              reward: this._extractTaskPrice(data.self) * this._getAssigneeCount(data.self),
-              multiplier: this._getAssigneeCount(data.self),
-            }
-          : undefined;
         result[comment.user.login] = {
           ...result[comment.user.login],
           total: 0,
-          task,
           userId: comment.user.id,
         };
       }
