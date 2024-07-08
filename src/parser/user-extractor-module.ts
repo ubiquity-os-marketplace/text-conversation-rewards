@@ -1,4 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
+import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import { UserExtractorConfiguration, userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { GitHubIssue } from "../github-types";
@@ -43,7 +44,7 @@ export class UserExtractorModule implements Module {
   }
 
   _getAssigneeCount(issue: GitHubIssue) {
-    return 1 / (issue.assignees?.length || 1);
+    return new Decimal(1).div(issue.assignees?.length || 1).toNumber();
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
