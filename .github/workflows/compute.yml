@@ -40,8 +40,6 @@ jobs:
           script: |
             const comment_body = 'Evaluating comments, please wait...';
             console.log(${{ inputs.eventPayload }});
-#            console.log(${{ fromJSON(inputs) }});
-#            console.log(${{ fromJSON(inputs.eventPayload) }});
 
             github.rest.issues.createComment({
               owner: ${{ inputs.eventPayload.repository.owner.login }},
