@@ -15,7 +15,8 @@ Be sure to review all `*.test.*` files for implementation details.
   "userName": {
     "total": 40.5,
     "task": {
-      "reward": 37.5
+      "reward": 37.5,
+      "multiplier": 1
     },
     "comments": [
       {
