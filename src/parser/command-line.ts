@@ -15,6 +15,7 @@ export interface PluginInputs<T extends WebhookEventName = SupportedEvents> {
   ref: string;
 }
 
+console.log("Envi+++", process.env, github.context.payload);
 const webhookPayload = github.context.payload.inputs;
 const program: PluginInputs = {
   stateId: webhookPayload.stateId,
