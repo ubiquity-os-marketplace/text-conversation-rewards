@@ -30,16 +30,31 @@ jobs:
       NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Post starting comment to issue
+        uses: actions/github-script@v7
         with:
-          node-version: "20.10.0"
+          github-token: ${{ inputs.authToken }}
+          script: |
+            const issue_number = ${{ inputs.eventPayload.issue.number }};
+            const comment_body = 'Evaluating comments, please wait...';
 
-      - run: ${{ toJSON(inputs) }}
-        shell: cat {0}
+            github.rest.issues.createComment({
+              owner: ${{ inputs.eventPayload.issue.repo.owner }},
+              repo: ${{ inputs.eventPayload.issue.repo.name }},
+              issue_number: issue_number,
+              body: comment_body,
+            });
 
-      - name: Generate Rewards
-        uses: ./
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: "20.10.0"
+#
+#      - run: ${{ toJSON(inputs) }}
+#        shell: cat {0}
+#
+#      - name: Generate Rewards
+#        uses: ./
