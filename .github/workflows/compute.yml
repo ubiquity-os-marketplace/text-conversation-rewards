@@ -36,7 +36,7 @@ jobs:
         with:
           github-token: ${{ inputs.authToken }}
           script: |
-            const comment_body = '\`\`\`diff\n+ Evaluating comments, please wait...';
+            const comment_body = '\`\`\`diff\n+ Evaluating results. Please wait...';
             const obj = ${{ inputs.eventPayload }}
             if (obj.issue && "${{ inputs.eventName }}" === "issues.closed") {
               const response = await github.rest.issues.createComment({
