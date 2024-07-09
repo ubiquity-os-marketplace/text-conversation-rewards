@@ -23,6 +23,9 @@ export async function run() {
       await githubCommentModuleInstance.postComment(result?.logMessage.diff || "");
       return result?.logMessage.raw;
     }
+    await githubCommentModuleInstance.postComment(
+      logger.ok("Evaluating results. Please wait...")?.logMessage.diff || ""
+    );
     const processor = new Processor();
     await processor.run(activity);
     return processor.dump();
