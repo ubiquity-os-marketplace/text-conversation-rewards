@@ -39,7 +39,7 @@ jobs:
           github-token: ${{ inputs.authToken }}
           script: |
             const comment_body = 'Evaluating comments, please wait...';
-            console.log(${{ toJSON(inputs.eventPayload).repository }})
+            console.log(${{ inputs.eventPayload }})
 
             github.rest.issues.createComment({
               owner: ${{ inputs.eventPayload.repository.owner.login }},
