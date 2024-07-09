@@ -42,7 +42,7 @@ jobs:
             const comment_body = 'Evaluating comments, please wait...';
             const obj = ${{ inputs.eventPayload }}
             if (obj.issue) {
-              github.rest.issues.createComment({
+              const response = await github.rest.issues.createComment({
                 owner: obj.repository.owner.login,
                 repo: obj.repository.name,
                 issue_number: obj.issue.number,
