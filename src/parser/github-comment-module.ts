@@ -23,7 +23,7 @@ interface SortedTasks {
 export class GithubCommentModule implements Module {
   private readonly _configuration: GithubCommentConfiguration = configuration.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
-  private _lastCommentId: number | null = null;
+  private _lastCommentId: number | null = process.env.COMMENT_ID ? Number(process.env.COMMENT_ID) : null;
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const bodyArray: (string | undefined)[] = [];
