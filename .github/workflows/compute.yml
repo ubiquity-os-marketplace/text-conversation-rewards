@@ -44,9 +44,9 @@ jobs:
             console.log(obj.installation);
 
             github.rest.issues.createComment({
-              owner: ${{ inputs.eventPayload.repository.owner.login }},
-              repo: ${{ inputs.eventPayload.repository.name }},
-              issue_number: ${{ inputs.eventPayload.issue.number }},
+              owner: obj.repository.owner.login,
+              repo: obj.repository.name,
+              issue_number: obj.issue.number,
               body: comment_body,
             });
 
