@@ -42,6 +42,6 @@ jest.mock("../src/parser/command-line", () => {
 describe("Price tests", () => {
   it("Should skip when no price label is set", async () => {
     const result = await run();
-    expect(result).toEqual("! No price label has been set. Skipping permit generation.");
+    expect(result).toEqual("No price label has been set. Skipping permit generation.");
   });
 });
