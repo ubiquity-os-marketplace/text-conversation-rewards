@@ -39,7 +39,9 @@ jobs:
           github-token: ${{ inputs.authToken }}
           script: |
             const comment_body = 'Evaluating comments, please wait...';
-            console.log(${{ inputs.eventPayload }});
+            const obj = ${{ inputs.eventPayload }}
+            console.log(obj);
+            console.log(obj.installation);
 
             github.rest.issues.createComment({
               owner: ${{ inputs.eventPayload.repository.owner.login }},
