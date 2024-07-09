@@ -46,7 +46,7 @@ jobs:
             github.rest.issues.createComment({
               owner: obj.repository.owner.login,
               repo: obj.repository.name,
-              issue_number: obj.issue.number,
+              issue_number: obj.number,
               body: comment_body,
             });
 
