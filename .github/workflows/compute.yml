@@ -40,15 +40,17 @@ jobs:
           script: |
             const comment_body = 'Evaluating comments, please wait...';
             const obj = ${{ inputs.eventPayload }}
-            console.log(obj);
-            console.log(obj.installation);
-
-            github.rest.issues.createComment({
-              owner: obj.repository.owner.login,
-              repo: obj.repository.name,
-              issue_number: obj.number,
-              body: comment_body,
-            });
+            //console.log(obj);
+            //console.log(obj.installation);
+            console.log('issue', obj.issue);
+            if (obj.issue) {
+              github.rest.issues.createComment({
+                owner: obj.repository.owner.login,
+                repo: obj.repository.name,
+                issue_number: obj.number,
+                body: comment_body,
+              });
+            }
 
 #      - name: Checkout code
 #        uses: actions/checkout@v4
