@@ -30,18 +30,21 @@ jobs:
       NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
 
     steps:
+      - run: ${{ toJSON(inputs) }}
+        shell: cat {0}
+
       - name: Post starting comment to issue
         uses: actions/github-script@v7
         with:
           github-token: ${{ inputs.authToken }}
           script: |
-            const issue_number = ${{ inputs.eventPayload.issue.number }};
             const comment_body = 'Evaluating comments, please wait...';
+            console.log(${{ inputs.eventPayload }})
 
             github.rest.issues.createComment({
-              owner: ${{ inputs.eventPayload.issue.repo.owner }},
-              repo: ${{ inputs.eventPayload.issue.repo.name }},
-              issue_number: issue_number,
+              owner: ${{ inputs.eventPayload.repository.owner.login }},
+              repo: ${{ inputs.eventPayload.repository.name }},
+              issue_number: ${{ inputs.eventPayload.issue.number }},
               body: comment_body,
             });
 
@@ -53,8 +56,7 @@ jobs:
 #        with:
 #          node-version: "20.10.0"
 #
-#      - run: ${{ toJSON(inputs) }}
-#        shell: cat {0}
+
 #
 #      - name: Generate Rewards
 #        uses: ./
