@@ -30,18 +30,15 @@ jobs:
       NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
 
     steps:
-      - run: ${{ toJSON(inputs) }}
-        shell: cat {0}
-
       - name: Post starting comment to issue
         uses: actions/github-script@v7
         id: post-comment
         with:
           github-token: ${{ inputs.authToken }}
           script: |
-            const comment_body = 'Evaluating comments, please wait...';
+            const comment_body = '\`\`\`diff\n+ Evaluating comments, please wait...';
             const obj = ${{ inputs.eventPayload }}
-            if (obj.issue) {
+            if (obj.issue && ${{ inputs.eventName }} === "issues.closed") {
               const response = await github.rest.issues.createComment({
                 owner: obj.repository.owner.login,
                 repo: obj.repository.name,
@@ -53,6 +50,9 @@ jobs:
 
       - name: Set environment variable
         run: echo "COMMENT_ID=${{ steps.post-comment.outputs.comment_id }}" >> $GITHUB_ENV
+
+      - run: ${{ toJSON(inputs) }}
+        shell: cat {0}
 
       - name: Checkout code
         uses: actions/checkout@v4
