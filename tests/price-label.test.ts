@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/no-var-requires: 0 */
 import "../src/parser/command-line";
 import { run } from "../src/run";
-import { server } from "./__mocks__/node.ts";
+import { server } from "./__mocks__/node";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());

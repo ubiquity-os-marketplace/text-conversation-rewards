@@ -1,4 +1,4 @@
-import { GithubCommentModule } from "../parser/github-comment-module.ts";
+import { GithubCommentModule } from "../parser/github-comment-module";
 
 const githubCommentModule = new GithubCommentModule();
 
