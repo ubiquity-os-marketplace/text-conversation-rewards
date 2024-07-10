@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/ubiquibot/conversation-rewards/compare/v1.1.0...v1.2.0) (2024-07-10)
+
+
+### Features
+
+* reward is now split if there are multiple assignees ([b556238](https://github.com/ubiquibot/conversation-rewards/commit/b55623812633bc48760e07bbbd7a1c8f7509121d))
+
+
+### Bug Fixes
+
+* assignees are added to the reward even without commenting ([170cdcc](https://github.com/ubiquibot/conversation-rewards/commit/170cdcc694cf4499eb8210beff1a58885c99c5a4))
+* users with no comment now can see their issue task on multiple assignees ([615d221](https://github.com/ubiquibot/conversation-rewards/commit/615d221bc1d0a8129f58e2c0ff5c06339d177792))
+
 ## [1.1.0](https://github.com/ubiquibot/conversation-rewards/compare/v1.0.0...v1.1.0) (2024-07-07)
 
 
