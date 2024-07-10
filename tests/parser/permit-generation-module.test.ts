@@ -48,7 +48,8 @@ const resultOriginal: Result = {
   "user1": {
     "total": 100,
     "task": {
-      "reward": 90
+      "reward": 90,
+      "multiplier": 1,
     },
     "userId": 1,
     "comments": [
@@ -65,7 +66,8 @@ const resultOriginal: Result = {
   "user2": {
     "total": 11.11,
     "task": {
-      "reward": 9.99
+      "reward": 9.99,
+      "multiplier": 1,
     },
     "userId": 1,
     "comments": [
@@ -86,7 +88,7 @@ describe("permit-generation-module.ts", () => {
     beforeEach(() => {
       // set fee related env variables
       // treasury fee applied to the final permits, ex: 100 = 100%, 0.1 = 0.1%
-      process.env.PERMIT_FEE_RATE=10
+      process.env.PERMIT_FEE_RATE='10';
       // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquibot-treasury"
       process.env.PERMIT_TREASURY_GITHUB_USERNAME="ubiquibot-treasury"
       // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
@@ -98,8 +100,16 @@ describe("permit-generation-module.ts", () => {
       jest.restoreAllMocks();
     });
 
+    it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
+      process.env.PERMIT_FEE_RATE = '';
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, 'log');
+      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      expect(spyConsoleLog).toHaveBeenCalledWith('PERMIT_FEE_RATE is not set, skipping permit fee generation');
+    });
+
     it("Should not apply fees if PERMIT_FEE_RATE is 0", async () => {
-      process.env.PERMIT_FEE_RATE = 0;
+      process.env.PERMIT_FEE_RATE = '0';
       const permitGenerationModule = new PermitGenerationModule();
       const spyConsoleLog = jest.spyOn(console, 'log');
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
