@@ -1,3 +1,4 @@
+import { http, HttpResponse } from "msw";
 import { parseGitHubUrl } from "../src/start";
 import { IssueActivity } from "../src/issue-activity";
 import { Processor } from "../src/parser/processor";
@@ -27,6 +28,12 @@ const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/com
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
   return Promise.resolve(comments.map(() => new Decimal(0.8)));
 });
+
+jest.mock("../src/helpers/web3", () => ({
+  getERC20TokenSymbol() {
+    return "WXDAI";
+  },
+}));
 
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
@@ -135,37 +142,30 @@ describe("Modules tests", () => {
   });
 
   it("Should extract users from comments", async () => {
-    const logSpy = jest.spyOn(console, "log");
     const processor = new Processor();
     processor["_transformers"] = [new UserExtractorModule()];
     await processor.run(activity);
-    processor.dump();
-    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));
-    logSpy.mockReset();
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(userCommentResults);
   });
 
   it("Should purge data", async () => {
-    const logSpy = jest.spyOn(console, "log");
     const processor = new Processor();
     processor["_transformers"] = [new UserExtractorModule(), new DataPurgeModule()];
     await processor.run(activity);
-    processor.dump();
-    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(dataPurgeResults, undefined, 2));
-    logSpy.mockReset();
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(dataPurgeResults);
   });
 
   it("Should evaluate formatting", async () => {
-    const logSpy = jest.spyOn(console, "log");
     const processor = new Processor();
     processor["_transformers"] = [new UserExtractorModule(), new DataPurgeModule(), new FormattingEvaluatorModule()];
     await processor.run(activity);
-    processor.dump();
-    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(formattingEvaluatorResults, undefined, 2));
-    logSpy.mockReset();
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(formattingEvaluatorResults);
   });
 
   it("Should evaluate content", async () => {
-    const logSpy = jest.spyOn(console, "log");
     const processor = new Processor();
     processor["_transformers"] = [
       new UserExtractorModule(),
@@ -174,13 +174,11 @@ describe("Modules tests", () => {
       new ContentEvaluatorModule(),
     ];
     await processor.run(activity);
-    processor.dump();
-    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(contentEvaluatorResults, undefined, 2));
-    logSpy.mockReset();
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(contentEvaluatorResults);
   });
 
   it("Should generate permits", async () => {
-    const logSpy = jest.spyOn(console, "log");
     const processor = new Processor();
     processor["_transformers"] = [
       new UserExtractorModule(),
@@ -189,14 +187,29 @@ describe("Modules tests", () => {
       new ContentEvaluatorModule(),
       new PermitGenerationModule(),
     ];
+    // This catches calls by getFastestRpc
+    server.use(
+      http.post("https://*", () =>
+        HttpResponse.json([
+          {
+            jsonrpc: "2.0",
+            id: 1,
+            result: "0x64",
+          },
+          {
+            jsonrpc: "2.0",
+            id: 2,
+            result: "0x0000000000000000000000000000000000000000000000000000000000000012",
+          },
+        ])
+      )
+    );
     await processor.run(activity);
-    processor.dump();
-    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(permitGenerationResults, undefined, 2));
-    logSpy.mockReset();
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(permitGenerationResults);
   });
 
   it("Should generate GitHub comment", async () => {
-    const logSpy = jest.spyOn(console, "log");
     const processor = new Processor();
     processor["_transformers"] = [
       new UserExtractorModule(),
@@ -206,11 +219,27 @@ describe("Modules tests", () => {
       new PermitGenerationModule(),
       new GithubCommentModule(),
     ];
+    // This catches calls by getFastestRpc
+    server.use(
+      http.post("https://*", () =>
+        HttpResponse.json([
+          {
+            jsonrpc: "2.0",
+            id: 1,
+            result: "0x64",
+          },
+          {
+            jsonrpc: "2.0",
+            id: 2,
+            result: "0x0000000000000000000000000000000000000000000000000000000000000012",
+          },
+        ])
+      )
+    );
     await processor.run(activity);
-    processor.dump();
-    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(githubCommentResults, undefined, 2));
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(githubCommentResults);
     expect(fs.readFileSync("./output.html")).toEqual(fs.readFileSync("./tests/__mocks__/results/output.html"));
-    logSpy.mockReset();
   });
 
   it("Should properly generate the configuration", () => {
