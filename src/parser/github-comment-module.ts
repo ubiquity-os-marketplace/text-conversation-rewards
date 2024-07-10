@@ -64,6 +64,10 @@ export class GithubCommentModule implements Module {
   _createContributionRows(result: Result[0], sortedTasks: SortedTasks | undefined) {
     const content: string[] = [];
 
+    if (result.task?.reward) {
+      content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
+    }
+
     if (!sortedTasks) {
       return content.join("");
     }
@@ -83,9 +87,6 @@ export class GithubCommentModule implements Module {
           </tr>`;
     }
 
-    if (result.task?.reward) {
-      content.push(buildContributionRow("Issue", "Task", 1, result.task.reward));
-    }
     if (sortedTasks.issues.specification) {
       content.push(buildContributionRow("Issue", "Specification", 1, sortedTasks.issues.specification.score?.reward));
     }

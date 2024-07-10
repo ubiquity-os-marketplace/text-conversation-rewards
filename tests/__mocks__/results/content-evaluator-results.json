@@ -380,7 +380,8 @@
   "gitcoindev": {
     "total": 45.5,
     "task": {
-      "reward": 37.5
+      "reward": 37.5,
+      "multiplier": 1
     },
     "userId": 88761781,
     "comments": [
