@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/ubiquibot/conversation-rewards/compare/v1.0.0...v1.1.0) (2024-07-07)
+
+
+### Features
+
+* add erc20RewardToken config param ([2b53e68](https://github.com/ubiquibot/conversation-rewards/commit/2b53e6875178d8f4ead54a620dc13e0e5f8c2322))
+* pass token address on permit generation ([6fd15dd](https://github.com/ubiquibot/conversation-rewards/commit/6fd15ddcdf71062f905a14ddf4c4dd5fe8051e38))
+* set default erc20 reward param to WXDAI ([f7ad975](https://github.com/ubiquibot/conversation-rewards/commit/f7ad97538c7a5da1dfee37f309be4a2885847574))
+
+
+### Bug Fixes
+
+* resolve conflicts ([f8159e1](https://github.com/ubiquibot/conversation-rewards/commit/f8159e16d7988ba7346208fba8d18b25115fe4bb))
+* updated test suite to match the new schema, fixed the async test to not run after tear down ([ca6e472](https://github.com/ubiquibot/conversation-rewards/commit/ca6e472511cbecad9a7b3ce7ba137e9c6b3ce3ff))
+
 ## 1.0.0 (2024-06-11)
 
 

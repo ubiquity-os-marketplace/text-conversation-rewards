@@ -1,4 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
+import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import { UserExtractorConfiguration, userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { GitHubIssue } from "../github-types";
@@ -42,19 +43,31 @@ export class UserExtractorModule implements Module {
     return sortedPriceLabels[0];
   }
 
+  _getTaskMultiplier(issue: GitHubIssue) {
+    return new Decimal(1).div(issue.assignees?.length || 1);
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    // First, try to add all assignees as they didn't necessarily add a comment but should receive a reward
+    data.self?.assignees?.forEach((assignee) => {
+      const task = data.self
+        ? {
+            reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getTaskMultiplier(data.self)).toNumber(),
+            multiplier: this._getTaskMultiplier(data.self).toNumber(),
+          }
+        : undefined;
+      result[assignee.login] = {
+        ...result[assignee.login],
+        userId: assignee.id,
+        total: 0,
+        task,
+      };
+    });
     for (const comment of data.allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
-        const task =
-          data.self?.assignee?.id === comment.user.id
-            ? {
-                reward: this._extractTaskPrice(data.self),
-              }
-            : undefined;
         result[comment.user.login] = {
           ...result[comment.user.login],
           total: 0,
-          task,
           userId: comment.user.id,
         };
       }
