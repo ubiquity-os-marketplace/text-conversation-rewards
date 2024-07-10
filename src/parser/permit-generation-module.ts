@@ -114,6 +114,10 @@ export class PermitGenerationModule implements Module {
         console.error(e);
       }
     }
+
+    // remove treasury item from final result in order not to display permit fee in github comments
+    if (process.env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[process.env.PERMIT_TREASURY_GITHUB_USERNAME];
+
     return result;
   }
 
@@ -139,7 +143,7 @@ export class PermitGenerationModule implements Module {
    */
   async _applyFees(result: Result, erc20RewardToken: string): Promise<Result> {
     // validate fee related env variables
-    if (!process.env.PERMIT_FEE_RATE) {
+    if (!process.env.PERMIT_FEE_RATE || +process.env.PERMIT_FEE_RATE === 0) {
       console.log("PERMIT_FEE_RATE is not set, skipping permit fee generation");
       return result;
     }
@@ -168,11 +172,11 @@ export class PermitGenerationModule implements Module {
     // - user.task.reward
     // - user.comments[].reward
     const feeRateDecimal = new Decimal(100).minus(process.env.PERMIT_FEE_RATE).div(100);
-    const permitFeeAmountDecimal = new Decimal(0);
+    let permitFeeAmountDecimal = new Decimal(0);
     for (const [_, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
       const totalAfterFee = +(new Decimal(rewardResult.total).mul(feeRateDecimal).toFixed(2));
-      permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
+      permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
       rewardResult.total = +totalAfterFee.toFixed(2);
       if (rewardResult.task) rewardResult.task.reward = +(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
