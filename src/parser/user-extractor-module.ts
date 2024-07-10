@@ -43,7 +43,7 @@ export class UserExtractorModule implements Module {
     return sortedPriceLabels[0];
   }
 
-  _getAssigneeCount(issue: GitHubIssue) {
+  _getTaskMultiplier(issue: GitHubIssue) {
     return new Decimal(1).div(issue.assignees?.length || 1);
   }
 
@@ -52,8 +52,8 @@ export class UserExtractorModule implements Module {
     data.self?.assignees?.forEach((assignee) => {
       const task = data.self
         ? {
-            reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getAssigneeCount(data.self)).toNumber(),
-            multiplier: this._getAssigneeCount(data.self).toNumber(),
+            reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getTaskMultiplier(data.self)).toNumber(),
+            multiplier: this._getTaskMultiplier(data.self).toNumber(),
           }
         : undefined;
       result[assignee.login] = {
