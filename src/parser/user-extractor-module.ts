@@ -1,4 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
+import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import { UserExtractorConfiguration, userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { GitHubIssue } from "../github-types";
@@ -42,8 +43,8 @@ export class UserExtractorModule implements Module {
     return sortedPriceLabels[0];
   }
 
-  _getAssigneeCount(issue: GitHubIssue) {
-    return 1 / (issue.assignees?.length || 1);
+  _getTaskMultiplier(issue: GitHubIssue) {
+    return new Decimal(1).div(issue.assignees?.length || 1);
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -51,8 +52,8 @@ export class UserExtractorModule implements Module {
     data.self?.assignees?.forEach((assignee) => {
       const task = data.self
         ? {
-            reward: this._extractTaskPrice(data.self) * this._getAssigneeCount(data.self),
-            multiplier: this._getAssigneeCount(data.self),
+            reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getTaskMultiplier(data.self)).toNumber(),
+            multiplier: this._getTaskMultiplier(data.self).toNumber(),
           }
         : undefined;
       result[assignee.login] = {
