@@ -20,6 +20,9 @@ jobs:
       EVM_PRIVATE_ENCRYPTED: "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ"
       NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
       NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
+      PERMIT_FEE_RATE: ""
+      PERMIT_TREASURY_GITHUB_USERNAME: ""
+      PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ""
     steps:
       - uses: actions/setup-node@v4
         with:
