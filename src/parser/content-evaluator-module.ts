@@ -48,17 +48,34 @@ export class ContentEvaluatorModule implements Module {
 
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
-    const commentsBody = commentsWithScore.map((comment) => comment.content);
+
+    const specificationCommentIndex = commentsWithScore.findIndex((commentWithScore) => {
+      return !commentWithScore.url.includes("#issuecomment-");
+    });
+    let commentsToEvaluate = commentsWithScore;
+    if (specificationCommentIndex !== -1) {
+      commentsToEvaluate = commentsWithScore.filter((comment, i) => i != specificationCommentIndex);
+    }
+
+    const commentsBody = commentsToEvaluate.map((comment) => comment.content);
     const relevance = await this._evaluateComments(specificationBody, commentsBody);
 
-    if (relevance.length !== commentsWithScore.length) {
+    if (relevance.length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! Skipping.");
       return [];
     }
+    const relevanceOfAllComments =
+      specificationCommentIndex === -1
+        ? relevance
+        : [
+            ...relevance.slice(0, specificationCommentIndex),
+            new Decimal(1.0),
+            ...relevance.slice(specificationCommentIndex),
+          ];
 
-    for (let i = 0; i < relevance.length; i++) {
+    for (let i = 0; i < relevanceOfAllComments.length; i++) {
       const currentComment = commentsWithScore[i];
-      const currentRelevance = relevance[i];
+      const currentRelevance = relevanceOfAllComments[i];
       const currentReward = new Decimal(currentComment.score?.reward || 0);
       currentComment.score = {
         ...(currentComment.score || {}),
@@ -106,7 +123,8 @@ export class ContentEvaluatorModule implements Module {
       .map((comment) => comment)
       .join(
         "\n"
-      )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY an array of float numbers between 0 and 1, corresponding to each comment in the order they appear. Each float should represent the degree of relevance and added value of the comment to the issue. The total length of the array in your response should equal exactly ${comments.length
-      } elements.`;
+      )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY an array of float numbers between 0 and 1, corresponding to each comment in the order they appear. Each float should represent the degree of relevance and added value of the comment to the issue. The total length of the array in your response should equal exactly ${
+      comments.length
+    } elements.`;
   }
 }
