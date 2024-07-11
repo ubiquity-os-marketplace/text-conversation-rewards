@@ -23,6 +23,10 @@ interface SortedTasks {
 export class GithubCommentModule implements Module {
   private readonly _configuration: GithubCommentConfiguration = configuration.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
+  /**
+   * COMMENT_ID can be set in the environment to reference the id of the last comment created during this workflow.
+   * See also compute.yml to understand how it is set.
+   */
   private _lastCommentId: number | null = process.env.COMMENT_ID ? Number(process.env.COMMENT_ID) : null;
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
