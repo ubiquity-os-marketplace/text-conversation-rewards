@@ -8,6 +8,7 @@ declare global {
       SUPABASE_URL: string;
       NFT_CONTRACT_ADDRESS: string;
       NFT_MINTER_PRIVATE_KEY: string;
+      COMMENT_ID: string | undefined;
     }
   }
 }
