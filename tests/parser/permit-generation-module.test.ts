@@ -43,6 +43,12 @@ jest.mock("../../src/get-authentication-token", () => ({
   })
 }));
 
+jest.mock("@supabase/supabase-js", () => {
+  return {
+    createClient: jest.fn(),
+  };
+});
+
 // original rewards object before fees are applied
 const resultOriginal: Result = {
   "user1": {
