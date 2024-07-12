@@ -1,4 +1,4 @@
-import { GitHubIssue } from "../github-types.ts";
+import { GitHubIssue } from "../github-types";
 
 export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
   if (!labels) return [];

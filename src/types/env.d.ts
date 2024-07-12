@@ -11,6 +11,7 @@ declare global {
       PERMIT_FEE_RATE: string,
       PERMIT_TREASURY_GITHUB_USERNAME: string,
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: string,
+      COMMENT_ID: string | undefined;
     }
   }
 }

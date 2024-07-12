@@ -3,7 +3,7 @@ import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import { UserExtractorConfiguration, userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { GitHubIssue } from "../github-types";
-import { getSortedPrices } from "../helpers/label-price-extractor.ts";
+import { getSortedPrices } from "../helpers/label-price-extractor";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
 

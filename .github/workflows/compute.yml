@@ -33,6 +33,30 @@ jobs:
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
 
     steps:
+      - name: Post starting comment to issue
+        uses: actions/github-script@v7
+        id: post-comment
+        with:
+          github-token: ${{ inputs.authToken }}
+          script: |
+            const comment_body = '\`\`\`diff\n+ Evaluating results. Please wait...';
+            const obj = ${{ inputs.eventPayload }}
+            if (obj.issue && "${{ inputs.eventName }}" === "issues.closed") {
+              const response = await github.rest.issues.createComment({
+                owner: obj.repository.owner.login,
+                repo: obj.repository.name,
+                issue_number: obj.issue.number,
+                body: comment_body,
+              });
+              core.setOutput('comment_id', response.data.id);
+            }
+
+      - name: Set environment variable
+        run: echo "COMMENT_ID=${{ steps.post-comment.outputs.comment_id }}" >> $GITHUB_ENV
+
+      - run: ${{ toJSON(inputs) }}
+        shell: cat {0}
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -40,9 +64,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.10.0"
-
-      - run: ${{ toJSON(inputs) }}
-        shell: cat {0}
 
       - name: Generate Rewards
         uses: ./
