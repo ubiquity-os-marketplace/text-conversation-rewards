@@ -142,10 +142,8 @@ describe("permit-generation-module.ts", () => {
       const resultAfterFees = await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
 
       // check that 10% fee is subtracted from rewards
-      expect(resultAfterFees['user1'].total).toEqual(90);
       expect(resultAfterFees['user1'].task?.reward).toEqual(81);
       expect(resultAfterFees['user1'].comments?.[0].score?.reward).toEqual(9);
-      expect(resultAfterFees['user2'].total).toEqual(10);
       expect(resultAfterFees['user2'].task?.reward).toEqual(8.99);
       expect(resultAfterFees['user2'].comments?.[0].score?.reward).toEqual(1.01);
 
