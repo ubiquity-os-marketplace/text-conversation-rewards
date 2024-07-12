@@ -9,6 +9,7 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
+import { CommentType } from "../configuration/comment-types";
 
 /**
  * Evaluates and rates comments.
@@ -49,8 +50,9 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
+    const specficationCommentType = CommentType.ISSUE | CommentType.ISSUER | CommentType.SPECIFICATION;
     const specificationCommentIndex = commentsWithScore.findIndex((commentWithScore) => {
-      return !commentWithScore.url.includes("#issuecomment-");
+      return commentWithScore.type == specficationCommentType;
     });
     let commentsToEvaluate = commentsWithScore;
     if (specificationCommentIndex !== -1) {
