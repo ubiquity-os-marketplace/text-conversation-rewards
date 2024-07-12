@@ -175,7 +175,7 @@ export class PermitGenerationModule implements Module {
     let permitFeeAmountDecimal = new Decimal(0);
     for (const [_, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
-      const totalAfterFee = +(new Decimal(rewardResult.total).mul(feeRateDecimal).toFixed(2));
+      const totalAfterFee = +(new Decimal(rewardResult.total).mul(feeRateDecimal));
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
       rewardResult.total = +totalAfterFee.toFixed(2);
