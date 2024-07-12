@@ -124,7 +124,7 @@ export class PermitGenerationModule implements Module {
   /**
    * Applies fees to the final result.
    * How it works:
-   * 1. Fee (read from ENV variable) is subtracted from all of the final result items (user.task.reward, user.comments[].reward)
+   * 1. Fee (read from ENV variable) is subtracted from all of the final result items (user.total, user.task.reward, user.comments[].reward)
    * 2. Total fee is calculated
    * 3. A new item is added to the final result object, example:
    * ```
@@ -137,10 +137,6 @@ export class PermitGenerationModule implements Module {
    * }
    * ```
    * This method is meant to be called before the final permit generation.
-   * 
-   * NOTICE: we don't modify `user.total` since it is modified later in `processor:run()` at 
-   * https://github.com/ubiquibot/conversation-rewards/blob/7a5ba729373d5ba1a63f2012300693f708fd6ed0/src/parser/processor.ts#L44
-   * 
    * @param result Result object
    * @param erc20RewardToken ERC20 address of the reward token
    * @returns Result object
@@ -172,15 +168,17 @@ export class PermitGenerationModule implements Module {
     }
 
     // Subtract fees from the final result:
+    // - user.total
     // - user.task.reward
     // - user.comments[].reward
     const feeRateDecimal = new Decimal(100).minus(process.env.PERMIT_FEE_RATE).div(100);
     let permitFeeAmountDecimal = new Decimal(0);
     for (const [_, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
-      const totalAfterFee = +(new Decimal(rewardResult.total).mul(feeRateDecimal));
+      const totalAfterFee = +(new Decimal(rewardResult.total).mul(feeRateDecimal).toFixed(2));
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
+      rewardResult.total = +totalAfterFee.toFixed(2);
       if (rewardResult.task) rewardResult.task.reward = +(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
       if (rewardResult.comments) {
         for (let comment of rewardResult.comments) {
