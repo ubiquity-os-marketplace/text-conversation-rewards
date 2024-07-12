@@ -162,7 +162,7 @@
     ]
   },
   "0x4007": {
-    "total": 60.24,
+    "total": 61.42,
     "userId": 4975670,
     "comments": [
       {
@@ -306,8 +306,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 4.72,
-          "relevance": 0.8
+          "reward": 5.9,
+          "relevance": 1
         }
       },
       {
