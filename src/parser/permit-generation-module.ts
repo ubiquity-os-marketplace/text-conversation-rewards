@@ -11,6 +11,7 @@ import {
   SupportedEvents,
   TokenType,
 } from "@ubiquibot/permit-generation/core";
+import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import {
   PermitGenerationConfiguration,
@@ -69,6 +70,9 @@ export class PermitGenerationModule implements Module {
     };
     const adapters = {} as ReturnType<typeof createAdapters>;
 
+    // apply fees
+    result = await this._applyFees(result, payload.erc20RewardToken);
+
     for (const [key, value] of Object.entries(result)) {
       try {
         const config: Context["config"] = {
@@ -110,6 +114,85 @@ export class PermitGenerationModule implements Module {
         console.error(e);
       }
     }
+
+    // remove treasury item from final result in order not to display permit fee in github comments
+    if (process.env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[process.env.PERMIT_TREASURY_GITHUB_USERNAME];
+
+    return result;
+  }
+
+  /**
+   * Applies fees to the final result.
+   * How it works:
+   * 1. Fee (read from ENV variable) is subtracted from all of the final result items (user.total, user.task.reward, user.comments[].reward)
+   * 2. Total fee is calculated
+   * 3. A new item is added to the final result object, example:
+   * ```
+   * {
+   *   ...other items
+   *   "ubiquibot-treasury": {
+   *     total: 10.00,
+   *     userId: 1
+   *   }
+   * }
+   * ```
+   * This method is meant to be called before the final permit generation.
+   * @param result Result object
+   * @param erc20RewardToken ERC20 address of the reward token
+   * @returns Result object
+   */
+  async _applyFees(result: Result, erc20RewardToken: string): Promise<Result> {
+    // validate fee related env variables
+    if (!process.env.PERMIT_FEE_RATE || +process.env.PERMIT_FEE_RATE === 0) {
+      console.log("PERMIT_FEE_RATE is not set, skipping permit fee generation");
+      return result;
+    }
+    if (!process.env.PERMIT_TREASURY_GITHUB_USERNAME) {
+      console.log("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
+      return result;
+    }
+    if (process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST) {
+      const erc20TokensNoFee = process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST.split(",");
+      if (erc20TokensNoFee.includes(erc20RewardToken)) {
+        console.log(`Token address ${erc20RewardToken} is whitelisted to be fee free, skipping permit fee generation`);
+        return result;
+      }
+    }
+    
+    // Get treasury github user id
+    const octokit = getOctokitInstance();
+    const { data: treasuryGithubData } = await octokit.users.getByUsername({ username: process.env.PERMIT_TREASURY_GITHUB_USERNAME });
+    if (!treasuryGithubData) {
+      console.log(`GitHub user was not found for username ${process.env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`);
+      return result;
+    }
+
+    // Subtract fees from the final result:
+    // - user.total
+    // - user.task.reward
+    // - user.comments[].reward
+    const feeRateDecimal = new Decimal(100).minus(process.env.PERMIT_FEE_RATE).div(100);
+    let permitFeeAmountDecimal = new Decimal(0);
+    for (const [_, rewardResult] of Object.entries(result)) {
+      // accumulate total permit fee amount
+      const totalAfterFee = +(new Decimal(rewardResult.total).mul(feeRateDecimal));
+      permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
+      // subtract fees
+      rewardResult.total = +totalAfterFee.toFixed(2);
+      if (rewardResult.task) rewardResult.task.reward = +(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
+      if (rewardResult.comments) {
+        for (let comment of rewardResult.comments) {
+          if (comment.score) comment.score.reward = +(new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2));
+        }
+      }
+    }
+
+    // Add a new result item for treasury
+    result[process.env.PERMIT_TREASURY_GITHUB_USERNAME] = {
+      total: +permitFeeAmountDecimal.toFixed(2),
+      userId: treasuryGithubData.id,
+    };
+
     return result;
   }
 
