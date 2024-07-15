@@ -14,7 +14,7 @@ export enum CommentType {
   /**
    * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}
    */
-  ISSUER = 0b1000,
+  AUTHOR = 0b1000,
   /**
    * A user that is part of the organization or owner of the repo
    */
@@ -30,7 +30,7 @@ export enum CommentType {
   /**
    * Pull request opening item
    */
-  TASK = 0b10000000,
+  PULL = 0b10000000,
   /**
    * Issue opening item
    */

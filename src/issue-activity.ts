@@ -73,12 +73,12 @@ export class IssueActivity {
     let ret = 0;
     ret |= issueType;
     if (comment.id === self?.id) {
-      ret |= ret & CommentType.ISSUE ? CommentType.SPECIFICATION : CommentType.TASK;
+      ret |= ret & CommentType.ISSUE ? CommentType.SPECIFICATION : CommentType.PULL;
     } else {
       ret |= CommentType.COMMENTED;
     }
     if (comment.user?.id === self?.user?.id) {
-      ret |= CommentType.ISSUER;
+      ret |= CommentType.AUTHOR;
     } else if (comment.user?.id === self?.assignee?.id) {
       ret |= CommentType.ASSIGNEE;
     } else if (comment.author_association === "MEMBER" || comment.author_association === "COLLABORATOR") {
