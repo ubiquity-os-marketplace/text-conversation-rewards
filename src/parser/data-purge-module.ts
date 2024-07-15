@@ -26,8 +26,8 @@ export class DataPurgeModule implements Module {
           .replace(/^>.*$/gm, "")
           // Remove commands such as /start
           .replace(/^\/.+/g, "")
-          // makes the content single lined
-          .replace(/[\r\n]+/g, " ")
+          // Keep only one new line needed by markdown-it package to convert to html
+          .replace(/\n\s*\n/g, "\n")
           .trim();
         if (newContent.length) {
           result[comment.user.login].comments = [
