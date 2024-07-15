@@ -46,7 +46,7 @@ Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * re
 
 ## Plugin configuration
 
-Here is a possible valid configuration to enable this plugin.
+Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration) for more details.
 
 
 ```yaml
@@ -56,17 +56,12 @@ with:
     evmPrivateEncrypted: "encrypted-key"
     erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
     incentives:
-      enabled: true
       requirePriceLabel: true
       contentEvaluator:
-        enabled: true
       userExtractor:
-        enabled: true
         redeemTask: true
       dataPurge:
-        enabled: true
       formattingEvaluator:
-        enabled: true
         scores:
           br: 0
           code: 1
@@ -117,9 +112,7 @@ with:
             formattingMultiplier: 0.25
             wordValue: 0.1
       permitGeneration:
-        enabled: true
       githubComment:
-        enabled: true
         post: true
         debug: false
 ```

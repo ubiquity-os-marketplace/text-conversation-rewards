@@ -181,6 +181,6 @@ export class PermitGenerationModule implements Module {
       console.warn("Invalid configuration detected for PermitGenerationModule, disabling.");
       return false;
     }
-    return this._configuration.enabled;
+    return true;
   }
 }

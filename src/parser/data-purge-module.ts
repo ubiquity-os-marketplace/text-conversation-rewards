@@ -15,7 +15,7 @@ export class DataPurgeModule implements Module {
       console.warn("Invalid configuration detected for DataPurgeModule, disabling.");
       return false;
     }
-    return this._configuration.enabled;
+    return true;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {

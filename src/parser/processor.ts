@@ -31,10 +31,6 @@ export class Processor {
   }
 
   async run(data: Readonly<IssueActivity>) {
-    if (!this._configuration.enabled) {
-      logger.debug("Module is disabled. Skipping...");
-      return;
-    }
     for (const transformer of this._transformers) {
       if (transformer.enabled) {
         this._result = await transformer.transform(data, this._result);

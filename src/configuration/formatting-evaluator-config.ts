@@ -5,10 +5,6 @@ const type = Type.Union([...Object.keys(CommentType).map((key) => Type.Literal(k
 
 export const formattingEvaluatorConfigurationType = Type.Object({
   /**
-   * Enables or disables this module
-   */
-  enabled: Type.Boolean({ default: true }),
-  /**
    * Multipliers applied to different parts of the comment body content
    */
   multipliers: Type.Array(
