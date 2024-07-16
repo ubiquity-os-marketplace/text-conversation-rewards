@@ -33,9 +33,42 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
+jest.mock("@actions/github", () => ({
+  context: {
+    runId: "1",
+    payload: {
+      repository: {
+        html_url: "https://ubiquibot/conversation-rewards",
+      },
+    },
+  },
+}));
+
 describe("Action tests", () => {
   it("Should skip when the issue is closed without the completed status", async () => {
     const result = await run();
     expect(result).toEqual("Issue was not closed as completed. Skipping.");
+  });
+
+  it("Should link metadata to Github's comment", async () => {
+    jest.mock("../src/run", () => ({
+      run: jest.fn(() => {
+        return Promise.reject("Some error");
+      }),
+    }));
+    const githubCommentModule = require("../src/parser/github-comment-module");
+    const spy = jest.spyOn(githubCommentModule.GithubCommentModule.prototype, "postComment");
+    const run = (await import("../src/index")) as unknown as { default: Promise<string> };
+    await expect(run.default).resolves.toEqual("Some error");
+    expect(spy).toHaveBeenCalledWith(`\`\`\`diff
+! Failed to run comment evaluation. Some error
+\`\`\`
+<!--
+https://ubiquibot/conversation-rewards/actions/runs/1
+{
+  "message": "Some error",
+  "caller": "call"
+}
+-->`);
   });
 });
