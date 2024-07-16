@@ -158,9 +158,9 @@ describe("Rewards tests", () => {
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(rewardSplitResult);
     console.log("+++++++");
-    console.log(fs.readFileSync("./output.html"));
-    expect(fs.readFileSync("./output.html")).toEqual(
-      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html")
+    console.log(fs.readFileSync("./output.html", "utf-8"));
+    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
+      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html", "utf-8")
     );
   });
 });
