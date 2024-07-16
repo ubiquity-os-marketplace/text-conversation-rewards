@@ -38,10 +38,10 @@ export class GithubCommentModule implements Module {
       bodyArray.push(result[key].evaluationCommentHtml);
     }
     // Add the workflow run url and the metadata in the GitHub's comment
-    bodyArray.push("<!--");
-    bodyArray.push(`${github.context.payload.repository?.html_url}/actions/runs/${github.context.runId}`);
+    bodyArray.push("\n<!--");
+    bodyArray.push(`\n${github.context.payload.repository?.html_url}/actions/runs/${github.context.runId}\n`);
     bodyArray.push(JSON.stringify(result, null, 2));
-    bodyArray.push("-->");
+    bodyArray.push("\n-->");
     const body = bodyArray.join("");
     if (this._configuration.debug) {
       fs.writeFileSync(this._debugFilePath, body);
