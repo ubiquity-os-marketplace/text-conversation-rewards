@@ -1,3 +1,4 @@
+import * as github from "@actions/github";
 import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import * as fs from "fs";
@@ -36,6 +37,11 @@ export class GithubCommentModule implements Module {
       result[key].evaluationCommentHtml = await this._generateHtml(key, value);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
+    // Add the workflow run url and the metadata in the GitHub's comment
+    bodyArray.push("<!--");
+    bodyArray.push(`${github.context.payload.repository?.html_url}/actions/runs/${github.context.runId}`);
+    bodyArray.push(JSON.stringify(result, null, 2));
+    bodyArray.push("-->");
     const body = bodyArray.join("");
     if (this._configuration.debug) {
       fs.writeFileSync(this._debugFilePath, body);
