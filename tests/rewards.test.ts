@@ -28,7 +28,7 @@ jest.mock("@actions/github", () => ({
     runId: "1",
     payload: {
       repository: {
-        html_url: "https://ubiquibot/conversation-rewards",
+        html_url: "https://github.com/ubiquibot/conversation-rewards",
       },
     },
   },
