@@ -35,6 +35,17 @@ jest.mock("../src/helpers/web3", () => ({
   },
 }));
 
+jest.mock("@actions/github", () => ({
+  context: {
+    runId: "1",
+    payload: {
+      repository: {
+        html_url: "https://ubiquibot/conversation-rewards",
+      },
+    },
+  },
+}));
+
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
   // eslint-disable-next-line @typescript-eslint/no-var-requires
