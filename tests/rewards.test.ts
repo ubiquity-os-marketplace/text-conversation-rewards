@@ -2,11 +2,11 @@ import { drop } from "@mswjs/data";
 import Decimal from "decimal.js";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
+import githubCommentModuleInstance from "../src/helpers/github-comment-module-instance";
 import { IssueActivity } from "../src/issue-activity";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
 import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
-import { GithubCommentModule } from "../src/parser/github-comment-module";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
@@ -136,7 +136,7 @@ describe("Rewards tests", () => {
       new FormattingEvaluatorModule(),
       new ContentEvaluatorModule(),
       new PermitGenerationModule(),
-      new GithubCommentModule(),
+      githubCommentModuleInstance,
     ];
     server.use(
       http.post("https://*", () =>
