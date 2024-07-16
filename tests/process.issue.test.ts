@@ -250,7 +250,9 @@ describe("Modules tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(githubCommentResults);
-    expect(fs.readFileSync("./output.html")).toEqual(fs.readFileSync("./tests/__mocks__/results/output.html"));
+    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
+      fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")
+    );
   });
 
   it("Should properly generate the configuration", () => {

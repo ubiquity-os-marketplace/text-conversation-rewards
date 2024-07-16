@@ -168,8 +168,6 @@ describe("Rewards tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(rewardSplitResult);
-    console.log("+++++++");
-    console.log(fs.readFileSync("./output.html", "utf-8"));
     expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
       fs.readFileSync("./tests/__mocks__/results/output-reward-split.html", "utf-8")
     );
