@@ -81,10 +81,10 @@ with:
           td: 1
           hr: 0
         multipliers:
-          - targets: [ ISSUE, ISSUER, SPECIFICATION ]
+          - targets: [ ISSUE, AUTHOR, SPECIFICATION ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ ISSUE, ISSUER, COMMENTED ]
+          - targets: [ ISSUE, AUTHOR, COMMENTED ]
             formattingMultiplier: 1
             wordValue: 0.2
           - targets: [ ISSUE, ASSIGNEE, COMMENTED ]
@@ -96,10 +96,10 @@ with:
           - targets: [ ISSUE, CONTRIBUTOR, COMMENTED ]
             formattingMultiplier: 0.25
             wordValue: 0.1
-          - targets: [ REVIEW, ISSUER, TASK ]
+          - targets: [ REVIEW, AUTHOR, PULL ]
             formattingMultiplier: 0
             wordValue: 0
-          - targets: [ REVIEW, ISSUER, COMMENTED ]
+          - targets: [ REVIEW, AUTHOR, COMMENTED ]
             formattingMultiplier: 2
             wordValue: 0.2
           - targets: [ REVIEW, ASSIGNEE, COMMENTED ]

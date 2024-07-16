@@ -16,12 +16,12 @@ export const formattingEvaluatorConfigurationType = Type.Object({
     {
       default: [
         {
-          targets: ["ISSUE", "ISSUER", "SPECIFICATION"],
+          targets: ["ISSUE", "AUTHOR", "SPECIFICATION"],
           formattingMultiplier: 1,
           wordValue: 0.1,
         },
         {
-          targets: ["ISSUE", "ISSUER", "COMMENTED"],
+          targets: ["ISSUE", "AUTHOR", "COMMENTED"],
           formattingMultiplier: 1,
           wordValue: 0.2,
         },
@@ -41,12 +41,12 @@ export const formattingEvaluatorConfigurationType = Type.Object({
           wordValue: 0.1,
         },
         {
-          targets: ["REVIEW", "ISSUER", "TASK"],
+          targets: ["REVIEW", "AUTHOR", "PULL"],
           formattingMultiplier: 0,
           wordValue: 0,
         },
         {
-          targets: ["REVIEW", "ISSUER", "COMMENTED"],
+          targets: ["REVIEW", "AUTHOR", "COMMENTED"],
           formattingMultiplier: 2,
           wordValue: 0.2,
         },
