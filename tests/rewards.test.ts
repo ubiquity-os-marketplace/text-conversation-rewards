@@ -157,6 +157,8 @@ describe("Rewards tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(rewardSplitResult);
+    console.log("+++++++");
+    console.log(fs.readFileSync("./output.html"));
     expect(fs.readFileSync("./output.html")).toEqual(
       fs.readFileSync("./tests/__mocks__/results/output-reward-split.html")
     );
