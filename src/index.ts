@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+import logger from "./helpers/logger";
 import { run } from "./run";
 
 export default run()
@@ -7,7 +8,6 @@ export default run()
     return result;
   })
   .catch((e) => {
-    console.error("Failed to run comment evaluation:", e);
-    core?.setFailed(e.toString());
+    logger.error(`Failed to run comment evaluation: ${e}`, e);
     return e;
   });
