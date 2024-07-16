@@ -9,7 +9,6 @@ import { parseGitHubUrl } from "./start";
 
 export async function run() {
   const { eventPayload, eventName } = program;
-  throw new Error("TEST ERROR");
   if (eventName === "issues.closed") {
     if (eventPayload.issue.state_reason !== "completed") {
       const result = logger.info("Issue was not closed as completed. Skipping.");
