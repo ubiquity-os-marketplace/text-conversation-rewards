@@ -1,5 +1,5 @@
 {
   "name": "Conversation rewards",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
-  "ubiquibot:listeners": [ "issues.closed" ]
+  "ubiquity:listeners": [ "issues.closed" ]
 }
