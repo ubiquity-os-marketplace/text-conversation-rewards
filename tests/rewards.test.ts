@@ -23,6 +23,17 @@ jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementa
   return Promise.resolve(comments.map(() => new Decimal(0.8)));
 });
 
+jest.mock("@actions/github", () => ({
+  context: {
+    runId: "1",
+    payload: {
+      repository: {
+        html_url: "https://ubiquibot/conversation-rewards",
+      },
+    },
+  },
+}));
+
 jest.mock("@ubiquibot/permit-generation/core", () => {
   const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
 
