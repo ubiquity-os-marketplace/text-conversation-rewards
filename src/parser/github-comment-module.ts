@@ -2,7 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { stringify } from "yaml";
-import { CommentType } from "../configuration/comment-types";
+import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { getOctokitInstance } from "../get-authentication-token";
@@ -195,13 +195,13 @@ export class GithubCommentModule implements Module {
   async _generateHtml(username: string, result: Result[0]) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
-        if (curr.type & CommentType.ISSUE) {
-          if (curr.type & CommentType.SPECIFICATION) {
+        if (curr.type & CommentKind.ISSUE) {
+          if (curr.type & CommentAssociation.SPECIFICATION) {
             acc.issues.specification = curr;
           } else {
             acc.issues.comments.push(curr);
           }
-        } else if (curr.type & CommentType.REVIEW) {
+        } else if (curr.type & CommentKind.PULL) {
           acc.reviews.push(curr);
         }
         return acc;

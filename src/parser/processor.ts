@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
-import { CommentType } from "../configuration/comment-types";
+import { CommentAssociation, commentEnum, CommentKind } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import githubCommentModuleInstance from "../helpers/github-comment-module-instance";
 import logger from "../helpers/logger";
@@ -51,13 +51,13 @@ export class Processor {
         // Changes "type" to be human-readable
         if (key === "type" && typeof value === "number") {
           const typeNames: string[] = [];
-          const types = Object.values(CommentType) as number[];
-          types.forEach((typeValue) => {
+          const types = Object.values(commentEnum) as number[];
+          types.reverse().forEach((typeValue) => {
             if (value & typeValue) {
-              typeNames.push(CommentType[typeValue]);
+              typeNames.push(commentEnum[typeValue]);
             }
           });
-          return typeNames.join("|");
+          return typeNames.join("_");
         }
         return value;
       },
@@ -108,7 +108,7 @@ export interface Result {
 export interface GithubCommentScore {
   content: string;
   url: string;
-  type: CommentType;
+  type: CommentKind | CommentAssociation;
   score?: {
     formatting?: {
       content: Record<string, { count: number; score: number }>;

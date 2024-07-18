@@ -1,4 +1,4 @@
-import { CommentType } from "./configuration/comment-types";
+import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
@@ -9,14 +9,14 @@ import {
   GitHubPullRequestReviewState,
 } from "./github-types";
 import {
-  IssueParams,
-  PullParams,
   getIssue,
   getIssueComments,
   getIssueEvents,
   getPullRequest,
   getPullRequestReviewComments,
   getPullRequestReviews,
+  IssueParams,
+  PullParams,
 } from "./start";
 
 export class IssueActivity {
@@ -61,7 +61,7 @@ export class IssueActivity {
   }
 
   _getTypeFromComment(
-    issueType: CommentType.ISSUE | CommentType.REVIEW,
+    issueType: CommentKind,
     comment:
       | GitHubIssueComment
       | GitHubPullRequestReviewComment
@@ -69,22 +69,19 @@ export class IssueActivity {
       | GitHubIssue
       | GitHubPullRequest,
     self: GitHubPullRequest | GitHubIssue | null
-  ) {
+  ): CommentAssociation | CommentKind {
     let ret = 0;
     ret |= issueType;
     if (comment.id === self?.id) {
-      ret |= ret & CommentType.ISSUE ? CommentType.SPECIFICATION : CommentType.PULL;
-    } else {
-      ret |= CommentType.COMMENTED;
-    }
-    if (comment.user?.id === self?.user?.id) {
-      ret |= CommentType.AUTHOR;
+      ret |= CommentAssociation.SPECIFICATION;
+    } else if (comment.user?.id === self?.user?.id) {
+      ret |= CommentAssociation.AUTHOR;
     } else if (comment.user?.id === self?.assignee?.id) {
-      ret |= CommentType.ASSIGNEE;
+      ret |= CommentAssociation.ASSIGNEE;
     } else if (comment.author_association === "MEMBER" || comment.author_association === "COLLABORATOR") {
-      ret |= CommentType.COLLABORATOR;
+      ret |= CommentAssociation.COLLABORATOR;
     } else {
-      ret |= CommentType.CONTRIBUTOR;
+      ret |= CommentAssociation.CONTRIBUTOR;
     }
     return ret;
   }
@@ -97,13 +94,13 @@ export class IssueActivity {
           for (const review of value) {
             comments.push({
               ...review,
-              type: this._getTypeFromComment(CommentType.REVIEW, review, linkedReview.self),
+              type: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
             });
           }
         } else if (value) {
           comments.push({
             ...value,
-            type: this._getTypeFromComment(CommentType.REVIEW, value, value),
+            type: this._getTypeFromComment(CommentKind.PULL, value, value),
           });
         }
       }
@@ -113,15 +110,17 @@ export class IssueActivity {
 
   get allComments() {
     const comments: Array<
-      (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & { type: CommentType }
+      (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & {
+        type: CommentKind | CommentAssociation;
+      }
     > = this.comments.map((comment) => ({
       ...comment,
-      type: this._getTypeFromComment(CommentType.ISSUE, comment, this.self),
+      type: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
     }));
     if (this.self) {
       comments.push({
         ...this.self,
-        type: this._getTypeFromComment(CommentType.ISSUE, this.self, this.self),
+        type: this._getTypeFromComment(CommentKind.ISSUE, this.self, this.self),
       });
     }
     if (this.linkedReviews) {

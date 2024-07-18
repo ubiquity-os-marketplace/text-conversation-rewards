@@ -81,34 +81,34 @@ with:
           td: 1
           hr: 0
         multipliers:
-          - targets: [ ISSUE, AUTHOR, SPECIFICATION ]
+          - select: [ ISSUE_SPECIFICATION ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ ISSUE, AUTHOR, COMMENTED ]
+          - select: [ ISSUE_AUTHOR ]
             formattingMultiplier: 1
             wordValue: 0.2
-          - targets: [ ISSUE, ASSIGNEE, COMMENTED ]
+          - select: [ ISSUE_ASSIGNEE ]
             formattingMultiplier: 0
             wordValue: 0
-          - targets: [ ISSUE, COLLABORATOR, COMMENTED ]
+          - select: [ ISSUE_COLLABORATOR ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ ISSUE, CONTRIBUTOR, COMMENTED ]
+          - select: [ ISSUE_CONTRIBUTOR ]
             formattingMultiplier: 0.25
             wordValue: 0.1
-          - targets: [ REVIEW, AUTHOR, PULL ]
+          - select: [ PULL_SPECIFICATION ]
             formattingMultiplier: 0
             wordValue: 0
-          - targets: [ REVIEW, AUTHOR, COMMENTED ]
+          - select: [ PULL_AUTHOR ]
             formattingMultiplier: 2
             wordValue: 0.2
-          - targets: [ REVIEW, ASSIGNEE, COMMENTED ]
+          - select: [ PULL_ASSIGNEE ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ REVIEW, COLLABORATOR, COMMENTED ]
+          - select: [ PULL_COLLABORATOR ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ REVIEW, CONTRIBUTOR, COMMENTED ]
+          - select: [ PULL_CONTRIBUTOR ]
             formattingMultiplier: 0.25
             wordValue: 0.1
       permitGeneration:

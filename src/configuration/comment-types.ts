@@ -1,18 +1,21 @@
-export enum CommentType {
+export enum CommentKind {
   /**
-   * Review related item
+   * Pull-request related item
    */
-  REVIEW = 0b1,
+  PULL = 0b1,
   /**
    * Issue related item
    */
   ISSUE = 0b10,
+}
+
+export enum CommentAssociation {
   /**
-   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}
+   * User assigned to the {@link CommentKind.ISSUE} or {@link CommentKind.PULL}
    */
   ASSIGNEE = 0b100,
   /**
-   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}
+   * The author of the {@link CommentKind.ISSUE} or {@link CommentKind.PULL}
    */
   AUTHOR = 0b1000,
   /**
@@ -24,15 +27,11 @@ export enum CommentType {
    */
   CONTRIBUTOR = 0b100000,
   /**
-   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}
+   * {@link CommentKind.ISSUE} or {@link CommentKind.PULL} opening item
    */
-  COMMENTED = 0b1000000,
-  /**
-   * Pull request opening item
-   */
-  PULL = 0b10000000,
-  /**
-   * Issue opening item
-   */
-  SPECIFICATION = 0b100000000,
+  SPECIFICATION = 0b10000000,
 }
+
+export const commentEnum = { ...CommentAssociation, ...CommentKind };
+
+export type CommentType = `${keyof typeof CommentKind}_${keyof typeof CommentAssociation}`;
