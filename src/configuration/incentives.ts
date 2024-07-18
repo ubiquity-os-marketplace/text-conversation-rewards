@@ -29,12 +29,12 @@ export const incentivesConfigurationSchema = T.Object({
      * If set to true, the plugin runs even if the price label is missing, and will evaluate comments.
      */
     requirePriceLabel: T.Boolean({ default: true }),
-    contentEvaluator: contentEvaluatorConfigurationType,
-    userExtractor: userExtractorConfigurationType,
-    dataPurge: dataPurgeConfigurationType,
-    formattingEvaluator: formattingEvaluatorConfigurationType,
-    permitGeneration: permitGenerationConfigurationType,
-    githubComment: githubCommentConfigurationType,
+    contentEvaluator: T.Optional(contentEvaluatorConfigurationType),
+    userExtractor: T.Optional(userExtractorConfigurationType),
+    dataPurge: T.Optional(dataPurgeConfigurationType),
+    formattingEvaluator: T.Optional(formattingEvaluatorConfigurationType),
+    permitGeneration: T.Optional(permitGenerationConfigurationType),
+    githubComment: T.Optional(githubCommentConfigurationType),
   }),
 });
 export const validateIncentivesConfiguration = new StandardValidator(incentivesConfigurationSchema);

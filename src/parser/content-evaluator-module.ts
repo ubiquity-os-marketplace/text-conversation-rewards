@@ -15,14 +15,14 @@ import { Value } from "@sinclair/typebox/value";
  */
 export class ContentEvaluatorModule implements Module {
   readonly _openAi = new OpenAI({ apiKey: OPENAI_API_KEY });
-  readonly _configuration: ContentEvaluatorConfiguration = configuration.incentives.contentEvaluator;
+  readonly _configuration: ContentEvaluatorConfiguration | undefined = configuration.incentives.contentEvaluator;
 
   get enabled(): boolean {
     if (!Value.Check(contentEvaluatorConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for ContentEvaluatorModule, disabling.");
       return false;
     }
-    return this._configuration.enabled;
+    return true;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
@@ -106,7 +106,8 @@ export class ContentEvaluatorModule implements Module {
       .map((comment) => comment)
       .join(
         "\n"
-      )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY an array of float numbers between 0 and 1, corresponding to each comment in the order they appear. Each float should represent the degree of relevance and added value of the comment to the issue. The total length of the array in your response should equal exactly ${comments.length
-      } elements.`;
+      )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY an array of float numbers between 0 and 1, corresponding to each comment in the order they appear. Each float should represent the degree of relevance and added value of the comment to the issue. The total length of the array in your response should equal exactly ${
+      comments.length
+    } elements.`;
   }
 }
