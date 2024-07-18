@@ -1,9 +1,10 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
-import { CommentAssociation, commentEnum, CommentKind } from "../configuration/comment-types";
+import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import githubCommentModuleInstance from "../helpers/github-comment-module-instance";
 import logger from "../helpers/logger";
+import { typeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
@@ -45,24 +46,7 @@ export class Processor {
 
   dump() {
     const { file } = this._configuration;
-    const result = JSON.stringify(
-      this._result,
-      (key: string, value: string | number) => {
-        // Changes "type" to be human-readable
-        if (key === "type" && typeof value === "number") {
-          const typeNames: string[] = [];
-          const types = Object.values(commentEnum) as number[];
-          types.reverse().forEach((typeValue) => {
-            if (value & typeValue) {
-              typeNames.push(commentEnum[typeValue]);
-            }
-          });
-          return typeNames.join("_");
-        }
-        return value;
-      },
-      2
-    );
+    const result = JSON.stringify(this._result, typeReplacer, 2);
     if (!file) {
       logger.debug(result);
     } else {

@@ -8,6 +8,7 @@ import { GithubCommentConfiguration, githubCommentConfigurationType } from "../c
 import { getOctokitInstance } from "../get-authentication-token";
 import { getGithubWorkflowRunUrl } from "../helpers/github-comment-module-instance";
 import logger from "../helpers/logger";
+import { typeReplacer } from "../helpers/result-replacer";
 import { getERC20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import program from "./command-line";
@@ -40,7 +41,7 @@ export class GithubCommentModule implements Module {
     // Add the workflow run url and the metadata in the GitHub's comment
     bodyArray.push("\n<!--");
     bodyArray.push(`\n${getGithubWorkflowRunUrl()}\n`);
-    bodyArray.push(JSON.stringify(result, null, 2));
+    bodyArray.push(JSON.stringify(result, typeReplacer, 2));
     bodyArray.push("\n-->");
     const body = bodyArray.join("");
     if (this._configuration?.debug) {
