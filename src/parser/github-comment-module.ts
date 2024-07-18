@@ -22,7 +22,7 @@ interface SortedTasks {
  * Posts a GitHub comment according to the given results.
  */
 export class GithubCommentModule implements Module {
-  private readonly _configuration: GithubCommentConfiguration = configuration.incentives.githubComment;
+  private readonly _configuration: GithubCommentConfiguration | undefined = configuration.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
   /**
    * COMMENT_ID can be set in the environment to reference the id of the last comment created during this workflow.
@@ -43,10 +43,10 @@ export class GithubCommentModule implements Module {
     bodyArray.push(JSON.stringify(result, null, 2));
     bodyArray.push("\n-->");
     const body = bodyArray.join("");
-    if (this._configuration.debug) {
+    if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
-    if (this._configuration.post) {
+    if (this._configuration?.post) {
       try {
         await this.postComment(body);
       } catch (e) {

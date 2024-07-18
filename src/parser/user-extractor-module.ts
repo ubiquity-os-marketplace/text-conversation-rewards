@@ -11,7 +11,7 @@ import { Module, Result } from "./processor";
  * Creates entries for each user with its associated comments.
  */
 export class UserExtractorModule implements Module {
-  private readonly _configuration: UserExtractorConfiguration = configuration.incentives.userExtractor;
+  private readonly _configuration: UserExtractorConfiguration | undefined = configuration.incentives.userExtractor;
 
   get enabled(): boolean {
     if (!Value.Check(userExtractorConfigurationType, this._configuration)) {
@@ -32,7 +32,7 @@ export class UserExtractorModule implements Module {
    * Gets the price from the labels, except if the configuration disables the redeem
    */
   _extractTaskPrice(issue: GitHubIssue) {
-    if (this._configuration.redeemTask === false) {
+    if (this._configuration?.redeemTask === false) {
       return 0;
     }
     const sortedPriceLabels = getSortedPrices(issue.labels);
