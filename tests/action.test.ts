@@ -38,7 +38,7 @@ jest.mock("@actions/github", () => ({
     runId: "1",
     payload: {
       repository: {
-        html_url: "https://ubiquibot/conversation-rewards",
+        html_url: "https://github.com/ubiquibot/conversation-rewards",
       },
     },
   },
@@ -64,10 +64,10 @@ describe("Action tests", () => {
 ! Failed to run comment evaluation. Some error
 \`\`\`
 <!--
-https://ubiquibot/conversation-rewards/actions/runs/1
+https://github.com/ubiquibot/conversation-rewards/actions/runs/1
 {
   "message": "Some error",
-  "caller": "call"
+  "caller": "error"
 }
 -->`);
   });
