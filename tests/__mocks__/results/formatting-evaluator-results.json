@@ -236,7 +236,7 @@
     ]
   },
   "0x4007": {
-    "total": 78.5,
+    "total": 74.8,
     "userId": 4975670,
     "comments": [
       {
@@ -368,7 +368,7 @@
               },
               "ol": {
                 "count": 33,
-                "score": 1
+                "score": 0
               },
               "li": {
                 "count": 33,
@@ -382,7 +382,7 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 8.9
+          "reward": 5.6
         }
       },
       {
@@ -442,7 +442,7 @@
               },
               "ul": {
                 "count": 4,
-                "score": 1
+                "score": 0
               },
               "li": {
                 "count": 4,
@@ -452,7 +452,7 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 33.7
+          "reward": 33.3
         }
       }
     ]
