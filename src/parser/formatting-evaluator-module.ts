@@ -17,7 +17,7 @@ interface Multiplier {
 }
 
 export class FormattingEvaluatorModule implements Module {
-  private readonly _configuration: FormattingEvaluatorConfiguration | undefined =
+  private readonly _configuration: FormattingEvaluatorConfiguration | undefined | null =
     configuration.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: string]: Multiplier } = {};

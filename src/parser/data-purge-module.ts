@@ -8,7 +8,7 @@ import { Module, Result } from "./processor";
  * Removes the data in the comments that we do not want to be processed.
  */
 export class DataPurgeModule implements Module {
-  readonly _configuration: DataPurgeConfiguration | undefined = configuration.incentives.dataPurge;
+  readonly _configuration: DataPurgeConfiguration | undefined | null = configuration.incentives.dataPurge;
 
   get enabled(): boolean {
     if (!Value.Check(dataPurgeConfigurationType, this._configuration)) {

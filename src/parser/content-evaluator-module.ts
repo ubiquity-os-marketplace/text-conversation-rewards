@@ -15,7 +15,7 @@ import { Value } from "@sinclair/typebox/value";
  */
 export class ContentEvaluatorModule implements Module {
   readonly _openAi = new OpenAI({ apiKey: OPENAI_API_KEY });
-  readonly _configuration: ContentEvaluatorConfiguration | undefined = configuration.incentives.contentEvaluator;
+  readonly _configuration: ContentEvaluatorConfiguration | undefined | null = configuration.incentives.contentEvaluator;
 
   get enabled(): boolean {
     if (!Value.Check(contentEvaluatorConfigurationType, this._configuration)) {

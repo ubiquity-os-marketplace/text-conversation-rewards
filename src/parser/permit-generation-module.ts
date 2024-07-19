@@ -33,7 +33,7 @@ interface Payload {
 }
 
 export class PermitGenerationModule implements Module {
-  readonly _configuration: PermitGenerationConfiguration | undefined = configuration.incentives.permitGeneration;
+  readonly _configuration: PermitGenerationConfiguration | undefined | null = configuration.incentives.permitGeneration;
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
