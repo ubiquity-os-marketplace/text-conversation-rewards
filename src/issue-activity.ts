@@ -47,15 +47,9 @@ export class IssueActivity {
         }
       },
       async onMaxRetryFunc(error) {
-        try {
-          const content = "Failed to retrieve activity after 10 attempts. See logs for more details.";
-          const message = logger.error(content, {
-            error,
-          });
-          await githubCommentModuleInstance.postComment(message?.logMessage.diff || content);
-        } catch (e) {
-          logger.error(`${e}`);
-        }
+        logger.error("Failed to retrieve activity after 10 attempts. See logs for more details.", {
+          error,
+        });
       },
     });
     [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
