@@ -91,6 +91,8 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
     const activity = new IssueActivity(issue);
     await activity.init();
     expect(activity.self).toBeTruthy();
-    expect([]).toBeTruthy();
+    expect(activity.linkedReviews.length).toBeGreaterThan(0);
+    expect(activity.comments.length).toBeGreaterThan(0);
+    expect(activity.events.length).toBeGreaterThan(0);
   }, 60000);
 });
