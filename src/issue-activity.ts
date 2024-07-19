@@ -9,15 +9,18 @@ import {
   GitHubPullRequestReviewState,
 } from "./github-types";
 import {
-  IssueParams,
-  PullParams,
   getIssue,
   getIssueComments,
   getIssueEvents,
   getPullRequest,
   getPullRequestReviewComments,
   getPullRequestReviews,
+  IssueParams,
+  PullParams,
 } from "./start";
+import { retryAsyncUntilDefinedDecorator } from "ts-retry";
+import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
+import logger from "./helpers/logger";
 
 export class IssueActivity {
   constructor(private _issueParams: IssueParams) {}
@@ -28,11 +31,38 @@ export class IssueActivity {
   linkedReviews: Review[] = [];
 
   async init() {
+    function fn<T>(func: () => Promise<T>) {
+      return func();
+    }
+    const decoratedFn = retryAsyncUntilDefinedDecorator(fn, {
+      delay: 10000,
+      maxTry: 10,
+      async onError(error) {
+        try {
+          const content = "Failed to retrieve activity. Retrying...";
+          const message = logger.error(content, { error });
+          await githubCommentModuleInstance.postComment(message?.logMessage.diff || content);
+        } catch (e) {
+          logger.error(`${e}`);
+        }
+      },
+      async onMaxRetryFunc(error) {
+        try {
+          const content = "Failed to retrieve activity after 10 attempts. See logs for more details.";
+          const message = logger.error(content, {
+            error,
+          });
+          await githubCommentModuleInstance.postComment(message?.logMessage.diff || content);
+        } catch (e) {
+          logger.error(`${e}`);
+        }
+      },
+    });
     [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
-      getIssue(this._issueParams),
-      getIssueEvents(this._issueParams),
-      getIssueComments(this._issueParams),
-      this._getLinkedReviews(),
+      decoratedFn(() => getIssue(this._issueParams)),
+      decoratedFn(() => getIssueEvents(this._issueParams)),
+      decoratedFn(() => getIssueComments(this._issueParams)),
+      decoratedFn(() => this._getLinkedReviews()),
     ]);
   }
 
