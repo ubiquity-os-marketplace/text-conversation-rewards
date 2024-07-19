@@ -55,6 +55,9 @@ with:
     evmNetworkId: 100
     evmPrivateEncrypted: "encrypted-key"
     erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
+    dataCollection:
+      maxTry: 10
+      delay: 10000
     incentives:
       enabled: true
       requirePriceLabel: true

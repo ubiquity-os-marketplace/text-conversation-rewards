@@ -1,4 +1,7 @@
+import { retryAsyncUntilDefinedDecorator } from "ts-retry";
 import { CommentType } from "./configuration/comment-types";
+import configuration from "./configuration/config-reader";
+import { DataCollectionConfiguration } from "./configuration/data-collection-config";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
@@ -8,6 +11,8 @@ import {
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
 } from "./github-types";
+import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
+import logger from "./helpers/logger";
 import {
   getIssue,
   getIssueComments,
@@ -18,11 +23,10 @@ import {
   IssueParams,
   PullParams,
 } from "./start";
-import { retryAsyncUntilDefinedDecorator } from "ts-retry";
-import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
-import logger from "./helpers/logger";
 
 export class IssueActivity {
+  readonly _configuration: DataCollectionConfiguration = configuration.dataCollection;
+
   constructor(private _issueParams: IssueParams) {}
 
   self: GitHubIssue | null = null;
@@ -35,8 +39,8 @@ export class IssueActivity {
       return func();
     }
     const decoratedFn = retryAsyncUntilDefinedDecorator(fn, {
-      delay: 10000,
-      maxTry: 10,
+      delay: this._configuration.delay,
+      maxTry: this._configuration.maxTry,
       async onError(error) {
         try {
           const content = "Failed to retrieve activity. Retrying...";
