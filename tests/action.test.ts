@@ -1,6 +1,9 @@
 /* eslint @typescript-eslint/no-var-requires: 0 */
 import "../src/parser/command-line";
+import { http, HttpResponse } from "msw";
+import { IssueActivity } from "../src/issue-activity";
 import { run } from "../src/run";
+import { parseGitHubUrl } from "../src/start";
 import { server } from "./__mocks__/node";
 
 beforeAll(() => server.listen());
@@ -71,4 +74,25 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
 }
 -->`);
   });
+
+  it("Should retry to fetch on network failure", async () => {
+    // Fakes one crash per route retrieving the data. Should succeed on retry. Timeout for the test function needs
+    // to be increased since it takes 10 seconds for a retry to happen.
+    [
+      "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22",
+      "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/events",
+      "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/comments",
+      "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/timeline",
+    ].forEach((url) => {
+      server.use(http.get(url, () => HttpResponse.json("", { status: 500 }), { once: true }));
+    });
+    const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
+    const issue = parseGitHubUrl(issueUrl);
+    const activity = new IssueActivity(issue);
+    await activity.init();
+    expect(activity.self).toBeTruthy();
+    expect(activity.linkedReviews.length).toBeGreaterThan(0);
+    expect(activity.comments.length).toBeGreaterThan(0);
+    expect(activity.events.length).toBeGreaterThan(0);
+  }, 60000);
 });
