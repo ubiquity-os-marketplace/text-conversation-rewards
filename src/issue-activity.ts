@@ -39,8 +39,8 @@ export class IssueActivity {
       return func();
     }
     const decoratedFn = retryAsyncUntilDefinedDecorator(fn, {
-      delay: this._configuration.delay,
-      maxTry: this._configuration.maxTry,
+      delay: this._configuration.delayMs,
+      maxTry: this._configuration.maxAttempts,
       async onError(error) {
         try {
           const content = "Failed to retrieve activity. Retrying...";
