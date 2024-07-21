@@ -1,6 +1,7 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { StandardValidator } from "typebox-validators";
 import { contentEvaluatorConfigurationType } from "./content-evaluator-config";
+import { dataCollectionConfigurationType } from "./data-collection-config";
 import { dataPurgeConfigurationType } from "./data-purge-config";
 import { formattingEvaluatorConfigurationType } from "./formatting-evaluator-config";
 import { githubCommentConfigurationType } from "./github-comment-config";
@@ -36,7 +37,9 @@ export const incentivesConfigurationSchema = T.Object({
     permitGeneration: T.Optional(T.Union([permitGenerationConfigurationType, T.Null()])),
     githubComment: T.Optional(T.Union([githubCommentConfigurationType, T.Null()])),
   }),
+  dataCollection: dataCollectionConfigurationType,
 });
+
 export const validateIncentivesConfiguration = new StandardValidator(incentivesConfigurationSchema);
 
 export type IncentivesConfiguration = StaticDecode<typeof incentivesConfigurationSchema>;
