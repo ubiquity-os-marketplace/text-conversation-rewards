@@ -2,11 +2,11 @@ import { drop } from "@mswjs/data";
 import Decimal from "decimal.js";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
+import githubCommentModuleInstance from "../src/helpers/github-comment-module-instance";
 import { IssueActivity } from "../src/issue-activity";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
 import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
-import { GithubCommentModule } from "../src/parser/github-comment-module";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
@@ -30,6 +30,17 @@ jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementa
     })()
   );
 });
+
+jest.mock("@actions/github", () => ({
+  context: {
+    runId: "1",
+    payload: {
+      repository: {
+        html_url: "https://github.com/ubiquibot/conversation-rewards",
+      },
+    },
+  },
+}));
 
 jest.mock("@ubiquibot/permit-generation/core", () => {
   const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
@@ -144,7 +155,7 @@ describe("Rewards tests", () => {
       new FormattingEvaluatorModule(),
       new ContentEvaluatorModule(),
       new PermitGenerationModule(),
-      new GithubCommentModule(),
+      githubCommentModuleInstance,
     ];
     server.use(
       http.post("https://*", () =>
@@ -165,8 +176,8 @@ describe("Rewards tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(rewardSplitResult);
-    expect(fs.readFileSync("./output.html")).toEqual(
-      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html")
+    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
+      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html", "utf-8")
     );
   });
 });

@@ -3315,7 +3315,7 @@
     ethers "6.11.1"
     libsodium-wrappers "^0.7.13"
 
-"@ubiquity-dao/rpc-handler@^1.1.0":
+"@ubiquity-dao/rpc-handler@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ubiquity-dao/rpc-handler/-/rpc-handler-1.1.0.tgz#5a17e98de8c611ea19315ff946166b20d6f7f629"
   integrity sha512-EzbwAoHx+jPEymAdJbKt1O7C9RB/R3IWcBPRbDzFs8iBOuFktClsR8e95xvFrV9n2jTmr2ZHxpXE/rOLOEWfPA==
@@ -8333,6 +8333,11 @@ ts-node@10.9.2:
     make-error "^1.1.1"
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
+
+ts-retry@4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/ts-retry/-/ts-retry-4.2.5.tgz#ee4638e66c68bb49da975aa4994d5f16bfb61bc2"
+  integrity sha512-dFBa4pxMBkt/bjzdBio8EwYfbAdycEAwe0KZgzlUKKwU9Wr1WErK7Hg9QLqJuDDYJXTW4KYZyXAyqYKOdO/ehA==
 
 tslib@2.4.0:
   version "2.4.0"
