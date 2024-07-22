@@ -19,92 +19,52 @@
       "enabled": true,
       "multipliers": [
         {
-          "targets": [
-            "ISSUE",
-            "ISSUER",
-            "SPECIFICATION"
-          ],
+          "targets": ["ISSUE", "ISSUER", "SPECIFICATION"],
           "formattingMultiplier": 1,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "ISSUE",
-            "ISSUER",
-            "COMMENTED"
-          ],
+          "targets": ["ISSUE", "ISSUER", "COMMENTED"],
           "formattingMultiplier": 1,
           "wordValue": 0.2
         },
         {
-          "targets": [
-            "ISSUE",
-            "ASSIGNEE",
-            "COMMENTED"
-          ],
+          "targets": ["ISSUE", "ASSIGNEE", "COMMENTED"],
           "formattingMultiplier": 0,
           "wordValue": 0
         },
         {
-          "targets": [
-            "ISSUE",
-            "COLLABORATOR",
-            "COMMENTED"
-          ],
+          "targets": ["ISSUE", "COLLABORATOR", "COMMENTED"],
           "formattingMultiplier": 1,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "ISSUE",
-            "CONTRIBUTOR",
-            "COMMENTED"
-          ],
+          "targets": ["ISSUE", "CONTRIBUTOR", "COMMENTED"],
           "formattingMultiplier": 0.25,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "REVIEW",
-            "ISSUER",
-            "TASK"
-          ],
+          "targets": ["REVIEW", "ISSUER", "TASK"],
           "formattingMultiplier": 0,
           "wordValue": 0
         },
         {
-          "targets": [
-            "REVIEW",
-            "ISSUER",
-            "COMMENTED"
-          ],
+          "targets": ["REVIEW", "ISSUER", "COMMENTED"],
           "formattingMultiplier": 2,
           "wordValue": 0.2
         },
         {
-          "targets": [
-            "REVIEW",
-            "ASSIGNEE",
-            "COMMENTED"
-          ],
+          "targets": ["REVIEW", "ASSIGNEE", "COMMENTED"],
           "formattingMultiplier": 1,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "REVIEW",
-            "COLLABORATOR",
-            "COMMENTED"
-          ],
+          "targets": ["REVIEW", "COLLABORATOR", "COMMENTED"],
           "formattingMultiplier": 1,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "REVIEW",
-            "CONTRIBUTOR",
-            "COMMENTED"
-          ],
+          "targets": ["REVIEW", "CONTRIBUTOR", "COMMENTED"],
           "formattingMultiplier": 0.25,
           "wordValue": 0.1
         }
