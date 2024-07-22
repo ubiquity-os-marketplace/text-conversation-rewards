@@ -26,7 +26,15 @@ import "../src/parser/command-line";
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
-  return Promise.resolve(comments.map(() => new Decimal(0.8)));
+  return Promise.resolve(
+    (() => {
+      const relevance: { [k: string]: Decimal } = {};
+      comments.forEach((comment) => {
+        relevance[`${comment.id}`] = new Decimal(0.8);
+      });
+      return relevance;
+    })()
+  );
 });
 
 jest.mock("../src/helpers/web3", () => ({

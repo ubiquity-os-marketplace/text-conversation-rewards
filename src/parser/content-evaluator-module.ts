@@ -51,37 +51,38 @@ export class ContentEvaluatorModule implements Module {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
     const specificationCommentType = CommentType.ISSUE | CommentType.ISSUER | CommentType.SPECIFICATION;
-    const specificationCommentIndex = commentsWithScore.findIndex((commentWithScore) => {
+    const specificationComment = commentsWithScore.find((commentWithScore) => {
       return commentWithScore.type == specificationCommentType;
     });
-    let commentsToEvaluate = commentsWithScore;
-    if (specificationCommentIndex !== -1) {
-      commentsToEvaluate = commentsWithScore.filter((comment, i) => i != specificationCommentIndex);
+    let commentsToEvaluate: GithubCommentScore[] = commentsWithScore;
+    if (specificationComment) {
+      commentsToEvaluate = commentsWithScore.filter((comment) => comment.id != specificationComment.id);
     }
 
-    const commentsBody = commentsToEvaluate.map((comment) => comment.content);
+    const commentsBody = commentsToEvaluate.map((comment) => {
+      return {
+        id: comment.id,
+        comment: comment.content,
+      };
+    });
     const relevance = await this._evaluateComments(specificationBody, commentsBody);
 
-    if (relevance.length !== commentsToEvaluate.length) {
+    if (Object.keys(relevance).length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! Skipping.");
       return [];
     }
-    const relevanceOfAllComments =
-      specificationCommentIndex === -1
-        ? relevance
-        : [
-            ...relevance.slice(0, specificationCommentIndex),
-            new Decimal(1.0),
-            ...relevance.slice(specificationCommentIndex),
-          ];
 
-    for (let i = 0; i < relevanceOfAllComments.length; i++) {
+    if (specificationComment) {
+      relevance[specificationComment.id as unknown as string] = 1;
+    }
+
+    for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      const currentRelevance = relevanceOfAllComments[i];
+      const currentRelevance = relevance[currentComment.id as unknown as string];
       const currentReward = new Decimal(currentComment.score?.reward || 0);
       currentComment.score = {
         ...(currentComment.score || {}),
-        relevance: currentRelevance.toNumber(),
+        relevance: new Decimal(currentRelevance).toNumber(),
         reward: currentReward.mul(currentRelevance).toNumber(),
       };
     }
@@ -89,12 +90,16 @@ export class ContentEvaluatorModule implements Module {
     return commentsWithScore;
   }
 
-  async _evaluateComments(specification: string, comments: string[]): Promise<Decimal[]> {
+  async _evaluateComments(
+    specification: string,
+    comments: { id: number; comment: string }[]
+  ): Promise<{ [k: string]: number }> {
     const prompt = this._generatePrompt(specification, comments);
 
     try {
       const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
         model: "gpt-4o",
+        response_format: { type: "json_object" },
         messages: [
           {
             role: "system",
@@ -109,24 +114,21 @@ export class ContentEvaluatorModule implements Module {
       });
 
       const rawResponse = String(response.choices[0].message.content);
-      const parsedResponse = JSON.parse(rawResponse) as number[];
-      return parsedResponse.map((o) => new Decimal(o));
+      return JSON.parse(rawResponse) as { [k: string]: number };
     } catch (error) {
       console.error(`Failed to evaluate comment`, error);
-      return [];
+      return {};
     }
   }
 
-  _generatePrompt(issue: string, comments: string[]) {
+  _generatePrompt(issue: string, comments: { id: number; comment: string }[]) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
-    return `I need to evaluate the relevance of GitHub contributors' comments to a specific issue specification. Specifically, I'm interested in how much each comment helps to further define the issue specification or contributes new information or research relevant to the issue. Please provide a float between 0 and 1 to represent the degree of relevance. A score of 1 indicates that the comment is entirely relevant and adds significant value to the issue, whereas a score of 0 indicates no relevance or added value. Each contributor's comment is on a new line.\n\nIssue Specification:\n\`\`\`\n${issue}\n\`\`\`\n\nConversation:\n\`\`\`\n${comments
-      .map((comment) => comment)
-      .join(
-        "\n"
-      )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY an array of float numbers between 0 and 1, corresponding to each comment in the order they appear. Each float should represent the degree of relevance and added value of the comment to the issue. The total length of the array in your response should equal exactly ${
+    return `I need to evaluate the relevance of GitHub contributors' comments to a specific issue specification. Specifically, I'm interested in how much each comment helps to further define the issue specification or contributes new information or research relevant to the issue. Please provide a float between 0 and 1 to represent the degree of relevance. A score of 1 indicates that the comment is entirely relevant and adds significant value to the issue, whereas a score of 0 indicates no relevance or added value. A stringified JSON is given below that contains the specification and contributors' comments. Each comment in the JSON has a unique ID and comment content. \n\n\`\`\`\n${JSON.stringify(
+      { specification: issue, comments: comments }
+    )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY a JSON where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. The float number should represent the degree of relevance and added value of the comment to the issue. The total number of properties in your JSON response should equal exactly ${
       comments.length
-    } elements.`;
+    }.`;
   }
 }

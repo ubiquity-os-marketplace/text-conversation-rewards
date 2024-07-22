@@ -33,6 +33,7 @@ export class DataPurgeModule implements Module {
           result[comment.user.login].comments = [
             ...(result[comment.user.login].comments ?? []),
             {
+              id: comment.id,
               content: newContent,
               url: comment.html_url,
               type: comment.type,

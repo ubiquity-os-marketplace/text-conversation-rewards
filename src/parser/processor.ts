@@ -110,6 +110,7 @@ export interface Result {
 }
 
 export interface GithubCommentScore {
+  id: number;
   content: string;
   url: string;
   type: CommentType;
