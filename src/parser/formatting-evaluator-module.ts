@@ -14,8 +14,8 @@ import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {
   formattingMultiplier: number;
-  wordValue: number;
   scores: FormattingEvaluatorConfiguration["multipliers"][0]["scores"];
+  symbols: FormattingEvaluatorConfiguration["multipliers"][0]["symbols"];
 }
 
 export class FormattingEvaluatorModule implements Module {
@@ -39,7 +39,7 @@ export class FormattingEvaluatorModule implements Module {
         return {
           ...acc,
           [curr.select.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
-            wordValue: curr.wordValue,
+            symbols: curr.symbols,
             formattingMultiplier: curr.formattingMultiplier,
             scores: curr.scores,
           },
@@ -58,22 +58,18 @@ export class FormattingEvaluatorModule implements Module {
         const { formatting } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { wordValue: 0, formattingMultiplier: 0 };
         const formattingTotal = formatting
-          ? Object.values(formatting).reduce(
-              (acc, curr) =>
-                acc.add(
-                  new Decimal(curr.score)
-                    .mul(multiplierFactor.formattingMultiplier)
-                    .mul(curr.count)
-                    .mul(multiplierFactor.wordValue)
-                ),
-              new Decimal(0)
-            )
+          ? Object.values(formatting).reduce((acc, curr) => {
+              let sum = new Decimal(curr.score).mul(multiplierFactor.formattingMultiplier);
+              for (const symbol of Object.keys(curr.symbols)) {
+                sum = sum.mul(curr.symbols[symbol].count).mul(curr.symbols[symbol].multiplier);
+              }
+              return acc.add(sum);
+            }, new Decimal(0))
           : new Decimal(0);
         comment.score = {
           ...comment.score,
           formatting: {
             content: formatting,
-            wordValue: multiplierFactor.wordValue,
             formattingMultiplier: multiplierFactor.formattingMultiplier,
           },
           reward: (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber(),
@@ -102,17 +98,28 @@ export class FormattingEvaluatorModule implements Module {
     }
   }
 
-  _countWords(text: string): number {
-    return text.trim().split(/\s+/).length;
+  _countWords(symbols: FormattingEvaluatorConfiguration["multipliers"][0]["symbols"], text: string) {
+    const counts: { [p: string]: { count: number; multiplier: number } } = {};
+    for (const [regex, multiplier] of Object.entries(symbols)) {
+      const match = text.trim().match(new RegExp(regex, "g"));
+      counts[regex] = {
+        count: match?.length || 1,
+        multiplier,
+      };
+    }
+    return counts;
   }
 
   classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
-    const tagWordCount: Record<string, { count: number; score: number }> = {};
+    const tagWordCount: Record<
+      string,
+      { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }
+    > = {};
     const elements = htmlElement.getElementsByTagName("*");
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
-      const wordCount = this._countWords(element.textContent || "");
+      const wordCount = this._countWords(this._multipliers[commentType].symbols, element.textContent || "");
       let score = 1;
       if (this._multipliers[commentType]?.scores[tagName] !== undefined) {
         score = this._multipliers[commentType].scores[tagName];
@@ -120,7 +127,7 @@ export class FormattingEvaluatorModule implements Module {
         logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
       }
       tagWordCount[tagName] = {
-        count: (tagWordCount[tagName]?.count || 0) + wordCount,
+        symbols: wordCount,
         score,
       };
     }

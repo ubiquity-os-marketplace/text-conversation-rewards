@@ -7,6 +7,8 @@ const type = Type.Union(
   )
 );
 
+const symbolsType = Type.Record(Type.String(), Type.Number(), { minProperties: 1 });
+
 export const formattingEvaluatorConfigurationType = Type.Object(
   {
     /**
@@ -16,7 +18,7 @@ export const formattingEvaluatorConfigurationType = Type.Object(
       Type.Object({
         select: Type.Array(type),
         formattingMultiplier: Type.Number(),
-        wordValue: Type.Number(),
+        symbols: symbolsType,
         /**
          * Attributed score per HTML entity
          */
@@ -47,52 +49,52 @@ export const formattingEvaluatorConfigurationType = Type.Object(
           {
             select: ["ISSUE_SPECIFICATION"],
             formattingMultiplier: 1,
-            wordValue: 0.1,
+            symbols: { "\\b\\w+\\b": 0.1 },
           },
           {
             select: ["ISSUE_AUTHOR"],
             formattingMultiplier: 1,
-            wordValue: 0.2,
+            symbols: { "\\b\\w+\\b": 0.2 },
           },
           {
             select: ["ISSUE_ASSIGNEE"],
             formattingMultiplier: 0,
-            wordValue: 0,
+            symbols: { "\\b\\w+\\b": 0 },
           },
           {
             select: ["ISSUE_COLLABORATOR"],
             formattingMultiplier: 1,
-            wordValue: 0.1,
+            symbols: { "\\b\\w+\\b": 0.1 },
           },
           {
             select: ["ISSUE_CONTRIBUTOR"],
             formattingMultiplier: 0.25,
-            wordValue: 0.1,
+            symbols: { "\\b\\w+\\b": 0.1 },
           },
           {
             select: ["PULL_SPECIFICATION"],
             formattingMultiplier: 0,
-            wordValue: 0,
+            symbols: { "\\b\\w+\\b": 0 },
           },
           {
             select: ["PULL_AUTHOR"],
             formattingMultiplier: 2,
-            wordValue: 0.2,
+            symbols: { "\\b\\w+\\b": 0.2 },
           },
           {
             select: ["PULL_ASSIGNEE"],
             formattingMultiplier: 1,
-            wordValue: 0.1,
+            symbols: { "\\b\\w+\\b": 0.1 },
           },
           {
             select: ["PULL_COLLABORATOR"],
             formattingMultiplier: 1,
-            wordValue: 0.1,
+            symbols: { "\\b\\w+\\b": 0.1 },
           },
           {
             select: ["PULL_CONTRIBUTOR"],
             formattingMultiplier: 0.25,
-            wordValue: 0.1,
+            symbols: { "\\b\\w+\\b": 0.1 },
           },
         ],
       }

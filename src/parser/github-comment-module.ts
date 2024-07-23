@@ -165,14 +165,7 @@ export class GithubCommentModule implements Module {
             <td>
             <details>
               <summary>
-                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
-                  const multiplier = new Decimal(
-                    commentScore.score?.formatting
-                      ? commentScore.score.formatting.formattingMultiplier * commentScore.score.formatting.wordValue
-                      : 0
-                  );
-                  return acc.add(multiplier.mul(curr.score * curr.count));
-                }, new Decimal(0))}
+                ${new Decimal(commentScore.score?.reward || 0).div(new Decimal(commentScore.score?.relevance || 0))}
               </summary>
               <pre>${formatting}</pre>
              </details>
