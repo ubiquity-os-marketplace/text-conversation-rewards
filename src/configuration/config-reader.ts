@@ -6,8 +6,7 @@ import { IncentivesConfiguration, incentivesConfigurationSchema, validateIncenti
 let configuration: IncentivesConfiguration | null = null;
 
 try {
-  const defaultConf = Value.Create(incentivesConfigurationSchema);
-  Value.Default(incentivesConfigurationSchema, defaultConf);
+  configuration = Value.Default(incentivesConfigurationSchema, {}) as IncentivesConfiguration;
 } catch (e) {
   console.error(e);
 }
@@ -26,5 +25,4 @@ if (program.settings) {
     }
   }
 }
-
 export default configuration as IncentivesConfiguration;
