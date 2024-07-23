@@ -68,8 +68,7 @@ export class ContentEvaluatorModule implements Module {
     const relevance = await this._evaluateComments(specificationBody, commentsBody);
 
     if (Object.keys(relevance).length !== commentsToEvaluate.length) {
-      console.error("Relevance / Comment length mismatch! Skipping.");
-      return [];
+      console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
     }
 
     if (specificationComment) {
@@ -78,7 +77,7 @@ export class ContentEvaluatorModule implements Module {
 
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      const currentRelevance = relevance[currentComment.id as unknown as string];
+      const currentRelevance = relevance[currentComment.id as unknown as string] ?? 1;
       const currentReward = new Decimal(currentComment.score?.reward || 0);
       currentComment.score = {
         ...(currentComment.score || {}),
