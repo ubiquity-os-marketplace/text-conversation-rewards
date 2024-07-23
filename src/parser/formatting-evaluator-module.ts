@@ -8,19 +8,21 @@ import {
   FormattingEvaluatorConfiguration,
   formattingEvaluatorConfigurationType,
 } from "../configuration/formatting-evaluator-config";
+import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {
   formattingMultiplier: number;
   wordValue: number;
+  scores: FormattingEvaluatorConfiguration["multipliers"][0]["scores"];
 }
 
 export class FormattingEvaluatorModule implements Module {
   private readonly _configuration: FormattingEvaluatorConfiguration | undefined | null =
     configuration.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
-  private readonly _multipliers: { [k: string]: Multiplier } = {};
+  private readonly _multipliers: { [k: number]: Multiplier } = {};
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -39,6 +41,7 @@ export class FormattingEvaluatorModule implements Module {
           [curr.select.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
             wordValue: curr.wordValue,
             formattingMultiplier: curr.formattingMultiplier,
+            scores: curr.scores,
           },
         };
       }, {});
@@ -70,7 +73,8 @@ export class FormattingEvaluatorModule implements Module {
           ...comment.score,
           formatting: {
             content: formatting,
-            ...multiplierFactor,
+            wordValue: multiplierFactor.wordValue,
+            formattingMultiplier: multiplierFactor.formattingMultiplier,
           },
           reward: (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber(),
         };
@@ -91,7 +95,7 @@ export class FormattingEvaluatorModule implements Module {
     const html = this._md.render(comment.content);
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
-      const res = this.classifyTagsWithWordCount(temp.window.document.body);
+      const res = this.classifyTagsWithWordCount(temp.window.document.body, comment.type);
       return { formatting: res };
     } else {
       throw new Error(`Could not create DOM for comment [${comment}]`);
@@ -102,7 +106,7 @@ export class FormattingEvaluatorModule implements Module {
     return text.trim().split(/\s+/).length;
   }
 
-  classifyTagsWithWordCount(htmlElement: HTMLElement) {
+  classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
     const tagWordCount: Record<string, { count: number; score: number }> = {};
     const elements = htmlElement.getElementsByTagName("*");
 
@@ -110,8 +114,10 @@ export class FormattingEvaluatorModule implements Module {
       const tagName = element.tagName.toLowerCase();
       const wordCount = this._countWords(element.textContent || "");
       let score = 1;
-      if (this._configuration?.scores?.[tagName] !== undefined) {
-        score = this._configuration.scores[tagName];
+      if (this._multipliers[commentType]?.scores[tagName] !== undefined) {
+        score = this._multipliers[commentType].scores[tagName];
+      } else {
+        logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
       }
       tagWordCount[tagName] = {
         count: (tagWordCount[tagName]?.count || 0) + wordCount,

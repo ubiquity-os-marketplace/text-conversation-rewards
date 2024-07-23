@@ -67,26 +67,7 @@
           "formattingMultiplier": 0.25,
           "wordValue": 0.1
         }
-      ],
-      "scores": {
-        "br": 0,
-        "code": 1,
-        "p": 1,
-        "em": 0,
-        "img": 0,
-        "strong": 0,
-        "blockquote": 0,
-        "h1": 1,
-        "h2": 1,
-        "h3": 1,
-        "h4": 1,
-        "h5": 1,
-        "h6": 1,
-        "a": 1,
-        "li": 1,
-        "td": 1,
-        "hr": 0
-      }
+      ]
     },
     "permitGeneration": {
     },
