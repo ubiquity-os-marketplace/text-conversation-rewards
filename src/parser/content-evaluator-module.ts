@@ -50,7 +50,7 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
-    // exclude comments that have fixed relevane. e.g. review comments = 1
+    // exclude comments that have fixed relevance. e.g. review comments = 1
     const commentsToEvaluate: { id: number; comment: string }[] = [];
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
@@ -70,7 +70,7 @@ export class ContentEvaluatorModule implements Module {
 
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      let currentRelevance = 1; // For comments not is fixed types and missed by OpenAI evalutaion
+      let currentRelevance = 1; // For comments not in fixed relevance types or missed by OpenAI evaluation
       if (currentComment.type & CommentType.SPECIFICATION) {
         currentRelevance = 1;
       } else if (currentComment.type & CommentType.REVIEW) {
