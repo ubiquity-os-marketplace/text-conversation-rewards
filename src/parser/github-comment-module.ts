@@ -5,7 +5,7 @@ import { stringify } from "yaml";
 import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
-import { getOctokitInstance } from "../get-authentication-token";
+import { getOctokitInstance } from "../octokit";
 import { getGithubWorkflowRunUrl } from "../helpers/github-comment-module-instance";
 import logger from "../helpers/logger";
 import { getERC20TokenSymbol } from "../helpers/web3";

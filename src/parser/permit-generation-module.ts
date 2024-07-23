@@ -17,7 +17,7 @@ import {
   PermitGenerationConfiguration,
   permitGenerationConfigurationType,
 } from "../configuration/permit-generation-configuration";
-import { getOctokitInstance } from "../get-authentication-token";
+import { getOctokitInstance } from "../octokit";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import envConfigSchema, { EnvConfigType } from "../types/env-type";
@@ -158,12 +158,16 @@ export class PermitGenerationModule implements Module {
         return result;
       }
     }
-    
+
     // Get treasury github user id
     const octokit = getOctokitInstance();
-    const { data: treasuryGithubData } = await octokit.users.getByUsername({ username: process.env.PERMIT_TREASURY_GITHUB_USERNAME });
+    const { data: treasuryGithubData } = await octokit.users.getByUsername({
+      username: process.env.PERMIT_TREASURY_GITHUB_USERNAME,
+    });
     if (!treasuryGithubData) {
-      console.log(`GitHub user was not found for username ${process.env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`);
+      console.log(
+        `GitHub user was not found for username ${process.env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`
+      );
       return result;
     }
 
@@ -175,14 +179,15 @@ export class PermitGenerationModule implements Module {
     let permitFeeAmountDecimal = new Decimal(0);
     for (const [_, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
-      const totalAfterFee = +(new Decimal(rewardResult.total).mul(feeRateDecimal));
+      const totalAfterFee = +new Decimal(rewardResult.total).mul(feeRateDecimal);
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
       rewardResult.total = +totalAfterFee.toFixed(2);
-      if (rewardResult.task) rewardResult.task.reward = +(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
+      if (rewardResult.task)
+        rewardResult.task.reward = +new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2);
       if (rewardResult.comments) {
         for (let comment of rewardResult.comments) {
-          if (comment.score) comment.score.reward = +(new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2));
+          if (comment.score) comment.score.reward = +new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2);
         }
       }
     }

@@ -1,4 +1,3 @@
-import { retryAsyncUntilDefinedDecorator } from "ts-retry";
 import { CommentType } from "./configuration/comment-types";
 import configuration from "./configuration/config-reader";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
@@ -11,8 +10,6 @@ import {
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
 } from "./github-types";
-import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
-import logger from "./helpers/logger";
 import {
   getIssue,
   getIssueComments,
@@ -35,32 +32,11 @@ export class IssueActivity {
   linkedReviews: Review[] = [];
 
   async init() {
-    function fn<T>(func: () => Promise<T>) {
-      return func();
-    }
-    const decoratedFn = retryAsyncUntilDefinedDecorator(fn, {
-      delay: this._configuration.delayMs,
-      maxTry: this._configuration.maxAttempts,
-      async onError(error) {
-        try {
-          const content = "Failed to retrieve activity. Retrying...";
-          const message = logger.error(content, { error });
-          await githubCommentModuleInstance.postComment(message?.logMessage.diff || content);
-        } catch (e) {
-          logger.error(`${e}`);
-        }
-      },
-      async onMaxRetryFunc(error) {
-        logger.error("Failed to retrieve activity after 10 attempts. See logs for more details.", {
-          error,
-        });
-      },
-    });
     [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
-      decoratedFn(() => getIssue(this._issueParams)),
-      decoratedFn(() => getIssueEvents(this._issueParams)),
-      decoratedFn(() => getIssueComments(this._issueParams)),
-      decoratedFn(() => this._getLinkedReviews()),
+      getIssue(this._issueParams),
+      getIssueEvents(this._issueParams),
+      getIssueComments(this._issueParams),
+      this._getLinkedReviews(),
     ]);
   }
 
