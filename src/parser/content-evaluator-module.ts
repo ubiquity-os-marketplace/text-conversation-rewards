@@ -50,9 +50,8 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
-    const specificationCommentType = CommentType.ISSUE | CommentType.ISSUER | CommentType.SPECIFICATION;
     const specificationComment = commentsWithScore.find((commentWithScore) => {
-      return commentWithScore.type == specificationCommentType;
+      return commentWithScore.type & CommentType.SPECIFICATION;
     });
     let commentsToEvaluate: GithubCommentScore[] = commentsWithScore;
     if (specificationComment) {
