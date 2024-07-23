@@ -50,11 +50,13 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
+    const multipliers: { [k: string]: number } = this._commentTypeToRelevanceMap();
+
     // exclude comments that have fixed relevance. e.g. review comments = 1
     const commentsToEvaluate: { id: number; comment: string }[] = [];
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      if (!(currentComment.type & CommentType.SPECIFICATION || currentComment.type & CommentType.REVIEW)) {
+      if (!multipliers[currentComment.type]) {
         commentsToEvaluate.push({
           id: currentComment.id,
           comment: currentComment.content,
@@ -71,10 +73,9 @@ export class ContentEvaluatorModule implements Module {
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
       let currentRelevance = 1; // For comments not in fixed relevance types or missed by OpenAI evaluation
-      if (currentComment.type & CommentType.SPECIFICATION) {
-        currentRelevance = 1;
-      } else if (currentComment.type & CommentType.REVIEW) {
-        currentRelevance = 1;
+
+      if (multipliers[currentComment.type]) {
+        currentRelevance = multipliers[currentComment.type];
       } else if (!isNaN(relevance[currentComment.id])) {
         currentRelevance = relevance[currentComment.id];
       }
@@ -88,6 +89,21 @@ export class ContentEvaluatorModule implements Module {
     }
 
     return commentsWithScore;
+  }
+
+  _commentTypeToRelevanceMap(): { [k: string]: number } {
+    const multipliers: { [k: string]: number } = {};
+    this._configuration.multipliers.forEach((multiplier) => {
+      let key = 0;
+      multiplier.targets.forEach((target) => {
+        key |= CommentType[target as keyof typeof CommentType];
+      });
+
+      if (multiplier.relevance !== undefined) {
+        multipliers[key as unknown as string] = multiplier.relevance;
+      }
+    });
+    return multipliers;
   }
 
   async _evaluateComments(

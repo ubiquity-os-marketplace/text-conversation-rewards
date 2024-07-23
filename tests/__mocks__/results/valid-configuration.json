@@ -10,7 +10,33 @@
     "enabled": true,
     "requirePriceLabel": true,
     "contentEvaluator": {
-      "enabled": true
+      "enabled": true,
+      "multipliers": [
+        {
+          "targets": ["ISSUE", "ISSUER", "SPECIFICATION"],
+          "relevance": 1
+        },
+        {
+          "targets": ["REVIEW", "ISSUER", "TASK"],
+          "relevance": 1
+        },
+        {
+          "targets": ["REVIEW", "ISSUER", "COMMENTED"],
+          "relevance": 1
+        },
+        {
+          "targets": ["REVIEW", "ASSIGNEE", "COMMENTED"],
+          "relevance": 1
+        },
+        {
+          "targets": ["REVIEW", "COLLABORATOR", "COMMENTED"],
+          "relevance": 1
+        },
+        {
+          "targets": ["REVIEW", "CONTRIBUTOR", "COMMENTED"],
+          "relevance": 1
+        }
+      ]
     },
     "userExtractor": {
       "enabled": true,
