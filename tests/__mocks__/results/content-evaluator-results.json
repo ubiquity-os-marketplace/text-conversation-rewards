@@ -1,7 +1,7 @@
 {
   "gitcoindev": {
     "userId": 88761781,
-    "total": 45.5,
+    "total": 47.5,
     "task": {
       "reward": 37.5,
       "multiplier": 1
@@ -44,7 +44,7 @@
             "formattingMultiplier": 0
           },
           "reward": 0,
-          "relevance": 0.8
+          "relevance": 1
         }
       },
       {
@@ -63,8 +63,8 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 3.2,
-          "relevance": 0.8
+          "reward": 4,
+          "relevance": 1
         }
       },
       {
@@ -83,14 +83,14 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 4.8,
-          "relevance": 0.8
+          "reward": 6,
+          "relevance": 1
         }
       }
     ]
   },
   "molecula451": {
-    "total": 1.78,
+    "total": 1.875,
     "userId": 41552663,
     "comments": [
       {
@@ -233,8 +233,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 0.25
           },
-          "reward": 0.02,
-          "relevance": 0.8
+          "reward": 0.025,
+          "relevance": 1
         }
       },
       {
@@ -253,14 +253,14 @@
             "wordValue": 0.1,
             "formattingMultiplier": 0.25
           },
-          "reward": 0.36,
-          "relevance": 0.8
+          "reward": 0.45,
+          "relevance": 1
         }
       }
     ]
   },
   "0x4007": {
-    "total": 60.96,
+    "total": 68,
     "userId": 4975670,
     "comments": [
       {
@@ -439,8 +439,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.56,
-          "relevance": 0.8
+          "reward": 0.7,
+          "relevance": 1
         }
       },
       {
@@ -459,8 +459,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.96,
-          "relevance": 0.8
+          "reward": 1.2,
+          "relevance": 1
         }
       },
       {
@@ -495,8 +495,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 26.64,
-          "relevance": 0.8
+          "reward": 33.3,
+          "relevance": 1
         }
       }
     ]

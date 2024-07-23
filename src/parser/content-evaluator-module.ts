@@ -50,33 +50,35 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
-    const specificationComment = commentsWithScore.find((commentWithScore) => {
-      return commentWithScore.type & CommentType.SPECIFICATION;
-    });
-    let commentsToEvaluate: GithubCommentScore[] = commentsWithScore;
-    if (specificationComment) {
-      commentsToEvaluate = commentsWithScore.filter((comment) => comment.id != specificationComment.id);
+    // exclude comments that have fixed relevane. e.g. review comments = 1
+    const commentsToEvaluate: { id: number; comment: string }[] = [];
+    for (let i = 0; i < commentsWithScore.length; i++) {
+      const currentComment = commentsWithScore[i];
+      if (!(currentComment.type & CommentType.SPECIFICATION || currentComment.type & CommentType.REVIEW)) {
+        commentsToEvaluate.push({
+          id: currentComment.id,
+          comment: currentComment.content,
+        });
+      }
     }
 
-    const commentsBody = commentsToEvaluate.map((comment) => {
-      return {
-        id: comment.id,
-        comment: comment.content,
-      };
-    });
-    const relevance = await this._evaluateComments(specificationBody, commentsBody);
+    const relevance = await this._evaluateComments(specificationBody, commentsToEvaluate);
 
     if (Object.keys(relevance).length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
     }
 
-    if (specificationComment) {
-      relevance[specificationComment.id as unknown as string] = 1;
-    }
-
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      const currentRelevance = relevance[currentComment.id as unknown as string] ?? 1;
+      let currentRelevance = 1; // For comments not is fixed types and missed by OpenAI evalutaion
+      if (currentComment.type & CommentType.SPECIFICATION) {
+        currentRelevance = 1;
+      } else if (currentComment.type & CommentType.REVIEW) {
+        currentRelevance = 1;
+      } else if (!isNaN(relevance[currentComment.id])) {
+        currentRelevance = relevance[currentComment.id];
+      }
+
       const currentReward = new Decimal(currentComment.score?.reward || 0);
       currentComment.score = {
         ...(currentComment.score || {}),

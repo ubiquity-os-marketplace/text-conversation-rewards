@@ -1,7 +1,7 @@
 {
   "gitcoindev": {
     "userId": 88761781,
-    "total": 45.5,
+    "total": 47.5,
     "task": {
       "reward": 37.5,
       "multiplier": 1
@@ -44,7 +44,7 @@
             "formattingMultiplier": 0
           },
           "reward": 0,
-          "relevance": 0.8
+          "relevance": 1
         }
       },
       {
@@ -63,8 +63,8 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 3.2,
-          "relevance": 0.8
+          "reward": 4,
+          "relevance": 1
         }
       },
       {
@@ -83,15 +83,15 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 4.8,
-          "relevance": 0.8
+          "reward": 6,
+          "relevance": 1
         }
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI0NTUwMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjEwODAwNTI0OTcwODY5MDEwODU1NTU2MTA2MzI5OTM1MDQ1MTQwNTQ2NDU1MDc5NDkxNzkwNzI0NjYzNjk1OTk5MTMyMjMxMTU3Nzc2NiIsImRlYWRsaW5lIjoiNTc4OTYwNDQ2MTg2NTgwOTc3MTE3ODU0OTI1MDQzNDM5NTM5MjY2MzQ5OTIzMzI4MjAyODIwMTk3Mjg3OTIwMDM5NTY1NjQ4MTk5NjcifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiNDU1MDAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGRhNTE4NTRhMjkzYmU4MTcxMzAzNTVkMzQ2ZGQwMmJiYzIzNjFlMTRhMjExZTY1N2JlNmVjZjNkNGRhNDcyMzE2Mzg1Mzk0Mjk1ZmQ0N2VlNDUzMGMxNTk4NzA1ODliYTI1OWVlMGI2MmRiNWEyNTZkY2Q0NWNmYTk2MzAxYTE4MWMiLCJuZXR3b3JrSWQiOjEwMH1d"
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI0NzUwMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjEwODAwNTI0OTcwODY5MDEwODU1NTU2MTA2MzI5OTM1MDQ1MTQwNTQ2NDU1MDc5NDkxNzkwNzI0NjYzNjk1OTk5MTMyMjMxMTU3Nzc2NiIsImRlYWRsaW5lIjoiNTc4OTYwNDQ2MTg2NTgwOTc3MTE3ODU0OTI1MDQzNDM5NTM5MjY2MzQ5OTIzMzI4MjAyODIwMTk3Mjg3OTIwMDM5NTY1NjQ4MTk5NjcifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiNDc1MDAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDU2N2I4YmE0ZmU2NTk2ZGM4ZDBkYmVkYzk0MmEyMWQ2Y2FjMzBhMmFiZDBjODMyODRiMGUyNGNkOGEwOTA3YmMwYjA0MGU1YmVlOGViMDhmMDVkZjU0M2JhMmUzODI5YmE4YTU0ZTQ1Y2YyNjk2NDk1MzczMDAwZTM1NmFmMzlkMWIiLCJuZXR3b3JrSWQiOjEwMH1d"
   },
   "molecula451": {
-    "total": 1.78,
+    "total": 1.875,
     "userId": 41552663,
     "comments": [
       {
@@ -234,8 +234,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 0.25
           },
-          "reward": 0.02,
-          "relevance": 0.8
+          "reward": 0.025,
+          "relevance": 1
         }
       },
       {
@@ -254,15 +254,15 @@
             "wordValue": 0.1,
             "formattingMultiplier": 0.25
           },
-          "reward": 0.36,
-          "relevance": 0.8
+          "reward": 0.45,
+          "relevance": 1
         }
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxNzgwMDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiNTI3ODUzNTAyNjczOTk4MzczNzk3NzMyNTIzMjczMjE4NDgwMzIwMjAyMzk4MjQ4NjYyMDQ3Mjc0NTUzMTcwMTIzMDk3NjYwMDQ2OTciLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjE3ODAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDdhZDcwMjVmYmU1OGI1MjkwOTE1YzUxMGYxZGUzZDllNzQ0MjIwNzY0NmU1NWIzNGU5NjUxNTg5MTg0OTQzMzEzNzE4NDNjMmYwNzZjYTRkNjA3YzdjNzJmZjQyY2QwOThmZDI0NjYxYzFmZjJlMmJiMjVmNjg4MzdlMzMwZWM0MWMiLCJuZXR3b3JrSWQiOjEwMH1d"
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxODc1MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiNTI3ODUzNTAyNjczOTk4MzczNzk3NzMyNTIzMjczMjE4NDgwMzIwMjAyMzk4MjQ4NjYyMDQ3Mjc0NTUzMTcwMTIzMDk3NjYwMDQ2OTciLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjE4NzUwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDRhMmIyNzBjZWRiODkzZGUzNTUzOTRlYzgyY2YzM2M0NTFmZGYyNDU2YTNmYjVkMzIyZWM3ZGE3NjZkMGQwMGE1MjgwYjBmNmFjNzY2ZjUwNzc4ZTY2NWQ5MjA4ZDcwNzMzYzAxZjI2ODM4MjlhZWJkYzkzZmI2MDU0YmRiMzY5MWMiLCJuZXR3b3JrSWQiOjEwMH1d"
   },
   "0x4007": {
-    "total": 60.96,
+    "total": 68,
     "userId": 4975670,
     "comments": [
       {
@@ -441,8 +441,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.56,
-          "relevance": 0.8
+          "reward": 0.7,
+          "relevance": 1
         }
       },
       {
@@ -461,8 +461,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.96,
-          "relevance": 0.8
+          "reward": 1.2,
+          "relevance": 1
         }
       },
       {
@@ -497,11 +497,11 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 26.64,
-          "relevance": 0.8
+          "reward": 33.3,
+          "relevance": 1
         }
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI2MDk2MDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjEzOTgwNzc0NDc2OTc2NzY0NTA0ODk5MjU5NjcyODM3NDI0NzU0ODkxMTY5NDMxMDE4MzYyNTI4MjAzMTI5OTY5NTkwODgyMDgxNjEiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjYwOTYwMDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg2Y2VmN2E3MGVkNWJkNjE3MDQ4YmQwNGQ4MGZiYzk5MGIyNzc4YTZmM2VlMWE5OGQwMTI4YWY3NGQzNWJkNjY3MTVjMjhlMTNjMjE5ZGQ0ZGFiNjRiYzIyMGJhYmY3YzIzZTM4ODE2ZDE1OTFkN2UwYmRiN2NlNDZiN2RjY2JkNzFjIiwibmV0d29ya0lkIjoxMDB9XQ=="
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI2ODAwMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjEzOTgwNzc0NDc2OTc2NzY0NTA0ODk5MjU5NjcyODM3NDI0NzU0ODkxMTY5NDMxMDE4MzYyNTI4MjAzMTI5OTY5NTkwODgyMDgxNjEiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjY4MDAwMDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHgzM2YxMjhmMmYzN2M4YjMyYTliMjEzNTZlZjkwNTQyNjE4MmQ0MmRhZjMzYzExZWNmZTVlMGM2NjM1ZTAxMzUzNWNmNmRkZWJjZWMzNjc2ODBiYTJjMGZlMWI5MzQxNmMwNDgyMzBiYjIxYmFmNDk0ZTM1MWZjYThkMmY3YTA0YTFiIiwibmV0d29ya0lkIjoxMDB9XQ=="
   }
 }
