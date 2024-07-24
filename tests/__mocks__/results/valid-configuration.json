@@ -35,7 +35,7 @@
           "select": [
             "ISSUE_SPECIFICATION"
           ],
-          "wordValue": 0.1
+          "symbols": { "\\b\\w+\\b": 0.1 }
         },
         {
           "formattingMultiplier": 1,
@@ -61,7 +61,7 @@
           "select": [
             "ISSUE_AUTHOR"
           ],
-          "wordValue": 0.2
+          "symbols": { "\\b\\w+\\b": 0.2 }
         },
         {
           "formattingMultiplier": 0,
@@ -87,7 +87,7 @@
           "select": [
             "ISSUE_ASSIGNEE"
           ],
-          "wordValue": 0
+          "symbols": { "\\b\\w+\\b": 0 }
         },
         {
           "formattingMultiplier": 1,
@@ -113,7 +113,7 @@
           "select": [
             "ISSUE_COLLABORATOR"
           ],
-          "wordValue": 0.1
+          "symbols": { "\\b\\w+\\b": 0.1 }
         },
         {
           "formattingMultiplier": 0.25,
@@ -139,7 +139,7 @@
           "select": [
             "ISSUE_CONTRIBUTOR"
           ],
-          "wordValue": 0.1
+          "symbols": { "\\b\\w+\\b": 0.1 }
         },
         {
           "formattingMultiplier": 0,
@@ -165,7 +165,7 @@
           "select": [
             "PULL_SPECIFICATION"
           ],
-          "wordValue": 0
+          "symbols": { "\\b\\w+\\b": 0 }
         },
         {
           "formattingMultiplier": 2,
@@ -191,7 +191,7 @@
           "select": [
             "PULL_AUTHOR"
           ],
-          "wordValue": 0.2
+          "symbols": { "\\b\\w+\\b": 0.2 }
         },
         {
           "formattingMultiplier": 1,
@@ -217,7 +217,7 @@
           "select": [
             "PULL_ASSIGNEE"
           ],
-          "wordValue": 0.1
+          "symbols": { "\\b\\w+\\b": 0.1 }
         },
         {
           "formattingMultiplier": 1,
@@ -243,7 +243,7 @@
           "select": [
             "PULL_COLLABORATOR"
           ],
-          "wordValue": 0.1
+          "symbols": { "\\b\\w+\\b": 0.1 }
         },
         {
           "formattingMultiplier": 0.25,
@@ -269,7 +269,7 @@
           "select": [
             "PULL_CONTRIBUTOR"
           ],
-          "wordValue": 0.1
+          "symbols": { "\\b\\w+\\b": 0.1 }
         }
       ]
     },
