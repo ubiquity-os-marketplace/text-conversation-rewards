@@ -86,34 +86,44 @@ with:
         multipliers:
           - select: [ ISSUE_SPECIFICATION ]
             formattingMultiplier: 1
-            wordValue: 0.1
+            symbols:
+              "\\b\\w+\\b": 0.1
           - select: [ ISSUE_AUTHOR ]
             formattingMultiplier: 1
-            wordValue: 0.2
+            symbols:
+              "\\b\\w+\\b": 0.2
           - select: [ ISSUE_ASSIGNEE ]
             formattingMultiplier: 0
-            wordValue: 0
+            symbols:
+              "\\b\\w+\\b": 0
           - select: [ ISSUE_COLLABORATOR ]
             formattingMultiplier: 1
-            wordValue: 0.1
+            symbols:
+              "\\b\\w+\\b": 0.1
           - select: [ ISSUE_CONTRIBUTOR ]
             formattingMultiplier: 0.25
-            wordValue: 0.1
+            symbols:
+              "\\b\\w+\\b": 0.1
           - select: [ PULL_SPECIFICATION ]
             formattingMultiplier: 0
-            wordValue: 0
+            symbols:
+              "\\b\\w+\\b": 0
           - select: [ PULL_AUTHOR ]
             formattingMultiplier: 2
-            wordValue: 0.2
+            symbols:
+              "\\b\\w+\\b": 0.2
           - select: [ PULL_ASSIGNEE ]
             formattingMultiplier: 1
-            wordValue: 0.1
+            symbols:
+              "\\b\\w+\\b": 0.1
           - select: [ PULL_COLLABORATOR ]
             formattingMultiplier: 1
-            wordValue: 0.1
+            symbols:
+              "\\b\\w+\\b": 0.1
           - select: [ PULL_CONTRIBUTOR ]
             formattingMultiplier: 0.25
-            wordValue: 0.1
+            symbols:
+              "\\b\\w+\\b": 0.1
       permitGeneration:
       githubComment:
         post: true
