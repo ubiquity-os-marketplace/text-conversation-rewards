@@ -50,13 +50,13 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
-    const multipliers: { [k: string]: number } = this._commentTypeToRelevanceMap();
+    const fixedRelevances: { [k: string]: number } = this._relevancesForCommentTypes();
 
-    // exclude comments that have fixed relevance. e.g. review comments = 1
+    // exclude comments that have fixed relevance multiplier. e.g. review comments = 1
     const commentsToEvaluate: { id: number; comment: string }[] = [];
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      if (!multipliers[currentComment.type]) {
+      if (!fixedRelevances[currentComment.type]) {
         commentsToEvaluate.push({
           id: currentComment.id,
           comment: currentComment.content,
@@ -64,9 +64,9 @@ export class ContentEvaluatorModule implements Module {
       }
     }
 
-    const relevance = await this._evaluateComments(specificationBody, commentsToEvaluate);
+    const relevancesByAI = await this._evaluateComments(specificationBody, commentsToEvaluate);
 
-    if (Object.keys(relevance).length !== commentsToEvaluate.length) {
+    if (Object.keys(relevancesByAI).length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
     }
 
@@ -74,10 +74,10 @@ export class ContentEvaluatorModule implements Module {
       const currentComment = commentsWithScore[i];
       let currentRelevance = 1; // For comments not in fixed relevance types or missed by OpenAI evaluation
 
-      if (multipliers[currentComment.type]) {
-        currentRelevance = multipliers[currentComment.type];
-      } else if (!isNaN(relevance[currentComment.id])) {
-        currentRelevance = relevance[currentComment.id];
+      if (fixedRelevances[currentComment.type]) {
+        currentRelevance = fixedRelevances[currentComment.type];
+      } else if (!isNaN(relevancesByAI[currentComment.id])) {
+        currentRelevance = relevancesByAI[currentComment.id];
       }
 
       const currentReward = new Decimal(currentComment.score?.reward || 0);
@@ -91,19 +91,19 @@ export class ContentEvaluatorModule implements Module {
     return commentsWithScore;
   }
 
-  _commentTypeToRelevanceMap(): { [k: string]: number } {
-    const multipliers: { [k: string]: number } = {};
+  _relevancesForCommentTypes(): { [k: string]: number } {
+    const relevances: { [k: string]: number } = {};
     this._configuration.multipliers.forEach((multiplier) => {
-      let key = 0;
+      let commentType = 0;
       multiplier.targets.forEach((target) => {
-        key |= CommentType[target as keyof typeof CommentType];
+        commentType |= CommentType[target as keyof typeof CommentType];
       });
 
       if (multiplier.relevance !== undefined) {
-        multipliers[key as unknown as string] = multiplier.relevance;
+        relevances[commentType as unknown as string] = multiplier.relevance;
       }
     });
-    return multipliers;
+    return relevances;
   }
 
   async _evaluateComments(
