@@ -6,11 +6,12 @@ import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { getOctokitInstance } from "../get-authentication-token";
+import { getGithubWorkflowRunUrl } from "../helpers/github-comment-module-instance";
+import logger from "../helpers/logger";
+import { getERC20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
-import { parseGitHubUrl } from "../start";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
-import { getERC20TokenSymbol } from "../helpers/web3";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -23,6 +24,11 @@ interface SortedTasks {
 export class GithubCommentModule implements Module {
   private readonly _configuration: GithubCommentConfiguration = configuration.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
+  /**
+   * COMMENT_ID can be set in the environment to reference the id of the last comment created during this workflow.
+   * See also compute.yml to understand how it is set.
+   */
+  private _lastCommentId: number | null = process.env.COMMENT_ID ? Number(process.env.COMMENT_ID) : null;
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const bodyArray: (string | undefined)[] = [];
@@ -31,23 +37,20 @@ export class GithubCommentModule implements Module {
       result[key].evaluationCommentHtml = await this._generateHtml(key, value);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
+    // Add the workflow run url and the metadata in the GitHub's comment
+    bodyArray.push("\n<!--");
+    bodyArray.push(`\n${getGithubWorkflowRunUrl()}\n`);
+    bodyArray.push(JSON.stringify(result, null, 2));
+    bodyArray.push("\n-->");
     const body = bodyArray.join("");
     if (this._configuration.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
     if (this._configuration.post) {
       try {
-        const octokit = getOctokitInstance();
-        const { owner, repo, issue_number } = parseGitHubUrl(program.eventPayload.issue.html_url);
-
-        await octokit.issues.createComment({
-          body,
-          repo,
-          owner,
-          issue_number,
-        });
+        await this.postComment(body);
       } catch (e) {
-        console.error(`Could not post GitHub comment: ${e}`);
+        logger.error(`Could not post GitHub comment: ${e}`);
       }
     }
     return result;
@@ -55,10 +58,31 @@ export class GithubCommentModule implements Module {
 
   get enabled(): boolean {
     if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
-      console.warn("Invalid configuration detected for GithubContentModule, disabling.");
+      logger.error("Invalid configuration detected for GithubContentModule, disabling.");
       return false;
     }
     return true;
+  }
+
+  async postComment(body: string, updateLastComment = true) {
+    const { eventPayload } = program;
+    if (updateLastComment && this._lastCommentId !== null) {
+      await getOctokitInstance().issues.updateComment({
+        body,
+        repo: eventPayload.repository.name,
+        owner: eventPayload.repository.owner.login,
+        issue_number: eventPayload.issue.number,
+        comment_id: this._lastCommentId,
+      });
+    } else {
+      const comment = await getOctokitInstance().issues.createComment({
+        body,
+        repo: eventPayload.repository.name,
+        owner: eventPayload.repository.owner.login,
+        issue_number: eventPayload.issue.number,
+      });
+      this._lastCommentId = comment.data.id;
+    }
   }
 
   _createContributionRows(result: Result[0], sortedTasks: SortedTasks | undefined) {

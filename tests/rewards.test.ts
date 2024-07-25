@@ -2,19 +2,19 @@ import { drop } from "@mswjs/data";
 import Decimal from "decimal.js";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
-import { IssueActivity } from "../src/issue-activity.ts";
-import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module.ts";
-import { DataPurgeModule } from "../src/parser/data-purge-module.ts";
-import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module.ts";
-import { GithubCommentModule } from "../src/parser/github-comment-module.ts";
-import { PermitGenerationModule } from "../src/parser/permit-generation-module.ts";
-import { Processor } from "../src/parser/processor.ts";
-import { UserExtractorModule } from "../src/parser/user-extractor-module.ts";
-import { parseGitHubUrl } from "../src/start.ts";
+import githubCommentModuleInstance from "../src/helpers/github-comment-module-instance";
+import { IssueActivity } from "../src/issue-activity";
+import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
+import { DataPurgeModule } from "../src/parser/data-purge-module";
+import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
+import { PermitGenerationModule } from "../src/parser/permit-generation-module";
+import { Processor } from "../src/parser/processor";
+import { UserExtractorModule } from "../src/parser/user-extractor-module";
+import { parseGitHubUrl } from "../src/start";
 import "../src/parser/command-line";
-import { db, db as mockDb } from "./__mocks__/db.ts";
+import { db, db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
-import { server } from "./__mocks__/node.ts";
+import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
@@ -22,6 +22,17 @@ const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
   return Promise.resolve(comments.map(() => new Decimal(0.8)));
 });
+
+jest.mock("@actions/github", () => ({
+  context: {
+    runId: "1",
+    payload: {
+      repository: {
+        html_url: "https://github.com/ubiquibot/conversation-rewards",
+      },
+    },
+  },
+}));
 
 jest.mock("@ubiquibot/permit-generation/core", () => {
   const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
@@ -136,7 +147,7 @@ describe("Rewards tests", () => {
       new FormattingEvaluatorModule(),
       new ContentEvaluatorModule(),
       new PermitGenerationModule(),
-      new GithubCommentModule(),
+      githubCommentModuleInstance,
     ];
     server.use(
       http.post("https://*", () =>
@@ -157,8 +168,8 @@ describe("Rewards tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(rewardSplitResult);
-    expect(fs.readFileSync("./output.html")).toEqual(
-      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html")
+    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
+      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html", "utf-8")
     );
   });
 });

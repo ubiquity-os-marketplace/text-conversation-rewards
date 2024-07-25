@@ -2,11 +2,12 @@ import Decimal from "decimal.js";
 import * as fs from "fs";
 import { CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
+import githubCommentModuleInstance from "../helpers/github-comment-module-instance";
+import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
-import { GithubCommentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
 
@@ -21,7 +22,7 @@ export class Processor {
       .add(new FormattingEvaluatorModule())
       .add(new ContentEvaluatorModule())
       .add(new PermitGenerationModule())
-      .add(new GithubCommentModule());
+      .add(githubCommentModuleInstance);
   }
 
   add(transformer: Module) {
@@ -31,7 +32,7 @@ export class Processor {
 
   async run(data: Readonly<IssueActivity>) {
     if (!this._configuration.enabled) {
-      console.log("Module is disabled. Skipping...");
+      logger.debug("Module is disabled. Skipping...");
       return;
     }
     for (const transformer of this._transformers) {
@@ -67,7 +68,7 @@ export class Processor {
       2
     );
     if (!file) {
-      console.log(result);
+      logger.debug(result);
     } else {
       fs.writeFileSync(file, result);
     }

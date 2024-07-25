@@ -35,6 +35,17 @@ jest.mock("../src/helpers/web3", () => ({
   },
 }));
 
+jest.mock("@actions/github", () => ({
+  context: {
+    runId: "1",
+    payload: {
+      repository: {
+        html_url: "https://github.com/ubiquibot/conversation-rewards",
+      },
+    },
+  },
+}));
+
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -239,7 +250,9 @@ describe("Modules tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(githubCommentResults);
-    expect(fs.readFileSync("./output.html")).toEqual(fs.readFileSync("./tests/__mocks__/results/output.html"));
+    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
+      fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")
+    );
   });
 
   it("Should properly generate the configuration", () => {
@@ -249,7 +262,7 @@ describe("Modules tests", () => {
   });
 
   it("Should do a full run", async () => {
-    const module = (await import("../src/index.ts")) as unknown as { default: Promise<string> };
+    const module = (await import("../src/index")) as unknown as { default: Promise<string> };
     const result = await module.default;
     expect(result).toBeTruthy();
   });

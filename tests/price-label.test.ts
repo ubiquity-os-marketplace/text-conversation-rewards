@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/no-var-requires: 0 */
 import "../src/parser/command-line";
 import { run } from "../src/run";
-import { server } from "./__mocks__/node.ts";
+import { server } from "./__mocks__/node";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -42,6 +42,6 @@ jest.mock("../src/parser/command-line", () => {
 describe("Price tests", () => {
   it("Should skip when no price label is set", async () => {
     const result = await run();
-    expect(result).toEqual("! No price label has been set. Skipping permit generation.");
+    expect(result).toEqual("No price label has been set. Skipping permit generation.");
   });
 });
