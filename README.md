@@ -46,7 +46,7 @@ Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * re
 
 ## Plugin configuration
 
-Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration) for more details.
+Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration/) for more details.
 
 
 ```yaml
