@@ -85,11 +85,6 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   get enabled(): boolean {
-    console.log(
-      "Formatting evaluator module",
-      JSON.stringify(this._configuration, null, 2),
-      JSON.stringify(configuration.incentives, null, 2)
-    );
     if (!Value.Check(formattingEvaluatorConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for FormattingEvaluatorModule, disabling.");
       return false;
