@@ -33,7 +33,7 @@ interface Payload {
 }
 
 export class PermitGenerationModule implements Module {
-  readonly _configuration: PermitGenerationConfiguration = configuration.incentives.permitGeneration;
+  readonly _configuration: PermitGenerationConfiguration | null = configuration.incentives.permitGeneration;
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -158,12 +158,16 @@ export class PermitGenerationModule implements Module {
         return result;
       }
     }
-    
+
     // Get treasury github user id
     const octokit = getOctokitInstance();
-    const { data: treasuryGithubData } = await octokit.users.getByUsername({ username: process.env.PERMIT_TREASURY_GITHUB_USERNAME });
+    const { data: treasuryGithubData } = await octokit.users.getByUsername({
+      username: process.env.PERMIT_TREASURY_GITHUB_USERNAME,
+    });
     if (!treasuryGithubData) {
-      console.log(`GitHub user was not found for username ${process.env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`);
+      console.log(
+        `GitHub user was not found for username ${process.env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`
+      );
       return result;
     }
 
@@ -175,14 +179,15 @@ export class PermitGenerationModule implements Module {
     let permitFeeAmountDecimal = new Decimal(0);
     for (const [_, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
-      const totalAfterFee = +(new Decimal(rewardResult.total).mul(feeRateDecimal));
+      const totalAfterFee = +new Decimal(rewardResult.total).mul(feeRateDecimal);
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
       rewardResult.total = +totalAfterFee.toFixed(2);
-      if (rewardResult.task) rewardResult.task.reward = +(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
+      if (rewardResult.task)
+        rewardResult.task.reward = +new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2);
       if (rewardResult.comments) {
         for (let comment of rewardResult.comments) {
-          if (comment.score) comment.score.reward = +(new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2));
+          if (comment.score) comment.score.reward = +new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2);
         }
       }
     }
@@ -264,6 +269,6 @@ export class PermitGenerationModule implements Module {
       console.warn("Invalid configuration detected for PermitGenerationModule, disabling.");
       return false;
     }
-    return this._configuration.enabled;
+    return true;
   }
 }

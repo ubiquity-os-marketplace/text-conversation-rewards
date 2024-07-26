@@ -2,7 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
-import { CommentType } from "../configuration/comment-types";
+import { commentEnum, CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import {
   FormattingEvaluatorConfiguration,
@@ -17,16 +17,26 @@ interface Multiplier {
 }
 
 export class FormattingEvaluatorModule implements Module {
-  private readonly _configuration: FormattingEvaluatorConfiguration = configuration.incentives.formattingEvaluator;
+  private readonly _configuration: FormattingEvaluatorConfiguration | null =
+    configuration.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: string]: Multiplier } = {};
 
+  _getEnumValue(key: CommentType) {
+    let res = 0;
+
+    key.split("_").forEach((value) => {
+      res |= Number(commentEnum[value as keyof typeof commentEnum]);
+    });
+    return res;
+  }
+
   constructor() {
-    if (this._configuration.multipliers) {
+    if (this._configuration?.multipliers) {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.targets.reduce((a, b) => CommentType[b] | a, 0)]: {
+          [curr.select.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
             wordValue: curr.wordValue,
             formattingMultiplier: curr.formattingMultiplier,
           },
@@ -74,7 +84,7 @@ export class FormattingEvaluatorModule implements Module {
       console.warn("Invalid configuration detected for FormattingEvaluatorModule, disabling.");
       return false;
     }
-    return this._configuration?.enabled;
+    return true;
   }
 
   _getFormattingScore(comment: GithubCommentScore) {

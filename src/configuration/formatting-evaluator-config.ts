@@ -1,71 +1,71 @@
 import { Static, Type } from "@sinclair/typebox";
-import { CommentType } from "./comment-types";
+import { CommentAssociation, CommentKind, CommentType } from "./comment-types";
 
-const type = Type.Union([...Object.keys(CommentType).map((key) => Type.Literal(key as keyof typeof CommentType))]);
+const type = Type.Union(
+  Object.keys(CommentKind).flatMap((kind) =>
+    Object.keys(CommentAssociation).map((association) => Type.Literal(`${kind}_${association}` as CommentType))
+  )
+);
 
 export const formattingEvaluatorConfigurationType = Type.Object({
-  /**
-   * Enables or disables this module
-   */
-  enabled: Type.Boolean({ default: true }),
   /**
    * Multipliers applied to different parts of the comment body content
    */
   multipliers: Type.Array(
     Type.Object({
-      targets: Type.Array(type),
+      select: Type.Array(type),
       formattingMultiplier: Type.Number(),
       wordValue: Type.Number(),
     }),
     {
       default: [
         {
-          targets: ["ISSUE", "ISSUER", "SPECIFICATION"],
+          select: ["ISSUE_SPECIFICATION"],
           formattingMultiplier: 1,
           wordValue: 0.1,
         },
         {
-          targets: ["ISSUE", "ISSUER", "COMMENTED"],
+          select: ["ISSUE_AUTHOR"],
           formattingMultiplier: 1,
           wordValue: 0.2,
         },
         {
-          targets: ["ISSUE", "ASSIGNEE", "COMMENTED"],
+          select: ["ISSUE_ASSIGNEE"],
           formattingMultiplier: 0,
           wordValue: 0,
         },
         {
-          targets: ["ISSUE", "COLLABORATOR", "COMMENTED"],
+          select: ["ISSUE_COLLABORATOR"],
           formattingMultiplier: 1,
           wordValue: 0.1,
         },
         {
-          targets: ["ISSUE", "CONTRIBUTOR", "COMMENTED"],
+          select: ["ISSUE_CONTRIBUTOR"],
           formattingMultiplier: 0.25,
           wordValue: 0.1,
         },
         {
-          targets: ["REVIEW", "ISSUER", "TASK"],
+          select: ["PULL_SPECIFICATION"],
           formattingMultiplier: 0,
           wordValue: 0,
         },
         {
-          targets: ["REVIEW", "ISSUER", "COMMENTED"],
+          select: ["PULL_AUTHOR"],
           formattingMultiplier: 2,
           wordValue: 0.2,
         },
         {
-          targets: ["REVIEW", "ASSIGNEE", "COMMENTED"],
+          select: ["PULL_ASSIGNEE"],
           formattingMultiplier: 1,
           wordValue: 0.1,
         },
         {
-          targets: ["REVIEW", "COLLABORATOR", "COMMENTED"],
+          select: ["PULL_COLLABORATOR"],
           formattingMultiplier: 1,
           wordValue: 0.1,
         },
         {
-          targets: ["REVIEW", "CONTRIBUTOR", "COMMENTED"],
+          select: ["PULL_CONTRIBUTOR"],
           formattingMultiplier: 0.25,
           wordValue: 0.1,
         },
