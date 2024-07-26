@@ -65,29 +65,29 @@ with:
         redeemTask: true
       dataPurge:
       formattingEvaluator:
-        scores:
-          br: 0
-          code: 1
-          p: 1
-          em: 0
-          img: 0
-          strong: 0
-          blockquote: 0
-          h1: 1
-          h2: 1
-          h3: 1
-          h4: 1
-          h5: 1
-          h6: 1
-          a: 1
-          li: 1
-          td: 1
-          hr: 0
         multipliers:
           - select: [ ISSUE_SPECIFICATION ]
             formattingMultiplier: 1
             symbols:
               "\\b\\w+\\b": 0.1
+            scores: # Scores can be set for each item differently
+              br: 0
+              code: 1
+              p: 1
+              em: 0
+              img: 0
+              strong: 0
+              blockquote: 0
+              h1: 1
+              h2: 1
+              h3: 1
+              h4: 1
+              h5: 1
+              h6: 1
+              a: 1
+              li: 1
+              td: 1
+              hr: 0
           - select: [ ISSUE_AUTHOR ]
             formattingMultiplier: 1
             symbols:
