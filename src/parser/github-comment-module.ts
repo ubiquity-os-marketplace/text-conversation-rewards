@@ -23,8 +23,7 @@ interface SortedTasks {
  * Posts a GitHub comment according to the given results.
  */
 export class GithubCommentModule implements Module {
-  private readonly _configuration: GithubCommentConfiguration | undefined | null =
-    configuration.incentives.githubComment;
+  private readonly _configuration: GithubCommentConfiguration | null = configuration.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
   /**
    * COMMENT_ID can be set in the environment to reference the id of the last comment created during this workflow.
