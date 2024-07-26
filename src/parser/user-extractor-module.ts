@@ -11,8 +11,7 @@ import { Module, Result } from "./processor";
  * Creates entries for each user with its associated comments.
  */
 export class UserExtractorModule implements Module {
-  private readonly _configuration: UserExtractorConfiguration | undefined | null =
-    configuration.incentives.userExtractor;
+  private readonly _configuration: UserExtractorConfiguration | null = configuration.incentives.userExtractor;
 
   get enabled(): boolean {
     if (!Value.Check(userExtractorConfigurationType, this._configuration)) {
