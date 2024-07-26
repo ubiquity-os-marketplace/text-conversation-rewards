@@ -35,7 +35,7 @@ export const incentivesConfigurationSchema = T.Object(
         contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()]),
         userExtractor: T.Union([userExtractorConfigurationType, T.Null()]),
         dataPurge: T.Union([dataPurgeConfigurationType, T.Null()]),
-        formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()]),
+        formattingEvaluator: T.Optional(formattingEvaluatorConfigurationType),
         permitGeneration: T.Union([permitGenerationConfigurationType, T.Null()]),
         githubComment: T.Union([githubCommentConfigurationType, T.Null()]),
       },
