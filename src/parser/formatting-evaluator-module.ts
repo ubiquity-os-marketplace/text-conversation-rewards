@@ -20,7 +20,7 @@ interface Multiplier {
 
 export class FormattingEvaluatorModule implements Module {
   private readonly _configuration: FormattingEvaluatorConfiguration | null =
-    configuration.incentives.formattingEvaluator;
+    configuration.incentives.formattingEvaluator ?? null;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: number]: Multiplier } = {};
 
@@ -59,9 +59,14 @@ export class FormattingEvaluatorModule implements Module {
         const multiplierFactor = this._multipliers?.[comment.type] ?? { wordValue: 0, formattingMultiplier: 0 };
         const formattingTotal = formatting
           ? Object.values(formatting).reduce((acc, curr) => {
-              let sum = new Decimal(curr.score).mul(multiplierFactor.formattingMultiplier);
+              let sum = new Decimal(0);
               for (const symbol of Object.keys(curr.symbols)) {
-                sum = sum.mul(curr.symbols[symbol].count).mul(curr.symbols[symbol].multiplier);
+                sum = sum.add(
+                  new Decimal(curr.symbols[symbol].count)
+                    .mul(curr.symbols[symbol].multiplier)
+                    .mul(multiplierFactor.formattingMultiplier)
+                    .mul(curr.score)
+                );
               }
               return acc.add(sum);
             }, new Decimal(0))

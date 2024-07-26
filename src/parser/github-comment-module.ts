@@ -164,7 +164,7 @@ export class GithubCommentModule implements Module {
             <td>
             <details>
               <summary>
-                ${new Decimal(commentScore.score?.reward || 0).div(new Decimal(commentScore.score?.relevance || 0))}
+                ${new Decimal(commentScore.score?.reward || 0).div(new Decimal(commentScore.score?.relevance || 1))}
               </summary>
               <pre>${formatting}</pre>
              </details>
