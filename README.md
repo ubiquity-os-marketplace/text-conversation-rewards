@@ -46,7 +46,7 @@ Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * re
 
 ## Plugin configuration
 
-Here is a possible valid configuration to enable this plugin.
+Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration) for more details.
 
 
 ```yaml
@@ -59,17 +59,12 @@ with:
       maxAttempts: 10
       delayMs: 10000
     incentives:
-      enabled: true
       requirePriceLabel: true
       contentEvaluator:
-        enabled: true
       userExtractor:
-        enabled: true
         redeemTask: true
       dataPurge:
-        enabled: true
       formattingEvaluator:
-        enabled: true
         scores:
           br: 0
           code: 1
@@ -89,40 +84,38 @@ with:
           td: 1
           hr: 0
         multipliers:
-          - targets: [ ISSUE, ISSUER, SPECIFICATION ]
+          - select: [ ISSUE_SPECIFICATION ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ ISSUE, ISSUER, COMMENTED ]
+          - select: [ ISSUE_AUTHOR ]
             formattingMultiplier: 1
             wordValue: 0.2
-          - targets: [ ISSUE, ASSIGNEE, COMMENTED ]
+          - select: [ ISSUE_ASSIGNEE ]
             formattingMultiplier: 0
             wordValue: 0
-          - targets: [ ISSUE, COLLABORATOR, COMMENTED ]
+          - select: [ ISSUE_COLLABORATOR ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ ISSUE, CONTRIBUTOR, COMMENTED ]
+          - select: [ ISSUE_CONTRIBUTOR ]
             formattingMultiplier: 0.25
             wordValue: 0.1
-          - targets: [ REVIEW, ISSUER, TASK ]
+          - select: [ PULL_SPECIFICATION ]
             formattingMultiplier: 0
             wordValue: 0
-          - targets: [ REVIEW, ISSUER, COMMENTED ]
+          - select: [ PULL_AUTHOR ]
             formattingMultiplier: 2
             wordValue: 0.2
-          - targets: [ REVIEW, ASSIGNEE, COMMENTED ]
+          - select: [ PULL_ASSIGNEE ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ REVIEW, COLLABORATOR, COMMENTED ]
+          - select: [ PULL_COLLABORATOR ]
             formattingMultiplier: 1
             wordValue: 0.1
-          - targets: [ REVIEW, CONTRIBUTOR, COMMENTED ]
+          - select: [ PULL_CONTRIBUTOR ]
             formattingMultiplier: 0.25
             wordValue: 0.1
       permitGeneration:
-        enabled: true
       githubComment:
-        enabled: true
         post: true
         debug: false
 ```

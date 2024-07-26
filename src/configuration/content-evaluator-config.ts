@@ -1,10 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
 
-export const contentEvaluatorConfigurationType = Type.Object({
-  /**
-   * Enables or disables this module
-   */
-  enabled: Type.Boolean({ default: true }),
-});
+export const contentEvaluatorConfigurationType = Type.Object({});
 
 export type ContentEvaluatorConfiguration = Static<typeof contentEvaluatorConfigurationType>;

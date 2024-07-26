@@ -1,4 +1,5 @@
-import { CommentType } from "../../src/configuration/comment-types";
+/* eslint @typescript-eslint/no-var-requires: 0 */
+import { CommentKind } from "../../src/configuration/comment-types";
 import { PermitGenerationModule } from "../../src/parser/permit-generation-module";
 import { Result } from "../../src/parser/processor";
 
@@ -62,7 +63,7 @@ const resultOriginal: Result = {
       {
         content: "comment 3",
         url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-        type: CommentType.COMMENTED,
+        type: CommentKind.ISSUE,
         score: {
           reward: 10,
         },
@@ -80,7 +81,7 @@ const resultOriginal: Result = {
       {
         content: "comment 3",
         url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-        type: CommentType.COMMENTED,
+        type: CommentKind.ISSUE,
         score: {
           reward: 1.12,
         },

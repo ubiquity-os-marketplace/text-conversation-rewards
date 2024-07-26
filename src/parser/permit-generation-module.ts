@@ -33,7 +33,7 @@ interface Payload {
 }
 
 export class PermitGenerationModule implements Module {
-  readonly _configuration: PermitGenerationConfiguration = configuration.incentives.permitGeneration;
+  readonly _configuration: PermitGenerationConfiguration | null = configuration.incentives.permitGeneration;
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -270,6 +270,6 @@ export class PermitGenerationModule implements Module {
       console.warn("Invalid configuration detected for PermitGenerationModule, disabling.");
       return false;
     }
-    return this._configuration.enabled;
+    return true;
   }
 }
