@@ -183,12 +183,14 @@ export class PermitGenerationModule implements Module {
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
       rewardResult.total = +totalAfterFee.toFixed(2);
-      if (rewardResult.task)
+      if (rewardResult.task) {
         rewardResult.task.reward = Number(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
+      }
       if (rewardResult.comments) {
         for (const comment of rewardResult.comments) {
-          if (comment.score)
+          if (comment.score) {
             comment.score.reward = Number(new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2));
+          }
         }
       }
     }
