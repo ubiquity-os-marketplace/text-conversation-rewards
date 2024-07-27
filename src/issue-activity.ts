@@ -20,6 +20,8 @@ import {
   IssueParams,
   PullParams,
 } from "./start";
+import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
+import logger from "./helpers/logger";
 
 export class IssueActivity {
   readonly _configuration: DataCollectionConfiguration = configuration.dataCollection;
@@ -32,12 +34,18 @@ export class IssueActivity {
   linkedReviews: Review[] = [];
 
   async init() {
-    [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
-      getIssue(this._issueParams),
-      getIssueEvents(this._issueParams),
-      getIssueComments(this._issueParams),
-      this._getLinkedReviews(),
-    ]);
+    try {
+      [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
+        getIssue(this._issueParams),
+        getIssueEvents(this._issueParams),
+        getIssueComments(this._issueParams),
+        this._getLinkedReviews(),
+      ]);
+    } catch (error) {
+      const result = logger.error(`Could not fetch issue data: ${error}`);
+      await githubCommentModuleInstance.postComment(result?.logMessage.diff || "");
+      throw result;
+    }
   }
 
   private async _getLinkedReviews(): Promise<Review[]> {
