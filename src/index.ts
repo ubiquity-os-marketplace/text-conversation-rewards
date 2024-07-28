@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
-import githubCommentModuleInstance, { getGithubWorkflowRunUrl } from "./helpers/github-comment-module-instance";
+import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
+import { getGithubWorkflowRunUrl } from "./helpers/github";
 import logger from "./helpers/logger";
 import { run } from "./run";
 

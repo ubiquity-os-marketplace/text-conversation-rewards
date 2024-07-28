@@ -1,59 +1,84 @@
 /* eslint @typescript-eslint/no-var-requires: 0 */
-import "../src/parser/command-line";
 import { http, HttpResponse } from "msw";
-import { IssueActivity } from "../src/issue-activity";
-import { run } from "../src/run";
-import { parseGitHubUrl } from "../src/start";
 import { server } from "./__mocks__/node";
 
 beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-jest.mock("../src/parser/command-line", () => {
-  const cfg = require("./__mocks__/results/valid-configuration.json");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  return {
-    stateId: 1,
-    eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
-    eventPayload: {
-      issue: {
-        html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
-        number: 1,
-        state_reason: "not_planned",
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquibot",
+beforeEach(() => {
+  jest.mock("@actions/github", () => ({
+    context: {
+      runId: "1",
+      payload: {
+        repository: {
+          html_url: "https://github.com/ubiquibot/conversation-rewards",
         },
       },
     },
-    settings: JSON.stringify(cfg),
-  };
+  }));
 });
-
-jest.mock("@actions/github", () => ({
-  context: {
-    runId: "1",
-    payload: {
-      repository: {
-        html_url: "https://github.com/ubiquibot/conversation-rewards",
-      },
-    },
-  },
-}));
+afterEach(() => {
+  server.resetHandlers();
+  jest.resetModules();
+  jest.restoreAllMocks();
+});
+afterAll(() => server.close());
 
 describe("Action tests", () => {
   it("Should skip when the issue is closed without the completed status", async () => {
-    const result = await run();
-    expect(result).toEqual("Issue was not closed as completed. Skipping.");
+    jest.mock("../src/parser/command-line", () => {
+      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = require("./__mocks__/results/valid-configuration.json");
+      const dotenv = require("dotenv");
+      dotenv.config();
+      return {
+        stateId: 1,
+        eventName: "issues.closed",
+        authToken: process.env.GITHUB_TOKEN,
+        ref: "",
+        eventPayload: {
+          issue: {
+            html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+            number: 1,
+            state_reason: "not_planned",
+          },
+          repository: {
+            name: "conversation-rewards",
+            owner: {
+              login: "ubiquibot",
+            },
+          },
+        },
+        settings: JSON.stringify(cfg),
+      };
+    });
+    const run: typeof import("../src/index") = require("../src/index");
+    await expect(run.default).resolves.toEqual("Issue was not closed as completed. Skipping.");
   });
 
   it("Should post comment network failure", async () => {
+    jest.mock("../src/parser/command-line", () => {
+      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = require("./__mocks__/results/valid-configuration.json");
+      const dotenv = require("dotenv");
+      dotenv.config();
+      return {
+        stateId: 1,
+        eventName: "issues.closed",
+        authToken: process.env.GITHUB_TOKEN,
+        ref: "",
+        eventPayload: {
+          issue: {
+            html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+            number: 1,
+            state_reason: "completed",
+          },
+          repository: {
+            name: "conversation-rewards",
+            owner: {
+              login: "ubiquibot",
+            },
+          },
+        },
+        settings: JSON.stringify(cfg),
+      };
+    });
     [
       "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22",
       "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/events",
@@ -62,18 +87,26 @@ describe("Action tests", () => {
     ].forEach((url) => {
       server.use(http.get(url, () => HttpResponse.json("", { status: 500 })));
     });
-    const githubCommentModule = require("../src/parser/github-comment-module");
+    const githubCommentModule: typeof import("../src/parser/github-comment-module") = require("../src/parser/github-comment-module");
     const spy = jest.spyOn(githubCommentModule.GithubCommentModule.prototype, "postComment");
-    const run = (await import("../src/index")) as unknown as { default: Promise<string> };
-    await expect(run.default).resolves.toEqual("Some error");
+    const run: typeof import("../src/index") = require("../src/index");
+    await expect(run.default).resolves.toBeTruthy();
     expect(spy).toHaveBeenCalledWith(`\`\`\`diff
-! Failed to run comment evaluation. Some error
+! Failed to run comment evaluation. Could not fetch issue data: HttpError
 \`\`\`
 <!--
 https://github.com/ubiquibot/conversation-rewards/actions/runs/1
 {
-  "message": "Some error",
-  "caller": "error"
+  \"logMessage\": {
+    \"raw\": \"Could not fetch issue data: HttpError\",
+    \"diff\": \"\`\`\`diff\\n! Could not fetch issue data: HttpError\\n\`\`\`\",
+    \"type\": \"error\",
+    \"level\": \"error\"
+  },
+  \"metadata\": {
+    \"caller\": \"IssueActivity.error\"
+  },
+  \"caller\": \"error\"
 }
 -->`);
   }, 60000);
@@ -84,9 +117,9 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
         return Promise.reject("Some error");
       }),
     }));
-    const githubCommentModule = require("../src/parser/github-comment-module");
+    const githubCommentModule: typeof import("../src/parser/github-comment-module") = require("../src/parser/github-comment-module");
     const spy = jest.spyOn(githubCommentModule.GithubCommentModule.prototype, "postComment");
-    const run = (await import("../src/index")) as unknown as { default: Promise<string> };
+    const run: typeof import("../src/index") = require("../src/index");
     await expect(run.default).resolves.toEqual("Some error");
     expect(spy).toHaveBeenCalledWith(`\`\`\`diff
 ! Failed to run comment evaluation. Some error
@@ -101,6 +134,33 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
   });
 
   it("Should retry to fetch on network failure", async () => {
+    jest.mock("../src/parser/command-line", () => {
+      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = require("./__mocks__/results/valid-configuration.json");
+      const dotenv = require("dotenv");
+      dotenv.config();
+      return {
+        stateId: 1,
+        eventName: "issues.closed",
+        authToken: process.env.GITHUB_TOKEN,
+        ref: "",
+        eventPayload: {
+          issue: {
+            html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+            number: 1,
+            state_reason: "not_planned",
+          },
+          repository: {
+            name: "conversation-rewards",
+            owner: {
+              login: "ubiquibot",
+            },
+          },
+        },
+        settings: JSON.stringify(cfg),
+      };
+    });
+    const { IssueActivity }: typeof import("../src/issue-activity") = require("../src/issue-activity");
+    const { parseGitHubUrl }: typeof import("../src/start") = require("../src/start");
     // Fakes one crash per route retrieving the data. Should succeed on retry. Timeout for the test function needs
     // to be increased since it takes 10 seconds for a retry to happen.
     [

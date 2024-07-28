@@ -6,7 +6,7 @@ import { CommentAssociation, CommentKind } from "../configuration/comment-types"
 import configuration from "../configuration/config-reader";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { getOctokitInstance } from "../octokit";
-import { getGithubWorkflowRunUrl } from "../helpers/github-comment-module-instance";
+import { getGithubWorkflowRunUrl } from "../helpers/github";
 import logger from "../helpers/logger";
 import { typeReplacer } from "../helpers/result-replacer";
 import { getERC20TokenSymbol } from "../helpers/web3";
