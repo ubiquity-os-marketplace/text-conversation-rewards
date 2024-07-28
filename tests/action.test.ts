@@ -97,9 +97,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
   }, 60000);
 
   it("Should post comment network failure", async () => {
-    jest.mock("../src/run", () => {
-      return jest.requireActual("../src/run");
-    });
+    jest.unmock("../src/run");
     [
       "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22",
       "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/events",
