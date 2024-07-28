@@ -95,4 +95,29 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
     expect(activity.comments.length).toBeGreaterThan(0);
     expect(activity.events.length).toBeGreaterThan(0);
   }, 60000);
+
+  it("Should post comment network failure", async () => {
+    [
+      "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22",
+      "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/events",
+      "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/comments",
+      "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/timeline",
+    ].forEach((url) => {
+      server.use(http.get(url, () => HttpResponse.json("", { status: 500 })));
+    });
+    const githubCommentModule = require("../src/parser/github-comment-module");
+    const spy = jest.spyOn(githubCommentModule.GithubCommentModule.prototype, "postComment");
+    const run = (await import("../src/index")) as unknown as { default: Promise<string> };
+    await expect(run.default).resolves.toEqual("Some error");
+    expect(spy).toHaveBeenCalledWith(`\`\`\`diff
+! Failed to run comment evaluation. Some error
+\`\`\`
+<!--
+https://github.com/ubiquibot/conversation-rewards/actions/runs/1
+{
+  "message": "Some error",
+  "caller": "error"
+}
+-->`);
+  }, 60000);
 });

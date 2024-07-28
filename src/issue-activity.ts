@@ -20,7 +20,6 @@ import {
   IssueParams,
   PullParams,
 } from "./start";
-import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
 import logger from "./helpers/logger";
 
 export class IssueActivity {
@@ -42,9 +41,7 @@ export class IssueActivity {
         this._getLinkedReviews(),
       ]);
     } catch (error) {
-      const result = logger.error(`Could not fetch issue data: ${error}`);
-      await githubCommentModuleInstance.postComment(result?.logMessage.diff || "");
-      throw result;
+      throw logger.error(`Could not fetch issue data: ${error}`);
     }
   }
 
