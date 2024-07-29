@@ -32,7 +32,7 @@ jest.mock("../../src/parser/command-line", () => {
   };
 });
 
-jest.mock("../../src/get-authentication-token", () => ({
+jest.mock("../../src/octokit", () => ({
   getOctokitInstance: () => ({
     users: {
       getByUsername: () => ({

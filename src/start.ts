@@ -1,4 +1,4 @@
-import { getOctokitInstance } from "./get-authentication-token";
+import { getOctokitInstance } from "./octokit";
 import {
   GitHubIssue,
   GitHubIssueComment,

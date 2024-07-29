@@ -17,7 +17,7 @@ import {
   PermitGenerationConfiguration,
   permitGenerationConfigurationType,
 } from "../configuration/permit-generation-configuration";
-import { getOctokitInstance } from "../get-authentication-token";
+import { getOctokitInstance } from "../octokit";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import envConfigSchema, { EnvConfigType } from "../types/env-type";
@@ -179,15 +179,18 @@ export class PermitGenerationModule implements Module {
     let permitFeeAmountDecimal = new Decimal(0);
     for (const [_, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
-      const totalAfterFee = +new Decimal(rewardResult.total).mul(feeRateDecimal);
+      const totalAfterFee = new Decimal(rewardResult.total).mul(feeRateDecimal).toNumber();
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
       rewardResult.total = +totalAfterFee.toFixed(2);
-      if (rewardResult.task)
-        rewardResult.task.reward = +new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2);
+      if (rewardResult.task) {
+        rewardResult.task.reward = Number(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
+      }
       if (rewardResult.comments) {
-        for (let comment of rewardResult.comments) {
-          if (comment.score) comment.score.reward = +new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2);
+        for (const comment of rewardResult.comments) {
+          if (comment.score) {
+            comment.score.reward = Number(new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2));
+          }
         }
       }
     }
