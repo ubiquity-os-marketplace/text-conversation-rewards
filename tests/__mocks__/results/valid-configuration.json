@@ -1,13 +1,17 @@
 {
   "dataCollection": {
-    "delayMs": 10000,
-    "maxAttempts": 10
+    "delayMs": 1000,
+    "maxAttempts": 3
   },
   "erc20RewardToken": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
   "evmNetworkId": 100,
   "evmPrivateEncrypted": "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ",
   "incentives": {
+    "requirePriceLabel": true,
     "contentEvaluator": {},
+    "userExtractor": {
+      "redeemTask": true
+    },
     "dataPurge": {},
     "formattingEvaluator": {
       "multipliers": [
