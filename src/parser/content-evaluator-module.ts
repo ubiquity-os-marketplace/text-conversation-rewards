@@ -10,6 +10,7 @@ import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
 import { CommentType } from "../configuration/comment-types";
+import { Type } from "@sinclair/typebox";
 
 /**
  * Evaluates and rates comments.
@@ -129,7 +130,15 @@ export class ContentEvaluatorModule implements Module {
     });
 
     const rawResponse = String(response.choices[0].message.content);
-    return JSON.parse(rawResponse) as { [k: string]: number };
+    const jsonResponse = JSON.parse(rawResponse);
+
+    const responseType = Type.Record(Type.String(), Type.Number({ minimum: 0, maximum: 1 }));
+
+    if (Value.Check(responseType, jsonResponse)) {
+      return Value.Convert(responseType, jsonResponse) as { [k: string]: number };
+    } else {
+      throw new Error(`Invalid response type received from openai while evaluating: ${jsonResponse}`);
+    }
   }
 
   _generatePrompt(issue: string, comments: { id: number; comment: string }[]) {
