@@ -8,14 +8,14 @@ import { Module, Result } from "./processor";
  * Removes the data in the comments that we do not want to be processed.
  */
 export class DataPurgeModule implements Module {
-  readonly _configuration: DataPurgeConfiguration = configuration.incentives.dataPurge;
+  readonly _configuration: DataPurgeConfiguration | null = configuration.incentives.dataPurge;
 
   get enabled(): boolean {
     if (!Value.Check(dataPurgeConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for DataPurgeModule, disabling.");
       return false;
     }
-    return this._configuration.enabled;
+    return true;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {

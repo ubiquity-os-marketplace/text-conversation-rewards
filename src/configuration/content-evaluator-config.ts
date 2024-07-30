@@ -1,47 +1,35 @@
 import { Static, Type } from "@sinclair/typebox";
-import { CommentType } from "./comment-types";
-
-const commentType = Type.Union([
-  ...Object.keys(CommentType).map((key) => Type.Literal(key as keyof typeof CommentType)),
-]);
+import { commentType } from "./formatting-evaluator-config";
 
 export const contentEvaluatorConfigurationType = Type.Object({
-  /**
-   * Enables or disables this module
-   */
-  enabled: Type.Boolean({ default: true }),
   /**
    * Multipliers applied to different types of comments
    */
   multipliers: Type.Array(
     Type.Object({
-      targets: Type.Array(commentType),
+      select: Type.Array(commentType),
       relevance: Type.Optional(Type.Number()),
     }),
     {
       default: [
         {
-          targets: ["ISSUE", "ISSUER", "SPECIFICATION"],
+          select: ["ISSUE_SPECIFICATION"],
           relevance: 1,
         },
         {
-          targets: ["REVIEW", "ISSUER", "TASK"],
+          select: ["PULL_AUTHOR"],
           relevance: 1,
         },
         {
-          targets: ["REVIEW", "ISSUER", "COMMENTED"],
+          select: ["PULL_ASSIGNEE"],
           relevance: 1,
         },
         {
-          targets: ["REVIEW", "ASSIGNEE", "COMMENTED"],
+          select: ["PULL_COLLABORATOR"],
           relevance: 1,
         },
         {
-          targets: ["REVIEW", "COLLABORATOR", "COMMENTED"],
-          relevance: 1,
-        },
-        {
-          targets: ["REVIEW", "CONTRIBUTOR", "COMMENTED"],
+          select: ["PULL_CONTRIBUTOR"],
           relevance: 1,
         },
       ],

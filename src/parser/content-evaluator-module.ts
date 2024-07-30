@@ -9,7 +9,7 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
-import { CommentType } from "../configuration/comment-types";
+import { commentEnum, CommentType } from "../configuration/comment-types";
 import { Type } from "@sinclair/typebox";
 
 /**
@@ -17,14 +17,35 @@ import { Type } from "@sinclair/typebox";
  */
 export class ContentEvaluatorModule implements Module {
   readonly _openAi = new OpenAI({ apiKey: OPENAI_API_KEY });
-  readonly _configuration: ContentEvaluatorConfiguration = configuration.incentives.contentEvaluator;
+  readonly _configuration: ContentEvaluatorConfiguration | null = configuration.incentives.contentEvaluator;
+  private readonly _fixedRelevances: { [k: string]: number } = {};
+
+  _getEnumValue(key: CommentType) {
+    let res = 0;
+
+    key.split("_").forEach((value) => {
+      res |= Number(commentEnum[value as keyof typeof commentEnum]);
+    });
+    return res;
+  }
+
+  constructor() {
+    if (this._configuration?.multipliers) {
+      this._fixedRelevances = this._configuration.multipliers.reduce((acc, curr) => {
+        return {
+          ...acc,
+          [curr.select.reduce((a, b) => this._getEnumValue(b) | a, 0)]: curr.relevance,
+        };
+      }, {});
+    }
+  }
 
   get enabled(): boolean {
     if (!Value.Check(contentEvaluatorConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for ContentEvaluatorModule, disabling.");
       return false;
     }
-    return this._configuration.enabled;
+    return true;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
@@ -51,13 +72,11 @@ export class ContentEvaluatorModule implements Module {
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
-    const fixedRelevances: { [k: string]: number } = this._relevancesForCommentTypes();
-
     // exclude comments that have fixed relevance multiplier. e.g. review comments = 1
     const commentsToEvaluate: { id: number; comment: string }[] = [];
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      if (!fixedRelevances[currentComment.type]) {
+      if (!this._fixedRelevances[currentComment.type]) {
         commentsToEvaluate.push({
           id: currentComment.id,
           comment: currentComment.content,
@@ -75,8 +94,8 @@ export class ContentEvaluatorModule implements Module {
       const currentComment = commentsWithScore[i];
       let currentRelevance = 1; // For comments not in fixed relevance types or missed by OpenAI evaluation
 
-      if (fixedRelevances[currentComment.type]) {
-        currentRelevance = fixedRelevances[currentComment.type];
+      if (this._fixedRelevances[currentComment.type]) {
+        currentRelevance = this._fixedRelevances[currentComment.type];
       } else if (!isNaN(relevancesByAI[currentComment.id])) {
         currentRelevance = relevancesByAI[currentComment.id];
       }
@@ -90,21 +109,6 @@ export class ContentEvaluatorModule implements Module {
     }
 
     return commentsWithScore;
-  }
-
-  _relevancesForCommentTypes(): { [k: string]: number } {
-    const relevances: { [k: string]: number } = {};
-    this._configuration.multipliers.forEach((multiplier) => {
-      let commentType = 0;
-      multiplier.targets.forEach((target) => {
-        commentType |= CommentType[target as keyof typeof CommentType];
-      });
-
-      if (multiplier.relevance !== undefined) {
-        relevances[commentType] = multiplier.relevance;
-      }
-    });
-    return relevances;
   }
 
   async _evaluateComments(

@@ -46,7 +46,7 @@ Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * re
 
 ## Plugin configuration
 
-Here is a possible valid configuration to enable this plugin.
+Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration) for more details.
 
 ```yaml
 plugin: ubiquibot/conversation-rewards
@@ -58,30 +58,23 @@ with:
     maxAttempts: 10
     delayMs: 10000
   incentives:
-    enabled: true
     requirePriceLabel: true
     contentEvaluator:
-      enabled: true
       multipliers:
-        - targets: [ISSUE, ISSUER, SPECIFICATION]
+        - select: [ISSUE_SPECIFICATION]
           relevance: 1
-        - targets: [REVIEW, ISSUER, TASK]
+        - select: [PULL_AUTHOR]
           relevance: 1
-        - targets: [REVIEW, ISSUER, COMMENTED]
+        - select: [PULL_ASSIGNEE]
           relevance: 1
-        - targets: [REVIEW, ASSIGNEE, COMMENTED]
+        - select: [PULL_COLLABORATOR]
           relevance: 1
-        - targets: [REVIEW, COLLABORATOR, COMMENTED]
-          relevance: 1
-        - targets: [REVIEW, CONTRIBUTOR, COMMENTED]
+        - select: [PULL_CONTRIBUTOR]
           relevance: 1
     userExtractor:
-      enabled: true
       redeemTask: true
     dataPurge:
-      enabled: true
     formattingEvaluator:
-      enabled: true
       scores:
         br: 0
         code: 1
@@ -100,41 +93,39 @@ with:
         li: 1
         td: 1
         hr: 0
-      multipliers:
-        - targets: [ISSUE, ISSUER, SPECIFICATION]
-          formattingMultiplier: 1
-          wordValue: 0.1
-        - targets: [ISSUE, ISSUER, COMMENTED]
-          formattingMultiplier: 1
-          wordValue: 0.2
-        - targets: [ISSUE, ASSIGNEE, COMMENTED]
-          formattingMultiplier: 0
-          wordValue: 0
-        - targets: [ISSUE, COLLABORATOR, COMMENTED]
-          formattingMultiplier: 1
-          wordValue: 0.1
-        - targets: [ISSUE, CONTRIBUTOR, COMMENTED]
-          formattingMultiplier: 0.25
-          wordValue: 0.1
-        - targets: [REVIEW, ISSUER, TASK]
-          formattingMultiplier: 0
-          wordValue: 0
-        - targets: [REVIEW, ISSUER, COMMENTED]
-          formattingMultiplier: 2
-          wordValue: 0.2
-        - targets: [REVIEW, ASSIGNEE, COMMENTED]
-          formattingMultiplier: 1
-          wordValue: 0.1
-        - targets: [REVIEW, COLLABORATOR, COMMENTED]
-          formattingMultiplier: 1
-          wordValue: 0.1
-        - targets: [REVIEW, CONTRIBUTOR, COMMENTED]
-          formattingMultiplier: 0.25
-          wordValue: 0.1
-    permitGeneration:
-      enabled: true
-    githubComment:
-      enabled: true
-      post: true
-      debug: false
+        multipliers:
+          - select: [ISSUE_SPECIFICATION]
+            formattingMultiplier: 1
+            wordValue: 0.1
+          - select: [ISSUE_AUTHOR]
+            formattingMultiplier: 1
+            wordValue: 0.2
+          - select: [ISSUE_ASSIGNEE]
+            formattingMultiplier: 0
+            wordValue: 0
+          - select: [ISSUE_COLLABORATOR]
+            formattingMultiplier: 1
+            wordValue: 0.1
+          - select: [ISSUE_CONTRIBUTOR]
+            formattingMultiplier: 0.25
+            wordValue: 0.1
+          - select: [PULL_SPECIFICATION]
+            formattingMultiplier: 0
+            wordValue: 0
+          - select: [PULL_AUTHOR]
+            formattingMultiplier: 2
+            wordValue: 0.2
+          - select: [PULL_ASSIGNEE]
+            formattingMultiplier: 1
+            wordValue: 0.1
+          - select: [PULL_COLLABORATOR]
+            formattingMultiplier: 1
+            wordValue: 0.1
+          - select: [PULL_CONTRIBUTOR]
+            formattingMultiplier: 0.25
+            wordValue: 0.1
+      permitGeneration:
+      githubComment:
+        post: true
+        debug: false
 ```

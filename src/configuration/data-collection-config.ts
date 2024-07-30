@@ -8,7 +8,7 @@ export const dataCollectionConfigurationType = Type.Object({
   /**
    * The delay between each retry, in milliseconds.
    */
-  delayMs: Type.Number({ default: 10000, minimum: 100 }),
+  delayMs: Type.Number({ default: 1000, minimum: 100 }),
 });
 
 export type DataCollectionConfiguration = Static<typeof dataCollectionConfigurationType>;
