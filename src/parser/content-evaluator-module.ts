@@ -134,12 +134,16 @@ export class ContentEvaluatorModule implements Module {
     });
 
     const rawResponse = String(response.choices[0].message.content);
+    console.log("OpenAI raw response:", rawResponse);
+
     const jsonResponse = JSON.parse(rawResponse);
 
     const responseType = Type.Record(Type.String(), Type.Number({ minimum: 0, maximum: 1 }));
 
     if (Value.Check(responseType, jsonResponse)) {
-      return Value.Convert(responseType, jsonResponse) as { [k: string]: number };
+      const relevances = Value.Convert(responseType, jsonResponse) as { [k: string]: number };
+      console.log("Relevances by OpenAI:", relevances);
+      return relevances;
     } else {
       throw new Error(`Invalid response type received from openai while evaluating: ${jsonResponse}`);
     }
