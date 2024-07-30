@@ -1,5 +1,4 @@
 import { Value } from "@sinclair/typebox/value";
-import { merge } from "lodash";
 import program from "../parser/command-line";
 import { IncentivesConfiguration, incentivesConfigurationSchema, validateIncentivesConfiguration } from "./incentives";
 
@@ -12,10 +11,10 @@ try {
 }
 
 if (program.settings) {
-  const settings = merge(
-    configuration,
-    Value.Default(incentivesConfigurationSchema, JSON.parse(program.settings)) as IncentivesConfiguration
-  );
+  const settings = Value.Default(
+    incentivesConfigurationSchema,
+    JSON.parse(program.settings)
+  ) as IncentivesConfiguration;
   if (validateIncentivesConfiguration.test(settings)) {
     configuration = Value.Decode(incentivesConfigurationSchema, settings);
   } else {
