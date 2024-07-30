@@ -100,7 +100,7 @@ export class ContentEvaluatorModule implements Module {
       });
 
       if (multiplier.relevance !== undefined) {
-        relevances[commentType as unknown as string] = multiplier.relevance;
+        relevances[commentType] = multiplier.relevance;
       }
     });
     return relevances;
