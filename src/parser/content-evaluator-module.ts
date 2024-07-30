@@ -112,29 +112,24 @@ export class ContentEvaluatorModule implements Module {
   ): Promise<{ [k: string]: number }> {
     const prompt = this._generatePrompt(specification, comments);
 
-    try {
-      const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
-        model: "gpt-4o",
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content: prompt,
-          },
-        ],
-        temperature: 1,
-        max_tokens: 128,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-      });
+    const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
+      model: "gpt-4o",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: prompt,
+        },
+      ],
+      temperature: 1,
+      max_tokens: 128,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
 
-      const rawResponse = String(response.choices[0].message.content);
-      return JSON.parse(rawResponse) as { [k: string]: number };
-    } catch (error) {
-      console.error(`Failed to evaluate comment`, error);
-      return {};
-    }
+    const rawResponse = String(response.choices[0].message.content);
+    return JSON.parse(rawResponse) as { [k: string]: number };
   }
 
   _generatePrompt(issue: string, comments: { id: number; comment: string }[]) {
