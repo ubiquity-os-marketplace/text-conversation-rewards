@@ -1,7 +1,9 @@
 import { Static, Type } from "@sinclair/typebox";
 import { CommentType } from "./comment-types";
 
-const type = Type.Union([...Object.keys(CommentType).map((key) => Type.Literal(key as keyof typeof CommentType))]);
+const commentType = Type.Union([
+  ...Object.keys(CommentType).map((key) => Type.Literal(key as keyof typeof CommentType)),
+]);
 
 export const contentEvaluatorConfigurationType = Type.Object({
   /**
@@ -13,7 +15,7 @@ export const contentEvaluatorConfigurationType = Type.Object({
    */
   multipliers: Type.Array(
     Type.Object({
-      targets: Type.Array(type),
+      targets: Type.Array(commentType),
       relevance: Type.Optional(Type.Number()),
     }),
     {
