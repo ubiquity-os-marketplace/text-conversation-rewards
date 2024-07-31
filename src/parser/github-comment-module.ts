@@ -165,11 +165,11 @@ export class GithubCommentModule implements Module {
             <details>
               <summary>
                 ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
-                  const multiplier = new Decimal(
-                    commentScore.score?.formatting
-                      ? commentScore.score.formatting.formattingMultiplier * commentScore.score.formatting.wordValue
-                      : 0
-                  );
+                  const multiplier = commentScore.score?.formatting
+                    ? new Decimal(commentScore.score.formatting.formattingMultiplier).mul(
+                        commentScore.score.formatting.wordValue
+                      )
+                    : new Decimal(0);
                   return acc.add(multiplier.mul(curr.score * curr.count));
                 }, new Decimal(0))}
               </summary>
