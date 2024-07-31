@@ -11,6 +11,7 @@ import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
 import { commentEnum, CommentType } from "../configuration/comment-types";
 import { Type } from "@sinclair/typebox";
+import logger from "../helpers/logger";
 
 /**
  * Evaluates and rates comments.
@@ -134,7 +135,7 @@ export class ContentEvaluatorModule implements Module {
     });
 
     const rawResponse = String(response.choices[0].message.content);
-    console.log("OpenAI raw response:", rawResponse);
+    logger.info(`OpenAI raw response: ${rawResponse}`);
 
     const jsonResponse = JSON.parse(rawResponse);
 
@@ -142,7 +143,7 @@ export class ContentEvaluatorModule implements Module {
 
     if (Value.Check(responseType, jsonResponse)) {
       const relevances = Value.Convert(responseType, jsonResponse) as { [k: string]: number };
-      console.log("Relevances by OpenAI:", relevances);
+      logger.info(`Relevances by OpenAI: ${JSON.stringify(relevances)}`);
       return relevances;
     } else {
       throw new Error(`Invalid response type received from openai while evaluating: ${jsonResponse}`);
