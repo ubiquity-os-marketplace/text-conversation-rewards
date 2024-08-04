@@ -14,7 +14,7 @@ export async function collectLinkedMergedPulls(issue: IssueParams) {
     // Works on multiple linked issues, and matches #<number> or URL patterns
     const linkedIssueRegex =
       /\b(?:Close(?:s|d)?|Fix(?:es|ed)?|Resolve(?:s|d)?):?\s+(?:#(\d+)|https?:\/\/(?:www\.)?github\.com\/(?:[^/\s]+\/[^/\s]+\/(?:issues|pull)\/(\d+)))\b/gi;
-    // We remove the comments as they should not be parts of the linked pull requests
+    // We remove the comments as they should not be part of the linked pull requests
     const linkedPrUrls = event.source.issue.body.replace(/<!--[\s\S]+-->/, "").match(linkedIssueRegex);
     if (!linkedPrUrls) {
       return false;

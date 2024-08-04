@@ -163,12 +163,13 @@ export class GithubCommentModule implements Module {
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
-        .replaceAll("`", "&#96;");
+        .replaceAll("`", "&#96;")
+        .replace(/([\s\S]{64}).[\s\S]+/, "$1&hellip;");
       return `
           <tr>
             <td>
               <h6>
-                <a href="${commentScore.url}" target="_blank" rel="noopener">${sanitizedContent.replace(/(.{64})..+/, "$1&hellip;")}</a>
+                <a href="${commentScore.url}" target="_blank" rel="noopener">${sanitizedContent}</a>
               </h6>
             </td>
             <td>
