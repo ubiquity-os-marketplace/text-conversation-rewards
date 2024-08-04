@@ -73,6 +73,5 @@ function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
 
 async function getLinkedEvents(params: IssueParams): Promise<GitHubLinkEvent[]> {
   const issueEvents = await getAllTimelineEvents(params);
-  console.log(JSON.stringify(issueEvents, null, 2));
   return issueEvents.filter(isGitHubLinkEvent);
 }

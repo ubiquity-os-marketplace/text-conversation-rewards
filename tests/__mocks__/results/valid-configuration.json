@@ -111,7 +111,7 @@
     },
     "permitGeneration": {},
     "githubComment": {
-      "post": false,
+      "post": true,
       "debug": true
     }
   }
