@@ -14,7 +14,8 @@ export async function collectLinkedMergedPulls(issue: IssueParams) {
     // Works on multiple linked issues, and matches #<number> or URL patterns
     const linkedIssueRegex =
       /\b(?:Close(?:s|d)?|Fix(?:es|ed)?|Resolve(?:s|d)?):?\s+(?:#(\d+)|https?:\/\/(?:www\.)?github\.com\/(?:[^/\s]+\/[^/\s]+\/(?:issues|pull)\/(\d+)))\b/gi;
-    const linkedPrUrls = event.source.issue.body.match(linkedIssueRegex);
+    // We remove the comments as they should not be parts of the linked pull requests
+    const linkedPrUrls = event.source.issue.body.replace(/<!--[\s\S]+-->/, "").match(linkedIssueRegex);
     if (!linkedPrUrls) {
       return false;
     }
@@ -33,6 +34,7 @@ export async function collectLinkedMergedPulls(issue: IssueParams) {
             linkedRepo.owner === issue.owner;
         }
       }
+      if (isClosingPr) break;
     }
     return isGitHubLinkEvent(event) && event.source.issue.pull_request?.merged_at && isClosingPr;
   });
@@ -71,5 +73,6 @@ function eliminateDisconnects(issueLinkEvents: GitHubLinkEvent[]) {
 
 async function getLinkedEvents(params: IssueParams): Promise<GitHubLinkEvent[]> {
   const issueEvents = await getAllTimelineEvents(params);
+  console.log(JSON.stringify(issueEvents, null, 2));
   return issueEvents.filter(isGitHubLinkEvent);
 }
