@@ -1,12 +1,11 @@
 # `@ubiquibot/conversation-rewards`
 
-This is intended to be the proper implementation of comment incentives, based on our learnings from the first go-around. 
+As of 28 February: test driven development to aggregate all necessary information based on a URL to an issue.
 
-As of 28 February: test driven development to aggregate all necessary information based on a URL to an issue. 
-- pass in closed as complete issue URL and receive all the timeline events and activities of all humans who helped close the issue as complete. 
-- most importantly: this can inherit bot authentication and link pull requests to issues in private repositories. 
+- pass in closed as complete issue URL and receive all the timeline events and activities of all humans who helped close the issue as complete.
+- most importantly: this can inherit bot authentication and link pull requests to issues in private repositories.
 
-Be sure to review all `*.test.*` files for implementation details. 
+Be sure to review all `*.test.*` files for implementation details.
 
 ## Data structure
 
@@ -36,8 +35,9 @@ Be sure to review all `*.test.*` files for implementation details.
           },
           "reward": 0.8,
           "relevance": 0.5
+        }
       }
-    }]
+    ]
   }
 }
 ```
@@ -48,24 +48,34 @@ Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * re
 
 Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration/) for more details.
 
-
 ```yaml
 plugin: ubiquibot/conversation-rewards
 with:
-    evmNetworkId: 100
-    evmPrivateEncrypted: "encrypted-key"
-    erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
-    dataCollection:
-      maxAttempts: 10
-      delayMs: 10000
-    incentives:
-      requirePriceLabel: true
-      contentEvaluator:
-      userExtractor:
-        redeemTask: true
-      dataPurge:
-      formattingEvaluator:
-        multipliers:
+  evmNetworkId: 100
+  evmPrivateEncrypted: "encrypted-key"
+  erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
+  dataCollection:
+    maxAttempts: 10
+    delayMs: 10000
+  incentives:
+    requirePriceLabel: true
+    contentEvaluator:
+      multipliers:
+        - select: [ISSUE_SPECIFICATION]
+          relevance: 1
+        - select: [PULL_AUTHOR]
+          relevance: 1
+        - select: [PULL_ASSIGNEE]
+          relevance: 1
+        - select: [PULL_COLLABORATOR]
+          relevance: 1
+        - select: [PULL_CONTRIBUTOR]
+          relevance: 1
+    userExtractor:
+      redeemTask: true
+    dataPurge:
+    formattingEvaluator:
+      multipliers:
           - select: [ ISSUE_SPECIFICATION ]
             formattingMultiplier: 1
             symbols:
@@ -88,39 +98,39 @@ with:
               li: 1
               td: 1
               hr: 0
-          - select: [ ISSUE_AUTHOR ]
+          - select: [ISSUE_AUTHOR]
             formattingMultiplier: 1
             symbols:
               "\\b\\w+\\b": 0.2
-          - select: [ ISSUE_ASSIGNEE ]
+          - select: [ISSUE_ASSIGNEE]
             formattingMultiplier: 0
             symbols:
               "\\b\\w+\\b": 0
-          - select: [ ISSUE_COLLABORATOR ]
+          - select: [ISSUE_COLLABORATOR]
             formattingMultiplier: 1
             symbols:
               "\\b\\w+\\b": 0.1
-          - select: [ ISSUE_CONTRIBUTOR ]
+          - select: [ISSUE_CONTRIBUTOR]
             formattingMultiplier: 0.25
             symbols:
               "\\b\\w+\\b": 0.1
-          - select: [ PULL_SPECIFICATION ]
+          - select: [PULL_SPECIFICATION]
             formattingMultiplier: 0
             symbols:
               "\\b\\w+\\b": 0
-          - select: [ PULL_AUTHOR ]
+          - select: [PULL_AUTHOR]
             formattingMultiplier: 2
             symbols:
               "\\b\\w+\\b": 0.2
-          - select: [ PULL_ASSIGNEE ]
+          - select: [PULL_ASSIGNEE]
             formattingMultiplier: 1
             symbols:
               "\\b\\w+\\b": 0.1
-          - select: [ PULL_COLLABORATOR ]
+          - select: [PULL_COLLABORATOR]
             formattingMultiplier: 1
             symbols:
               "\\b\\w+\\b": 0.1
-          - select: [ PULL_CONTRIBUTOR ]
+          - select: [PULL_CONTRIBUTOR]
             formattingMultiplier: 0.25
             symbols:
               "\\b\\w+\\b": 0.1

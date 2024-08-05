@@ -1,5 +1,4 @@
 import { drop } from "@mswjs/data";
-import Decimal from "decimal.js";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
 import githubCommentModuleInstance from "../src/helpers/github-comment-module-instance";
@@ -20,7 +19,15 @@ import rewardSplitResult from "./__mocks__/results/reward-split.json";
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
-  return Promise.resolve(comments.map(() => new Decimal(0.8)));
+  return Promise.resolve(
+    (() => {
+      const relevance: { [k: string]: number } = {};
+      comments.forEach((comment) => {
+        relevance[`${comment.id}`] = 0.8;
+      });
+      return relevance;
+    })()
+  );
 });
 
 jest.mock("@actions/github", () => ({
