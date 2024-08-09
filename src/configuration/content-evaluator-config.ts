@@ -16,22 +16,6 @@ export const contentEvaluatorConfigurationType = Type.Object({
           select: ["ISSUE_SPECIFICATION"],
           relevance: 1,
         },
-        {
-          select: ["PULL_AUTHOR"],
-          relevance: 1,
-        },
-        {
-          select: ["PULL_ASSIGNEE"],
-          relevance: 1,
-        },
-        {
-          select: ["PULL_COLLABORATOR"],
-          relevance: 1,
-        },
-        {
-          select: ["PULL_CONTRIBUTOR"],
-          relevance: 1,
-        },
       ],
     }
   ),
