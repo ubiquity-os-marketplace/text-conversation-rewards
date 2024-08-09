@@ -23,7 +23,7 @@ import configuration from "../src/configuration/config-reader";
 import validConfiguration from "./__mocks__/results/valid-configuration.json";
 import "../src/parser/command-line";
 
-const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
+const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/conversation-rewards/issues/5";
 
 jest.mock("../src/helpers/web3", () => ({
   getERC20TokenSymbol() {
@@ -149,17 +149,22 @@ describe("Modules tests", () => {
   });
 
   beforeEach(async () => {
-    jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
-      return Promise.resolve(
-        (() => {
-          const relevance: { [k: string]: Decimal } = {};
-          comments.forEach((comment) => {
-            relevance[`${comment.id}`] = new Decimal(0.8);
-          });
-          return relevance;
-        })()
-      );
-    });
+    jest
+      .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+      .mockImplementation((specificationBody, commentsToEvaluate, reviewCommentsToEvaluate) => {
+        return Promise.resolve(
+          (() => {
+            const relevance: { [k: string]: number } = {};
+            commentsToEvaluate.forEach((comment) => {
+              relevance[`${comment.id}`] = 0.8;
+            });
+            reviewCommentsToEvaluate.forEach((comment) => {
+              relevance[`${comment.id}`] = 0.7;
+            });
+            return relevance;
+          })()
+        );
+      });
   });
 
   it("Should extract users from comments", async () => {
