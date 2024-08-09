@@ -9,7 +9,7 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
-import { commentEnum, CommentType } from "../configuration/comment-types";
+import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { Type } from "@sinclair/typebox";
 import logger from "../helpers/logger";
 
@@ -83,12 +83,16 @@ export class ContentEvaluatorModule implements Module {
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
       if (!this._fixedRelevances[currentComment.type]) {
-        if (currentComment?.diff_hunk) {
-          reviewCommentsToEvaluate.push({
-            id: currentComment.id,
-            comment: currentComment.content,
-            diff_hunk: currentComment.diff_hunk,
-          });
+        if (currentComment.type & CommentKind.PULL) {
+          if (currentComment?.diff_hunk) {
+            //Eval PR comment with diff_hunk, all other PR comments get relevance:1 by default
+
+            reviewCommentsToEvaluate.push({
+              id: currentComment.id,
+              comment: currentComment.content,
+              diff_hunk: currentComment.diff_hunk,
+            });
+          }
         } else {
           commentsToEvaluate.push({
             id: currentComment.id,
