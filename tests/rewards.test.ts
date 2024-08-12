@@ -19,17 +19,22 @@ import rewardSplitResult from "./__mocks__/results/reward-split.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
-  return Promise.resolve(
-    (() => {
-      const relevance: { [k: string]: Decimal } = {};
-      comments.forEach((comment) => {
-        relevance[`${comment.id}`] = new Decimal(0.8);
-      });
-      return relevance;
-    })()
-  );
-});
+jest
+  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+  .mockImplementation((specificationBody, commentsToEvaluate, reviewCommentsToEvaluate) => {
+    return Promise.resolve(
+      (() => {
+        const relevance: { [k: string]: number } = {};
+        commentsToEvaluate.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        reviewCommentsToEvaluate.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        return relevance;
+      })()
+    );
+  });
 
 jest.mock("@actions/github", () => ({
   context: {
