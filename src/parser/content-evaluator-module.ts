@@ -93,7 +93,7 @@ export class ContentEvaluatorModule implements Module {
 
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      let currentRelevance = 1; // For comments not in fixed relevance types or missed by OpenAI evaluation
+      let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
 
       if (this._fixedRelevances[currentComment.type]) {
         currentRelevance = this._fixedRelevances[currentComment.type];
