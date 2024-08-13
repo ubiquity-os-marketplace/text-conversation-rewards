@@ -15,7 +15,6 @@ import openAiRelevanceResponseSchema, { RelevancesByOpenAi } from "../types/open
 
 type CommentToEvaluate = { id: number; comment: string };
 type ReviewCommentToEvaluate = { id: number; comment: string; diff_hunk: string };
-type Relevances = { [k: string]: number };
 
 /**
  * Evaluates and rates comments.
@@ -145,7 +144,7 @@ export class ContentEvaluatorModule implements Module {
     comments: CommentToEvaluate[],
     reviewComments: ReviewCommentToEvaluate[]
   ): Promise<RelevancesByOpenAi> {
-    let combinedRelevances: Relevances = {};
+    let combinedRelevances: RelevancesByOpenAi = {};
 
     if (comments.length) {
       const promptForComments = this._generatePromptForComments(specification, comments);
@@ -161,7 +160,7 @@ export class ContentEvaluatorModule implements Module {
     return combinedRelevances;
   }
 
-  async _submitPrompt(prompt: string): Promise<Relevances> {
+  async _submitPrompt(prompt: string): Promise<RelevancesByOpenAi> {
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
       model: "gpt-4o",
       response_format: { type: "json_object" },
