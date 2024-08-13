@@ -3,112 +3,88 @@
   "evmPrivateEncrypted": "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ",
   "erc20RewardToken": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
   "dataCollection": {
-    "delayMs": 10000,
-    "maxAttempts": 10
+    "delayMs": 1000,
+    "maxAttempts": 3
   },
   "incentives": {
-    "enabled": true,
     "requirePriceLabel": true,
     "contentEvaluator": {
-      "enabled": true
-    },
-    "userExtractor": {
-      "enabled": true,
-      "redeemTask": true
-    },
-    "dataPurge": {
-      "enabled": true
-    },
-    "formattingEvaluator": {
-      "enabled": true,
       "multipliers": [
         {
-          "targets": [
-            "ISSUE",
-            "ISSUER",
-            "SPECIFICATION"
-          ],
+          "select": ["ISSUE_SPECIFICATION"],
+          "relevance": 1
+        },
+        {
+          "select": ["PULL_AUTHOR"],
+          "relevance": 1
+        },
+        {
+          "select": ["PULL_ASSIGNEE"],
+          "relevance": 1
+        },
+        {
+          "select": ["PULL_COLLABORATOR"],
+          "relevance": 1
+        },
+        {
+          "select": ["PULL_CONTRIBUTOR"],
+          "relevance": 1
+        }
+      ]
+    },
+    "userExtractor": {
+      "redeemTask": true
+    },
+    "dataPurge": {},
+    "formattingEvaluator": {
+      "multipliers": [
+        {
+          "select": ["ISSUE_SPECIFICATION"],
           "formattingMultiplier": 1,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "ISSUE",
-            "ISSUER",
-            "COMMENTED"
-          ],
+          "select": ["ISSUE_AUTHOR"],
           "formattingMultiplier": 1,
           "wordValue": 0.2
         },
         {
-          "targets": [
-            "ISSUE",
-            "ASSIGNEE",
-            "COMMENTED"
-          ],
+          "select": ["ISSUE_ASSIGNEE"],
           "formattingMultiplier": 0,
           "wordValue": 0
         },
         {
-          "targets": [
-            "ISSUE",
-            "COLLABORATOR",
-            "COMMENTED"
-          ],
+          "select": ["ISSUE_COLLABORATOR"],
           "formattingMultiplier": 1,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "ISSUE",
-            "CONTRIBUTOR",
-            "COMMENTED"
-          ],
+          "select": ["ISSUE_CONTRIBUTOR"],
           "formattingMultiplier": 0.25,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "REVIEW",
-            "ISSUER",
-            "TASK"
-          ],
+          "select": ["PULL_SPECIFICATION"],
           "formattingMultiplier": 0,
           "wordValue": 0
         },
         {
-          "targets": [
-            "REVIEW",
-            "ISSUER",
-            "COMMENTED"
-          ],
+          "select": ["PULL_AUTHOR"],
           "formattingMultiplier": 2,
           "wordValue": 0.2
         },
         {
-          "targets": [
-            "REVIEW",
-            "ASSIGNEE",
-            "COMMENTED"
-          ],
+          "select": ["PULL_ASSIGNEE"],
           "formattingMultiplier": 1,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "REVIEW",
-            "COLLABORATOR",
-            "COMMENTED"
-          ],
+          "select": ["PULL_COLLABORATOR"],
           "formattingMultiplier": 1,
           "wordValue": 0.1
         },
         {
-          "targets": [
-            "REVIEW",
-            "CONTRIBUTOR",
-            "COMMENTED"
-          ],
+          "select": ["PULL_CONTRIBUTOR"],
           "formattingMultiplier": 0.25,
           "wordValue": 0.1
         }
@@ -133,11 +109,8 @@
         "hr": 0
       }
     },
-    "permitGeneration": {
-      "enabled": true
-    },
+    "permitGeneration": {},
     "githubComment": {
-      "enabled": true,
       "post": false,
       "debug": true
     }

@@ -8,14 +8,14 @@ import { Module, Result } from "./processor";
  * Removes the data in the comments that we do not want to be processed.
  */
 export class DataPurgeModule implements Module {
-  readonly _configuration: DataPurgeConfiguration = configuration.incentives.dataPurge;
+  readonly _configuration: DataPurgeConfiguration | null = configuration.incentives.dataPurge;
 
   get enabled(): boolean {
     if (!Value.Check(dataPurgeConfigurationType, this._configuration)) {
       console.warn("Invalid configuration detected for DataPurgeModule, disabling.");
       return false;
     }
-    return this._configuration.enabled;
+    return true;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
@@ -26,13 +26,14 @@ export class DataPurgeModule implements Module {
           .replace(/^>.*$/gm, "")
           // Remove commands such as /start
           .replace(/^\/.+/g, "")
-          // makes the content single lined
-          .replace(/[\r\n]+/g, " ")
+          // Keep only one new line needed by markdown-it package to convert to html
+          .replace(/\n\s*\n/g, "\n")
           .trim();
         if (newContent.length) {
           result[comment.user.login].comments = [
             ...(result[comment.user.login].comments ?? []),
             {
+              id: comment.id,
               content: newContent,
               url: comment.html_url,
               type: comment.type,

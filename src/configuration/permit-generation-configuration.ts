@@ -1,10 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
 
-export const permitGenerationConfigurationType = Type.Object({
-  /**
-   * Enables or disables this module
-   */
-  enabled: Type.Boolean({ default: true }),
-});
+export const permitGenerationConfigurationType = Type.Object({});
 
 export type PermitGenerationConfiguration = Static<typeof permitGenerationConfigurationType>;

@@ -2,16 +2,18 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { stringify } from "yaml";
-import { CommentType } from "../configuration/comment-types";
+import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
-import { getOctokitInstance } from "../get-authentication-token";
-import { getGithubWorkflowRunUrl } from "../helpers/github-comment-module-instance";
+import { getOctokitInstance } from "../octokit";
+import { getGithubWorkflowRunUrl } from "../helpers/github";
 import logger from "../helpers/logger";
+import { typeReplacer } from "../helpers/result-replacer";
 import { getERC20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
+import { JSDOM } from "jsdom";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -22,13 +24,23 @@ interface SortedTasks {
  * Posts a GitHub comment according to the given results.
  */
 export class GithubCommentModule implements Module {
-  private readonly _configuration: GithubCommentConfiguration = configuration.incentives.githubComment;
+  private readonly _configuration: GithubCommentConfiguration | null = configuration.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
   /**
    * COMMENT_ID can be set in the environment to reference the id of the last comment created during this workflow.
    * See also compute.yml to understand how it is set.
    */
   private _lastCommentId: number | null = process.env.COMMENT_ID ? Number(process.env.COMMENT_ID) : null;
+
+  /**
+   * Ensures that a string containing special characters get HTML encoded.
+   */
+  _encodeHTML(str: string) {
+    const dom = new JSDOM();
+    const div = dom.window.document.createElement("div");
+    div.appendChild(dom.window.document.createTextNode(str));
+    return div.innerHTML;
+  }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const bodyArray: (string | undefined)[] = [];
@@ -39,14 +51,13 @@ export class GithubCommentModule implements Module {
     }
     // Add the workflow run url and the metadata in the GitHub's comment
     bodyArray.push("\n<!--");
-    bodyArray.push(`\n${getGithubWorkflowRunUrl()}\n`);
-    bodyArray.push(JSON.stringify(result, null, 2));
+    bodyArray.push(this._encodeHTML(`\n${getGithubWorkflowRunUrl()}\n${JSON.stringify(result, typeReplacer, 2)}`));
     bodyArray.push("\n-->");
     const body = bodyArray.join("");
-    if (this._configuration.debug) {
+    if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
-    if (this._configuration.post) {
+    if (this._configuration?.post) {
       try {
         await this.postComment(body);
       } catch (e) {
@@ -152,23 +163,24 @@ export class GithubCommentModule implements Module {
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
-        .replaceAll("`", "&#96;");
+        .replaceAll("`", "&#96;")
+        .replace(/([\s\S]{64}).[\s\S]+/, "$1&hellip;");
       return `
           <tr>
             <td>
               <h6>
-                <a href="${commentScore.url}" target="_blank" rel="noopener">${sanitizedContent.replace(/(.{64})..+/, "$1&hellip;")}</a>
+                <a href="${commentScore.url}" target="_blank" rel="noopener">${sanitizedContent}</a>
               </h6>
             </td>
             <td>
             <details>
               <summary>
                 ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
-                  const multiplier = new Decimal(
-                    commentScore.score?.formatting
-                      ? commentScore.score.formatting.formattingMultiplier * commentScore.score.formatting.wordValue
-                      : 0
-                  );
+                  const multiplier = commentScore.score?.formatting
+                    ? new Decimal(commentScore.score.formatting.formattingMultiplier).mul(
+                        commentScore.score.formatting.wordValue
+                      )
+                    : new Decimal(0);
                   return acc.add(multiplier.mul(curr.score * curr.count));
                 }, new Decimal(0))}
               </summary>
@@ -195,13 +207,13 @@ export class GithubCommentModule implements Module {
   async _generateHtml(username: string, result: Result[0]) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
-        if (curr.type & CommentType.ISSUE) {
-          if (curr.type & CommentType.SPECIFICATION) {
+        if (curr.type & CommentKind.ISSUE) {
+          if (curr.type & CommentAssociation.SPECIFICATION) {
             acc.issues.specification = curr;
           } else {
             acc.issues.comments.push(curr);
           }
-        } else if (curr.type & CommentType.REVIEW) {
+        } else if (curr.type & CommentKind.PULL) {
           acc.reviews.push(curr);
         }
         return acc;

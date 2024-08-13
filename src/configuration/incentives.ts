@@ -23,10 +23,6 @@ export const incentivesConfigurationSchema = T.Object({
   erc20RewardToken: T.String({ default: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d" }),
   incentives: T.Object({
     /**
-     * Enables or disables the incentive plugin
-     */
-    enabled: T.Boolean({ default: true }),
-    /**
      * Optionally specify a file to write the results in
      */
     file: T.Optional(T.String()),
@@ -34,12 +30,12 @@ export const incentivesConfigurationSchema = T.Object({
      * If set to true, the plugin runs even if the price label is missing, and will evaluate comments.
      */
     requirePriceLabel: T.Boolean({ default: true }),
-    contentEvaluator: contentEvaluatorConfigurationType,
-    userExtractor: userExtractorConfigurationType,
-    dataPurge: dataPurgeConfigurationType,
-    formattingEvaluator: formattingEvaluatorConfigurationType,
-    permitGeneration: permitGenerationConfigurationType,
-    githubComment: githubCommentConfigurationType,
+    contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()]),
+    userExtractor: T.Union([userExtractorConfigurationType, T.Null()]),
+    dataPurge: T.Union([dataPurgeConfigurationType, T.Null()]),
+    formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()]),
+    permitGeneration: T.Union([permitGenerationConfigurationType, T.Null()]),
+    githubComment: T.Union([githubCommentConfigurationType, T.Null()]),
   }),
   dataCollection: dataCollectionConfigurationType,
 });

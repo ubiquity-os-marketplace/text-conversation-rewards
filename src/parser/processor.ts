@@ -1,9 +1,10 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
-import { CommentType } from "../configuration/comment-types";
+import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import githubCommentModuleInstance from "../helpers/github-comment-module-instance";
 import logger from "../helpers/logger";
+import { typeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
@@ -31,10 +32,6 @@ export class Processor {
   }
 
   async run(data: Readonly<IssueActivity>) {
-    if (!this._configuration.enabled) {
-      logger.debug("Module is disabled. Skipping...");
-      return;
-    }
     for (const transformer of this._transformers) {
       if (transformer.enabled) {
         this._result = await transformer.transform(data, this._result);
@@ -49,24 +46,7 @@ export class Processor {
 
   dump() {
     const { file } = this._configuration;
-    const result = JSON.stringify(
-      this._result,
-      (key: string, value: string | number) => {
-        // Changes "type" to be human-readable
-        if (key === "type" && typeof value === "number") {
-          const typeNames: string[] = [];
-          const types = Object.values(CommentType) as number[];
-          types.forEach((typeValue) => {
-            if (value & typeValue) {
-              typeNames.push(CommentType[typeValue]);
-            }
-          });
-          return typeNames.join("|");
-        }
-        return value;
-      },
-      2
-    );
+    const result = JSON.stringify(this._result, typeReplacer, 2);
     if (!file) {
       logger.debug(result);
     } else {
@@ -110,9 +90,10 @@ export interface Result {
 }
 
 export interface GithubCommentScore {
+  id: number;
   content: string;
   url: string;
-  type: CommentType;
+  type: CommentKind | CommentAssociation;
   score?: {
     formatting?: {
       content: Record<string, { count: number; score: number }>;
