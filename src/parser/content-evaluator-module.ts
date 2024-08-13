@@ -10,8 +10,8 @@ import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
 import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
-import { Type } from "@sinclair/typebox";
 import logger from "../helpers/logger";
+import openAiRelevanceResponseSchema, { RelevancesByOpenAi } from "../types/openai-type";
 
 type CommentToEvaluate = { id: number; comment: string };
 type ReviewCommentToEvaluate = { id: number; comment: string; diff_hunk: string };
@@ -76,7 +76,40 @@ export class ContentEvaluatorModule implements Module {
 
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
+    const { commentsToEvaluate, reviewCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
+    const relevancesByAI = await this._evaluateComments(
+      specificationBody,
+      commentsToEvaluate,
+      reviewCommentsToEvaluate
+    );
+
+    if (Object.keys(relevancesByAI).length !== commentsToEvaluate.length) {
+      console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
+    }
+
+    for (let i = 0; i < commentsWithScore.length; i++) {
+      const currentComment = commentsWithScore[i];
+      let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
+
+      if (this._fixedRelevances[currentComment.type]) {
+        currentRelevance = this._fixedRelevances[currentComment.type];
+      } else if (!isNaN(relevancesByAI[currentComment.id])) {
+        currentRelevance = relevancesByAI[currentComment.id];
+      }
+
+      const currentReward = new Decimal(currentComment.score?.reward || 0);
+      currentComment.score = {
+        ...(currentComment.score || {}),
+        relevance: new Decimal(currentRelevance).toNumber(),
+        reward: currentReward.mul(currentRelevance).toNumber(),
+      };
+    }
+
+    return commentsWithScore;
+  }
+
+  _splitCommentsByPrompt(commentsWithScore: Readonly<GithubCommentScore>[]) {
     // exclude comments that have fixed relevance multiplier. e.g. review comments = 1
     const commentsToEvaluate: CommentToEvaluate[] = [];
     const reviewCommentsToEvaluate: ReviewCommentToEvaluate[] = [];
@@ -101,43 +134,14 @@ export class ContentEvaluatorModule implements Module {
         }
       }
     }
-
-    const relevancesByAI = await this._evaluateComments(
-      specificationBody,
-      commentsToEvaluate,
-      reviewCommentsToEvaluate
-    );
-
-    if (Object.keys(relevancesByAI).length !== commentsToEvaluate.length) {
-      console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
-    }
-
-    for (let i = 0; i < commentsWithScore.length; i++) {
-      const currentComment = commentsWithScore[i];
-      let currentRelevance = 1; // For comments not in fixed relevance types or missed by OpenAI evaluation
-
-      if (this._fixedRelevances[currentComment.type]) {
-        currentRelevance = this._fixedRelevances[currentComment.type];
-      } else if (!isNaN(relevancesByAI[currentComment.id])) {
-        currentRelevance = relevancesByAI[currentComment.id];
-      }
-
-      const currentReward = new Decimal(currentComment.score?.reward || 0);
-      currentComment.score = {
-        ...(currentComment.score || {}),
-        relevance: new Decimal(currentRelevance).toNumber(),
-        reward: currentReward.mul(currentRelevance).toNumber(),
-      };
-    }
-
-    return commentsWithScore;
+    return { commentsToEvaluate, reviewCommentsToEvaluate };
   }
 
   async _evaluateComments(
     specification: string,
     comments: CommentToEvaluate[],
     reviewComments: ReviewCommentToEvaluate[]
-  ): Promise<Relevances> {
+  ): Promise<RelevancesByOpenAi> {
     let combinedRelevances: Relevances = {};
 
     if (comments.length) {
@@ -176,14 +180,13 @@ export class ContentEvaluatorModule implements Module {
 
     const jsonResponse = JSON.parse(rawResponse);
 
-    const responseType = Type.Record(Type.String(), Type.Number({ minimum: 0, maximum: 1 }));
-
-    if (Value.Check(responseType, jsonResponse)) {
-      const relevances = Value.Convert(responseType, jsonResponse) as { [k: string]: number };
+    try {
+      const relevances = Value.Decode(openAiRelevanceResponseSchema, jsonResponse);
       logger.info(`Relevances by OpenAI: ${JSON.stringify(relevances)}`);
       return relevances;
-    } else {
-      throw new Error(`Invalid response type received from openai while evaluating: ${jsonResponse}`);
+    } catch (e) {
+      logger.error(`Invalid response type received from openai while evaluating: ${jsonResponse} \n\nError: ${e}`);
+      throw new Error("Error in evaluation by OpenAI.");
     }
   }
 
