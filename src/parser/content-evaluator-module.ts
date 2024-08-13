@@ -109,7 +109,10 @@ export class ContentEvaluatorModule implements Module {
     return commentsWithScore;
   }
 
-  _splitCommentsByPrompt(commentsWithScore: Readonly<GithubCommentScore>[]) {
+  _splitCommentsByPrompt(commentsWithScore: Readonly<GithubCommentScore>[]): {
+    commentsToEvaluate: CommentToEvaluate[];
+    reviewCommentsToEvaluate: ReviewCommentToEvaluate[];
+  } {
     // exclude comments that have fixed relevance multiplier. e.g. review comments = 1
     const commentsToEvaluate: CommentToEvaluate[] = [];
     const reviewCommentsToEvaluate: ReviewCommentToEvaluate[] = [];
