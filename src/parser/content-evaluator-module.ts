@@ -11,10 +11,12 @@ import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
 import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import logger from "../helpers/logger";
-import openAiRelevanceResponseSchema, { RelevancesByOpenAi } from "../types/openai-type";
-
-type CommentToEvaluate = { id: number; comment: string };
-type ReviewCommentToEvaluate = { id: number; comment: string; diff_hunk: string };
+import {
+  openAiRelevanceResponseSchema,
+  CommentToEvaluate,
+  Relevances,
+  ReviewCommentToEvaluate,
+} from "../types/content-evaluator-module-type";
 
 /**
  * Evaluates and rates comments.
@@ -143,8 +145,8 @@ export class ContentEvaluatorModule implements Module {
     specification: string,
     comments: CommentToEvaluate[],
     reviewComments: ReviewCommentToEvaluate[]
-  ): Promise<RelevancesByOpenAi> {
-    let combinedRelevances: RelevancesByOpenAi = {};
+  ): Promise<Relevances> {
+    let combinedRelevances: Relevances = {};
 
     if (comments.length) {
       const promptForComments = this._generatePromptForComments(specification, comments);
@@ -160,7 +162,7 @@ export class ContentEvaluatorModule implements Module {
     return combinedRelevances;
   }
 
-  async _submitPrompt(prompt: string): Promise<RelevancesByOpenAi> {
+  async _submitPrompt(prompt: string): Promise<Relevances> {
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
       model: "gpt-4o",
       response_format: { type: "json_object" },
