@@ -10,8 +10,8 @@ import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 import { Value } from "@sinclair/typebox/value";
 import { commentEnum, CommentType } from "../configuration/comment-types";
-import { Type } from "@sinclair/typebox";
 import logger from "../helpers/logger";
+import openAiRelevanceResponseSchema, { RelevancesByOpenAi } from "../types/openai-type";
 
 /**
  * Evaluates and rates comments.
@@ -93,7 +93,7 @@ export class ContentEvaluatorModule implements Module {
 
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
-      let currentRelevance = 1; // For comments not in fixed relevance types or missed by OpenAI evaluation
+      let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
 
       if (this._fixedRelevances[currentComment.type]) {
         currentRelevance = this._fixedRelevances[currentComment.type];
@@ -115,7 +115,7 @@ export class ContentEvaluatorModule implements Module {
   async _evaluateComments(
     specification: string,
     comments: { id: number; comment: string }[]
-  ): Promise<{ [k: string]: number }> {
+  ): Promise<RelevancesByOpenAi> {
     const prompt = this._generatePrompt(specification, comments);
 
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
@@ -139,14 +139,13 @@ export class ContentEvaluatorModule implements Module {
 
     const jsonResponse = JSON.parse(rawResponse);
 
-    const responseType = Type.Record(Type.String(), Type.Number({ minimum: 0, maximum: 1 }));
-
-    if (Value.Check(responseType, jsonResponse)) {
-      const relevances = Value.Convert(responseType, jsonResponse) as { [k: string]: number };
+    try {
+      const relevances = Value.Decode(openAiRelevanceResponseSchema, jsonResponse);
       logger.info(`Relevances by OpenAI: ${JSON.stringify(relevances)}`);
       return relevances;
-    } else {
-      throw new Error(`Invalid response type received from openai while evaluating: ${jsonResponse}`);
+    } catch (e) {
+      logger.error(`Invalid response type received from openai while evaluating: ${jsonResponse} \n\nError: ${e}`);
+      throw new Error("Error in evaluation by OpenAI.");
     }
   }
 
