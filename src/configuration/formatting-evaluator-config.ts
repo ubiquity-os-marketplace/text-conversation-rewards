@@ -29,6 +29,7 @@ const htmlType = Type.Record(Type.String(), Type.Number(), {
     h6: 1,
     a: 1,
     li: 1,
+    ul: 1,
     td: 1,
     hr: 0,
   },

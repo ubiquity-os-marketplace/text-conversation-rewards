@@ -13,7 +13,7 @@ import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {
-  formattingMultiplier: number;
+  multiplier: number;
   html: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["html"];
   regex: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"];
 }
@@ -40,7 +40,7 @@ export class FormattingEvaluatorModule implements Module {
           ...acc,
           [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
             html: curr.rewards.html,
-            formattingMultiplier: curr.multiplier,
+            multiplier: curr.multiplier,
             regex: curr.rewards.regex,
           },
         };
@@ -56,7 +56,7 @@ export class FormattingEvaluatorModule implements Module {
         const comment = comments[i];
         // Count with html elements if any, otherwise just treat it as plain text
         const { formatting } = this._getFormattingScore(comment);
-        const multiplierFactor = this._multipliers?.[comment.type] ?? { wordValue: 0, multiplier: 0 };
+        const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = formatting
           ? Object.values(formatting).reduce((acc, curr) => {
               let sum = new Decimal(0);
@@ -75,7 +75,7 @@ export class FormattingEvaluatorModule implements Module {
           ...comment.score,
           formatting: {
             content: formatting,
-            formattingMultiplier: multiplierFactor.multiplier,
+            multiplier: multiplierFactor.multiplier,
           },
           reward: (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber(),
         };
@@ -103,9 +103,9 @@ export class FormattingEvaluatorModule implements Module {
     }
   }
 
-  _countWords(symbols: FormattingEvaluatorConfiguration["multipliers"][0]["symbols"], text: string) {
+  _countWords(regexes: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"], text: string) {
     const counts: { [p: string]: { count: number; multiplier: number } } = {};
-    for (const [regex, multiplier] of Object.entries(symbols)) {
+    for (const [regex, multiplier] of Object.entries(regexes)) {
       const match = text.trim().match(new RegExp(regex, "g"));
       counts[regex] = {
         count: match?.length || 1,
@@ -124,7 +124,7 @@ export class FormattingEvaluatorModule implements Module {
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
-      const wordCount = this._countWords(this._multipliers[commentType].html, element.textContent || "");
+      const wordCount = this._countWords(this._multipliers[commentType].regex, element.textContent || "");
       let score = 0;
       if (this._multipliers[commentType]?.html[tagName] !== undefined) {
         score = this._multipliers[commentType].html[tagName];

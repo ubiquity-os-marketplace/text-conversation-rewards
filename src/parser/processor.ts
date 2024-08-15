@@ -97,7 +97,7 @@ export interface GithubCommentScore {
   score?: {
     formatting?: {
       content: Record<string, { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }>;
-      formattingMultiplier: number;
+      multiplier: number;
     };
     relevance?: number;
     clarity?: number;
