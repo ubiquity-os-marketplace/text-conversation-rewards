@@ -69,7 +69,7 @@ export class GithubCommentModule implements Module {
 
   get enabled(): boolean {
     if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
-      logger.error("Invalid configuration detected for GithubContentModule, disabling.");
+      logger.error("Invalid / missing configuration detected for GithubContentModule, disabling.");
       return false;
     }
     return true;

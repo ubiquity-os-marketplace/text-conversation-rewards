@@ -20,7 +20,7 @@ interface Multiplier {
 
 export class FormattingEvaluatorModule implements Module {
   private readonly _configuration: FormattingEvaluatorConfiguration | null =
-    configuration.incentives.formattingEvaluator ?? null;
+    configuration.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: number]: Multiplier } = {};
 
@@ -86,7 +86,7 @@ export class FormattingEvaluatorModule implements Module {
 
   get enabled(): boolean {
     if (!Value.Check(formattingEvaluatorConfigurationType, this._configuration)) {
-      console.warn("Invalid configuration detected for FormattingEvaluatorModule, disabling.");
+      console.warn("Invalid / missing configuration detected for FormattingEvaluatorModule, disabling.");
       return false;
     }
     return true;
