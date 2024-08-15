@@ -140,170 +140,182 @@
         },
         {
           "multiplier": 1,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
           "role": [
             "ISSUE_COLLABORATOR"
           ],
-          "symbols": {
-            "\\b\\w+\\b": 0.1
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0.1
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
           }
         },
         {
           "multiplier": 0.25,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
           "role": [
             "ISSUE_CONTRIBUTOR"
           ],
-          "symbols": {
-            "\\b\\w+\\b": 0.1
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0.1
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
           }
         },
         {
           "multiplier": 0,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
           "role": [
             "PULL_SPECIFICATION"
           ],
-          "symbols": {
-            "\\b\\w+\\b": 0
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
           }
         },
         {
           "multiplier": 2,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
           "role": [
             "PULL_AUTHOR"
           ],
-          "symbols": {
-            "\\b\\w+\\b": 0.2
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0.2
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
           }
         },
         {
           "multiplier": 1,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
           "role": [
             "PULL_ASSIGNEE"
           ],
-          "symbols": {
-            "\\b\\w+\\b": 0.1
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0.1
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
           }
         },
         {
           "multiplier": 1,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
           "role": [
             "PULL_COLLABORATOR"
           ],
-          "symbols": {
-            "\\b\\w+\\b": 0.1
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0.1
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
           }
         },
         {

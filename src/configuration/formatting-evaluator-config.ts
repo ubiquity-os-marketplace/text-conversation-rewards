@@ -49,11 +49,12 @@ export const formattingEvaluatorConfigurationType = Type.Object(
      */
     multipliers: Type.Array(
       Type.Object({
-        role: Type.Array(commentType),
+        role: Type.Array(commentType, { minItems: 1 }),
         multiplier: Type.Number(),
         rewards: rewardsType,
       }),
       {
+        minItems: 1,
         default: [
           {
             role: ["ISSUE_SPECIFICATION"],
