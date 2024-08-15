@@ -7,29 +7,29 @@ export const contentEvaluatorConfigurationType = Type.Object({
    */
   multipliers: Type.Array(
     Type.Object({
-      select: Type.Array(commentType),
+      role: Type.Array(commentType),
       relevance: Type.Optional(Type.Number()),
     }),
     {
       default: [
         {
-          select: ["ISSUE_SPECIFICATION"],
+          role: ["ISSUE_SPECIFICATION"],
           relevance: 1,
         },
         {
-          select: ["PULL_AUTHOR"],
+          role: ["PULL_AUTHOR"],
           relevance: 1,
         },
         {
-          select: ["PULL_ASSIGNEE"],
+          role: ["PULL_ASSIGNEE"],
           relevance: 1,
         },
         {
-          select: ["PULL_COLLABORATOR"],
+          role: ["PULL_COLLABORATOR"],
           relevance: 1,
         },
         {
-          select: ["PULL_CONTRIBUTOR"],
+          role: ["PULL_CONTRIBUTOR"],
           relevance: 1,
         },
       ],

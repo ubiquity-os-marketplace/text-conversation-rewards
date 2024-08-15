@@ -1,25 +1,24 @@
+import fs from "fs";
 import { http, HttpResponse } from "msw";
-import { parseGitHubUrl } from "../src/start";
+import configuration from "../src/configuration/config-reader";
 import { IssueActivity } from "../src/issue-activity";
+import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
+import { DataPurgeModule } from "../src/parser/data-purge-module";
+import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
+import { GithubCommentModule } from "../src/parser/github-comment-module";
+import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { GithubCommentScore, Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
+import { parseGitHubUrl } from "../src/start";
+import { db as mockDb } from "./__mocks__/db";
+import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
-import { DataPurgeModule } from "../src/parser/data-purge-module";
-import userCommentResults from "./__mocks__/results/user-comment-results.json";
+import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
-import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
-import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
-import dbSeed from "./__mocks__/db-seed.json";
-import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
-import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
-import Decimal from "decimal.js";
-import { PermitGenerationModule } from "../src/parser/permit-generation-module";
-import { db as mockDb } from "./__mocks__/db";
-import { GithubCommentModule } from "../src/parser/github-comment-module";
-import fs from "fs";
-import configuration from "../src/configuration/config-reader";
+import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
+import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import validConfiguration from "./__mocks__/results/valid-configuration.json";
 import "../src/parser/command-line";
 
@@ -152,9 +151,9 @@ describe("Modules tests", () => {
     jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
       return Promise.resolve(
         (() => {
-          const relevance: { [k: string]: Decimal } = {};
+          const relevance: { [k: string]: number } = {};
           comments.forEach((comment) => {
-            relevance[`${comment.id}`] = new Decimal(0.8);
+            relevance[`${comment.id}`] = 0.8;
           });
           return relevance;
         })()

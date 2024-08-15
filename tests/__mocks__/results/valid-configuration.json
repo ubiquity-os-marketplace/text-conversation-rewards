@@ -11,23 +11,33 @@
     "contentEvaluator": {
       "multipliers": [
         {
-          "select": ["ISSUE_SPECIFICATION"],
+          "role": [
+            "ISSUE_SPECIFICATION"
+          ],
           "relevance": 1
         },
         {
-          "select": ["PULL_AUTHOR"],
+          "role": [
+            "PULL_AUTHOR"
+          ],
           "relevance": 1
         },
         {
-          "select": ["PULL_ASSIGNEE"],
+          "role": [
+            "PULL_ASSIGNEE"
+          ],
           "relevance": 1
         },
         {
-          "select": ["PULL_COLLABORATOR"],
+          "role": [
+            "PULL_COLLABORATOR"
+          ],
           "relevance": 1
         },
         {
-          "select": ["PULL_CONTRIBUTOR"],
+          "role": [
+            "PULL_CONTRIBUTOR"
+          ],
           "relevance": 1
         }
       ]
@@ -39,85 +49,97 @@
     "formattingEvaluator": {
       "multipliers": [
         {
-          "formattingMultiplier": 1,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
-          "select": [
+          "multiplier": 1,
+          "role": [
             "ISSUE_SPECIFICATION"
           ],
-          "symbols": { "\\b\\w+\\b": 0.1 }
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0.1
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
+          }
         },
         {
-          "formattingMultiplier": 1,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
-          "select": [
+          "multiplier": 1,
+          "role": [
             "ISSUE_AUTHOR"
           ],
-          "symbols": { "\\b\\w+\\b": 0.2 }
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0.2
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
+          }
         },
         {
-          "formattingMultiplier": 0,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
-          "select": [
+          "multiplier": 0,
+          "role": [
             "ISSUE_ASSIGNEE"
           ],
-          "symbols": { "\\b\\w+\\b": 0 }
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
+          }
         },
         {
-          "formattingMultiplier": 1,
+          "multiplier": 1,
           "scores": {
             "a": 1,
             "blockquote": 0,
@@ -137,13 +159,15 @@
             "strong": 0,
             "td": 1
           },
-          "select": [
+          "role": [
             "ISSUE_COLLABORATOR"
           ],
-          "symbols": { "\\b\\w+\\b": 0.1 }
+          "symbols": {
+            "\\b\\w+\\b": 0.1
+          }
         },
         {
-          "formattingMultiplier": 0.25,
+          "multiplier": 0.25,
           "scores": {
             "a": 1,
             "blockquote": 0,
@@ -163,13 +187,15 @@
             "strong": 0,
             "td": 1
           },
-          "select": [
+          "role": [
             "ISSUE_CONTRIBUTOR"
           ],
-          "symbols": { "\\b\\w+\\b": 0.1 }
+          "symbols": {
+            "\\b\\w+\\b": 0.1
+          }
         },
         {
-          "formattingMultiplier": 0,
+          "multiplier": 0,
           "scores": {
             "a": 1,
             "blockquote": 0,
@@ -189,13 +215,15 @@
             "strong": 0,
             "td": 1
           },
-          "select": [
+          "role": [
             "PULL_SPECIFICATION"
           ],
-          "symbols": { "\\b\\w+\\b": 0 }
+          "symbols": {
+            "\\b\\w+\\b": 0
+          }
         },
         {
-          "formattingMultiplier": 2,
+          "multiplier": 2,
           "scores": {
             "a": 1,
             "blockquote": 0,
@@ -215,13 +243,15 @@
             "strong": 0,
             "td": 1
           },
-          "select": [
+          "role": [
             "PULL_AUTHOR"
           ],
-          "symbols": { "\\b\\w+\\b": 0.2 }
+          "symbols": {
+            "\\b\\w+\\b": 0.2
+          }
         },
         {
-          "formattingMultiplier": 1,
+          "multiplier": 1,
           "scores": {
             "a": 1,
             "blockquote": 0,
@@ -241,13 +271,15 @@
             "strong": 0,
             "td": 1
           },
-          "select": [
+          "role": [
             "PULL_ASSIGNEE"
           ],
-          "symbols": { "\\b\\w+\\b": 0.1 }
+          "symbols": {
+            "\\b\\w+\\b": 0.1
+          }
         },
         {
-          "formattingMultiplier": 1,
+          "multiplier": 1,
           "scores": {
             "a": 1,
             "blockquote": 0,
@@ -267,36 +299,42 @@
             "strong": 0,
             "td": 1
           },
-          "select": [
+          "role": [
             "PULL_COLLABORATOR"
           ],
-          "symbols": { "\\b\\w+\\b": 0.1 }
+          "symbols": {
+            "\\b\\w+\\b": 0.1
+          }
         },
         {
-          "formattingMultiplier": 0.25,
-          "scores": {
-            "a": 1,
-            "blockquote": 0,
-            "br": 0,
-            "code": 1,
-            "em": 0,
-            "h1": 1,
-            "h2": 1,
-            "h3": 1,
-            "h4": 1,
-            "h5": 1,
-            "h6": 1,
-            "hr": 0,
-            "img": 0,
-            "li": 1,
-            "p": 1,
-            "strong": 0,
-            "td": 1
-          },
-          "select": [
+          "multiplier": 0.25,
+          "role": [
             "PULL_CONTRIBUTOR"
           ],
-          "symbols": { "\\b\\w+\\b": 0.1 }
+          "rewards": {
+            "regex": {
+              "\\b\\w+\\b": 0.1
+            },
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "strong": 0,
+              "td": 1
+            }
+          }
         }
       ]
     },
@@ -304,10 +342,6 @@
       "debug": true,
       "post": false
     },
-    "permitGeneration": {},
-    "requirePriceLabel": true,
-    "userExtractor": {
-      "redeemTask": true
-    }
+    "permitGeneration": {}
   }
 }

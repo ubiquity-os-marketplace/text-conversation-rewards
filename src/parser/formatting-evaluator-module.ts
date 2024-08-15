@@ -14,8 +14,8 @@ import { GithubCommentScore, Module, Result } from "./processor";
 
 interface Multiplier {
   formattingMultiplier: number;
-  scores: FormattingEvaluatorConfiguration["multipliers"][0]["scores"];
-  symbols: FormattingEvaluatorConfiguration["multipliers"][0]["symbols"];
+  html: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["html"];
+  regex: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"];
 }
 
 export class FormattingEvaluatorModule implements Module {
@@ -38,10 +38,10 @@ export class FormattingEvaluatorModule implements Module {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.select.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
-            symbols: curr.symbols,
-            formattingMultiplier: curr.formattingMultiplier,
-            scores: curr.scores,
+          [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
+            html: curr.rewards.html,
+            formattingMultiplier: curr.multiplier,
+            regex: curr.rewards.regex,
           },
         };
       }, {});
@@ -56,7 +56,7 @@ export class FormattingEvaluatorModule implements Module {
         const comment = comments[i];
         // Count with html elements if any, otherwise just treat it as plain text
         const { formatting } = this._getFormattingScore(comment);
-        const multiplierFactor = this._multipliers?.[comment.type] ?? { wordValue: 0, formattingMultiplier: 0 };
+        const multiplierFactor = this._multipliers?.[comment.type] ?? { wordValue: 0, multiplier: 0 };
         const formattingTotal = formatting
           ? Object.values(formatting).reduce((acc, curr) => {
               let sum = new Decimal(0);
@@ -64,7 +64,7 @@ export class FormattingEvaluatorModule implements Module {
                 sum = sum.add(
                   new Decimal(curr.symbols[symbol].count)
                     .mul(curr.symbols[symbol].multiplier)
-                    .mul(multiplierFactor.formattingMultiplier)
+                    .mul(multiplierFactor.multiplier)
                     .mul(curr.score)
                 );
               }
@@ -75,7 +75,7 @@ export class FormattingEvaluatorModule implements Module {
           ...comment.score,
           formatting: {
             content: formatting,
-            formattingMultiplier: multiplierFactor.formattingMultiplier,
+            formattingMultiplier: multiplierFactor.multiplier,
           },
           reward: (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber(),
         };
@@ -124,10 +124,10 @@ export class FormattingEvaluatorModule implements Module {
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
-      const wordCount = this._countWords(this._multipliers[commentType].symbols, element.textContent || "");
+      const wordCount = this._countWords(this._multipliers[commentType].html, element.textContent || "");
       let score = 0;
-      if (this._multipliers[commentType]?.scores[tagName] !== undefined) {
-        score = this._multipliers[commentType].scores[tagName];
+      if (this._multipliers[commentType]?.html[tagName] !== undefined) {
+        score = this._multipliers[commentType].html[tagName];
       } else {
         logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
       }

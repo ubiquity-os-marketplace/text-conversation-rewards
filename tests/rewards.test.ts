@@ -85,7 +85,7 @@ jest.mock("../src/parser/command-line", () => {
     eventPayload: {
       issue: {
         html_url: issueUrl,
-        number: 1,
+        number: 69,
         state_reason: "completed",
       },
       repository: {
