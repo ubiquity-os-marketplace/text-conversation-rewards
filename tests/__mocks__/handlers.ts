@@ -25,31 +25,24 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5", () => {
     return HttpResponse.json(issue5Get);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards", () => {
-    return HttpResponse.json(issue5Get);
-  }),
   http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/events", () => {
     return HttpResponse.json(issue5EventsGet);
   }),
   http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/comments", () => {
     return HttpResponse.json(issue5CommentsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/12/comments", ({ params: { page } }) => {
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/12/comments", () => {
     return HttpResponse.json(issue12CommentsGet);
   }),
-
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/timeline", ({ params: { page } }) => {
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/timeline", () => {
     return HttpResponse.json(issue5TimelineGet);
   }),
-
   http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12", ({ params: { page } }) => {
     return HttpResponse.json(pull12Get);
   }),
-
   http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12/reviews", () => {
     return HttpResponse.json(pull12ReviewsGet);
   }),
-
   http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12/comments", () => {
     return HttpResponse.json(pull12CommentsGet);
   }),
