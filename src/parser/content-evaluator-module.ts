@@ -173,7 +173,7 @@ export class ContentEvaluatorModule implements Module {
         },
       ],
       temperature: 1,
-      max_tokens: 128,
+      max_tokens: 384,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
