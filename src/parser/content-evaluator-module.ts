@@ -154,7 +154,7 @@ export class ContentEvaluatorModule implements Module {
     }
 
     if (reviewComments.length) {
-      const promptForReviewComments = this._generatePromptForComments(specification, reviewComments);
+      const promptForReviewComments = this._generatePromptForReviewComments(specification, reviewComments);
       const relevances = await this._submitPrompt(promptForReviewComments);
       combinedRelevances = { ...combinedRelevances, ...relevances };
     }
