@@ -1,10 +1,18 @@
 import { http, HttpResponse } from "msw";
 import issueGet from "./routes/issue-get.json";
+import issue5Get from "./routes/issue-5-conversation-rewards/issue-5-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
+import issue5EventsGet from "./routes/issue-5-conversation-rewards/issue-5-events-get.json";
 import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueCommentsGet from "./routes/issue-comments-get.json";
 import issue25CommentsGet from "./routes/issue-25-comments-get.json";
+import issue5CommentsGet from "./routes/issue-5-conversation-rewards/issue-5-comments-get.json";
+import issue12CommentsGet from "./routes/pull-12-conversation-rewards/issue-12-comments-get.json";
+import pull12Get from "./routes/pull-12-conversation-rewards/pull-12-get.json";
+import pull12ReviewsGet from "./routes/pull-12-conversation-rewards/pull-12-reviews-get.json";
+import pull12CommentsGet from "./routes/pull-12-conversation-rewards/pull-12-comments-get.json";
 import issueTimelineGet from "./routes/issue-timeline-get.json";
+import issue5TimelineGet from "./routes/issue-5-conversation-rewards/issue-5-timeline-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
@@ -14,6 +22,38 @@ import { db } from "./db";
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5", () => {
+    return HttpResponse.json(issue5Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards", () => {
+    return HttpResponse.json(issue5Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/events", () => {
+    return HttpResponse.json(issue5EventsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/comments", () => {
+    return HttpResponse.json(issue5CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/12/comments", ({ params: { page } }) => {
+    return HttpResponse.json(issue12CommentsGet);
+  }),
+
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/timeline", ({ params: { page } }) => {
+    return HttpResponse.json(issue5TimelineGet);
+  }),
+
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12", ({ params: { page } }) => {
+    return HttpResponse.json(pull12Get);
+  }),
+
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12/reviews", () => {
+    return HttpResponse.json(pull12ReviewsGet);
+  }),
+
+  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12/comments", () => {
+    return HttpResponse.json(pull12CommentsGet);
+  }),
+
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22", () => {
     return HttpResponse.json(issueGet);
   }),

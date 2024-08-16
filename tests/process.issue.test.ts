@@ -56,7 +56,7 @@ jest.mock("../src/parser/command-line", () => {
     ref: "",
     eventPayload: {
       issue: {
-        html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+        html_url: "https://github.com/ubiquibot/conversation-rewards/issues/5",
         number: 1,
         state_reason: "completed",
       },
