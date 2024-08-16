@@ -31,15 +31,7 @@ export class DataPurgeModule implements Module {
           .replace(/\n\s*\n/g, "\n")
           .trim();
 
-        let reviewCommentProps: {
-          diff_hunk?: string;
-        } = {};
         const reviewComment = comment as GitHubPullRequestReviewComment;
-        if (reviewComment?.pull_request_review_id) {
-          reviewCommentProps = {
-            diff_hunk: reviewComment?.diff_hunk,
-          };
-        }
 
         if (newContent.length) {
           result[comment.user.login].comments = [
@@ -49,7 +41,7 @@ export class DataPurgeModule implements Module {
               content: newContent,
               url: comment.html_url,
               type: comment.type,
-              ...reviewCommentProps,
+              diff_hunk: reviewComment?.pull_request_review_id ? reviewComment?.diff_hunk : undefined,
             },
           ];
         }
