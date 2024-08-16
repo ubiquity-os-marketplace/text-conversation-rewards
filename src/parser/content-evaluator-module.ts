@@ -146,20 +146,20 @@ export class ContentEvaluatorModule implements Module {
     comments: CommentToEvaluate[],
     reviewComments: ReviewCommentToEvaluate[]
   ): Promise<Relevances> {
-    let combinedRelevances: Relevances = {};
+    let commentRelevances: Relevances = {};
+    let reviewCommentRelevances: Relevances = {};
 
     if (comments.length) {
       const promptForComments = this._generatePromptForComments(specification, comments);
-      combinedRelevances = await this._submitPrompt(promptForComments);
+      commentRelevances = await this._submitPrompt(promptForComments);
     }
 
     if (reviewComments.length) {
       const promptForReviewComments = this._generatePromptForReviewComments(specification, reviewComments);
-      const relevances = await this._submitPrompt(promptForReviewComments);
-      combinedRelevances = { ...combinedRelevances, ...relevances };
+      reviewCommentRelevances = await this._submitPrompt(promptForReviewComments);
     }
 
-    return combinedRelevances;
+    return { ...commentRelevances, ...reviewCommentRelevances };
   }
 
   async _submitPrompt(prompt: string): Promise<Relevances> {
