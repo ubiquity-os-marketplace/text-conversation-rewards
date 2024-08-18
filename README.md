@@ -73,7 +73,7 @@ with:
           relevance: 1
     userExtractor:
       redeemTask: true
-    dataPurge:
+    dataPurge: {}
     formattingEvaluator:
       multipliers:
           - role: [ ISSUE_SPECIFICATION ]
@@ -145,7 +145,7 @@ with:
             rewards:
               regex:
                 "\\b\\w+\\b": 0.1
-      permitGeneration:
+      permitGeneration: {}
       githubComment:
         post: true
         debug: false
