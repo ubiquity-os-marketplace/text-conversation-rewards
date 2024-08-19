@@ -41,7 +41,7 @@ export class DataPurgeModule implements Module {
               content: newContent,
               url: comment.html_url,
               type: comment.type,
-              diff_hunk: reviewComment?.pull_request_review_id ? reviewComment?.diff_hunk : undefined,
+              diffHunk: reviewComment?.pull_request_review_id ? reviewComment?.diff_hunk : undefined,
             },
           ];
         }

@@ -121,13 +121,13 @@ export class ContentEvaluatorModule implements Module {
       const currentComment = commentsWithScore[i];
       if (!this._fixedRelevances[currentComment.type]) {
         if (currentComment.type & CommentKind.PULL) {
-          if (currentComment?.diff_hunk) {
+          if (currentComment?.diffHunk) {
             //Eval PR comment with diff_hunk, all other PR comments get relevance:1 by default
 
             reviewCommentsToEvaluate.push({
               id: currentComment.id,
               comment: currentComment.content,
-              diff_hunk: currentComment.diff_hunk,
+              diffHunk: currentComment.diffHunk,
             });
           }
         } else {
