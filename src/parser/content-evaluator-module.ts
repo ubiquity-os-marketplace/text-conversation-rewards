@@ -116,7 +116,7 @@ export class ContentEvaluatorModule implements Module {
   /**
    * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
    */
-  async _calculateMaxTokens(prompt: string, totalTokenLimit: number = 4096) {
+  _calculateMaxTokens(prompt: string, totalTokenLimit: number = 4096) {
     const tokenizer: Tiktoken = encodingForModel("gpt-4o");
     const inputTokens = tokenizer.encode(prompt).length;
     return Math.min(inputTokens, totalTokenLimit);
@@ -134,7 +134,7 @@ export class ContentEvaluatorModule implements Module {
   ): Promise<RelevancesByOpenAi> {
     const prompt = this._generatePrompt(specification, comments);
     const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
-    const maxTokens = await this._calculateMaxTokens(dummyResponse);
+    const maxTokens = this._calculateMaxTokens(dummyResponse);
 
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
       model: "gpt-4o",
