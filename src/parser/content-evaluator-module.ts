@@ -1,6 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { encodingForModel, Tiktoken } from "js-tiktoken";
+import * as crypto from "node:crypto";
 import OpenAI from "openai";
 import { commentEnum, CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
@@ -123,9 +124,9 @@ export class ContentEvaluatorModule implements Module {
   }
 
   async _generateDummyResponse(comments: { id: number; comment: string }[]) {
-    logger.debug(`Input for dummy response: ${comments}`);
-    return comments.reduce<Record<string, number>>((acc, curr) => {
-      return { ...acc, [curr.id]: 0.5 };
+    logger.debug(`Input for dummy response: ${JSON.stringify(comments, null, 2)}`);
+    return comments.reduce<Record<string, number>>((acc) => {
+      return { ...acc, [crypto.randomBytes(10).toString("hex")]: 0.5 };
     }, {});
   }
 
