@@ -113,7 +113,7 @@ export class ContentEvaluatorModule implements Module {
     return commentsWithScore;
   }
 
-  async _calculateMaxTokens(prompt: string, totalTokenLimit: number = 8192) {
+  async _calculateMaxTokens(prompt: string, totalTokenLimit: number = 4096) {
     const tokenizer: Tiktoken = encodingForModel("gpt-4o");
     const inputTokens = tokenizer.encode(prompt).length;
     return Math.max(totalTokenLimit - inputTokens, 0);
