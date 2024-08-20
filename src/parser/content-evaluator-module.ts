@@ -123,7 +123,6 @@ export class ContentEvaluatorModule implements Module {
   }
 
   _generateDummyResponse(comments: { id: number; comment: string }[]) {
-    logger.debug(`Input for dummy response: ${JSON.stringify(comments, null, 2)}`);
     return comments.reduce<Record<string, number>>((acc, curr) => {
       return { ...acc, [curr.id]: 0.5 };
     }, {});
@@ -136,7 +135,6 @@ export class ContentEvaluatorModule implements Module {
     const prompt = this._generatePrompt(specification, comments);
     const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
     const maxTokens = await this._calculateMaxTokens(dummyResponse);
-    logger.debug(`Will use the dummy response to predict max tokens: ${dummyResponse}. Max Tokens: ${maxTokens}`);
 
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
       model: "gpt-4o",
