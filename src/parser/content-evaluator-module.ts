@@ -116,8 +116,8 @@ export class ContentEvaluatorModule implements Module {
   /**
    * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
    */
-  _calculateMaxTokens(prompt: string, totalTokenLimit: number = 4096) {
-    const tokenizer: Tiktoken = encodingForModel("gpt-4o");
+  _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
+    const tokenizer: Tiktoken = encodingForModel("gpt-4o-2024-08-06");
     const inputTokens = tokenizer.encode(prompt).length;
     return Math.min(inputTokens, totalTokenLimit);
   }
@@ -137,7 +137,7 @@ export class ContentEvaluatorModule implements Module {
     const maxTokens = this._calculateMaxTokens(dummyResponse);
 
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-2024-08-06",
       response_format: { type: "json_object" },
       messages: [
         {
