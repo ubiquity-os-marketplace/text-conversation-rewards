@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/ubiquibot/conversation-rewards/compare/v1.3.0...v1.3.1) (2024-08-20)
+
+
+### Bug Fixes
+
+* increased max tokens for ChatGpt based on the prompt ([6132345](https://github.com/ubiquibot/conversation-rewards/commit/6132345bc16dbfc68bd0c9444781aa511d73a32d))
+
 ## [1.3.0](https://github.com/ubiquibot/conversation-rewards/compare/v1.2.0...v1.3.0) (2024-08-13)
 
 
