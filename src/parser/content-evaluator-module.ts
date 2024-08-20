@@ -123,6 +123,7 @@ export class ContentEvaluatorModule implements Module {
   }
 
   async _generateDummyResponse(comments: { id: number; comment: string }[]) {
+    logger.debug(`Input for dummy response: ${comments}`);
     return comments.reduce<Record<string, number>>((acc, curr) => {
       return { ...acc, [curr.id]: 0.5 };
     }, {});
