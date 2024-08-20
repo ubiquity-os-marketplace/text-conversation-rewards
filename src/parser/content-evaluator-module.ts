@@ -133,7 +133,9 @@ export class ContentEvaluatorModule implements Module {
     comments: { id: number; comment: string }[]
   ): Promise<RelevancesByOpenAi> {
     const prompt = this._generatePrompt(specification, comments);
-    const maxTokens = await this._calculateMaxTokens(JSON.stringify(this._generateDummyResponse(comments), null, 2));
+    const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
+    const maxTokens = await this._calculateMaxTokens(dummyResponse);
+    logger.debug(`Will use the dummy response to predict max tokens: ${dummyResponse}. Max Tokens: ${maxTokens}`);
 
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
       model: "gpt-4o",
