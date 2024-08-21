@@ -155,7 +155,7 @@ export class ContentEvaluatorModule implements Module {
     }
 
     if (reviewComments.length) {
-      const promptForReviewComments = this._generatePromptForReviewComments(reviewComments);
+      const promptForReviewComments = this._generatePromptForReviewComments(specification, reviewComments);
       reviewCommentRelevances = await this._submitPrompt(promptForReviewComments);
     }
 
@@ -205,9 +205,12 @@ export class ContentEvaluatorModule implements Module {
     }.`;
   }
 
-  _generatePromptForReviewComments(comments: ReviewCommentToEvaluate[]) {
-    return `I need to evaluate the value of a GitHub contributor's code review. Specifically, I'm interested in how much each code review comment helps to solve the GitHub issue and improve code quality. Please provide a float between 0 and 1 to represent the value of the code review comment. A score of 1 indicates that the comment is very valuable and significantly improves the submitted solution and code quality, whereas a score of 0 indicates a  negative or zero impact. A stringified JSON is given below that contains the code review comments by different contributors. The property "diffHunk" presents the chunk of code being addressed for a possible change. \n\n\`\`\`\n${JSON.stringify(
-      { comments: comments }
+  _generatePromptForReviewComments(issue: string, comments: ReviewCommentToEvaluate[]) {
+    if (!issue?.length) {
+      throw new Error("Issue specification comment is missing or empty");
+    }
+    return `I need to evaluate the value of a GitHub contributor's code review. Specifically, I'm interested in how much each code review comment helps to solve the GitHub issue and improve code quality. Please provide a float between 0 and 1 to represent the value of the code review comment. A score of 1 indicates that the comment is very valuable and significantly improves the submitted solution and code quality, whereas a score of 0 indicates a  negative or zero impact. A stringified JSON is given below that contains the specification of the GitHub issue, and code review comments by different contributors. The property "diffHunk" presents the chunk of code being addressed for a possible change. \n\n\`\`\`\n${JSON.stringify(
+      { specification: issue, comments: comments }
     )}\n\`\`\`\n\n\nTo what degree are each of the code review comments valuable? Please reply with ONLY a JSON where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. The float number should represent the value of the code review comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${
       comments.length
     }.`;
