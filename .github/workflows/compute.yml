@@ -41,7 +41,7 @@ jobs:
           script: |
             const comment_body = '\`\`\`diff\n+ Evaluating results. Please wait...';
             const obj = ${{ inputs.eventPayload }}
-            if (obj.issue && "${{ inputs.eventName }}" === "issues.closed") {
+            if (obj.issue && "${{ inputs.eventName }}" === "issues.closed" && obj.issue.state_reason === "completed") {
               const response = await github.rest.issues.createComment({
                 owner: obj.repository.owner.login,
                 repo: obj.repository.name,
