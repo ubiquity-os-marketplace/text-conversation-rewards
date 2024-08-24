@@ -1,7 +1,7 @@
 {
   "gentlementlegen": {
     "userId": 9807008,
-    "total": 757.66,
+    "total": 749.02,
     "task": {
       "reward": 400,
       "multiplier": 1
@@ -280,7 +280,7 @@
             "formattingMultiplier": 0
           },
           "reward": 0,
-          "relevance": 1
+          "relevance": 0.7
         }
       },
       {
@@ -492,8 +492,8 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 11.2,
-          "relevance": 1
+          "reward": 7.84,
+          "relevance": 0.7
         }
       },
       {
@@ -513,8 +513,8 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 3.6,
-          "relevance": 1
+          "reward": 2.52,
+          "relevance": 0.7
         }
       },
       {
@@ -817,8 +817,8 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 3.2,
-          "relevance": 1
+          "reward": 2.24,
+          "relevance": 0.7
         }
       },
       {
@@ -837,14 +837,14 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 10.8,
-          "relevance": 1
+          "reward": 7.56,
+          "relevance": 0.7
         }
       }
     ]
   },
   "0x4007": {
-    "total": 124.5,
+    "total": 123.63,
     "userId": 4975670,
     "comments": [
       {
@@ -1111,8 +1111,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.5,
-          "relevance": 1
+          "reward": 0.35,
+          "relevance": 0.7
         }
       },
       {
@@ -1433,8 +1433,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.7,
-          "relevance": 1
+          "reward": 0.49,
+          "relevance": 0.7
         }
       },
       {
@@ -1454,8 +1454,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.2,
-          "relevance": 1
+          "reward": 0.14,
+          "relevance": 0.7
         }
       },
       {
@@ -1604,8 +1604,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 1.5,
-          "relevance": 1
+          "reward": 1.05,
+          "relevance": 0.7
         }
       }
     ]

@@ -1,7 +1,7 @@
 {
   "gentlementlegen": {
     "userId": 9807008,
-    "total": 757.66,
+    "total": 749.02,
     "task": {
       "reward": 400,
       "multiplier": 1
@@ -280,7 +280,7 @@
             "formattingMultiplier": 0
           },
           "reward": 0,
-          "relevance": 1
+          "relevance": 0.7
         }
       },
       {
@@ -492,8 +492,8 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 11.2,
-          "relevance": 1
+          "reward": 7.84,
+          "relevance": 0.7
         }
       },
       {
@@ -513,8 +513,8 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 3.6,
-          "relevance": 1
+          "reward": 2.52,
+          "relevance": 0.7
         }
       },
       {
@@ -817,8 +817,8 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 3.2,
-          "relevance": 1
+          "reward": 2.24,
+          "relevance": 0.7
         }
       },
       {
@@ -837,14 +837,14 @@
             "wordValue": 0.2,
             "formattingMultiplier": 2
           },
-          "reward": 10.8,
-          "relevance": 1
+          "reward": 7.56,
+          "relevance": 0.7
         }
       }
     ]
   },
   "0x4007": {
-    "total": 124.5,
+    "total": 123.63,
     "userId": 4975670,
     "comments": [
       {
@@ -1111,8 +1111,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.5,
-          "relevance": 1
+          "reward": 0.35,
+          "relevance": 0.7
         }
       },
       {
@@ -1433,8 +1433,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.7,
-          "relevance": 1
+          "reward": 0.49,
+          "relevance": 0.7
         }
       },
       {
@@ -1454,8 +1454,8 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 0.2,
-          "relevance": 1
+          "reward": 0.14,
+          "relevance": 0.7
         }
       },
       {
@@ -1604,12 +1604,12 @@
             "wordValue": 0.1,
             "formattingMultiplier": 1
           },
-          "reward": 1.5,
-          "relevance": 1
+          "reward": 1.05,
+          "relevance": 0.7
         }
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxMjQ1MDAwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiI3OTA5MzY2MjM5MjEzMDI0NDg0MjgwNDYyNTM3ODI0NzAzOTY3ODgwOTMxMTc3NjU5NjYzODA3ODIyNDE4Nzg1NTIwNDc1OTI0MjM0OCIsImRlYWRsaW5lIjoiNTc4OTYwNDQ2MTg2NTgwOTc3MTE3ODU0OTI1MDQzNDM5NTM5MjY2MzQ5OTIzMzI4MjAyODIwMTk3Mjg3OTIwMDM5NTY1NjQ4MTk5NjcifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiMTI0NTAwMDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg4YjViOTk1ZWU2NzgxYTkwOTk1ZDhmMjc3MGE0YTc1MDc5NjJjMDE1ZTY5ZWJkMTcxMmY2YzYxMmQ2ZDA2ZmYwMDM4MzgzM2JiZTJjMjRmYTkyYmEyZjU5MzA2ZmRlMDRhNTRlYTk4OTM4ZmZmNjIwMTI2OTMxNWYxNDY2OTkxYjFiIiwibmV0d29ya0lkIjoxMDB9XQ=="
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxMjM2MzAwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiI3OTA5MzY2MjM5MjEzMDI0NDg0MjgwNDYyNTM3ODI0NzAzOTY3ODgwOTMxMTc3NjU5NjYzODA3ODIyNDE4Nzg1NTIwNDc1OTI0MjM0OCIsImRlYWRsaW5lIjoiNTc4OTYwNDQ2MTg2NTgwOTc3MTE3ODU0OTI1MDQzNDM5NTM5MjY2MzQ5OTIzMzI4MjAyODIwMTk3Mjg3OTIwMDM5NTY1NjQ4MTk5NjcifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiMTIzNjMwMDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHgxOGQ2NzZhMzUwYTA3ZDg5ZDk5NWIxMTFlYWYzMjQwNWRiMWQ5OWVjYmMzYWM4NjJhODgzNGNmNWE1OTFiMjRhM2I3MjZmMDkyZDBhNjJmZTg0OWVkYjMzNWUxYjcwNmZlMDU5ZGRlNDAyNGYyNjAzMWI1Yzc0ZjFmMzdmYjdlNjFjIiwibmV0d29ya0lkIjoxMDB9XQ=="
   },
   "whilefoo": {
     "total": 7.2725,
