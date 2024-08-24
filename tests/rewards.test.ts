@@ -1,5 +1,4 @@
 import { drop } from "@mswjs/data";
-import Decimal from "decimal.js";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
 import githubCommentModuleInstance from "../src/helpers/github-comment-module-instance";
@@ -29,7 +28,7 @@ jest
           relevance[`${comment.id}`] = 0.8;
         });
         reviewCommentsToEvaluate.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
+          relevance[`${comment.id}`] = 0.7;
         });
         return relevance;
       })()
