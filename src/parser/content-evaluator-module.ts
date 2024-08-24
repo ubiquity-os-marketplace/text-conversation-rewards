@@ -16,7 +16,7 @@ import {
   openAiRelevanceResponseSchema,
   CommentToEvaluate,
   Relevances,
-  ReviewCommentToEvaluate,
+  PrCommentToEvaluate,
 } from "../types/content-evaluator-module-type";
 
 /**
@@ -78,13 +78,10 @@ export class ContentEvaluatorModule implements Module {
 
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
-    const { commentsToEvaluate, reviewCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
+    const { commentsToEvaluate, PrCommentsToEvaluate: prCommentsToEvaluate } =
+      this._splitCommentsByPrompt(commentsWithScore);
 
-    const relevancesByAI = await this._evaluateComments(
-      specificationBody,
-      commentsToEvaluate,
-      reviewCommentsToEvaluate
-    );
+    const relevancesByAI = await this._evaluateComments(specificationBody, commentsToEvaluate, prCommentsToEvaluate);
 
     if (Object.keys(relevancesByAI).length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
@@ -128,15 +125,15 @@ export class ContentEvaluatorModule implements Module {
 
   _splitCommentsByPrompt(commentsWithScore: Readonly<GithubCommentScore>[]): {
     commentsToEvaluate: CommentToEvaluate[];
-    reviewCommentsToEvaluate: ReviewCommentToEvaluate[];
+    PrCommentsToEvaluate: PrCommentToEvaluate[];
   } {
     const commentsToEvaluate: CommentToEvaluate[] = [];
-    const reviewCommentsToEvaluate: ReviewCommentToEvaluate[] = [];
+    const prCommentsToEvaluate: PrCommentToEvaluate[] = [];
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
       if (!this._fixedRelevances[currentComment.type]) {
         if (currentComment.type & CommentKind.PULL) {
-          reviewCommentsToEvaluate.push({
+          prCommentsToEvaluate.push({
             id: currentComment.id,
             comment: currentComment.content,
             diffHunk: currentComment?.diffHunk,
@@ -149,16 +146,16 @@ export class ContentEvaluatorModule implements Module {
         }
       }
     }
-    return { commentsToEvaluate, reviewCommentsToEvaluate };
+    return { commentsToEvaluate, PrCommentsToEvaluate: prCommentsToEvaluate };
   }
 
   async _evaluateComments(
     specification: string,
     comments: CommentToEvaluate[],
-    reviewComments: ReviewCommentToEvaluate[]
+    prComments: PrCommentToEvaluate[]
   ): Promise<Relevances> {
     let commentRelevances: Relevances = {};
-    let reviewCommentRelevances: Relevances = {};
+    let prCommentRelevances: Relevances = {};
 
     if (comments.length) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
@@ -168,15 +165,15 @@ export class ContentEvaluatorModule implements Module {
       commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
     }
 
-    if (reviewComments.length) {
-      const dummyResponse = JSON.stringify(this._generateDummyResponse(reviewComments), null, 2);
+    if (prComments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForReviewComments = this._generatePromptForReviewComments(specification, reviewComments);
-      reviewCommentRelevances = await this._submitPrompt(promptForReviewComments, maxTokens);
+      const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
+      prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
     }
 
-    return { ...commentRelevances, ...reviewCommentRelevances };
+    return { ...commentRelevances, ...prCommentRelevances };
   }
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
@@ -222,7 +219,7 @@ export class ContentEvaluatorModule implements Module {
     }.`;
   }
 
-  _generatePromptForReviewComments(issue: string, comments: ReviewCommentToEvaluate[]) {
+  _generatePromptForPrComments(issue: string, comments: PrCommentToEvaluate[]) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }

@@ -14,7 +14,6 @@ import githubCommentResults from "./__mocks__/results/github-comment-results.jso
 import dbSeed from "./__mocks__/db-seed.json";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
-import Decimal from "decimal.js";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { db as mockDb } from "./__mocks__/db";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
@@ -151,14 +150,14 @@ describe("Modules tests", () => {
   beforeEach(async () => {
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate, reviewCommentsToEvaluate) => {
+      .mockImplementation((specificationBody, commentsToEvaluate, prCommentsToEvaluate) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
             commentsToEvaluate.forEach((comment) => {
               relevance[`${comment.id}`] = 0.8;
             });
-            reviewCommentsToEvaluate.forEach((comment) => {
+            prCommentsToEvaluate.forEach((comment) => {
               relevance[`${comment.id}`] = 0.7;
             });
             return relevance;
