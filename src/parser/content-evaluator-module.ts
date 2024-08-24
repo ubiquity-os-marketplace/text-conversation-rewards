@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { encodingForModel, Tiktoken } from "js-tiktoken";
 import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
@@ -110,6 +111,21 @@ export class ContentEvaluatorModule implements Module {
     return commentsWithScore;
   }
 
+  /**
+   * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
+   */
+  _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
+    const tokenizer: Tiktoken = encodingForModel("gpt-4o-2024-08-06");
+    const inputTokens = tokenizer.encode(prompt).length;
+    return Math.min(inputTokens, totalTokenLimit);
+  }
+
+  _generateDummyResponse(comments: { id: number; comment: string }[]) {
+    return comments.reduce<Record<string, number>>((acc, curr) => {
+      return { ...acc, [curr.id]: 0.5 };
+    }, {});
+  }
+
   _splitCommentsByPrompt(commentsWithScore: Readonly<GithubCommentScore>[]): {
     commentsToEvaluate: CommentToEvaluate[];
     reviewCommentsToEvaluate: ReviewCommentToEvaluate[];
@@ -145,21 +161,27 @@ export class ContentEvaluatorModule implements Module {
     let reviewCommentRelevances: Relevances = {};
 
     if (comments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
+
       const promptForComments = this._generatePromptForComments(specification, comments);
-      commentRelevances = await this._submitPrompt(promptForComments);
+      commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
     }
 
     if (reviewComments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(reviewComments), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
+
       const promptForReviewComments = this._generatePromptForReviewComments(specification, reviewComments);
-      reviewCommentRelevances = await this._submitPrompt(promptForReviewComments);
+      reviewCommentRelevances = await this._submitPrompt(promptForReviewComments, maxTokens);
     }
 
     return { ...commentRelevances, ...reviewCommentRelevances };
   }
 
-  async _submitPrompt(prompt: string): Promise<Relevances> {
+  async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-2024-08-06",
       response_format: { type: "json_object" },
       messages: [
         {
@@ -167,15 +189,15 @@ export class ContentEvaluatorModule implements Module {
           content: prompt,
         },
       ],
-      temperature: 1,
-      max_tokens: 384,
+      max_tokens: maxTokens,
       top_p: 1,
+      temperature: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
     });
 
     const rawResponse = String(response.choices[0].message.content);
-    logger.info(`OpenAI raw response: ${rawResponse}`);
+    logger.info(`OpenAI raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
     const jsonResponse = JSON.parse(rawResponse);
 
