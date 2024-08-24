@@ -114,22 +114,17 @@ export class ContentEvaluatorModule implements Module {
     commentsToEvaluate: CommentToEvaluate[];
     reviewCommentsToEvaluate: ReviewCommentToEvaluate[];
   } {
-    // exclude comments that have fixed relevance multiplier. e.g. review comments = 1
     const commentsToEvaluate: CommentToEvaluate[] = [];
     const reviewCommentsToEvaluate: ReviewCommentToEvaluate[] = [];
     for (let i = 0; i < commentsWithScore.length; i++) {
       const currentComment = commentsWithScore[i];
       if (!this._fixedRelevances[currentComment.type]) {
         if (currentComment.type & CommentKind.PULL) {
-          if (currentComment?.diffHunk) {
-            //Eval PR comment with diffHunk, all other PR comments get relevance:1 by default
-
-            reviewCommentsToEvaluate.push({
-              id: currentComment.id,
-              comment: currentComment.content,
-              diffHunk: currentComment.diffHunk,
-            });
-          }
+          reviewCommentsToEvaluate.push({
+            id: currentComment.id,
+            comment: currentComment.content,
+            diffHunk: currentComment?.diffHunk,
+          });
         } else {
           commentsToEvaluate.push({
             id: currentComment.id,
