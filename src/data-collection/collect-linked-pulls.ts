@@ -25,7 +25,7 @@ export async function collectLinkedMergedPulls2(issue: IssueParams) {
   const octokit = getOctokitInstance();
   const { owner, repo, issue_number } = issue;
 
-  const result = await octokit.graphql<IssueWithClosedByPRs>(LINKED_PULL_REQUESTS, {
+  const result = await octokit.graphql.paginate<IssueWithClosedByPRs>(LINKED_PULL_REQUESTS, {
     owner,
     repo,
     issue_number,
