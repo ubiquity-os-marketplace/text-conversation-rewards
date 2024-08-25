@@ -46,6 +46,7 @@ export class IssueActivity {
   }
 
   private async _getLinkedReviews(): Promise<Review[]> {
+    logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
     const pulls = await collectLinkedMergedPulls2(this._issueParams);
     logger.debug("Collected linked pull-requests", { pulls });
     const promises = pulls
