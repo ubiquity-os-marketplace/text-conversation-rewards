@@ -3,7 +3,7 @@ export const LINKED_PULL_REQUESTS = /* GraphQL */ `
     repository(owner: $owner, name: $repo) {
       issue(number: $issue_number) {
         id
-        closedByPullRequestsReferences(first: 10, includeClosedPrs: false, after: $cursor) {
+        closedByPullRequestsReferences(first: 10, includeClosedPrs: false, after: $cursor, last: 1) {
           edges {
             node {
               id
