@@ -30,5 +30,5 @@ export async function collectLinkedMergedPull(issue: IssueParams) {
     issue_number,
   });
 
-  return result.repository.issue.closedByPullRequestsReferences.edges.map((edge) => edge.node);
+  return result.repository.issue.closedByPullRequestsReferences.edges.map((edge) => edge.node).slice(-1);
 }
