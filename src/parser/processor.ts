@@ -96,9 +96,8 @@ export interface GithubCommentScore {
   type: CommentKind | CommentAssociation;
   score?: {
     formatting?: {
-      content: Record<string, { count: number; score: number }>;
-      formattingMultiplier: number;
-      wordValue: number;
+      content: Record<string, { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }>;
+      multiplier: number;
     };
     relevance?: number;
     clarity?: number;

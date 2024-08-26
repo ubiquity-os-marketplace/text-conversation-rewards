@@ -1,5 +1,4 @@
 import { drop } from "@mswjs/data";
-import Decimal from "decimal.js";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
 import githubCommentModuleInstance from "../src/helpers/github-comment-module-instance";
@@ -22,9 +21,9 @@ const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
   return Promise.resolve(
     (() => {
-      const relevance: { [k: string]: Decimal } = {};
+      const relevance: { [k: string]: number } = {};
       comments.forEach((comment) => {
-        relevance[`${comment.id}`] = new Decimal(0.8);
+        relevance[`${comment.id}`] = 0.8;
       });
       return relevance;
     })()
@@ -86,7 +85,7 @@ jest.mock("../src/parser/command-line", () => {
     eventPayload: {
       issue: {
         html_url: issueUrl,
-        number: 1,
+        number: 69,
         state_reason: "completed",
       },
       repository: {
@@ -131,6 +130,10 @@ jest.mock("../src/helpers/web3", () => ({
     return "WXDAI";
   },
 }));
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);
