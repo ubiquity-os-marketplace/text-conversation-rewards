@@ -132,15 +132,6 @@ export class ContentEvaluatorModule implements Module {
     specification: string,
     comments: { id: number; comment: string }[]
   ): Promise<RelevancesByOpenAi> {
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        return relevance;
-      })()
-    );
     const prompt = this._generatePrompt(specification, comments);
     const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
     const maxTokens = this._calculateMaxTokens(dummyResponse);
