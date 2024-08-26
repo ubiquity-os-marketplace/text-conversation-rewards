@@ -36,7 +36,7 @@ export class ContentEvaluatorModule implements Module {
       this._fixedRelevances = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.select.reduce((a, b) => this._getEnumValue(b) | a, 0)]: curr.relevance,
+          [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: curr.relevance,
         };
       }, {});
     }
@@ -44,7 +44,7 @@ export class ContentEvaluatorModule implements Module {
 
   get enabled(): boolean {
     if (!Value.Check(contentEvaluatorConfigurationType, this._configuration)) {
-      console.warn("Invalid configuration detected for ContentEvaluatorModule, disabling.");
+      console.warn("Invalid / missing configuration detected for ContentEvaluatorModule, disabling.");
       return false;
     }
     return true;

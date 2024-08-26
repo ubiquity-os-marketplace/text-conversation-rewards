@@ -7,95 +7,111 @@ export const commentType = Type.Union(
   )
 );
 
-export const formattingEvaluatorConfigurationType = Type.Object({
-  /**
-   * Multipliers applied to different parts of the comment body content
-   */
-  multipliers: Type.Array(
-    Type.Object({
-      select: Type.Array(commentType),
-      formattingMultiplier: Type.Number(),
-      wordValue: Type.Number(),
-    }),
-    {
-      default: [
-        {
-          select: ["ISSUE_SPECIFICATION"],
-          formattingMultiplier: 1,
-          wordValue: 0.1,
-        },
-        {
-          select: ["ISSUE_AUTHOR"],
-          formattingMultiplier: 1,
-          wordValue: 0.2,
-        },
-        {
-          select: ["ISSUE_ASSIGNEE"],
-          formattingMultiplier: 0,
-          wordValue: 0,
-        },
-        {
-          select: ["ISSUE_COLLABORATOR"],
-          formattingMultiplier: 1,
-          wordValue: 0.1,
-        },
-        {
-          select: ["ISSUE_CONTRIBUTOR"],
-          formattingMultiplier: 0.25,
-          wordValue: 0.1,
-        },
-        {
-          select: ["PULL_SPECIFICATION"],
-          formattingMultiplier: 0,
-          wordValue: 0,
-        },
-        {
-          select: ["PULL_AUTHOR"],
-          formattingMultiplier: 2,
-          wordValue: 0.2,
-        },
-        {
-          select: ["PULL_ASSIGNEE"],
-          formattingMultiplier: 1,
-          wordValue: 0.1,
-        },
-        {
-          select: ["PULL_COLLABORATOR"],
-          formattingMultiplier: 1,
-          wordValue: 0.1,
-        },
-        {
-          select: ["PULL_CONTRIBUTOR"],
-          formattingMultiplier: 0.25,
-          wordValue: 0.1,
-        },
-      ],
-    }
-  ),
-  /**
-   * Attributed score per HTML entity
-   */
-  scores: Type.Record(Type.String(), Type.Number(), {
-    default: {
-      br: 0,
-      code: 1,
-      p: 1,
-      em: 0,
-      img: 0,
-      strong: 0,
-      blockquote: 0,
-      h1: 1,
-      h2: 1,
-      h3: 1,
-      h4: 1,
-      h5: 1,
-      h6: 1,
-      a: 1,
-      li: 1,
-      td: 1,
-      hr: 0,
-    },
-  }),
+const regexType = Type.Record(Type.String(), Type.Number(), { minProperties: 1 });
+
+/**
+ * Attributed score per HTML entity
+ */
+const htmlType = Type.Record(Type.String(), Type.Number(), {
+  default: {
+    br: 0,
+    code: 1,
+    p: 1,
+    em: 0,
+    img: 0,
+    strong: 0,
+    blockquote: 0,
+    h1: 1,
+    h2: 1,
+    h3: 1,
+    h4: 1,
+    h5: 1,
+    h6: 1,
+    a: 1,
+    li: 1,
+    ul: 1,
+    td: 1,
+    hr: 0,
+  },
 });
+
+const rewardsType = Type.Object(
+  {
+    html: htmlType,
+    regex: regexType,
+  },
+  { default: {} }
+);
+
+export const formattingEvaluatorConfigurationType = Type.Object(
+  {
+    /**
+     * Multipliers applied to different parts of the comment body content
+     */
+    multipliers: Type.Array(
+      Type.Object({
+        role: Type.Array(commentType, { minItems: 1 }),
+        multiplier: Type.Number(),
+        rewards: rewardsType,
+      }),
+      {
+        minItems: 1,
+        default: [
+          {
+            role: ["ISSUE_SPECIFICATION"],
+            multiplier: 1,
+            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+          },
+          {
+            role: ["ISSUE_AUTHOR"],
+            multiplier: 1,
+            rewards: { regex: { "\\b\\w+\\b": 0.2 } },
+          },
+          {
+            role: ["ISSUE_ASSIGNEE"],
+            multiplier: 0,
+            rewards: { regex: { "\\b\\w+\\b": 0 } },
+          },
+          {
+            role: ["ISSUE_COLLABORATOR"],
+            multiplier: 1,
+            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+          },
+          {
+            role: ["ISSUE_CONTRIBUTOR"],
+            multiplier: 0.25,
+            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+          },
+          {
+            role: ["PULL_SPECIFICATION"],
+            multiplier: 0,
+            rewards: { regex: { "\\b\\w+\\b": 0 } },
+          },
+          {
+            role: ["PULL_AUTHOR"],
+            multiplier: 2,
+            rewards: { regex: { "\\b\\w+\\b": 0.2 } },
+          },
+          {
+            role: ["PULL_ASSIGNEE"],
+            multiplier: 1,
+            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+          },
+          {
+            role: ["PULL_COLLABORATOR"],
+            multiplier: 1,
+            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+          },
+          {
+            role: ["PULL_CONTRIBUTOR"],
+            multiplier: 0.25,
+            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+          },
+        ],
+      }
+    ),
+  },
+  { default: {} }
+);
 
 export type FormattingEvaluatorConfiguration = Static<typeof formattingEvaluatorConfigurationType>;

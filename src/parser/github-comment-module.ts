@@ -69,7 +69,7 @@ export class GithubCommentModule implements Module {
 
   get enabled(): boolean {
     if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
-      logger.error("Invalid configuration detected for GithubContentModule, disabling.");
+      logger.error("Invalid / missing configuration detected for GithubContentModule, disabling.");
       return false;
     }
     return true;
@@ -175,14 +175,7 @@ export class GithubCommentModule implements Module {
             <td>
             <details>
               <summary>
-                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {
-                  const multiplier = commentScore.score?.formatting
-                    ? new Decimal(commentScore.score.formatting.formattingMultiplier).mul(
-                        commentScore.score.formatting.wordValue
-                      )
-                    : new Decimal(0);
-                  return acc.add(multiplier.mul(curr.score * curr.count));
-                }, new Decimal(0))}
+                ${new Decimal(commentScore.score?.reward || 0).div(new Decimal(commentScore.score?.relevance || 1))}
               </summary>
               <pre>${formatting}</pre>
              </details>
