@@ -64,6 +64,7 @@ const resultOriginal: Result = {
     userId: 1,
     comments: [
       {
+        id: 57,
         content: "comment 3",
         url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
         type: CommentKind.ISSUE,
@@ -82,6 +83,7 @@ const resultOriginal: Result = {
     userId: 1,
     comments: [
       {
+        id: 57,
         content: "comment 3",
         url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
         type: CommentKind.ISSUE,

@@ -9,6 +9,7 @@ export const LINKED_PULL_REQUESTS = /* GraphQL */ `
               id
               title
               number
+              url
               author {
                 login
                 ... on User {
