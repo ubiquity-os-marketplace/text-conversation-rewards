@@ -32,7 +32,7 @@ const htmlType = Type.Record(Type.String(), Type.Number(), {
     ul: 1,
     td: 1,
     hr: 0,
-    pre: 1,
+    pre: 0,
   },
 });
 
