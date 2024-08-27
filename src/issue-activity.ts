@@ -1,7 +1,7 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import configuration from "./configuration/config-reader";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
-import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
+import { collectLinkedMergedPull } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -46,19 +46,21 @@ export class IssueActivity {
   }
 
   private async _getLinkedReviews(): Promise<Review[]> {
-    const pulls = await collectLinkedMergedPulls(this._issueParams);
+    logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
+    const pulls = await collectLinkedMergedPull(this._issueParams);
+    logger.debug("Collected linked pull-requests", { pulls });
     const promises = pulls
       .map(async (pull) => {
-        const repository = pull.source.issue.repository;
+        const repository = pull.repository;
 
         if (!repository) {
-          console.error(`No repository found for [${pull.source.issue.repository}]`);
+          logger.error(`No repository found for`, { ...pull.repository });
           return null;
         } else {
           const pullParams = {
             owner: repository.owner.login,
             repo: repository.name,
-            pull_number: pull.source.issue.number,
+            pull_number: pull.number,
           };
           const review = new Review(pullParams);
           await review.init();

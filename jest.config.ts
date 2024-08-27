@@ -11,6 +11,7 @@ const cfg: Config = {
   reporters: ["default", "jest-junit", "jest-md-dashboard"],
   coverageDirectory: "coverage",
   testTimeout: 10000,
+  roots: ["<rootDir>", "tests"],
 };
 
 export default cfg;

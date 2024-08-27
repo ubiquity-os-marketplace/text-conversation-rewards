@@ -22,6 +22,45 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
+jest.mock("@octokit/plugin-paginate-graphql", () => ({
+  paginateGraphQL() {
+    return {
+      graphql: {
+        paginate() {
+          return {
+            repository: {
+              issue: {
+                closedByPullRequestsReferences: {
+                  edges: [
+                    {
+                      node: {
+                        id: "PR_kwDOK87YcM5nHc9o",
+                        title: "chore: add new shared evmPrivateKeyEncrypted",
+                        number: 25,
+                        url: "https://github.com/ubiquibot/comment-incentives/pull/25",
+                        author: {
+                          login: "gitcoindev",
+                          id: 88761781,
+                        },
+                        repository: {
+                          owner: {
+                            login: "ubiquibot",
+                          },
+                          name: "comment-incentives",
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          };
+        },
+      },
+    };
+  },
+}));
+
 describe("Action tests", () => {
   it("Should skip when the issue is closed without the completed status", async () => {
     jest.mock("../src/parser/command-line", () => {

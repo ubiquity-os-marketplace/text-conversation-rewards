@@ -2,12 +2,13 @@ import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";
 import program from "./parser/command-line";
 import configuration from "./configuration/config-reader";
+import { paginateGraphQL, paginateGraphQLInterface } from "@octokit/plugin-paginate-graphql";
 
-const customOctokit = Octokit.plugin(retry);
+const customOctokit = Octokit.plugin(retry, paginateGraphQL);
 
-let octokitInstance: Octokit | null = null;
+let octokitInstance: (Octokit & paginateGraphQLInterface) | null = null;
 
-function getOctokitInstance(): Octokit {
+function getOctokitInstance() {
   if (!octokitInstance) {
     octokitInstance = new customOctokit({
       auth: program.authToken,
