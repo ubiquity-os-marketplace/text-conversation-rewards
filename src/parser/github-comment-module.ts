@@ -77,6 +77,10 @@ export class GithubCommentModule implements Module {
 
   async postComment(body: string, updateLastComment = true) {
     const { eventPayload } = program;
+    if (!this._configuration?.post) {
+      logger.debug("Won't post a comment since posting is disabled.", { body });
+      return;
+    }
     if (updateLastComment && this._lastCommentId !== null) {
       await getOctokitInstance().issues.updateComment({
         body,

@@ -60,6 +60,9 @@ with:
   incentives:
     requirePriceLabel: true
     contentEvaluator:
+      openAi:
+        model: "gpt-4o"
+        endpoint: "https://api.openai.com/v1"
       multipliers:
         - role: [ISSUE_SPECIFICATION]
           relevance: 1

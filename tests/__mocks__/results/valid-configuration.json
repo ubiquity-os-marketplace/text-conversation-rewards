@@ -7,56 +7,40 @@
   "evmNetworkId": 100,
   "evmPrivateEncrypted": "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ",
   "incentives": {
-    "requirePriceLabel": true,
     "contentEvaluator": {
       "multipliers": [
         {
-          "role": [
-            "ISSUE_SPECIFICATION"
-          ],
-          "relevance": 1
+          "relevance": 1,
+          "role": ["ISSUE_SPECIFICATION"]
         },
         {
-          "role": [
-            "PULL_AUTHOR"
-          ],
-          "relevance": 1
+          "relevance": 1,
+          "role": ["PULL_AUTHOR"]
         },
         {
-          "role": [
-            "PULL_ASSIGNEE"
-          ],
-          "relevance": 1
+          "relevance": 1,
+          "role": ["PULL_ASSIGNEE"]
         },
         {
-          "role": [
-            "PULL_COLLABORATOR"
-          ],
-          "relevance": 1
+          "relevance": 1,
+          "role": ["PULL_COLLABORATOR"]
         },
         {
-          "role": [
-            "PULL_CONTRIBUTOR"
-          ],
-          "relevance": 1
+          "relevance": 1,
+          "role": ["PULL_CONTRIBUTOR"]
         }
-      ]
-    },
-    "userExtractor": {
-      "redeemTask": true
+      ],
+      "openAi": {
+        "endpoint": "",
+        "model": "gpt-4o"
+      }
     },
     "dataPurge": {},
     "formattingEvaluator": {
       "multipliers": [
         {
           "multiplier": 1,
-          "role": [
-            "ISSUE_SPECIFICATION"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -72,22 +56,21 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0.1
             }
-          }
+          },
+          "role": ["ISSUE_SPECIFICATION"]
         },
         {
           "multiplier": 1,
-          "role": [
-            "ISSUE_AUTHOR"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0.2
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -103,22 +86,21 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0.2
             }
-          }
+          },
+          "role": ["ISSUE_AUTHOR"]
         },
         {
           "multiplier": 0,
-          "role": [
-            "ISSUE_ASSIGNEE"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -134,22 +116,21 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0
             }
-          }
+          },
+          "role": ["ISSUE_ASSIGNEE"]
         },
         {
           "multiplier": 1,
-          "role": [
-            "ISSUE_COLLABORATOR"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -165,22 +146,21 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0.1
             }
-          }
+          },
+          "role": ["ISSUE_COLLABORATOR"]
         },
         {
           "multiplier": 0.25,
-          "role": [
-            "ISSUE_CONTRIBUTOR"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -196,22 +176,21 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0.1
             }
-          }
+          },
+          "role": ["ISSUE_CONTRIBUTOR"]
         },
         {
           "multiplier": 0,
-          "role": [
-            "PULL_SPECIFICATION"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -227,53 +206,51 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0
             }
-          }
+          },
+          "role": ["PULL_SPECIFICATION"]
         },
         {
           "multiplier": 2,
-          "role": [
-            "PULL_AUTHOR"
-          ],
           "rewards": {
+            "html": {
+              "a": 1,
+              "blockquote": 0,
+              "br": 0,
+              "code": 1,
+              "em": 0,
+              "h1": 1,
+              "h2": 1,
+              "h3": 1,
+              "h4": 1,
+              "h5": 1,
+              "h6": 1,
+              "hr": 0,
+              "img": 0,
+              "li": 1,
+              "p": 1,
+              "pre": 0,
+              "strong": 0,
+              "td": 1,
+              "ul": 1
+            },
             "regex": {
               "\\b\\w+\\b": 0.2
-            },
-            "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "ul": 1,
-              "p": 1,
-              "strong": 0,
-              "td": 1
             }
-          }
+          },
+          "role": ["PULL_AUTHOR"]
         },
         {
           "multiplier": 1,
-          "role": [
-            "PULL_ASSIGNEE"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -289,22 +266,21 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0.1
             }
-          }
+          },
+          "role": ["PULL_ASSIGNEE"]
         },
         {
           "multiplier": 1,
-          "role": [
-            "PULL_COLLABORATOR"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -320,22 +296,21 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0.1
             }
-          }
+          },
+          "role": ["PULL_COLLABORATOR"]
         },
         {
           "multiplier": 0.25,
-          "role": [
-            "PULL_CONTRIBUTOR"
-          ],
           "rewards": {
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            },
             "html": {
               "a": 1,
               "blockquote": 0,
@@ -351,12 +326,17 @@
               "hr": 0,
               "img": 0,
               "li": 1,
-              "ul": 1,
               "p": 1,
+              "pre": 0,
               "strong": 0,
-              "td": 1
+              "td": 1,
+              "ul": 1
+            },
+            "regex": {
+              "\\b\\w+\\b": 0.1
             }
-          }
+          },
+          "role": ["PULL_CONTRIBUTOR"]
         }
       ]
     },
@@ -364,6 +344,10 @@
       "debug": true,
       "post": false
     },
-    "permitGeneration": {}
+    "permitGeneration": {},
+    "requirePriceLabel": true,
+    "userExtractor": {
+      "redeemTask": true
+    }
   }
 }
