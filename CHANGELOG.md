@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.0](https://github.com/ubiquibot/conversation-rewards/compare/v1.3.1...v1.4.0) (2024-08-28)
+
+
+### Features
+
+* added configuration for OpenAI settings ([bab8e3a](https://github.com/ubiquibot/conversation-rewards/commit/bab8e3a61b03eb54bbb7d5288cbaeae67a41171c))
+* changed pull-request by graphql ([4de373f](https://github.com/ubiquibot/conversation-rewards/commit/4de373fc13fea8fc18c7d016379ad5b909321b87))
+* only extracting the last pull request ([313f11b](https://github.com/ubiquibot/conversation-rewards/commit/313f11b209a3b79a8d4ada2022505a510d253a56))
+
+
+### Bug Fixes
+
+* relevances are not sent to OpenAI if empty ([d0e5bac](https://github.com/ubiquibot/conversation-rewards/commit/d0e5baccc6bf25f85a95751ae1f3e82684860d13))
+* waiting message is only displayed on issue completed ([6b6698b](https://github.com/ubiquibot/conversation-rewards/commit/6b6698b41459d8d8ecf0b8d019b40b385a7f4fe3))
+
 ## [1.3.1](https://github.com/ubiquibot/conversation-rewards/compare/v1.3.0...v1.3.1) (2024-08-20)
 
 
