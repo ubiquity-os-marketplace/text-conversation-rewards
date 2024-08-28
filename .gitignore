@@ -10,3 +10,4 @@ static/dist
 .env
 junit.xml
 coverage
+test-dashboard.md

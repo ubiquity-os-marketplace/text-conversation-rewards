@@ -126,6 +126,45 @@ jest.mock("@supabase/supabase-js", () => {
   };
 });
 
+jest.mock("@octokit/plugin-paginate-graphql", () => ({
+  paginateGraphQL() {
+    return {
+      graphql: {
+        paginate() {
+          return {
+            repository: {
+              issue: {
+                closedByPullRequestsReferences: {
+                  edges: [
+                    {
+                      node: {
+                        id: "PR_kwDOK87YcM5nHc9o",
+                        title: "chore: add new shared evmPrivateKeyEncrypted",
+                        number: 25,
+                        url: "https://github.com/ubiquibot/comment-incentives/pull/25",
+                        author: {
+                          login: "gitcoindev",
+                          id: 88761781,
+                        },
+                        repository: {
+                          owner: {
+                            login: "ubiquibot",
+                          },
+                          name: "comment-incentives",
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          };
+        },
+      },
+    };
+  },
+}));
+
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());

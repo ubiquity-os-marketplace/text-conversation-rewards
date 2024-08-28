@@ -10,8 +10,10 @@ import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
 import issueTimelineGet from "./routes/issue-timeline-get.json";
 import issue69TimelineGet from "./routes/issue-69-timeline-get.json";
+import issue70CommentsGet from "./routes/issue-70-comments-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
 import pullsGet from "./routes/pulls-get.json";
+import pulls70Get from "./routes/issue-70-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
 
 /**
@@ -56,6 +58,18 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/pulls/25/comments", () => {
     return HttpResponse.json(pullsCommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70", () => {
+    return HttpResponse.json(pulls70Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70/reviews", () => {
+    return HttpResponse.json(pullsReviewsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70/comments", () => {
+    return HttpResponse.json([]);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/70/comments", () => {
+    return HttpResponse.json(issue70CommentsGet);
   }),
   http.get("https://api.github.com/users/:login", ({ params: { login } }) => {
     const user = db.users.findFirst({

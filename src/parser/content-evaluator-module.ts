@@ -18,8 +18,11 @@ import { GithubCommentScore, Module, Result } from "./processor";
  * Evaluates and rates comments.
  */
 export class ContentEvaluatorModule implements Module {
-  readonly _openAi = new OpenAI({ apiKey: OPENAI_API_KEY });
   readonly _configuration: ContentEvaluatorConfiguration | null = configuration.incentives.contentEvaluator;
+  readonly _openAi = new OpenAI({
+    apiKey: OPENAI_API_KEY,
+    ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
+  });
   private readonly _fixedRelevances: { [k: string]: number } = {};
 
   _getEnumValue(key: CommentType) {
@@ -86,7 +89,9 @@ export class ContentEvaluatorModule implements Module {
       }
     }
 
-    const relevancesByAI = await this._evaluateComments(specificationBody, commentsToEvaluate);
+    const relevancesByAI = commentsToEvaluate.length
+      ? await this._evaluateComments(specificationBody, commentsToEvaluate)
+      : {};
 
     if (Object.keys(relevancesByAI).length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
@@ -137,7 +142,7 @@ export class ContentEvaluatorModule implements Module {
     const maxTokens = this._calculateMaxTokens(dummyResponse);
 
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
-      model: "gpt-4o-2024-08-06",
+      model: this._configuration?.openAi.model || "gpt-4o-2024-08-06",
       response_format: { type: "json_object" },
       messages: [
         {
