@@ -20,7 +20,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 2.08
+          "reward": 1.41
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186802545"
@@ -44,7 +44,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 3.36
+          "reward": 2.12
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186807999"
@@ -77,7 +77,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 4.8
+          "reward": 2.68
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69"
@@ -143,7 +143,7 @@
             "multiplier": 2
           },
           "relevance": 1,
-          "reward": 2
+          "reward": 1.57
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186530214"
@@ -176,7 +176,7 @@
             "multiplier": 2
           },
           "relevance": 1,
-          "reward": 20
+          "reward": 12.07
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186798329"
@@ -188,7 +188,7 @@
       "multiplier": 0.5,
       "reward": 25
     },
-    "total": 57.24,
+    "total": 44.87,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -212,7 +212,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 2
+          "reward": 1.23
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186805818"
@@ -245,7 +245,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 1.6
+          "reward": 1.07
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186813200"
@@ -269,7 +269,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 3.9
+          "reward": 2.25
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186914050"
@@ -281,7 +281,7 @@
       "multiplier": 0.5,
       "reward": 25
     },
-    "total": 32.5,
+    "total": 29.56,
     "userId": 9807008
   }
 }
