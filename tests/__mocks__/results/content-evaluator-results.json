@@ -20,7 +20,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 3.36
+          "reward": 2.12
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948930217"
@@ -44,7 +44,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 2.56
+          "reward": 1.68
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949201722"
@@ -77,7 +77,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 11.68
+          "reward": 6.28
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949203681"
@@ -101,7 +101,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 1.44
+          "reward": 1.03
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949633751"
@@ -125,7 +125,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 1.28
+          "reward": 0.93
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639054"
@@ -149,7 +149,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 8.16
+          "reward": 4.52
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949642845"
@@ -209,7 +209,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 5.7
+          "reward": 3.50
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22"
@@ -233,7 +233,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 0.7
+          "reward": 0.52
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949021356"
@@ -257,7 +257,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 1.2
+          "reward": 0.82
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196677"
@@ -317,13 +317,13 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 64.9
+          "reward": 25.01
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196678"
       }
     ],
-    "total": 100.98,
+    "total": 46.47,
     "userId": 4975670
   },
   "gitcoindev": {
@@ -395,7 +395,7 @@
             "multiplier": 2
           },
           "relevance": 1,
-          "reward": 4
+          "reward": 2.83
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044575"
@@ -419,7 +419,7 @@
             "multiplier": 2
           },
           "relevance": 1,
-          "reward": 6
+          "reward": 3.99
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949046925"
@@ -429,7 +429,7 @@
       "multiplier": 1,
       "reward": 37.5
     },
-    "total": 47.5,
+    "total": 44.32,
     "userId": 88761781
   },
   "molecula451": {
@@ -462,7 +462,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.3
+          "reward":  0.19
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343"
@@ -486,7 +486,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.1
+          "reward": 0.07
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948989989"
@@ -510,7 +510,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.28
+          "reward": 0.18
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949195772"
@@ -534,7 +534,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.24
+          "reward": 0.16
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949564869"
@@ -558,7 +558,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.62
+          "reward": 0.37
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949635137"
@@ -582,7 +582,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.04
+          "reward": 0.03
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639196"
@@ -630,13 +630,13 @@
             "multiplier": 0.25
           },
           "relevance": 1,
-          "reward": 0.45
+          "reward": 0.29
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855"
       }
     ],
-    "total": 2.055,
+    "total": 1.35,
     "userId": 41552663
   }
 }

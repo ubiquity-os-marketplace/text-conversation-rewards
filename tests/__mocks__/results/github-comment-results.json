@@ -20,7 +20,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 3.36
+          "reward": 2.12
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948930217"
@@ -44,7 +44,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 2.56
+          "reward": 1.68
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949201722"
@@ -77,7 +77,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 11.68
+          "reward": 6.28
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949203681"
@@ -101,7 +101,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 1.44
+          "reward": 1.03
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949633751"
@@ -125,7 +125,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 1.28
+          "reward": 0.93
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639054"
@@ -149,7 +149,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 8.16
+          "reward": 4.52
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949642845"
@@ -209,7 +209,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 5.7
+          "reward": 3.50
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22"
@@ -233,7 +233,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 0.7
+          "reward": 0.52
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949021356"
@@ -257,7 +257,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 1.2
+          "reward": 0.82
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196677"
@@ -317,7 +317,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 64.9
+          "reward": 25.01
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196678"
@@ -325,7 +325,7 @@
     ],
     "evaluationCommentHtml": "<details>       <summary>         <b>           <h3>             <a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxMDA5ODAwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIxMzk4MDc3NDQ3Njk3Njc2NDUwNDg5OTI1OTY3MjgzNzQyNDc1NDg5MTE2OTQzMTAxODM2MjUyODIwMzEyOTk2OTU5MDg4MjA4MTYxIiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIxMDA5ODAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDM1MTczYjc5YzA4NjY3YTU0NTljZjY1ZjA0NjQ4YjQ5MWQ4ZDQyNDcyYTE0NmUwNDUxYzc0NTU4NmM3MTVhMTU3ODMxZGJhOTIzZWFlNDEwY2Q1YTU3NjNlNDdjNWVkODAyZmQzN2I2ZWNlZDk1MmUwYWM3ZGIxYzc0N2UyMjI2MWIiLCJuZXR3b3JrSWQiOjEwMH1d\" target=\"_blank\" rel=\"noopener\">               [ 100.98 WXDAI ]             </a>           </h3>           <h6>             @0x4007           </h6>         </b>       </summary>       <h6>Contributions Overview</h6>       <table>         <thead>           <tr>             <th>View</th>             <th>Contribution</th>             <th>Count</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>Issue</td>             <td>Specification</td>             <td>1</td>             <td>5.7</td>           </tr>           <tr>             <td>Issue</td>             <td>Comment</td>             <td>6</td>             <td>28.48</td>           </tr>           <tr>             <td>Review</td>             <td>Comment</td>             <td>3</td>             <td>66.8</td>           </tr>         </tbody>       </table>       <h6>Conversation Incentives</h6>       <table>         <thead>           <tr>             <th>Comment</th>             <th>Formatting</th>             <th>Relevance</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22\" target=\"_blank\" rel=\"noopener\">Can somebody work on generating a new &#96;X25519_PRIVATE_KEY&#9&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 5.7               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 20&#13;        multiplier: 0.1&#13;    score: 1&#13;  code:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 2&#13;        multiplier: 0.1&#13;    score: 1&#13;  ol:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 52&#13;        multiplier: 0.1&#13;    score: 0&#13;  li:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 35&#13;        multiplier: 0.1&#13;    score: 1&#13;  em:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 15&#13;        multiplier: 0.1&#13;    score: 0&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>1</td>             <td>5.7</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948930217\" target=\"_blank\" rel=\"noopener\">Link below for conversation context. It was to me. Anyways you n&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 4.2               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 21&#13;        multiplier: 0.2&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>3.36</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949201722\" target=\"_blank\" rel=\"noopener\">In the repository secrets I think I need to change the key to ma&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.2               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 16&#13;        multiplier: 0.2&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>2.56</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949203681\" target=\"_blank\" rel=\"noopener\">I just changed it to &#96;627H-BcWbcp_O3YmQGIA6MqgxVsFuplFCA9DK3&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 14.6               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 71&#13;        multiplier: 0.2&#13;    score: 1&#13;  code:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 2&#13;        multiplier: 0.2&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>11.68</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949633751\" target=\"_blank\" rel=\"noopener\">I don't understand what you mean by this</a>               </h6>             </td>             <td>             <details>               <summary>                 1.8               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 9&#13;        multiplier: 0.2&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>1.44</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639054\" target=\"_blank\" rel=\"noopener\">I'll investigate more on my computer later.</a>               </h6>             </td>             <td>             <details>               <summary>                 1.6               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 8&#13;        multiplier: 0.2&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>1.28</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949642845\" target=\"_blank\" rel=\"noopener\">Will it be an issue if I revert to the commit and secret that I &hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 10.2               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 51&#13;        multiplier: 0.2&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>8.16</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949021356\" target=\"_blank\" rel=\"noopener\">Need to document a private key too</a>               </h6>             </td>             <td>             <details>               <summary>                 0.7               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 7&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>1</td>             <td>0.7</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196677\" target=\"_blank\" rel=\"noopener\">I was editing this right now but was too slow to push.</a>               </h6>             </td>             <td>             <details>               <summary>                 1.2               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 12&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>1</td>             <td>1.2</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196678\" target=\"_blank\" rel=\"noopener\">I am quoting some code! &lt;task-lists sortable=\"\"&gt; &lt;tab&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 64.9               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 641&#13;        multiplier: 0.1&#13;    score: 1&#13;  code:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 1&#13;        multiplier: 0.1&#13;    score: 1&#13;  a:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 1&#13;        multiplier: 0.1&#13;    score: 1&#13;  ul:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 4&#13;        multiplier: 0.1&#13;    score: 1&#13;  li:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 2&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>1</td>             <td>64.9</td>           </tr>         </tbody>       </table>     </details>",
     "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxMDA5ODAwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIxMzk4MDc3NDQ3Njk3Njc2NDUwNDg5OTI1OTY3MjgzNzQyNDc1NDg5MTE2OTQzMTAxODM2MjUyODIwMzEyOTk2OTU5MDg4MjA4MTYxIiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIxMDA5ODAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDM1MTczYjc5YzA4NjY3YTU0NTljZjY1ZjA0NjQ4YjQ5MWQ4ZDQyNDcyYTE0NmUwNDUxYzc0NTU4NmM3MTVhMTU3ODMxZGJhOTIzZWFlNDEwY2Q1YTU3NjNlNDdjNWVkODAyZmQzN2I2ZWNlZDk1MmUwYWM3ZGIxYzc0N2UyMjI2MWIiLCJuZXR3b3JrSWQiOjEwMH1d",
-    "total": 100.98,
+    "total": 46.47,
     "userId": 4975670
   },
   "gitcoindev": {
@@ -397,7 +397,7 @@
             "multiplier": 2
           },
           "relevance": 1,
-          "reward": 4
+          "reward": 2.83
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044575"
@@ -421,7 +421,7 @@
             "multiplier": 2
           },
           "relevance": 1,
-          "reward": 6
+          "reward": 3.99
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949046925"
@@ -433,7 +433,7 @@
       "multiplier": 1,
       "reward": 37.5
     },
-    "total": 47.5,
+    "total": 44.32,
     "userId": 88761781
   },
   "molecula451": {
@@ -466,7 +466,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.3
+          "reward": 0.19
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343"
@@ -490,7 +490,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.1
+          "reward": 0.07
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948989989"
@@ -514,7 +514,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.28
+          "reward": 0.18
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949195772"
@@ -538,7 +538,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.24
+          "reward": 0.16
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949564869"
@@ -562,7 +562,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.62
+          "reward": 0.37
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949635137"
@@ -586,7 +586,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.04
+          "reward": 0.03
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639196"
@@ -634,7 +634,7 @@
             "multiplier": 0.25
           },
           "relevance": 1,
-          "reward": 0.45
+          "reward": 0.29
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855"
@@ -642,7 +642,7 @@
     ],
     "evaluationCommentHtml": "<details>       <summary>         <b>           <h3>             <a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIyMDU1MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiNTI3ODUzNTAyNjczOTk4MzczNzk3NzMyNTIzMjczMjE4NDgwMzIwMjAyMzk4MjQ4NjYyMDQ3Mjc0NTUzMTcwMTIzMDk3NjYwMDQ2OTciLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjIwNTUwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGM0NGFmOTdmMDE2Y2RjZjg3YzlhMjk2ZWYyYTNlMDRiZTIwOWFlNWMyMDc2Y2UxNDRlMjc4MzkzMDRjNmQ4MWQ2NTQxNjVmOTgxYTE4MWYyM2Q0YmIwZDBlNzVlYWY3ZGY2OGY4ZDc2MTFlNTI1NWZlYWFjOWM2YmIwNGE4YjFiMWIiLCJuZXR3b3JrSWQiOjEwMH1d\" target=\"_blank\" rel=\"noopener\">               [ 2.055 WXDAI ]             </a>           </h3>           <h6>             @molecula451           </h6>         </b>       </summary>       <h6>Contributions Overview</h6>       <table>         <thead>           <tr>             <th>View</th>             <th>Contribution</th>             <th>Count</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>Issue</td>             <td>Comment</td>             <td>6</td>             <td>1.58</td>           </tr>           <tr>             <td>Review</td>             <td>Comment</td>             <td>2</td>             <td>0.475</td>           </tr>         </tbody>       </table>       <h6>Conversation Incentives</h6>       <table>         <thead>           <tr>             <th>Comment</th>             <th>Formatting</th>             <th>Relevance</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343\" target=\"_blank\" rel=\"noopener\">pavlovcik i think we need to update a bit the readme ![image_20&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 0.375               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 15&#13;        multiplier: 0.1&#13;    score: 1&#13;  img:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 1&#13;        multiplier: 0.1&#13;    score: 0&#13;multiplier: 0.25&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>0.3</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948989989\" target=\"_blank\" rel=\"noopener\">let us know when done</a>               </h6>             </td>             <td>             <details>               <summary>                 0.125               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 5&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 0.25&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>0.1</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949195772\" target=\"_blank\" rel=\"noopener\">https://github.com/ubiquibot/comment-incentives/actions/runs/793&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 0.35               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 14&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 0.25&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>0.28</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949564869\" target=\"_blank\" rel=\"noopener\">@pavlovcik permitted with hard debug (tho no funds in the privat&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 0.3               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 12&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 0.25&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>0.24</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949635137\" target=\"_blank\" rel=\"noopener\">pavlovcik i re-generated the X25519 to trigger the permit, what &hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 0.775               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 31&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 0.25&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>0.62</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639196\" target=\"_blank\" rel=\"noopener\">sure thing</a>               </h6>             </td>             <td>             <details>               <summary>                 0.05               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 2&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 0.25&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>0.04</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949038563\" target=\"_blank\" rel=\"noopener\">indeed</a>               </h6>             </td>             <td>             <details>               <summary>                 0.025               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 1&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 0.25&#13;</pre>              </details>             </td>             <td>1</td>             <td>0.025</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855\" target=\"_blank\" rel=\"noopener\">go to go pavlovick, we'll be using this one for test only or tes&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 0.45               </summary>               <pre>content:&#13;  p:&#13;    symbols:&#13;      \\b\\w+\\b:&#13;        count: 18&#13;        multiplier: 0.1&#13;    score: 1&#13;multiplier: 0.25&#13;</pre>              </details>             </td>             <td>1</td>             <td>0.45</td>           </tr>         </tbody>       </table>     </details>",
     "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIyMDU1MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiNTI3ODUzNTAyNjczOTk4MzczNzk3NzMyNTIzMjczMjE4NDgwMzIwMjAyMzk4MjQ4NjYyMDQ3Mjc0NTUzMTcwMTIzMDk3NjYwMDQ2OTciLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjIwNTUwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGM0NGFmOTdmMDE2Y2RjZjg3YzlhMjk2ZWYyYTNlMDRiZTIwOWFlNWMyMDc2Y2UxNDRlMjc4MzkzMDRjNmQ4MWQ2NTQxNjVmOTgxYTE4MWYyM2Q0YmIwZDBlNzVlYWY3ZGY2OGY4ZDc2MTFlNTI1NWZlYWFjOWM2YmIwNGE4YjFiMWIiLCJuZXR3b3JrSWQiOjEwMH1d",
-    "total": 2.055,
+    "total": 1.35,
     "userId": 41552663
   }
 }
