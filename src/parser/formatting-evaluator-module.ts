@@ -58,7 +58,7 @@ export class FormattingEvaluatorModule implements Module {
         const comment = comments[i];
         const { formatting } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
-        const formattingTotal = this._calculateFormattingTotal(formatting, multiplierFactor);
+        const formattingTotal = this._calculateFormattingTotal(formatting, multiplierFactor).toDecimalPlaces(2);
         comment.score = {
           ...comment.score,
           formatting: {
@@ -78,25 +78,27 @@ export class FormattingEvaluatorModule implements Module {
   ): Decimal {
     if (!formatting) return new Decimal(0);
 
-    return Object.values(formatting).reduce((acc, curr) => {
-      let sum = new Decimal(0);
+    return Object.values(formatting)
+      .reduce((acc, curr) => {
+        let sum = new Decimal(0);
 
-      for (const symbol of Object.keys(curr.symbols)) {
-        const count = new Decimal(curr.symbols[symbol].count);
-        const symbolMultiplier = new Decimal(curr.symbols[symbol].multiplier);
-        const formattingElementScore = new Decimal(curr.score);
-        const exponent = this._wordCountExponent;
+        for (const symbol of Object.keys(curr.symbols)) {
+          const count = new Decimal(curr.symbols[symbol].count);
+          const symbolMultiplier = new Decimal(curr.symbols[symbol].multiplier);
+          const formattingElementScore = new Decimal(curr.score);
+          const exponent = this._wordCountExponent;
 
-        sum = sum.add(
-          count
-            .pow(exponent) // (count^exponent)
-            .mul(symbolMultiplier) // symbol multiplier
-            .mul(formattingElementScore) // comment type multiplier
-            .mul(multiplierFactor.multiplier) // formatting element score
-        );
-      }
-      return acc.add(sum);
-    }, new Decimal(0));
+          sum = sum.add(
+            count
+              .pow(exponent) // (count^exponent)
+              .mul(symbolMultiplier) // symbol multiplier
+              .mul(formattingElementScore) // comment type multiplier
+              .mul(multiplierFactor.multiplier) // formatting element score
+          );
+        }
+        return acc.add(sum);
+      }, new Decimal(0))
+      .toDecimalPlaces(2);
   }
 
   get enabled(): boolean {
