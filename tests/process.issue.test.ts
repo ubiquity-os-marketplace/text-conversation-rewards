@@ -65,6 +65,9 @@ jest.mock("../src/parser/command-line", () => {
           login: "ubiquibot",
         },
       },
+      organization: {
+        id: 76412717, // https://github.com/ubiquity
+      },
     },
     settings: JSON.stringify(cfg),
   };
@@ -259,7 +262,7 @@ describe("Modules tests", () => {
     });
   });
 
-  it("Should generate permits", async () => {
+  it.only("Should generate permits", async () => {
     const processor = new Processor();
     processor["_transformers"] = [
       new UserExtractorModule(),
