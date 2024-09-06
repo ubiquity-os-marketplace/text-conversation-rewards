@@ -163,4 +163,151 @@ describe("permit-generation-module.ts", () => {
       expect(resultAfterFees["ubiquibot-treasury"].total).toEqual(11.11);
     });
   });
+
+  describe("_isPrivateKeyAllowed()", () => {
+    beforeEach(() => {
+      // set dummy X25519_PRIVATE_KEY
+      process.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+    });
+
+    it("Should return false if private key could not be decrypted", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      process.env.X25519_PRIVATE_KEY = "";
+      const privateKeyEncrypted = "ANY";
+      const githubContextOrganizationId = 1;
+      const githubContextRepositoryId = 2;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(false);
+      expect(spyConsoleLog).toHaveBeenCalledWith("Private key could not be decrypted");
+    });
+
+    it("Should return false if private key is used in plain format outside ubiquity related organizations", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      // format: "PRIVATE_KEY"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+      const privateKeyEncrypted = "Php81Y5mOJcuXDf9H9BOG74SHKVBG0xnKipnFpGrcDz0yQqNS_l3mWh06Tki_J1WLdjzcBx-ZVs3OrRpMCRFYeJ588kgxRwHFlAvZGQFdTohIClOwyHMw1t-mG4KZoLMyFmqxFTtFs64JezRB1dJDA";
+      const githubContextOrganizationId = 1;
+      const githubContextRepositoryId = 2;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(false);
+      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization id 1 is not allowed to use this type of private key");
+    });
+
+    it("Should return true if private key is used in plain format in ubiquity related organizations", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      // format: "PRIVATE_KEY"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+      const privateKeyEncrypted = "Php81Y5mOJcuXDf9H9BOG74SHKVBG0xnKipnFpGrcDz0yQqNS_l3mWh06Tki_J1WLdjzcBx-ZVs3OrRpMCRFYeJ588kgxRwHFlAvZGQFdTohIClOwyHMw1t-mG4KZoLMyFmqxFTtFs64JezRB1dJDA";
+      const githubContextOrganizationId = 76412717; // ubiquity
+      const githubContextRepositoryId = 2;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(true);
+    });
+
+    it("Should return false if private key is used in unallowed organization", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1"
+      const privateKeyEncrypted = "fdsmuUN_jTF-VAWMe55ozcg6AuLOKiyJm8unRg1QwnY9u_fsKmczRtekx6aq59ndQ0RDJ803SkeTOlUW87cd93rDTiq57ErxkRwq4j4SKYTitChIWAZw0-LCJAd2IvRmN9qVzA7oXEdkUihXkErGGtqK";
+      const githubContextOrganizationId = 99;
+      const githubContextRepositoryId = 2;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(false);
+      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization id 99 is not allowed to use this private key");
+    });
+
+    it("Should return true if private key is used in allowed organization", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1"
+      const privateKeyEncrypted = "fdsmuUN_jTF-VAWMe55ozcg6AuLOKiyJm8unRg1QwnY9u_fsKmczRtekx6aq59ndQ0RDJ803SkeTOlUW87cd93rDTiq57ErxkRwq4j4SKYTitChIWAZw0-LCJAd2IvRmN9qVzA7oXEdkUihXkErGGtqK";
+      const githubContextOrganizationId = 1;
+      const githubContextRepositoryId = 2;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(true);
+    });
+
+    it("Should return false if private key is used in unallowed organization and allowed repository", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
+      const privateKeyEncrypted = "mgLMdW_zfTYn3oNB5O0RBvPQOU4SkE1dOnhc6IGrgTQkkEJB7tvaEHdbZS0dEnq4VK21yShd5zdaRMbl6W2B6ij5tkrODH5-NEd8Uvp4Ks-NqrG-V3GkKrCJqCz3Cci3jrXU_rdn3Uil03d41eB4xluR_g8";
+      const githubContextOrganizationId = 99;
+      const githubContextRepositoryId = 2;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(false);
+      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization id 99 and repository id 2 are not allowed to use this private key");
+    });
+
+    it("Should return false if private key is used in allowed organization and unallowed repository", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
+      const privateKeyEncrypted = "mgLMdW_zfTYn3oNB5O0RBvPQOU4SkE1dOnhc6IGrgTQkkEJB7tvaEHdbZS0dEnq4VK21yShd5zdaRMbl6W2B6ij5tkrODH5-NEd8Uvp4Ks-NqrG-V3GkKrCJqCz3Cci3jrXU_rdn3Uil03d41eB4xluR_g8";
+      const githubContextOrganizationId = 1;
+      const githubContextRepositoryId = 99;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(false);
+      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization id 1 and repository id 99 are not allowed to use this private key");
+    });
+
+    it("Should return true if private key is used in allowed organization and repository", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
+      const privateKeyEncrypted = "mgLMdW_zfTYn3oNB5O0RBvPQOU4SkE1dOnhc6IGrgTQkkEJB7tvaEHdbZS0dEnq4VK21yShd5zdaRMbl6W2B6ij5tkrODH5-NEd8Uvp4Ks-NqrG-V3GkKrCJqCz3Cci3jrXU_rdn3Uil03d41eB4xluR_g8";
+      const githubContextOrganizationId = 1;
+      const githubContextRepositoryId = 2;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(true);
+    });
+
+    it("Should return false if private key format is invalid", async () => {
+      const permitGenerationModule = new PermitGenerationModule();
+      const spyConsoleLog = jest.spyOn(console, "log");
+
+      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID:UNKNOWN"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2:UNKNOWN"
+      const privateKeyEncrypted = "aW4_7S31ZISGV9-DAfjJEIbu2HUPsFPVzvTkCLBptxJAfkHLnPX5xb-_bP1LP2IHdSdOs4RtHliSbsfJKX3wbLJ9ySxcNElmJKNo38-uawCzJTxk2o0_B4mzr2H-iXBqZDOBx4tEwIT2nSQYl4yRpWhMPUQ3wP9FwbaN8Q";
+      const githubContextOrganizationId = 1;
+      const githubContextRepositoryId = 2;
+      
+      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
+      
+      expect(result).toEqual(false);
+      expect(spyConsoleLog).toHaveBeenCalledWith("Invalid private key format");
+    });
+  });
 });
