@@ -56,7 +56,7 @@ export class PermitGenerationModule implements Module {
     }
     const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(payload.evmPrivateEncrypted, program.eventPayload.organization?.id || 0, program.eventPayload.repository.id);
     if (!isPrivateKeyAllowed) {
-      console.warn("[PermitGenerationModule] Private key is not allowed to be used in this ogranization/repository.");
+      console.warn("[PermitGenerationModule] Private key is not allowed to be used in this organization/repository.");
       return Promise.resolve(result);
     }
     const eventName = context.eventName as SupportedEvents;
