@@ -262,7 +262,7 @@ describe("Modules tests", () => {
     });
   });
 
-  it.only("Should generate permits", async () => {
+  it("Should generate permits", async () => {
     const processor = new Processor();
     processor["_transformers"] = [
       new UserExtractorModule(),

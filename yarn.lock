@@ -4401,7 +4401,7 @@ __metadata:
     "@types/node": "npm:20.11.28"
     "@typescript-eslint/eslint-plugin": "npm:6.21.0"
     "@typescript-eslint/parser": "npm:6.21.0"
-    "@ubiquibot/permit-generation": "npm:1.5.1"
+    "@ubiquibot/permit-generation": "npm:1.6.0"
     "@ubiquity-dao/rpc-handler": "npm:1.3.0"
     "@ubiquity-dao/ubiquibot-logger": "npm:1.3.1"
     babel-jest: "npm:29.7.0"
@@ -4432,9 +4432,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ubiquibot/permit-generation@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@ubiquibot/permit-generation@npm:1.5.1"
+"@ubiquibot/permit-generation@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@ubiquibot/permit-generation@npm:1.6.0"
   dependencies:
     "@actions/core": "npm:^1.10.1"
     "@actions/github": "npm:^6.0.0"
@@ -4447,7 +4447,7 @@ __metadata:
     dotenv: "npm:^16.4.4"
     ethers: "npm:6.11.1"
     libsodium-wrappers: "npm:^0.7.13"
-  checksum: 10c0/781a1db5d95124a30650a806a3f82af79c236adda730bf7cca424fdc729990a42c352dd75b73cd64c91bc8c48728c11c0e8ed2469ac1b87298e6f49a83f82006
+  checksum: 10c0/87e424b6bb9b72bf15d220345a7f91cd84a1439d2ce5452a506dfca2980534d48b64a93efd594f14f403ec67a6b912aa6e483e3e8c6ca2d177fb65f2859bbe28
   languageName: node
   linkType: hard
 

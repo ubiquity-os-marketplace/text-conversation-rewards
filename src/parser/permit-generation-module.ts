@@ -11,7 +11,7 @@ import {
   SupportedEvents,
   TokenType,
 } from "@ubiquibot/permit-generation/core";
-import { decryptKeys } from "@ubiquibot/permit-generation/utils";
+import { decrypt, parseDecryptedPrivateKey } from "@ubiquibot/permit-generation/utils";
 import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import {
@@ -306,21 +306,22 @@ export class PermitGenerationModule implements Module {
     githubContextRepositoryId: number
   ): Promise<boolean> {
     // decrypt private key
-    const { privateKey } = await decryptKeys(privateKeyEncrypted);
-    if (!privateKey) {
+    const privateKeyDecrypted = await decrypt(privateKeyEncrypted, process.env.X25519_PRIVATE_KEY);
+    
+    // parse decrypted private key
+    const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
+    if (!privateKeyParsed.privateKey) {
       console.log("Private key could not be decrypted");
       return false;
     }
-
-    // split private key
-    const privateKeyParts = privateKey.split(":");
 
     // Plain private key.
     // Used for backwards compatibility. 
     // Can be used only within our existing organizations:
     // - https://github.com/ubiquity
     // - https://github.com/ubiquibot
-    if (privateKeyParts.length === 1) {
+    // Format: PRIVATE_KEY.
+    if (!privateKeyParsed.allowedOrganizationId && !privateKeyParsed.allowedRepositoryId) {
       const ALLOWED_ORGANIZATION_IDS = [
         76412717, // https://github.com/ubiquity
         133917611, // https://github.com/ubiquibot
@@ -333,9 +334,9 @@ export class PermitGenerationModule implements Module {
     }
 
     // private key + organization id
-    if (privateKeyParts.length === 2) {
-      const allowedOrganizationId = +privateKeyParts[1];
-      if (allowedOrganizationId !== githubContextOrganizationId) {
+    // Format: PRIVATE_KEY:GITHUB_ORGANIZATION_ID
+    if (privateKeyParsed.allowedOrganizationId && !privateKeyParsed.allowedRepositoryId) {
+      if (privateKeyParsed.allowedOrganizationId !== githubContextOrganizationId) {
         console.log(`Current organization id ${githubContextOrganizationId} is not allowed to use this private key`);
         return false;
       }
@@ -343,10 +344,9 @@ export class PermitGenerationModule implements Module {
     }
 
     // private key + organization id + repository id
-    if (privateKeyParts.length === 3) {
-      const allowedOrganizationId = +privateKeyParts[1];
-      const allowedRepositoryId = +privateKeyParts[2];
-      if (allowedOrganizationId !== githubContextOrganizationId || allowedRepositoryId !== githubContextRepositoryId) {
+    // Format: PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID
+    if (privateKeyParsed.allowedOrganizationId && privateKeyParsed.allowedRepositoryId) {
+      if (privateKeyParsed.allowedOrganizationId !== githubContextOrganizationId || privateKeyParsed.allowedRepositoryId !== githubContextRepositoryId) {
         console.log(`Current organization id ${githubContextOrganizationId} and repository id ${githubContextRepositoryId} are not allowed to use this private key`);
         return false;
       }

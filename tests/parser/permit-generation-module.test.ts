@@ -174,8 +174,9 @@ describe("permit-generation-module.ts", () => {
       const permitGenerationModule = new PermitGenerationModule();
       const spyConsoleLog = jest.spyOn(console, "log");
 
-      process.env.X25519_PRIVATE_KEY = "";
-      const privateKeyEncrypted = "ANY";
+      // format: "PRIVATE_KEY"
+      // encrypted value: ""
+      const privateKeyEncrypted = "Y-29-JttQ7xNBMOQylST_9kgVjVKnvkYlyihbqsBwGDmuBi7ZlaIh1I6cTDzrMiR";
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
       
@@ -298,9 +299,9 @@ describe("permit-generation-module.ts", () => {
       const permitGenerationModule = new PermitGenerationModule();
       const spyConsoleLog = jest.spyOn(console, "log");
 
-      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID:UNKNOWN"
-      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2:UNKNOWN"
-      const privateKeyEncrypted = "aW4_7S31ZISGV9-DAfjJEIbu2HUPsFPVzvTkCLBptxJAfkHLnPX5xb-_bP1LP2IHdSdOs4RtHliSbsfJKX3wbLJ9ySxcNElmJKNo38-uawCzJTxk2o0_B4mzr2H-iXBqZDOBx4tEwIT2nSQYl4yRpWhMPUQ3wP9FwbaN8Q";
+      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:0:2"
+      const privateKeyEncrypted = "RIocCo0h_tMvLWieOZYPWzP7l7jVnVAno_QELfyUrRwVsN8aOHlx5hw5Be41bX74_Xaqef-gwTToXfdbgbqgLhLG0fxtw-QxKkWtzVnMlqO-WA2WVuaf3BpyiGFbVyyvFyFY_Q_O9gxY_F3xBPmHNfAwCPs";
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
       
