@@ -4401,7 +4401,7 @@ __metadata:
     "@types/node": "npm:20.11.28"
     "@typescript-eslint/eslint-plugin": "npm:6.21.0"
     "@typescript-eslint/parser": "npm:6.21.0"
-    "@ubiquibot/permit-generation": "npm:1.4.3"
+    "@ubiquibot/permit-generation": "npm:1.6.0"
     "@ubiquity-dao/rpc-handler": "npm:1.3.0"
     "@ubiquity-dao/ubiquibot-logger": "npm:1.3.1"
     babel-jest: "npm:29.7.0"
@@ -4432,9 +4432,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ubiquibot/permit-generation@npm:1.4.3":
-  version: 1.4.3
-  resolution: "@ubiquibot/permit-generation@npm:1.4.3"
+"@ubiquibot/permit-generation@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@ubiquibot/permit-generation@npm:1.6.0"
   dependencies:
     "@actions/core": "npm:^1.10.1"
     "@actions/github": "npm:^6.0.0"
@@ -4442,16 +4442,16 @@ __metadata:
     "@octokit/webhooks": "npm:^13.1.0"
     "@sinclair/typebox": "npm:^0.32.5"
     "@supabase/supabase-js": "npm:2.42.0"
-    "@ubiquity-dao/rpc-handler": "npm:^1.1.0"
+    "@ubiquity-dao/rpc-handler": "npm:1.3.0"
     "@uniswap/permit2-sdk": "npm:^1.2.0"
     dotenv: "npm:^16.4.4"
     ethers: "npm:6.11.1"
     libsodium-wrappers: "npm:^0.7.13"
-  checksum: 10c0/7d16d99d1dc652f8448b59e2cf783d9574e3f5329739e02a72383f4677fbdfd4cd19753cf4b3172003e3c10eb154a310d67ca977d23c52e17beaed5023593f3e
+  checksum: 10c0/87e424b6bb9b72bf15d220345a7f91cd84a1439d2ce5452a506dfca2980534d48b64a93efd594f14f403ec67a6b912aa6e483e3e8c6ca2d177fb65f2859bbe28
   languageName: node
   linkType: hard
 
-"@ubiquity-dao/rpc-handler@npm:1.3.0, @ubiquity-dao/rpc-handler@npm:^1.1.0":
+"@ubiquity-dao/rpc-handler@npm:1.3.0":
   version: 1.3.0
   resolution: "@ubiquity-dao/rpc-handler@npm:1.3.0"
   dependencies:
