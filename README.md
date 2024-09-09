@@ -31,7 +31,7 @@ Be sure to review all `*.test.*` files for implementation details.
               }
             },
             "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.8,
           "relevance": 0.5
@@ -42,11 +42,11 @@ Be sure to review all `*.test.*` files for implementation details.
 }
 ```
 
-Reward formula: `((count * wordValue) * (score * formattingMultiplier) * n) * relevance + task.reward = total`
+Reward formula: `((count * wordValue) * (score * multiplier) * n) * relevance + task.reward = total`
 
 ## Plugin configuration
 
-Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration) for more details.
+Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration/) for more details.
 
 ```yaml
 plugin: ubiquibot/conversation-rewards
@@ -60,71 +60,95 @@ with:
   incentives:
     requirePriceLabel: true
     contentEvaluator:
+      openAi:
+        model: "gpt-4o"
+        endpoint: "https://api.openai.com/v1"
       multipliers:
-        - select: [ISSUE_SPECIFICATION]
+        - role: [ISSUE_SPECIFICATION]
           relevance: 1
-        - select: [PULL_AUTHOR]
+        - role: [PULL_AUTHOR]
           relevance: 1
-        - select: [PULL_ASSIGNEE]
+        - role: [PULL_ASSIGNEE]
           relevance: 1
-        - select: [PULL_COLLABORATOR]
+        - role: [PULL_COLLABORATOR]
           relevance: 1
-        - select: [PULL_CONTRIBUTOR]
+        - role: [PULL_CONTRIBUTOR]
           relevance: 1
     userExtractor:
       redeemTask: true
-    dataPurge:
+    dataPurge: {}
     formattingEvaluator:
-      scores:
-        br: 0
-        code: 1
-        p: 1
-        em: 0
-        img: 0
-        strong: 0
-        blockquote: 0
-        h1: 1
-        h2: 1
-        h3: 1
-        h4: 1
-        h5: 1
-        h6: 1
-        a: 1
-        li: 1
-        td: 1
-        hr: 0
-        multipliers:
-          - select: [ISSUE_SPECIFICATION]
-            formattingMultiplier: 1
-            wordValue: 0.1
-          - select: [ISSUE_AUTHOR]
-            formattingMultiplier: 1
-            wordValue: 0.2
-          - select: [ISSUE_ASSIGNEE]
-            formattingMultiplier: 0
-            wordValue: 0
-          - select: [ISSUE_COLLABORATOR]
-            formattingMultiplier: 1
-            wordValue: 0.1
-          - select: [ISSUE_CONTRIBUTOR]
-            formattingMultiplier: 0.25
-            wordValue: 0.1
-          - select: [PULL_SPECIFICATION]
-            formattingMultiplier: 0
-            wordValue: 0
-          - select: [PULL_AUTHOR]
-            formattingMultiplier: 2
-            wordValue: 0.2
-          - select: [PULL_ASSIGNEE]
-            formattingMultiplier: 1
-            wordValue: 0.1
-          - select: [PULL_COLLABORATOR]
-            formattingMultiplier: 1
-            wordValue: 0.1
-          - select: [PULL_CONTRIBUTOR]
-            formattingMultiplier: 0.25
-            wordValue: 0.1
-      permitGeneration:
+      multipliers:
+          - role: [ ISSUE_SPECIFICATION ]
+            multiplier: 1
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0.1
+              scores: # Scores can be set for each item differently
+                br: 0
+                code: 1
+                p: 1
+                em: 0
+                img: 0
+                strong: 0
+                blockquote: 0
+                h1: 1
+                h2: 1
+                h3: 1
+                h4: 1
+                h5: 1
+                h6: 1
+                a: 1
+                li: 1
+                ul: 1
+                td: 1
+                hr: 0
+          - role: [ISSUE_AUTHOR]
+            multiplier: 1
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0.2
+          - role: [ISSUE_ASSIGNEE]
+            multiplier: 0
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0
+          - role: [ISSUE_COLLABORATOR]
+            multiplier: 1
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0.1
+          - role: [ISSUE_CONTRIBUTOR]
+            multiplier: 0.25
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0.1
+          - role: [PULL_SPECIFICATION]
+            multiplier: 0
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0
+          - role: [PULL_AUTHOR]
+            multiplier: 2
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0.2
+          - role: [PULL_ASSIGNEE]
+            multiplier: 1
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0.1
+          - role: [PULL_COLLABORATOR]
+            multiplier: 1
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0.1
+          - role: [PULL_CONTRIBUTOR]
+            multiplier: 0.25
+            rewards:
+              regex:
+                "\\b\\w+\\b": 0.1
+      permitGeneration: {}
       githubComment:
         post: true
         debug: false

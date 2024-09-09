@@ -23,8 +23,11 @@ import {
  * Evaluates and rates comments.
  */
 export class ContentEvaluatorModule implements Module {
-  readonly _openAi = new OpenAI({ apiKey: OPENAI_API_KEY });
   readonly _configuration: ContentEvaluatorConfiguration | null = configuration.incentives.contentEvaluator;
+  readonly _openAi = new OpenAI({
+    apiKey: OPENAI_API_KEY,
+    ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
+  });
   private readonly _fixedRelevances: { [k: string]: number } = {};
 
   _getEnumValue(key: CommentType) {
@@ -41,7 +44,7 @@ export class ContentEvaluatorModule implements Module {
       this._fixedRelevances = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.select.reduce((a, b) => this._getEnumValue(b) | a, 0)]: curr.relevance,
+          [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: curr.relevance,
         };
       }, {});
     }
@@ -49,7 +52,7 @@ export class ContentEvaluatorModule implements Module {
 
   get enabled(): boolean {
     if (!Value.Check(contentEvaluatorConfigurationType, this._configuration)) {
-      console.warn("Invalid configuration detected for ContentEvaluatorModule, disabling.");
+      console.warn("Invalid / missing configuration detected for ContentEvaluatorModule, disabling.");
       return false;
     }
     return true;
@@ -178,7 +181,7 @@ export class ContentEvaluatorModule implements Module {
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
-      model: "gpt-4o-2024-08-06",
+      model: this._configuration?.openAi.model || "gpt-4o-2024-08-06",
       response_format: { type: "json_object" },
       messages: [
         {

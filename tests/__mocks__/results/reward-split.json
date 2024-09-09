@@ -16,8 +16,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 13,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 13,
+                    "multiplier": 0.2
+                  }
+                }
               }
             },
             "wordValue": 0.2,
@@ -36,8 +41,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 20,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 21,
+                    "multiplier": 0.2
+                  }
+                }
               }
             },
             "wordValue": 0.2,
@@ -80,8 +90,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 3,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 10,
+                    "multiplier": 0
+                  }
+                }
               },
               "ul": {
                 "count": 18,
@@ -108,8 +123,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 5,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 5,
+                    "multiplier": 0.2
+                  }
+                }
               }
             },
             "wordValue": 0.2,
@@ -164,8 +184,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 24,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 25,
+                    "multiplier": 0.1
+                  }
+                }
               }
             },
             "wordValue": 0.1,
@@ -208,8 +233,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 39,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 39,
+                    "multiplier": 0.1
+                  }
+                }
               }
             },
             "wordValue": 0.1,

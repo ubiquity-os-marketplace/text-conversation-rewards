@@ -97,9 +97,8 @@ export interface GithubCommentScore {
   diffHunk?: string;
   score?: {
     formatting?: {
-      content: Record<string, { count: number; score: number }>;
-      formattingMultiplier: number;
-      wordValue: number;
+      content: Record<string, { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }>;
+      multiplier: number;
     };
     relevance?: number;
     clarity?: number;

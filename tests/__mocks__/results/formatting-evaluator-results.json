@@ -281,6 +281,15 @@
         "score": {
           "formatting": {
             "content": {
+              "code": {
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.2
+                  }
+                }
+              },
               "p": {
                 "count": 61,
                 "score": 1
@@ -866,6 +875,42 @@
         "score": {
           "formatting": {
             "content": {
+              "code": {
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.1
+                  }
+                }
+              },
+              "em": {
+                "score": 0,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 15,
+                    "multiplier": 0.1
+                  }
+                }
+              },
+              "li": {
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 35,
+                    "multiplier": 0.1
+                  }
+                }
+              },
+              "ol": {
+                "score": 0,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 52,
+                    "multiplier": 0.1
+                  }
+                }
+              },
               "p": {
                 "count": 107,
                 "score": 1
@@ -947,6 +992,33 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                }
+              },
+              "code": {
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                }
+              },
+              "li": {
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.1
+                  }
+                }
+              },
               "p": {
                 "count": 190,
                 "score": 1
@@ -1099,6 +1171,15 @@
         "score": {
           "formatting": {
             "content": {
+              "img": {
+                "score": 0,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                }
+              },
               "p": {
                 "count": 47,
                 "score": 1
@@ -1308,8 +1389,7 @@
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 0.25
           },
           "reward": 0.5
         }

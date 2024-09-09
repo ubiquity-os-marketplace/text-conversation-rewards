@@ -279,8 +279,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
                 "score": 1
               }
             },
-            "wordValue": 0,
-            "formattingMultiplier": 0
+            "multiplier": 0
           },
           "reward": 0,
           "relevance": 0.7
@@ -751,8 +750,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 19.6,
           "relevance": 0.7
@@ -772,8 +770,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 13.16,
           "relevance": 0.7
@@ -1221,7 +1218,12 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
@@ -1367,8 +1369,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.35,
           "relevance": 0.7
@@ -1455,8 +1456,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.14,
           "relevance": 0.7
@@ -1518,7 +1518,12 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
                 "score": 1
               },
               "code": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },

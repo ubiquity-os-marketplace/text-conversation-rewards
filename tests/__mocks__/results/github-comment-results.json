@@ -552,8 +552,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 12,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 12,
+                    "multiplier": 0.1
+                  }
+                }
               }
             },
             "wordValue": 0.2,
@@ -1360,8 +1365,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 5,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 5,
+                    "multiplier": 0.1
+                  }
+                }
               }
             },
             "wordValue": 0.1,
@@ -1427,8 +1437,13 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 7,
-                "score": 1
+                "score": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 14,
+                    "multiplier": 0.1
+                  }
+                }
               }
             },
             "wordValue": 0.1,

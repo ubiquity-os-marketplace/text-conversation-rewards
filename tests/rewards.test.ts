@@ -46,6 +46,45 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
+jest.mock("@octokit/plugin-paginate-graphql", () => ({
+  paginateGraphQL() {
+    return {
+      graphql: {
+        paginate() {
+          return {
+            repository: {
+              issue: {
+                closedByPullRequestsReferences: {
+                  edges: [
+                    {
+                      node: {
+                        id: "PR_kwDOKzVPS85zXUoj",
+                        title: "fix: add state to sorting manager for bottom and top",
+                        number: 70,
+                        url: "https://github.com/ubiquity/work.ubq.fi/pull/70",
+                        author: {
+                          login: "0x4007",
+                          id: 4975670,
+                        },
+                        repository: {
+                          owner: {
+                            login: "ubiquity",
+                          },
+                          name: "work.ubq.fi",
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          };
+        },
+      },
+    };
+  },
+}));
+
 jest.mock("@ubiquibot/permit-generation/core", () => {
   const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
 
@@ -65,7 +104,7 @@ jest.mock("@ubiquibot/permit-generation/core", () => {
                 },
               });
               if (!wallet) {
-                return Promise.resolve(null);
+                return Promise.resolve(`[mock] Could not find wallet for user ${userId}`);
               }
               return Promise.resolve(wallet.address);
             }),
@@ -90,7 +129,7 @@ jest.mock("../src/parser/command-line", () => {
     eventPayload: {
       issue: {
         html_url: issueUrl,
-        number: 1,
+        number: 69,
         state_reason: "completed",
       },
       repository: {
@@ -135,6 +174,10 @@ jest.mock("../src/helpers/web3", () => ({
     return "WXDAI";
   },
 }));
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);

@@ -269,7 +269,7 @@ export class PermitGenerationModule implements Module {
 
   get enabled(): boolean {
     if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
-      console.warn("Invalid configuration detected for PermitGenerationModule, disabling.");
+      console.warn("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
       return false;
     }
     return true;
