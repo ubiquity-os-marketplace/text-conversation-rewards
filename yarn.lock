@@ -4401,7 +4401,7 @@ __metadata:
     "@types/node": "npm:20.11.28"
     "@typescript-eslint/eslint-plugin": "npm:6.21.0"
     "@typescript-eslint/parser": "npm:6.21.0"
-    "@ubiquibot/permit-generation": "npm:*"
+    "@ubiquibot/permit-generation": "npm:^1.6.0"
     "@ubiquity-dao/rpc-handler": "npm:1.3.0"
     "@ubiquity-dao/ubiquibot-logger": "npm:1.3.1"
     babel-jest: "npm:29.7.0"
@@ -4432,7 +4432,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ubiquibot/permit-generation@npm:*":
+"@ubiquibot/permit-generation@npm:^1.6.0":
   version: 1.6.0
   resolution: "@ubiquibot/permit-generation@npm:1.6.0"
   dependencies:
