@@ -133,6 +133,9 @@ jest.mock("../src/parser/command-line", () => {
           login: "ubiquibot",
         },
       },
+      organization: {
+        id: 76412717, // https://github.com/ubiquity
+      },
     },
     settings: JSON.stringify(cfg),
   };
