@@ -1,7 +1,7 @@
 {
   "gentlementlegen": {
     "userId": 9807008,
-    "total": 872.1,
+    "total": 938.4,
     "task": {
       "reward": 400,
       "multiplier": 1
@@ -16,14 +16,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 19,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 33,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 3.8
+          "reward": 6.6
         }
       },
       {
@@ -35,22 +39,36 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 12,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 12,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "ul": {
-                "count": 93,
-                "score": 0
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 98,
+                    "multiplier": 0.2
+                  }
+                },
+                "score": 1
               },
               "li": {
-                "count": 93,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 74,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 21
+          "reward": 36.8
         }
       },
       {
@@ -62,18 +80,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 106,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 114,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 3,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 21.8
+          "reward": 23.2
         }
       },
       {
@@ -85,18 +112,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 135,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 134,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "a": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 27.2
+          "reward": 27
         }
       },
       {
@@ -108,14 +144,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 157,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 159,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 31.4
+          "reward": 31.8
         }
       },
       {
@@ -127,14 +167,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 54,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 55,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 10.8
+          "reward": 11
         }
       },
       {
@@ -146,18 +190,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 84,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 85,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 17
+          "reward": 17.2
         }
       },
       {
@@ -169,18 +222,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 59,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 58,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 6,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 13
+          "reward": 12
         }
       },
       {
@@ -192,26 +254,45 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 14,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 14,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "ul": {
-                "count": 40,
-                "score": 0
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 40,
+                    "multiplier": 0.2
+                  }
+                },
+                "score": 1
               },
               "li": {
-                "count": 40,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 16,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 7,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 12.2
+          "reward": 14.2
         }
       },
       {
@@ -223,26 +304,45 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 74,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 84,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "a": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "ul": {
-                "count": 16,
-                "score": 0
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 14,
+                    "multiplier": 0.1
+                  }
+                },
+                "score": 1
               },
               "li": {
-                "count": 16,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 3,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 9.1
+          "reward": 10.2
         }
       },
       {
@@ -254,20 +354,34 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 19,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 19,
+                    "multiplier": 0
+                  }
+                },
                 "score": 1
               },
               "ul": {
-                "count": 18,
-                "score": 0
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 45,
+                    "multiplier": 0
+                  }
+                },
+                "score": 1
               },
               "li": {
-                "count": 18,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 35,
+                    "multiplier": 0
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0,
-            "formattingMultiplier": 0
+            "multiplier": 0
           },
           "reward": 0
         }
@@ -281,28 +395,28 @@
         "score": {
           "formatting": {
             "content": {
-              "code": {
-                "score": 1,
+              "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 2,
+                    "count": 60,
                     "multiplier": 0.2
                   }
-                }
-              },
-              "p": {
-                "count": 61,
+                },
                 "score": 1
               },
               "code": {
-                "count": 4,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 26
+          "reward": 24.4
         }
       },
       {
@@ -315,16 +429,25 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 16,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 16,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 6.8
         }
@@ -339,14 +462,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 16,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 19,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 6.4
+          "reward": 7.6
         }
       },
       {
@@ -359,18 +486,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 39,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 40,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 16.4
+          "reward": 16.8
         }
       },
       {
@@ -383,18 +519,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 11,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 23,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 5.2
+          "reward": 9.6
         }
       },
       {
@@ -407,14 +552,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 32,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 47,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 12.8
+          "reward": 18.8
         }
       },
       {
@@ -427,12 +576,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 25,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 25,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 10
         }
@@ -447,20 +600,34 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 41,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 41,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "a": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 17.2
         }
@@ -475,14 +642,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 28,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 36,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 11.2
+          "reward": 14.4
         }
       },
       {
@@ -495,14 +666,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 9,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 16,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 3.6
+          "reward": 6.4
         }
       },
       {
@@ -515,18 +690,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 37,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 43,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 3,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 15.2
+          "reward": 18.4
         }
       },
       {
@@ -539,12 +723,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 12,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 12,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 4.8
         }
@@ -559,12 +747,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 33,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 33,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 13.2
         }
@@ -579,16 +771,25 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 68,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 68,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 27.6
         }
@@ -603,18 +804,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 24,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 25,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 10
+          "reward": 10.4
         }
       },
       {
@@ -627,12 +837,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 24,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 24,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 9.6
         }
@@ -647,14 +861,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 11,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 19,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 4.4
+          "reward": 7.6
         }
       },
       {
@@ -667,22 +885,36 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 8,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 8,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "ul": {
-                "count": 24,
-                "score": 0
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 33,
+                    "multiplier": 0.2
+                  }
+                },
+                "score": 1
               },
               "li": {
-                "count": 24,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 24,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 12.8
+          "reward": 26
         }
       },
       {
@@ -695,18 +927,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 27,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 30,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 11.2
+          "reward": 12.4
         }
       },
       {
@@ -719,18 +960,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 60,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 65,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 10,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 28
+          "reward": 26.8
         }
       },
       {
@@ -743,14 +993,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 47,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 48,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 18.8
+          "reward": 19.2
         }
       },
       {
@@ -763,18 +1017,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 44,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 57,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 5,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 19.6
+          "reward": 23.2
         }
       },
       {
@@ -786,14 +1049,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 8,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 16,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
-          "reward": 3.2
+          "reward": 6.4
         }
       },
       {
@@ -805,12 +1072,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 27,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 27,
+                    "multiplier": 0.2
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.2,
-            "formattingMultiplier": 2
+            "multiplier": 2
           },
           "reward": 10.8
         }
@@ -818,7 +1089,7 @@
     ]
   },
   "0x4007": {
-    "total": 161.2,
+    "total": 157.4,
     "userId": 4975670,
     "comments": [
       {
@@ -830,22 +1101,36 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 34,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 34,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "pre": {
-                "count": 19,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 13,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               },
               "code": {
-                "count": 19,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 13,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 5.3
+          "reward": 4.7
         }
       },
       {
@@ -857,12 +1142,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 17,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 17,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 1.7
         }
@@ -875,63 +1164,46 @@
         "score": {
           "formatting": {
             "content": {
-              "code": {
-                "score": 1,
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 2,
-                    "multiplier": 0.1
-                  }
-                }
-              },
-              "em": {
-                "score": 0,
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 15,
-                    "multiplier": 0.1
-                  }
-                }
-              },
-              "li": {
-                "score": 1,
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 35,
-                    "multiplier": 0.1
-                  }
-                }
-              },
-              "ol": {
-                "score": 0,
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 52,
-                    "multiplier": 0.1
-                  }
-                }
-              },
               "p": {
-                "count": 107,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 108,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "ul": {
-                "count": 174,
-                "score": 0
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 177,
+                    "multiplier": 0.1
+                  }
+                },
+                "score": 1
               },
               "li": {
-                "count": 174,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 159,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 28.3
+          "reward": 44.5
         }
       },
       {
@@ -943,18 +1215,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 151,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 166,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 4,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 15.5
+          "reward": 16.7
         }
       },
       {
@@ -966,22 +1247,36 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 106,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 108,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 30,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 21,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "pre": {
-                "count": 26,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 21,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 13.6
+          "reward": 12.9
         }
       },
       {
@@ -992,58 +1287,55 @@
         "score": {
           "formatting": {
             "content": {
-              "a": {
-                "score": 1,
+              "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 22,
                     "multiplier": 0.1
                   }
-                }
+                },
+                "score": 1
               },
               "code": {
-                "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 19,
                     "multiplier": 0.1
                   }
-                }
+                },
+                "score": 1
               },
-              "li": {
-                "score": 1,
+              "a": {
                 "symbols": {
                   "\\b\\w+\\b": {
                     "count": 2,
                     "multiplier": 0.1
                   }
-                }
-              },
-              "p": {
-                "count": 190,
-                "score": 1
-              },
-              "code": {
-                "count": 22,
-                "score": 1
-              },
-              "a": {
-                "count": 3,
+                },
                 "score": 1
               },
               "h3": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "pre": {
-                "count": 17,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 19,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 21.6
+          "reward": 4.4
         }
       },
       {
@@ -1055,24 +1347,43 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 59,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 60,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "ol": {
-                "count": 36,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 38,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               },
               "li": {
-                "count": 36,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 35,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 9.6
         }
@@ -1086,22 +1397,36 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 28,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 30,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "ol": {
-                "count": 66,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 67,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               },
               "li": {
-                "count": 66,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 48,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 9.4
+          "reward": 7.8
         }
       },
       {
@@ -1113,12 +1438,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 29,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 29,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 2.9
         }
@@ -1132,12 +1461,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 5,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 5,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.5
         }
@@ -1152,14 +1485,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 6,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 7,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 0.6
+          "reward": 0.7
         }
       },
       {
@@ -1171,24 +1508,19 @@
         "score": {
           "formatting": {
             "content": {
-              "img": {
-                "score": 0,
+              "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 49,
                     "multiplier": 0.1
                   }
-                }
-              },
-              "p": {
-                "count": 47,
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 4.7
+          "reward": 4.9
         }
       },
       {
@@ -1201,14 +1533,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 5,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 6,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 0.5
+          "reward": 0.6
         }
       },
       {
@@ -1221,16 +1557,25 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 27,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 28,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 2.9
         }
@@ -1245,18 +1590,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 13,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 14,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 1,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 1.4
+          "reward": 1.5
         }
       },
       {
@@ -1269,22 +1623,36 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 15,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 15,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "pre": {
-                "count": 14,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 9,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               },
               "code": {
-                "count": 14,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 9,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 2.9
+          "reward": 2.4
         }
       },
       {
@@ -1297,12 +1665,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 5,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 5,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.5
         }
@@ -1317,12 +1689,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 8,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 8,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.8
         }
@@ -1337,22 +1713,36 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 58,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 57,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 15,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 8,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "pre": {
-                "count": 13,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 8,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 7.3
+          "reward": 6.5
         }
       },
       {
@@ -1365,12 +1755,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 23,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 23,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 2.3
         }
@@ -1385,11 +1779,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 5,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 5,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 1
           },
           "reward": 0.5
         }
@@ -1404,18 +1803,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 22,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 19,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 4,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 2.6
+          "reward": 2
         }
       },
       {
@@ -1428,14 +1836,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 24,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 25,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 2.4
+          "reward": 2.5
         }
       },
       {
@@ -1448,12 +1860,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 7,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 7,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.7
         }
@@ -1468,12 +1884,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.2
         }
@@ -1488,12 +1908,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 8,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 8,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.8
         }
@@ -1508,12 +1932,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 0.2
         }
@@ -1528,18 +1956,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 30,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 30,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 3.2
+          "reward": 3.1
         }
       },
       {
@@ -1552,14 +1989,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 40,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 41,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 4
+          "reward": 4.1
         }
       },
       {
@@ -1572,12 +2013,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 101,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 101,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
           "reward": 10.1
         }
@@ -1592,14 +2037,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 27,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 28,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 2.7
+          "reward": 2.8
         }
       },
       {
@@ -1611,20 +2060,24 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 15,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 16,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 1
+            "multiplier": 1
           },
-          "reward": 1.5
+          "reward": 1.6
         }
       }
     ]
   },
   "whilefoo": {
-    "total": 9.8,
+    "total": 9.175,
     "userId": 139262667,
     "comments": [
       {
@@ -1636,22 +2089,36 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 6,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 6,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "ol": {
-                "count": 159,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 167,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               },
               "li": {
-                "count": 159,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 114,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
-          "reward": 4.125
+          "reward": 3
         }
       },
       {
@@ -1664,20 +2131,34 @@
           "formatting": {
             "content": {
               "pre": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 0
               },
               "code": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "p": {
-                "count": 12,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 12,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
           "reward": 0.35
         }
@@ -1692,14 +2173,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 23,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 25,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
-          "reward": 0.575
+          "reward": 0.625
         }
       },
       {
@@ -1712,12 +2197,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 10,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 10,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
           "reward": 0.25
         }
@@ -1732,14 +2221,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 12,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 13,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
-          "reward": 0.3
+          "reward": 0.325
         }
       },
       {
@@ -1752,14 +2245,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 22,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 24,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
-          "reward": 0.55
+          "reward": 0.6
         }
       },
       {
@@ -1772,12 +2269,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 20,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 20,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
           "reward": 0.5
         }
@@ -1792,12 +2293,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 9,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 9,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
           "reward": 0.225
         }
@@ -1812,14 +2317,18 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 61,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 74,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
-          "reward": 1.525
+          "reward": 1.85
         }
       },
       {
@@ -1832,12 +2341,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 17,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 17,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
           "reward": 0.425
         }
@@ -1852,18 +2365,27 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 33,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 36,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               },
               "code": {
-                "count": 2,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 1,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
-          "reward": 0.875
+          "reward": 0.925
         }
       },
       {
@@ -1876,12 +2398,16 @@
           "formatting": {
             "content": {
               "p": {
-                "count": 4,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 4,
+                    "multiplier": 0.1
+                  }
+                },
                 "score": 1
               }
             },
-            "wordValue": 0.1,
-            "formattingMultiplier": 0.25
+            "multiplier": 0.25
           },
           "reward": 0.1
         }

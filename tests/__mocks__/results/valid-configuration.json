@@ -10,17 +10,14 @@
     "contentEvaluator": {
       "multipliers": [
         {
-          "select": ["ISSUE_SPECIFICATION"],
-          "relevance": 1
+          "relevance": 1,
+          "role": ["ISSUE_SPECIFICATION"]
         }
       ],
       "openAi": {
         "endpoint": "",
         "model": "gpt-4o"
       }
-    },
-    "userExtractor": {
-      "redeemTask": true
     },
     "dataPurge": {},
     "formattingEvaluator": {

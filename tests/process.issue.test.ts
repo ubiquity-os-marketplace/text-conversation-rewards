@@ -138,19 +138,19 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
                   edges: [
                     {
                       node: {
-                        id: "PR_kwDOK87YcM5nHc9o",
-                        title: "chore: add new shared evmPrivateKeyEncrypted",
-                        number: 25,
-                        url: "https://github.com/ubiquibot/comment-incentives/pull/25",
+                        id: "PR_kwDOLUK0B85soGlu",
+                        title: "feat: github comment generation and posting",
+                        number: 12,
+                        url: "https://github.com/ubiquibot/conversation-rewards/pull/12",
                         author: {
-                          login: "gitcoindev",
-                          id: 88761781,
+                          login: "gentlementlegen",
+                          id: 9807008,
                         },
                         repository: {
                           owner: {
                             login: "ubiquibot",
                           },
-                          name: "comment-incentives",
+                          name: "conversation-rewards",
                         },
                       },
                     },
