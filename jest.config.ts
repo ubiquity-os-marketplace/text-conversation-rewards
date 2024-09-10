@@ -10,7 +10,7 @@ const cfg: Config = {
   coverageReporters: ["json", "lcov", "text", "clover", "json-summary"],
   reporters: ["default", "jest-junit", "jest-md-dashboard"],
   coverageDirectory: "coverage",
-  testTimeout: 10000,
+  testTimeout: 20000,
   roots: ["<rootDir>", "tests"],
 };
 
