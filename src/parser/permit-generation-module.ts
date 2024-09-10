@@ -29,7 +29,7 @@ interface Payload {
   issueUrl: string;
   evmPrivateEncrypted: string;
   erc20RewardToken: string;
-  issue: { id: number };
+  issue: { node_id: string };
 }
 
 export class PermitGenerationModule implements Module {
@@ -46,7 +46,7 @@ export class PermitGenerationModule implements Module {
     };
     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[0]);
     payload.issue = {
-      id: issueId,
+      node_id: program.eventPayload.issue.node_id,
     };
     const env = Value.Default(envConfigSchema, process.env) as EnvConfigType;
     if (!Value.Check(envConfigSchema, env)) {
