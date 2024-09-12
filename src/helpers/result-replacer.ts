@@ -14,3 +14,22 @@ export function typeReplacer(key: string, value: string | number) {
   }
   return value;
 }
+
+export function removeKeyFromObject<T extends Record<string, unknown>>(obj: T, keyToRemove: string): T {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => removeKeyFromObject(item, keyToRemove)) as unknown as T;
+  }
+  if (obj !== null && typeof obj === "object") {
+    const newObj = {} as Record<string, unknown>;
+
+    Object.keys(obj).forEach((key) => {
+      if (key !== keyToRemove) {
+        newObj[key] = removeKeyFromObject(obj[key] as T, keyToRemove);
+      }
+    });
+
+    return newObj as T;
+  }
+
+  return obj;
+}
