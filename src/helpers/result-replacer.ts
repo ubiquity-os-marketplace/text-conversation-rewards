@@ -16,6 +16,9 @@ export function typeReplacer(key: string, value: string | number) {
 }
 
 export function removeKeyFromObject<T extends Record<string, unknown>>(obj: T, keyToRemove: string): T {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => removeKeyFromObject(item, keyToRemove)) as unknown as T;
+  }
   if (obj !== null && typeof obj === "object") {
     const newObj = {} as Record<string, unknown>;
 
