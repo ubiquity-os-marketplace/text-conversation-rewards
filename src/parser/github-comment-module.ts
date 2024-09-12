@@ -281,8 +281,7 @@ export class GithubCommentModule implements Module {
       </table>
       ${
         !stripComments
-          ? `
-      <h6>Conversation Incentives</h6>
+          ? `<h6>Conversation Incentives</h6>
       <table>
         <thead>
           <tr>
