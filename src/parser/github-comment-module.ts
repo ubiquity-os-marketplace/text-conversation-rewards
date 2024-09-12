@@ -43,6 +43,7 @@ export class GithubCommentModule implements Module {
   }
 
   async getBodyContent(result: Result, stripContent = false): Promise<string> {
+    console.log("Stripping content?", stripContent);
     if (stripContent) {
       const strippedBody: (string | undefined)[] = [];
       logger.info("Stripping content due to excessive length.");
