@@ -43,7 +43,6 @@ export class GithubCommentModule implements Module {
   }
 
   async getBodyContent(result: Result, stripContent = false): Promise<string> {
-    console.log("Stripping content?", stripContent);
     if (stripContent) {
       const strippedBody: (string | undefined)[] = [];
       logger.info("Stripping content due to excessive length.");
@@ -85,7 +84,7 @@ export class GithubCommentModule implements Module {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const body = await this.getBodyContent(result, true);
+    const body = await this.getBodyContent(result);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
