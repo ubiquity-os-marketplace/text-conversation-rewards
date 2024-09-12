@@ -84,21 +84,7 @@ export class GithubCommentModule implements Module {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const bodyArray: (string | undefined)[] = [];
-
-    for (const [key, value] of Object.entries(result)) {
-      result[key].evaluationCommentHtml = await this._generateHtml(key, value);
-      bodyArray.push(result[key].evaluationCommentHtml);
-    }
-    // Remove evaluationCommentHtml because it is superfluous
-    const metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
-    // Add the workflow run url and the metadata in the GitHub's comment
-    bodyArray.push("\n<!--");
-    bodyArray.push(
-      this._encodeHTML(`\n${getGithubWorkflowRunUrl()}\n${JSON.stringify(metadataResult, typeReplacer, 2)}`)
-    );
-    bodyArray.push("\n-->");
-    const body = bodyArray.join("");
+    const body = await this.getBodyContent(result, true);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
@@ -246,7 +232,7 @@ export class GithubCommentModule implements Module {
     return content.join("");
   }
 
-  async _generateHtml(username: string, result: Result[0]) {
+  async _generateHtml(username: string, result: Result[0], stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
         if (curr.type & CommentKind.ISSUE) {
@@ -293,6 +279,9 @@ export class GithubCommentModule implements Module {
           ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
+      ${
+        !stripComments
+          ? `
       <h6>Conversation Incentives</h6>
       <table>
         <thead>
@@ -306,7 +295,9 @@ export class GithubCommentModule implements Module {
         <tbody>
           ${this._createIncentiveRows(sortedTasks)}
         </tbody>
-      </table>
+      </table>`
+          : ""
+      }
     </details>
     `
       .replace(/[\n\r]+/g, " ")
