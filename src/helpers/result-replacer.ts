@@ -15,17 +15,13 @@ export function typeReplacer(key: string, value: string | number) {
   return value;
 }
 
-type RecursiveObject<T> = {
-  [key: string]: T | RecursiveObject<T> | RecursiveObject<T>[];
-};
-
 export function removeKeyFromObject<T extends Record<string, unknown>>(obj: T, keyToRemove: string): T {
   if (obj !== null && typeof obj === "object") {
     const newObj = {} as Record<string, unknown>;
 
     Object.keys(obj).forEach((key) => {
       if (key !== keyToRemove) {
-        newObj[key] = removeKeyFromObject(obj[key] as RecursiveObject<T>, keyToRemove);
+        newObj[key] = removeKeyFromObject(obj[key] as T, keyToRemove);
       }
     });
 
