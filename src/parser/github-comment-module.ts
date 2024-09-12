@@ -42,6 +42,47 @@ export class GithubCommentModule implements Module {
     return div.innerHTML;
   }
 
+  async getBodyContent(result: Result, stripContent = false): Promise<string> {
+    if (stripContent) {
+      const strippedBody: (string | undefined)[] = [];
+      logger.info("Stripping content due to excessive length.");
+      strippedBody.push("> [!NOTE]\n");
+      strippedBody.push("> This is a truncated output due to the comment length limit.\n\n");
+      for (const [key, value] of Object.entries(result)) {
+        result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
+        strippedBody.push(result[key].evaluationCommentHtml);
+      }
+      return strippedBody.join("");
+    }
+
+    const bodyArray: (string | undefined)[] = [];
+    for (const [key, value] of Object.entries(result)) {
+      result[key].evaluationCommentHtml = await this._generateHtml(key, value);
+      bodyArray.push(result[key].evaluationCommentHtml);
+    }
+    // Remove evaluationCommentHtml because it is superfluous
+    const metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
+    // Add the workflow run url and the metadata in the GitHub's comment
+    bodyArray.push("\n<!--");
+    bodyArray.push(
+      this._encodeHTML(`\n${getGithubWorkflowRunUrl()}\n${JSON.stringify(metadataResult, typeReplacer, 2)}`)
+    );
+    bodyArray.push("\n-->");
+    const body = bodyArray.join("");
+    // We check this length because GitHub has a comment length limit
+    if (body.length > 65536) {
+      // First, we try to diminish the metadata content to only contain the URL
+      bodyArray[bodyArray.length - 1] = `\n${getGithubWorkflowRunUrl()}\n`;
+      const newBody = bodyArray.join("");
+      if (newBody.length <= 65536) {
+        return newBody;
+      } else {
+        return this.getBodyContent(result, true);
+      }
+    }
+    return body;
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const bodyArray: (string | undefined)[] = [];
 
