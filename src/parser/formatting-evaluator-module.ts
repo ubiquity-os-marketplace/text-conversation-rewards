@@ -94,8 +94,12 @@ export class FormattingEvaluatorModule implements Module {
 
   _getFormattingScore(comment: GithubCommentScore) {
     const html = this._md.render(comment.content);
+    // TODO: the problem lies here on transformation, html is not correct but also comment.content seems to forget \n
+    console.log(comment.content);
+    console.log(html);
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
+      console.log(temp.window.document.body);
       const res = this.classifyTagsWithWordCount(temp.window.document.body, comment.type);
       return { formatting: res };
     } else {
@@ -131,6 +135,7 @@ export class FormattingEvaluatorModule implements Module {
       } else {
         logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
       }
+      console.log({ tagName, wordCount, text: element.textContent });
       tagWordCount[tagName] = {
         symbols: wordCount,
         score,
