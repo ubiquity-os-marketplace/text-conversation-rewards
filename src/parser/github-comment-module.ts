@@ -8,7 +8,7 @@ import { GithubCommentConfiguration, githubCommentConfigurationType } from "../c
 import { getOctokitInstance } from "../octokit";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import logger from "../helpers/logger";
-import { typeReplacer } from "../helpers/result-replacer";
+import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
 import { getERC20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import program from "./command-line";
@@ -49,9 +49,13 @@ export class GithubCommentModule implements Module {
       result[key].evaluationCommentHtml = await this._generateHtml(key, value);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
+    // Remove evaluationCommentHtml because it is superfluous
+    const metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
     // Add the workflow run url and the metadata in the GitHub's comment
     bodyArray.push("\n<!--");
-    bodyArray.push(this._encodeHTML(`\n${getGithubWorkflowRunUrl()}\n${JSON.stringify(result, typeReplacer, 2)}`));
+    bodyArray.push(
+      this._encodeHTML(`\n${getGithubWorkflowRunUrl()}\n${JSON.stringify(metadataResult, typeReplacer, 2)}`)
+    );
     bodyArray.push("\n-->");
     const body = bodyArray.join("");
     if (this._configuration?.debug) {
