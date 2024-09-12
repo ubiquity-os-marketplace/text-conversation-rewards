@@ -20,7 +20,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 3.36
+          "reward": 2.128
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948930217"
@@ -44,7 +44,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 2.56
+          "reward": 1.688
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949201722"
@@ -77,7 +77,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 11.68
+          "reward": 6.28
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949203681"
@@ -101,7 +101,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 1.44
+          "reward": 1.032
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949633751"
@@ -125,7 +125,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 1.28
+          "reward": 0.936
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639054"
@@ -149,7 +149,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 8.16
+          "reward": 4.528
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949642845"
@@ -209,7 +209,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 5.7
+          "reward": 3.51
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22"
@@ -233,7 +233,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 0.7
+          "reward": 0.52
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949021356"
@@ -257,7 +257,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 1.2
+          "reward": 0.83
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196677"
@@ -317,14 +317,14 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 64.9
+          "reward": 25.02
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196678"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxMDA5ODAwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIzMzkyOTQxNzYyNzkzOTc1NTkzMTc4MTExNTY1OTgzNzk3NDc1ODk0MDM3NDk1NDA0MTMxMjg2MzgyNzgwNDExNjg3NzA4MzUyODg4IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIxMDA5ODAwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDQ2NGQ0NWQ0ZTNhMWY4OTI0M2E1MGU4OTA0MTcxZmFhODlmYzk1YzliNDRjYTM5NTdhNzQ4ZDJlNjYxODQ3NjU1M2JjODFjNGM4NjE0OWM3MjMxOTZjNjA1NWFiN2U4MWVmNjJkMDk4NzUxNzVhNmMyYjUwZDA0MjUzZDFjNjY0MWMiLCJuZXR3b3JrSWQiOjEwMH1d",
-    "total": 100.98,
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI0NjQ3MjAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjQ2NDcyMDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg0NzY3MGFhMWYzOTJlODkxNDZhNzI5Yjc1NjVkMDBmZGVmMzQ3OTg5NjFkNjk4NWFmZjYzNDc5ZTM5MWZjMjQ1MWI0ZDUxZTk3M2FhZTI3YWRmMmY1MTMxYjA2ZjZkMmU0ODcwNWUwMzRjMzEwYWFiZjk1MDc4ZGU1ZjdmMTNiYzFiIiwibmV0d29ya0lkIjoxMDB9XQ==",
+    "total": 46.472,
     "userId": 4975670
   },
   "gitcoindev": {
@@ -396,7 +396,7 @@
             "multiplier": 2
           },
           "relevance": 1,
-          "reward": 4
+          "reward": 2.83
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044575"
@@ -420,18 +420,18 @@
             "multiplier": 2
           },
           "relevance": 1,
-          "reward": 6
+          "reward": 4
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949046925"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI0NzUwMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjU2NTUzNDk0NDU0MDk3MDE4NzcyMjE2NjE5NTI3NTk5MjE1NzUwNDQ1NjI4MjY2Njk2MjA3MzcxNjE1Mzc1NTEzMjM5NjM2MDMyMDE4IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiI0NzUwMDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4YTVlZDFkMTZiMDhjNjg0MTM0YmMwMjcwMjdlZTZmZDZkYzVmNzJmODM2YWJkNjdiYjI3MGRkOTk5YmIzYmM2MzQ5MjY5YWUyYTc1ZmJjMTY1NjNiNDg0Mjk3YjNiYmU5ZmE1ZGU4M2QxN2FjNzUyZWU4ODExMTllMmEwNjBjNmExYiIsIm5ldHdvcmtJZCI6MTAwfV0=",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI0NDMzMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjU2NTUzNDk0NDU0MDk3MDE4NzcyMjE2NjE5NTI3NTk5MjE1NzUwNDQ1NjI4MjY2Njk2MjA3MzcxNjE1Mzc1NTEzMjM5NjM2MDMyMDE4IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiI0NDMzMDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4ODU0OGQ1NDJiYjI4NmU5YTBjZTRlZTNjZWM1YTA0MzU4NTQ2MGNjMmYwYjE3NzViOWYxOTY3ZWRjZWUzMTMwODBmNWMxNTQ1OTZjMGE1NzgwNWQ0YzJjMjIwNzM5N2IzMmRjZTM1ODM2Njc5MTg1YmE4MThjZjgzOGY3YjU1YjAxYyIsIm5ldHdvcmtJZCI6MTAwfV0=",
     "task": {
       "multiplier": 1,
       "reward": 37.5
     },
-    "total": 47.5,
+    "total": 44.33,
     "userId": 88761781
   },
   "molecula451": {
@@ -464,7 +464,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.3
+          "reward": 0.2
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343"
@@ -488,7 +488,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.1
+          "reward": 0.08
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948989989"
@@ -512,7 +512,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.28
+          "reward": 0.192
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949195772"
@@ -536,7 +536,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.24
+          "reward": 0.168
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949564869"
@@ -560,7 +560,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.62
+          "reward": 0.368
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949635137"
@@ -608,7 +608,7 @@
             "multiplier": 0.25
           },
           "relevance": 1,
-          "reward": 0.025
+          "reward": 0.03
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949038563"
@@ -632,14 +632,14 @@
             "multiplier": 0.25
           },
           "relevance": 1,
-          "reward": 0.45
+          "reward": 0.29
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIyMDU1MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiMTg0Mjc4OTk1ODM3NTAwODQ0Njg3NTg1NjIxNTU0MzQ5MzU5Nzc1OTU1MDg3MzA3MDMzNTgwODYxNjI3NDIzODg4NzcxNzk5MjA4NTAiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjIwNTUwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGIzNjBiZDhmODdmOThmNjY4MzA0OTY3N2JjYmY2ODk4NGQ5NTQ5ZDEzMmQ0NTY5NGFhMzUxMDE2OTE1ZjY1N2QzYzhkMGJjOWQ0NDI2ZmI3OGMwNzc1M2MzZmI5NWY2MGE0MjQzN2I5OGIwYTgxOWU2MjAyNzRlNzNlNGViZjI2MWMiLCJuZXR3b3JrSWQiOjEwMH1d",
-    "total": 2.055,
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxMzY4MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiMTg0Mjc4OTk1ODM3NTAwODQ0Njg3NTg1NjIxNTU0MzQ5MzU5Nzc1OTU1MDg3MzA3MDMzNTgwODYxNjI3NDIzODg4NzcxNzk5MjA4NTAiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjEzNjgwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGI3YjU5NzRhNWM3ODg5NDc3ODI3ZTg1YzFjMGE5NWEwNmQzNzYzZmZlNTMxY2ZhZjYxMTUxYjQ3ODY3NGMyNTgwMmM5YzBjNmQyODBiMTNhOTk4YjI0OWJkYjMwZjQ3ZjdmOGFmNTI5ZmY1YzczYTk4NzJlOGJkYmVjMzg0Nzg5MWIiLCJuZXR3b3JrSWQiOjEwMH1d",
+    "total": 1.368,
     "userId": 41552663
   }
 }

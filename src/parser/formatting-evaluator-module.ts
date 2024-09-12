@@ -23,6 +23,7 @@ export class FormattingEvaluatorModule implements Module {
     configuration.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: number]: Multiplier } = {};
+  private readonly _wordCountExponent: number;
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -46,6 +47,7 @@ export class FormattingEvaluatorModule implements Module {
         };
       }, {});
     }
+    this._wordCountExponent = this._configuration?.wordCountExponent ?? 0.85;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
@@ -54,23 +56,9 @@ export class FormattingEvaluatorModule implements Module {
       const comments = currentElement.comments || [];
       for (let i = 0; i < comments.length; i++) {
         const comment = comments[i];
-        // Count with html elements if any, otherwise just treat it as plain text
         const { formatting } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
-        const formattingTotal = formatting
-          ? Object.values(formatting).reduce((acc, curr) => {
-              let sum = new Decimal(0);
-              for (const symbol of Object.keys(curr.symbols)) {
-                sum = sum.add(
-                  new Decimal(curr.symbols[symbol].count)
-                    .mul(curr.symbols[symbol].multiplier)
-                    .mul(multiplierFactor.multiplier)
-                    .mul(curr.score)
-                );
-              }
-              return acc.add(sum);
-            }, new Decimal(0))
-          : new Decimal(0);
+        const formattingTotal = this._calculateFormattingTotal(formatting, multiplierFactor).toDecimalPlaces(2);
         comment.score = {
           ...comment.score,
           formatting: {
@@ -82,6 +70,33 @@ export class FormattingEvaluatorModule implements Module {
       }
     }
     return result;
+  }
+
+  private _calculateFormattingTotal(
+    formatting: ReturnType<typeof this._getFormattingScore>["formatting"],
+    multiplierFactor: Multiplier
+  ): Decimal {
+    if (!formatting) return new Decimal(0);
+
+    return Object.values(formatting).reduce((acc, curr) => {
+      let sum = new Decimal(0);
+
+      for (const symbol of Object.keys(curr.symbols)) {
+        const count = new Decimal(curr.symbols[symbol].count);
+        const symbolMultiplier = new Decimal(curr.symbols[symbol].multiplier);
+        const formattingElementScore = new Decimal(curr.score);
+        const exponent = this._wordCountExponent;
+
+        sum = sum.add(
+          count
+            .pow(exponent) // (count^exponent)
+            .mul(symbolMultiplier) // symbol multiplier
+            .mul(formattingElementScore) // comment type multiplier
+            .mul(multiplierFactor.multiplier) // formatting element score
+        );
+      }
+      return acc.add(sum);
+    }, new Decimal(0));
   }
 
   get enabled(): boolean {
