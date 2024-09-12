@@ -72,7 +72,7 @@ export class GithubCommentModule implements Module {
     // We check this length because GitHub has a comment length limit
     if (body.length > 65536) {
       // First, we try to diminish the metadata content to only contain the URL
-      bodyArray[bodyArray.length - 1] = `\n${getGithubWorkflowRunUrl()}\n`;
+      bodyArray[bodyArray.length - 2] = `\n${getGithubWorkflowRunUrl()}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= 65536) {
         return newBody;
