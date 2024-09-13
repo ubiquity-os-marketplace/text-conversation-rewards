@@ -177,6 +177,6 @@ curl -H "Accept: application/json" -H "Authorization: token GITHUB_PAT_TOKEN" ht
 4. Input a string in the format `PRIVATE_KEY:GITHUB_ORGANIZATION_ID` in the `PLAIN_TEXT` UI text input where:
 - `PRIVATE_KEY`: your ethereum wallet private key without the `0x` prefix
 - `GITHUB_ORGANIZATION_ID`: your github organization id (which you got from step 1)
-5. Click "Ecnrypt" to get an encrypted value in the `CIPHER_TEXT` field
+5. Click "Encrypt" to get an encrypted value in the `CIPHER_TEXT` field
 6. Set the encrypted text (from step 5) in the `evmPrivateEncrypted` config parameter
 7. Set `X25519_PRIVATE_KEY` environment variable in github secrets of your forked instance of the `conversation-rewards` plugin 
