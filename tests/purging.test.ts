@@ -12,7 +12,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
 
-const issueUrl = "https://github.com/ubiquibot/conversation-rewards/issues/110";
+const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
   return Promise.resolve(
@@ -57,6 +57,11 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
+jest.mock("../src/start", () => ({
+  ...jest.requireActual("../src/start"),
+  getIssueComments: jest.fn(() => Promise.resolve([])),
+}));
+
 jest.mock("../src/parser/command-line", () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("./__mocks__/results/valid-configuration.json");
@@ -71,7 +76,7 @@ jest.mock("../src/parser/command-line", () => {
     eventPayload: {
       issue: {
         html_url: issueUrl,
-        number: 110,
+        number: 13,
         state_reason: "completed",
       },
       repository: {

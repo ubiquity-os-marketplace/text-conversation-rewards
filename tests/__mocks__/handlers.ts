@@ -2,9 +2,12 @@ import { http, HttpResponse } from "msw";
 import { db } from "./db";
 import issue22CommentsGet from "./routes/issue-22-comments-get.json";
 import issue22Get from "./routes/issue-22-get.json";
+import issue13Get from "./routes/issue-13-get.json";
 import issue25CommentsGet from "./routes/issue-25-comments-get.json";
 import issue69EventsGet from "./routes/issue-69-events-get.json";
+import issue13EventsGet from "./routes/issue-13-events-get.json";
 import issue69CommentsGet from "./routes/issue-69-comments-get.json";
+import issue13CommentsGet from "./routes/issue-13-comments-get.json";
 import issue69Get from "./routes/issue-69-get.json";
 import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
@@ -20,6 +23,9 @@ import pullsReviewsGet from "./routes/pulls-reviews-get.json";
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
+  http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13", () => {
+    return HttpResponse.json(issue13Get);
+  }),
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22", () => {
     return HttpResponse.json(issue22Get);
   }),
@@ -38,11 +44,17 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/comments", () => {
     return HttpResponse.json(issue22CommentsGet);
   }),
+  http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13/events", () => {
+    return HttpResponse.json(issue13EventsGet);
+  }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/comments", () => {
     return HttpResponse.json(issue69CommentsGet);
   }),
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/25/comments", () => {
     return HttpResponse.json(issue25CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13/comments", () => {
+    return HttpResponse.json(issue13CommentsGet);
   }),
   http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/timeline", () => {
     return HttpResponse.json(issueTimelineGet);
