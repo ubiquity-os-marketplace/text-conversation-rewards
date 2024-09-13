@@ -111,6 +111,7 @@ export const formattingEvaluatorConfigurationType = Type.Object(
         ],
       }
     ),
+    wordCountExponent: Type.Number({ default: 0.85 }),
   },
   { default: {} }
 );

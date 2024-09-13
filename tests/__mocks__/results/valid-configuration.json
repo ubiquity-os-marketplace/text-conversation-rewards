@@ -368,7 +368,8 @@
             "PULL_CONTRIBUTOR"
           ]
         }
-      ]
+      ],
+      "wordCountExponent": 0.85
     },
     "githubComment": {
       "debug": true,
