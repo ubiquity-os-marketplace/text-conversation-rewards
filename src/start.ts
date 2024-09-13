@@ -93,9 +93,7 @@ export async function getIssueComments(issueParams: IssueParams): Promise<GitHub
     if (commentData.node) {
       comment.isMinimized = commentData.node.isMinimized;
     }
-    console.log("Comment minimized", comment.body, comment.isMinimized);
   }
-  console.log("All comments", JSON.stringify(comments));
   return comments;
 }
 export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReviewState[]> {
