@@ -68,7 +68,7 @@
                 "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 71,
+                    "count": 69,
                     "multiplier": 0.2
                   }
                 }
@@ -77,7 +77,7 @@
             "multiplier": 1
           },
           "relevance": 0.8,
-          "reward": 11.68
+          "reward": 11.36
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949203681"
@@ -164,7 +164,7 @@
                 "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 2,
+                    "count": 4,
                     "multiplier": 0.1
                   }
                 }
@@ -182,7 +182,7 @@
                 "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 35,
+                    "count": 3,
                     "multiplier": 0.1
                   }
                 }
@@ -191,7 +191,7 @@
                 "score": 0,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 52,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 }
@@ -200,7 +200,7 @@
                 "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 20,
+                    "count": 54,
                     "multiplier": 0.1
                   }
                 }
@@ -209,7 +209,7 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 5.7
+          "reward": 6.1
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22"
@@ -281,7 +281,7 @@
                 "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 205,
                     "multiplier": 0.1
                   }
                 }
@@ -299,7 +299,16 @@
                 "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 641,
+                    "count": 441,
+                    "multiplier": 0.1
+                  }
+                }
+              },
+              "pre": {
+                "score": 0,
+                "symbols": {
+                  "\\b\\w+\\b": {
+                    "count": 2,
                     "multiplier": 0.1
                   }
                 }
@@ -308,7 +317,7 @@
                 "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 4,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 }
@@ -317,13 +326,13 @@
             "multiplier": 1
           },
           "relevance": 1,
-          "reward": 64.9
+          "reward": 65
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196678"
       }
     ],
-    "total": 100.98,
+    "total": 101.16,
     "userId": 4975670
   },
   "gitcoindev": {
@@ -453,7 +462,7 @@
                 "score": 1,
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 15,
+                    "count": 16,
                     "multiplier": 0.1
                   }
                 }
@@ -462,7 +471,7 @@
             "multiplier": 0.25
           },
           "relevance": 0.8,
-          "reward": 0.3
+          "reward": 0.32
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343"
@@ -636,7 +645,7 @@
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855"
       }
     ],
-    "total": 2.055,
+    "total": 2.075,
     "userId": 41552663
   }
 }
