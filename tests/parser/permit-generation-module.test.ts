@@ -199,7 +199,7 @@ describe("permit-generation-module.ts", () => {
       const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
       
       expect(result).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization id 99 is not allowed to use this private key");
+      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization/user id 99 is not allowed to use this private key");
     });
 
     it("Should return true if private key is used in allowed organization", async () => {
@@ -230,7 +230,7 @@ describe("permit-generation-module.ts", () => {
       const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
       
       expect(result).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization id 99 and repository id 2 are not allowed to use this private key");
+      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization/user id 99 and repository id 2 are not allowed to use this private key");
     });
 
     it("Should return false if private key is used in allowed organization and unallowed repository", async () => {
@@ -246,7 +246,7 @@ describe("permit-generation-module.ts", () => {
       const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
       
       expect(result).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization id 1 and repository id 99 are not allowed to use this private key");
+      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization/user id 1 and repository id 99 are not allowed to use this private key");
     });
 
     it("Should return true if private key is used in allowed organization and repository", async () => {
