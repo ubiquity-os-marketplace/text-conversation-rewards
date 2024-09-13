@@ -156,13 +156,10 @@ with:
 
 ## How to encrypt the `evmPrivateEncrypted` parameter
 
-Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards` plugin) supports 3 formats:
-1. `PRIVATE_KEY` (allowed to be used only in `ubiquity` and `ubiquibot` organizations)
-2. `PRIVATE_KEY:GITHUB_ORGANIZATION_ID`
-3. `PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID`
+Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards` plugin) supports 2 formats:
+1. `PRIVATE_KEY:GITHUB_ORGANIZATION_ID`
+2. `PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID`
 
-Format `PRIVATE_KEY` can be used only for `ubiquity` and `ubiquibot` organizations. It is kept for backwards compatibility in order not to update private key formats for our existing values set in the `evmPrivateEncrypted` param.
-   
 Format `PRIVATE_KEY:GITHUB_ORGANIZATION_ID` restricts in which particular organization this private key can be used. It can be set either in the organization wide config either in the repository wide one.
 
 Format `PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID` restricts organization and a particular repository where private key is allowed to be used.

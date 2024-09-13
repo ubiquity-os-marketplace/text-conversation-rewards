@@ -186,37 +186,6 @@ describe("permit-generation-module.ts", () => {
       expect(spyConsoleLog).toHaveBeenCalledWith("Private key could not be decrypted");
     });
 
-    it("Should return false if private key is used in plain format outside ubiquity related organizations", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
-
-      // format: "PRIVATE_KEY"
-      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-      const privateKeyEncrypted = "Php81Y5mOJcuXDf9H9BOG74SHKVBG0xnKipnFpGrcDz0yQqNS_l3mWh06Tki_J1WLdjzcBx-ZVs3OrRpMCRFYeJ588kgxRwHFlAvZGQFdTohIClOwyHMw1t-mG4KZoLMyFmqxFTtFs64JezRB1dJDA";
-      const githubContextOrganizationId = 1;
-      const githubContextRepositoryId = 2;
-      
-      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
-      
-      expect(result).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith("Current organization id 1 is not allowed to use this type of private key");
-    });
-
-    it("Should return true if private key is used in plain format in ubiquity related organizations", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
-
-      // format: "PRIVATE_KEY"
-      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-      const privateKeyEncrypted = "Php81Y5mOJcuXDf9H9BOG74SHKVBG0xnKipnFpGrcDz0yQqNS_l3mWh06Tki_J1WLdjzcBx-ZVs3OrRpMCRFYeJ588kgxRwHFlAvZGQFdTohIClOwyHMw1t-mG4KZoLMyFmqxFTtFs64JezRB1dJDA";
-      const githubContextOrganizationId = 76412717; // ubiquity
-      const githubContextRepositoryId = 2;
-      
-      const result = await permitGenerationModule._isPrivateKeyAllowed(privateKeyEncrypted, githubContextOrganizationId, githubContextRepositoryId);
-      
-      expect(result).toEqual(true);
-    });
-
     it("Should return false if private key is used in unallowed organization", async () => {
       const permitGenerationModule = new PermitGenerationModule();
       const spyConsoleLog = jest.spyOn(console, "log");

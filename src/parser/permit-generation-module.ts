@@ -280,14 +280,9 @@ export class PermitGenerationModule implements Module {
    * will be able to use that leaked private key in another organization with permits
    * generated from a leaked partner's wallet.
    * 
-   * Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards` plugin) supports 3 formats:
-   * 1. PRIVATE_KEY
-   * 2. PRIVATE_KEY:GITHUB_ORGANIZATION_ID
-   * 3. PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID
-   * 
-   * Format "PRIVATE_KEY" can be used only for `ubiquity` and `ubiquibot` organizations. It is
-   * kept for backwards compatibility in order not to update private key formats for our existing
-   * values set in the `evmPrivateEncrypted` param.
+   * Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards` plugin) supports 2 formats:
+   * 1. PRIVATE_KEY:GITHUB_ORGANIZATION_ID
+   * 2. PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID
    * 
    * Format "PRIVATE_KEY:GITHUB_ORGANIZATION_ID" restricts in which particular organization this private
    * key can be used. It can be set either in the organization wide config either in the repository wide one.
@@ -295,7 +290,7 @@ export class PermitGenerationModule implements Module {
    * Format "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID" restricts organization and a particular 
    * repository where private key is allowed to be used.
    * 
-   * @param privateKeyEncrypted Encrypted private key (with "X25519_PRIVATE_KEY") string (in any of the 3 different formats) 
+   * @param privateKeyEncrypted Encrypted private key (with "X25519_PRIVATE_KEY") string (in any of the 2 different formats) 
    * @param githubContextOrganizationId Github organization id from which the "conversation-rewards" is executed
    * @param githubContextRepositoryId Github repository id from which the "conversation-rewards" is executed
    * @returns Whether private key is allowed to be used in current organization/repository context
@@ -315,23 +310,7 @@ export class PermitGenerationModule implements Module {
       return false;
     }
 
-    // Plain private key.
-    // Used for backwards compatibility. 
-    // Can be used only within our existing organizations:
-    // - https://github.com/ubiquity
-    // - https://github.com/ubiquibot
-    // Format: PRIVATE_KEY.
-    if (!privateKeyParsed.allowedOrganizationId && !privateKeyParsed.allowedRepositoryId) {
-      const ALLOWED_ORGANIZATION_IDS = [
-        76412717, // https://github.com/ubiquity
-        133917611, // https://github.com/ubiquibot
-      ];
-      if (!ALLOWED_ORGANIZATION_IDS.includes(githubContextOrganizationId)) {
-        console.log(`Current organization id ${githubContextOrganizationId} is not allowed to use this type of private key`);
-        return false;
-      }
-      return true;
-    }
+    console.log('===here===', privateKeyParsed.privateKey);
 
     // private key + organization id
     // Format: PRIVATE_KEY:GITHUB_ORGANIZATION_ID
