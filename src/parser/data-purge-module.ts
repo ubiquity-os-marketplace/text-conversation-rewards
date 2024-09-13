@@ -20,6 +20,10 @@ export class DataPurgeModule implements Module {
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
     for (const comment of data.allComments) {
+      // Skips comments if they are minimized
+      if ("isMinimized" in comment && comment.isMinimized) {
+        continue;
+      }
       if (comment.body && comment.user?.login && result[comment.user.login]) {
         const newContent = comment.body
           // Remove quoted text

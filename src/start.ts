@@ -1,3 +1,4 @@
+import { IssueComment } from "@octokit/graphql-schema";
 import { getOctokitInstance } from "./octokit";
 import {
   GitHubIssue,
@@ -85,15 +86,11 @@ export async function getIssueComments(issueParams: IssueParams): Promise<GitHub
     octokit.issues.listComments.endpoint.merge(issueParams)
   );
   for (const comment of comments) {
-    console.log("---------");
-    console.log(comment.body);
-    const commentData = await octokit.graphql.paginate(QUERY_COMMENT_DETAILS, {
-      owner: issueParams.owner,
-      repo: issueParams.repo,
-      issue_number: issueParams.issue_number,
+    const commentData = await octokit.graphql.paginate<IssueComment>(QUERY_COMMENT_DETAILS, {
+      node_id: comment.node_id,
     });
-    console.log(JSON.stringify(commentData));
-    console.log("---------");
+    // For each comment we add the 'isMinimized' info, which corresponds to a collapsed comment
+    comment.isMinimized = commentData.isMinimized;
   }
   return comments;
 }

@@ -35,35 +35,11 @@ export const LINKED_PULL_REQUESTS = /* GraphQL */ `
 `;
 
 export const QUERY_COMMENT_DETAILS = /* GraphQL */ `
-  query commentDetails($owner: String!, $repo: String!, $issue_number: Int!, $cursor: String) {
-    repository(owner: $owner, name: $repo) {
-      issueOrPullRequest(number: $issue_number) {
-        ... on Issue {
-          id
-          comments(first: 100, after: $cursor) {
-            nodes {
-              id
-              isMinimized
-            }
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
-          }
-        }
-        ... on PullRequest {
-          id
-          comments(first: 100, after: $cursor) {
-            nodes {
-              id
-              isMinimized
-            }
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
-          }
-        }
+  query commentDetails($node_id: ID!) {
+    node(id: $node_id) {
+      ... on IssueComment {
+        id
+        isMinimized
       }
     }
   }
