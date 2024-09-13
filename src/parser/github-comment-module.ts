@@ -42,9 +42,20 @@ export class GithubCommentModule implements Module {
     return div.innerHTML;
   }
 
-  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const bodyArray: (string | undefined)[] = [];
+  async getBodyContent(result: Result, stripContent = false): Promise<string> {
+    if (stripContent) {
+      const strippedBody: (string | undefined)[] = [];
+      logger.info("Stripping content due to excessive length.");
+      strippedBody.push("> [!NOTE]\n");
+      strippedBody.push("> This is a truncated output due to the comment length limit.\n\n");
+      for (const [key, value] of Object.entries(result)) {
+        result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
+        strippedBody.push(result[key].evaluationCommentHtml);
+      }
+      return strippedBody.join("");
+    }
 
+    const bodyArray: (string | undefined)[] = [];
     for (const [key, value] of Object.entries(result)) {
       result[key].evaluationCommentHtml = await this._generateHtml(key, value);
       bodyArray.push(result[key].evaluationCommentHtml);
@@ -58,6 +69,22 @@ export class GithubCommentModule implements Module {
     );
     bodyArray.push("\n-->");
     const body = bodyArray.join("");
+    // We check this length because GitHub has a comment length limit
+    if (body.length > 65536) {
+      // First, we try to diminish the metadata content to only contain the URL
+      bodyArray[bodyArray.length - 2] = `\n${getGithubWorkflowRunUrl()}`;
+      const newBody = bodyArray.join("");
+      if (newBody.length <= 65536) {
+        return newBody;
+      } else {
+        return this.getBodyContent(result, true);
+      }
+    }
+    return body;
+  }
+
+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const body = await this.getBodyContent(result);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
@@ -205,7 +232,7 @@ export class GithubCommentModule implements Module {
     return content.join("");
   }
 
-  async _generateHtml(username: string, result: Result[0]) {
+  async _generateHtml(username: string, result: Result[0], stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
         if (curr.type & CommentKind.ISSUE) {
@@ -252,7 +279,9 @@ export class GithubCommentModule implements Module {
           ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
-      <h6>Conversation Incentives</h6>
+      ${
+        !stripComments
+          ? `<h6>Conversation Incentives</h6>
       <table>
         <thead>
           <tr>
@@ -265,7 +294,9 @@ export class GithubCommentModule implements Module {
         <tbody>
           ${this._createIncentiveRows(sortedTasks)}
         </tbody>
-      </table>
+      </table>`
+          : ""
+      }
     </details>
     `
       .replace(/[\n\r]+/g, " ")
