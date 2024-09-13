@@ -91,7 +91,9 @@ export async function getIssueComments(issueParams: IssueParams): Promise<GitHub
     });
     // For each comment we add the 'isMinimized' info, which corresponds to a collapsed comment
     comment.isMinimized = commentData.isMinimized;
+    console.log("Comment minimized", comment.body, comment.isMinimized);
   }
+  console.log("All comments", JSON.stringify(comments));
   return comments;
 }
 export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReviewState[]> {
