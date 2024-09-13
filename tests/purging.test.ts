@@ -1,5 +1,4 @@
 import { drop } from "@mswjs/data";
-import fs from "fs";
 import { IssueActivity } from "../src/issue-activity";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
 import { DataPurgeModule } from "../src/parser/data-purge-module";
@@ -10,7 +9,7 @@ import "../src/parser/command-line";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
-import rewardSplitResult from "./__mocks__/results/reward-split.json";
+import hiddenCommentPurged from "./__mocks__/results/hidden-comment-purged.json";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
@@ -57,10 +56,14 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-jest.mock("../src/start", () => ({
-  ...jest.requireActual("../src/start"),
-  getIssueComments: jest.fn(() => Promise.resolve([])),
-}));
+jest.mock("../src/start", () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const comments = require("./__mocks__/routes/issue-13-comments-get.json");
+  return {
+    ...jest.requireActual("../src/start"),
+    getIssueComments: jest.fn(() => Promise.resolve(comments)),
+  };
+});
 
 jest.mock("../src/parser/command-line", () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -91,38 +94,6 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
-// jest.mock("@supabase/supabase-js", () => {
-//   return {
-//     createClient: jest.fn(() => ({
-//       from: jest.fn(() => ({
-//         insert: jest.fn(() => ({})),
-//         select: jest.fn(() => ({
-//           eq: jest.fn(() => ({
-//             single: jest.fn(() => ({
-//               data: {
-//                 id: 1,
-//               },
-//             })),
-//             eq: jest.fn(() => ({
-//               single: jest.fn(() => ({
-//                 data: {
-//                   id: 1,
-//                 },
-//               })),
-//             })),
-//           })),
-//         })),
-//       })),
-//     })),
-//   };
-// });
-
-// jest.mock("../src/helpers/web3", () => ({
-//   getERC20TokenSymbol() {
-//     return "WXDAI";
-//   },
-// }));
-
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -145,27 +116,8 @@ describe("Purging tests", () => {
   it("Should purge collapsed comments", async () => {
     const processor = new Processor();
     processor["_transformers"] = [new UserExtractorModule(), new DataPurgeModule()];
-    // server.use(
-    //   http.post("https://*", () =>
-    //     HttpResponse.json([
-    //       {
-    //         jsonrpc: "2.0",
-    //         id: 1,
-    //         result: "0x64",
-    //       },
-    //       {
-    //         jsonrpc: "2.0",
-    //         id: 2,
-    //         result: "0x0000000000000000000000000000000000000000000000000000000000000012",
-    //       },
-    //     ])
-    //   )
-    // );
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    expect(result).toEqual(rewardSplitResult);
-    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
-      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html", "utf-8")
-    );
+    expect(result).toEqual(hiddenCommentPurged);
   });
 });

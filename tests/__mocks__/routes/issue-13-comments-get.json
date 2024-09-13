@@ -29,6 +29,7 @@
     "updated_at": "2024-09-13T13:44:58Z",
     "author_association": "NONE",
     "body": "Hide my comment!",
+    "isMinimized": true,
     "reactions": {
       "url": "https://api.github.com/repos/Meniole/conversation-rewards/issues/comments/2349000511/reactions",
       "total_count": 0,
