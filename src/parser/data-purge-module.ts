@@ -26,6 +26,8 @@ export class DataPurgeModule implements Module {
           .replace(/^>.*$/gm, "")
           // Remove commands such as /start
           .replace(/^\/.+/g, "")
+          // Remove HTML comments
+          .replace(/<!--[\s\S]*?-->/g, "")
           // Keep only one new line needed by markdown-it package to convert to html
           .replace(/\n\s*\n/g, "\n")
           .trim();
