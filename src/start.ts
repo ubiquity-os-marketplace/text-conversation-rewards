@@ -86,7 +86,7 @@ export async function getIssueComments(issueParams: IssueParams): Promise<GitHub
     octokit.issues.listComments.endpoint.merge(issueParams)
   );
   for (const comment of comments) {
-    const commentData = await octokit.graphql.paginate<IssueComment>(QUERY_COMMENT_DETAILS, {
+    const commentData = await octokit.graphql<IssueComment>(QUERY_COMMENT_DETAILS, {
       node_id: comment.node_id,
     });
     // For each comment we add the 'isMinimized' info, which corresponds to a collapsed comment
