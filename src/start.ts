@@ -85,13 +85,15 @@ export async function getIssueComments(issueParams: IssueParams): Promise<GitHub
     octokit.issues.listComments.endpoint.merge(issueParams)
   );
   for (const comment of comments) {
-    console.log(comment);
-    const { data } = await octokit.graphql.paginate(QUERY_COMMENT_DETAILS, {
+    console.log("---------");
+    console.log(comment.body);
+    const commentData = await octokit.graphql.paginate(QUERY_COMMENT_DETAILS, {
       owner: issueParams.owner,
       repo: issueParams.repo,
       issue_number: issueParams.issue_number,
     });
-    console.log(JSON.stringify(data));
+    console.log(JSON.stringify(commentData));
+    console.log("---------");
   }
   return comments;
 }
