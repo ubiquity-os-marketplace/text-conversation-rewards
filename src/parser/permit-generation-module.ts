@@ -11,6 +11,7 @@ import {
   SupportedEvents,
   TokenType,
 } from "@ubiquibot/permit-generation/core";
+import { decrypt, parseDecryptedPrivateKey } from "@ubiquibot/permit-generation/utils";
 import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import {
@@ -51,6 +52,11 @@ export class PermitGenerationModule implements Module {
     const env = Value.Default(envConfigSchema, process.env) as EnvConfigType;
     if (!Value.Check(envConfigSchema, env)) {
       console.warn("[PermitGenerationModule] Invalid env detected, skipping.");
+      return Promise.resolve(result);
+    }
+    const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(payload.evmPrivateEncrypted, program.eventPayload.repository.owner.id, program.eventPayload.repository.id);
+    if (!isPrivateKeyAllowed) {
+      console.warn("[PermitGenerationModule] Private key is not allowed to be used in this organization/repository.");
       return Promise.resolve(result);
     }
     const eventName = context.eventName as SupportedEvents;
@@ -265,6 +271,72 @@ export class PermitGenerationModule implements Module {
         console.error("Failed to save permits to the database", e);
       }
     }
+  }
+
+  /**
+   * Checks whether partner's private key is allowed to be used in current repository.
+   * 
+   * If partner accidentally shares his encrypted private key then a malicious user
+   * will be able to use that leaked private key in another organization with permits
+   * generated from a leaked partner's wallet.
+   * 
+   * Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards` plugin) supports 2 formats:
+   * 1. PRIVATE_KEY:GITHUB_OWNER_ID
+   * 2. PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID
+   * 
+   * Here `GITHUB_OWNER_ID` can be:
+   * 1. Github organization id (if ubiquibot is used within an organization)
+   * 2. Github user id (if ubiquibot is simply installed in a user's repository)
+   * 
+   * Format "PRIVATE_KEY:GITHUB_OWNER_ID" restricts in which particular organization (or user related repositories) 
+   * this private key can be used. It can be set either in the organization wide config either in the repository wide one.
+   * 
+   * Format "PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID" restricts organization (or user related repositories) and 
+   * a particular repository where private key is allowed to be used.
+   * 
+   * @param privateKeyEncrypted Encrypted private key (with "X25519_PRIVATE_KEY") string (in any of the 2 different formats) 
+   * @param githubContextOwnerId Github organization or used id from which the "conversation-rewards" is executed
+   * @param githubContextRepositoryId Github repository id from which the "conversation-rewards" is executed
+   * @returns Whether private key is allowed to be used in current owner/repository context
+   */
+  async _isPrivateKeyAllowed(
+    privateKeyEncrypted: string, 
+    githubContextOwnerId: number, 
+    githubContextRepositoryId: number
+  ): Promise<boolean> {
+    // decrypt private key
+    const privateKeyDecrypted = await decrypt(privateKeyEncrypted, process.env.X25519_PRIVATE_KEY);
+    
+    // parse decrypted private key
+    const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
+    if (!privateKeyParsed.privateKey) {
+      console.log("Private key could not be decrypted");
+      return false;
+    }
+
+    // private key + owner id
+    // Format: PRIVATE_KEY:GITHUB_OWNER_ID
+    if (privateKeyParsed.allowedOrganizationId && !privateKeyParsed.allowedRepositoryId) {
+      if (privateKeyParsed.allowedOrganizationId !== githubContextOwnerId) {
+        console.log(`Current organization/user id ${githubContextOwnerId} is not allowed to use this private key`);
+        return false;
+      }
+      return true;
+    }
+
+    // private key + owner id + repository id
+    // Format: PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID
+    if (privateKeyParsed.allowedOrganizationId && privateKeyParsed.allowedRepositoryId) {
+      if (privateKeyParsed.allowedOrganizationId !== githubContextOwnerId || privateKeyParsed.allowedRepositoryId !== githubContextRepositoryId) {
+        console.log(`Current organization/user id ${githubContextOwnerId} and repository id ${githubContextRepositoryId} are not allowed to use this private key`);
+        return false;
+      }
+      return true;
+    }
+
+    // otherwise invalid private key format
+    console.log("Invalid private key format");
+    return false;
   }
 
   get enabled(): boolean {

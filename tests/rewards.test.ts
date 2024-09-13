@@ -131,6 +131,7 @@ jest.mock("../src/parser/command-line", () => {
         name: "conversation-rewards",
         owner: {
           login: "ubiquibot",
+          id: 76412717, // https://github.com/ubiquity
         },
       },
     },
