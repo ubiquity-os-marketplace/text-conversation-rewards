@@ -21,7 +21,6 @@ export class DataPurgeModule implements Module {
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
     for (const comment of data.allComments) {
-      console.log("is comment mini???", comment.body, "isMinimized" in comment);
       // Skips comments if they are minimized
       if ("isMinimized" in comment && comment.isMinimized) {
         logger.debug("Skipping hidden comment", { comment });
