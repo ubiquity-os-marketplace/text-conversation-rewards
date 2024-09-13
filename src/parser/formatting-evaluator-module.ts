@@ -108,7 +108,9 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   _getFormattingScore(comment: GithubCommentScore) {
-    const html = this._md.render(comment.content);
+    // Change the \r to \n to fix markup interpretation
+    const html = this._md.render(comment.content.replaceAll("\r", "\n"));
+    logger.debug("Will analyze formatting for the current content", { comment: comment.content, html });
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
       const res = this.classifyTagsWithWordCount(temp.window.document.body, comment.type);
@@ -118,7 +120,7 @@ export class FormattingEvaluatorModule implements Module {
     }
   }
 
-  _countWords(regexes: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"], text: string) {
+  _countSymbols(regexes: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"], text: string) {
     const counts: { [p: string]: { count: number; multiplier: number } } = {};
     for (const [regex, multiplier] of Object.entries(regexes)) {
       const match = text.trim().match(new RegExp(regex, "g"));
@@ -139,17 +141,36 @@ export class FormattingEvaluatorModule implements Module {
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
-      const wordCount = this._countWords(this._multipliers[commentType].regex, element.textContent || "");
+      // We cannot use textContent otherwise we would duplicate counts, so instead we extract text nodes
+      const textNodes = Array.from(element?.childNodes || []).filter((node) => node.nodeType === 3);
+      const innerText = textNodes
+        .map((node) => node.nodeValue?.trim())
+        .join(" ")
+        .trim();
+      const symbols = this._countSymbols(this._multipliers[commentType].regex, innerText);
       let score = 0;
       if (this._multipliers[commentType]?.html[tagName] !== undefined) {
         score = this._multipliers[commentType].html[tagName];
       } else {
         logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
       }
-      tagWordCount[tagName] = {
-        symbols: wordCount,
-        score,
-      };
+      logger.debug("Tag content results", { tagName, symbols, text: element.textContent });
+      // If we already had that tag included in the result, merge them and update total count
+      if (Object.keys(tagWordCount).includes(tagName)) {
+        for (const [k, v] of Object.entries(symbols)) {
+          if (Object.keys(tagWordCount[tagName].symbols).includes(k)) {
+            tagWordCount[tagName].symbols[k] = {
+              ...tagWordCount[tagName].symbols[k],
+              count: tagWordCount[tagName].symbols[k].count + v.count,
+            };
+          }
+        }
+      } else {
+        tagWordCount[tagName] = {
+          symbols: symbols,
+          score,
+        };
+      }
     }
 
     return tagWordCount;

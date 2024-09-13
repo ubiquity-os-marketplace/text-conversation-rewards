@@ -10,7 +10,7 @@ export default run()
     return result;
   })
   .catch(async (e) => {
-    const errorMessage = logger.error(`Failed to run comment evaluation. ${e.logMessage?.raw || e}`, e);
+    const errorMessage = logger.error(`Failed to run comment evaluation. ${e?.logMessage?.raw || e}`, e);
     try {
       await githubCommentModuleInstance.postComment(
         `${errorMessage?.logMessage.diff}\n<!--\n${getGithubWorkflowRunUrl()}\n${JSON.stringify(errorMessage?.metadata, null, 2)}\n-->`
