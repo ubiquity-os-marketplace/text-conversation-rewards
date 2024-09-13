@@ -10,6 +10,7 @@ import {
   GitHubTimelineEvent,
   GitHubUser,
 } from "./github-types";
+import { QUERY_COMMENT_DETAILS } from "./types/requests";
 
 // async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
 // const issueParams = parseGitHubUrl(gitHubIssueUrl);
@@ -80,7 +81,19 @@ export async function getIssueEvents(issueParams: IssueParams): Promise<GitHubIs
 
 export async function getIssueComments(issueParams: IssueParams): Promise<GitHubIssueComment[]> {
   const octokit = getOctokitInstance();
-  return await octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams));
+  const comments: GitHubIssueComment[] = await octokit.paginate(
+    octokit.issues.listComments.endpoint.merge(issueParams)
+  );
+  for (const comment of comments) {
+    console.log(comment);
+    const { data } = await octokit.graphql.paginate(QUERY_COMMENT_DETAILS, {
+      owner: issueParams.owner,
+      repo: issueParams.repo,
+      issue_number: issueParams.issue_number,
+    });
+    console.log(JSON.stringify(data));
+  }
+  return comments;
 }
 export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReviewState[]> {
   const octokit = getOctokitInstance();
