@@ -1,6 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
 import configuration from "../configuration/config-reader";
 import { DataPurgeConfiguration, dataPurgeConfigurationType } from "../configuration/data-purge-config";
+import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
 
@@ -20,8 +21,10 @@ export class DataPurgeModule implements Module {
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
     for (const comment of data.allComments) {
+      console.log("comment", JSON.stringify(comment));
       // Skips comments if they are minimized
       if ("isMinimized" in comment && comment.isMinimized) {
+        logger.debug("Skipping hidden comment", { comment });
         continue;
       }
       if (comment.body && comment.user?.login && result[comment.user.login]) {
