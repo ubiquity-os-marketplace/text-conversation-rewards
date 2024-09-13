@@ -42,7 +42,15 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
     return {
       graphql: {
         paginate() {
-          return {};
+          return {
+            repository: {
+              issue: {
+                closedByPullRequestsReferences: {
+                  edges: [],
+                },
+              },
+            },
+          };
         },
       },
     };
