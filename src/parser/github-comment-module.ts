@@ -1,19 +1,19 @@
 import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import * as fs from "fs";
+import { JSDOM } from "jsdom";
 import { stringify } from "yaml";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
-import { getOctokitInstance } from "../octokit";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import logger from "../helpers/logger";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
 import { getERC20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
+import { getOctokitInstance } from "../octokit";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
-import { JSDOM } from "jsdom";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -47,7 +47,7 @@ export class GithubCommentModule implements Module {
       const strippedBody: (string | undefined)[] = [];
       logger.info("Stripping content due to excessive length.");
       strippedBody.push("> [!NOTE]\n");
-      strippedBody.push("> This is a truncated output due to the comment length limit.\n\n");
+      strippedBody.push("> This output has been truncated due to the comment length limit.\n\n");
       for (const [key, value] of Object.entries(result)) {
         result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
         strippedBody.push(result[key].evaluationCommentHtml);
