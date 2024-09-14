@@ -10,6 +10,7 @@ import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import hiddenCommentPurged from "./__mocks__/results/hidden-comment-purged.json";
+import { GitHubIssueComment } from "../src/github-types";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
@@ -94,6 +95,15 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
+jest.mock("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: jest.fn((comments: GitHubIssueComment[]) => {
+    for (let i = 0; i < comments.length; i++) {
+      const comment = comments[i];
+      comment.isMinimized = i === 1;
+    }
+  }),
+}));
+
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -118,6 +128,7 @@ describe("Purging tests", () => {
     processor["_transformers"] = [new UserExtractorModule(), new DataPurgeModule()];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
+    console.log(JSON.stringify(result));
     expect(result).toEqual(hiddenCommentPurged);
   });
 });
