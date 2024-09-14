@@ -1,0 +1,40 @@
+name: Run Jest testing suite
+on:
+  workflow_dispatch:
+  pull_request:
+
+env:
+  NODE_ENV: "test"
+
+jobs:
+  testing:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      # Dummy values, not production ones!
+      X25519_PRIVATE_KEY: "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY"
+      EVM_PRIVATE_ENCRYPTED: "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ"
+      NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
+      NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
+      PERMIT_FEE_RATE: ""
+      PERMIT_TREASURY_GITHUB_USERNAME: ""
+      PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ""
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.10.0"
+
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+
+      - name: Jest With Coverage
+        run: yarn install --immutable --immutable-cache --check-cache && yarn test
+
+      - name: Add Jest Report to Summary
+        if: always()
+        run: echo "$(cat test-dashboard.md)" >> $GITHUB_STEP_SUMMARY

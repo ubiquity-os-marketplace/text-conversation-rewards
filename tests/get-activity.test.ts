@@ -1,21 +1,31 @@
-import { config } from "dotenv";
-import { GetActivity } from "./get-activity";
-import { parseGitHubUrl } from "./start";
+import { IssueActivity } from "../src/issue-activity";
+import { parseGitHubUrl } from "../src/start";
 
-config();
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-if (!GITHUB_TOKEN) {
-  console.warn("GITHUB_TOKEN is not set");
-}
 // Mock process.argv
-process.argv = ["path/to/node", "path/to/script", `--auth=${GITHUB_TOKEN}`];
 const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
+
+jest.mock("../src/parser/command-line", () => {
+  // Require is needed because mock cannot access elements out of scope
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const cfg = require("./__mocks__/results/valid-configuration.json");
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const dotenv = require("dotenv");
+  dotenv.config();
+  return {
+    stateId: 1,
+    eventName: "issues.closed",
+    authToken: process.env.GITHUB_TOKEN,
+    ref: "",
+    eventPayload: JSON.stringify(cfg),
+  };
+});
 
 describe("GetActivity class", () => {
   const issue = parseGitHubUrl(issueUrl);
-  const activity = new GetActivity(issue);
-
-  beforeAll(async () => await activity.init());
+  const activity = new IssueActivity(issue);
+  beforeAll(async () => {
+    await activity.init();
+  });
 
   it("should resolve all promises", async () => {
     expect(activity.self).toBeTruthy();
@@ -25,7 +35,7 @@ describe("GetActivity class", () => {
   });
 
   it("should create an instance of GetActivity", () => {
-    expect(activity).toBeInstanceOf(GetActivity);
+    expect(activity).toBeInstanceOf(IssueActivity);
   });
 
   it("should initialize `activity.self` as an object", () => {

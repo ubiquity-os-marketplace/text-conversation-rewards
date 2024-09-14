@@ -8,3 +8,6 @@ node_modules
 .pnp.loader.mjs
 static/dist
 .env
+junit.xml
+coverage
+test-dashboard.md

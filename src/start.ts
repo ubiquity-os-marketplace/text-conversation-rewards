@@ -1,4 +1,4 @@
-import { getOctokitInstance } from "./get-authentication-token";
+import { getOctokitInstance } from "./octokit";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -6,6 +6,7 @@ import {
   GitHubPullRequest,
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
+  GitHubRepository,
   GitHubTimelineEvent,
   GitHubUser,
 } from "./github-types";
@@ -57,6 +58,11 @@ import {
 export type IssueParams = ReturnType<typeof parseGitHubUrl>;
 export type PullParams = { owner: string; repo: string; pull_number: number };
 
+export async function getRepo(params: IssueParams): Promise<GitHubRepository> {
+  const octokit = getOctokitInstance();
+  return (await octokit.repos.get(params)).data;
+}
+
 export async function getIssue(params: IssueParams): Promise<GitHubIssue> {
   const octokit = getOctokitInstance();
   return (await octokit.issues.get(params)).data;
@@ -85,7 +91,8 @@ export async function getPullRequestReviewComments(pullParams: PullParams): Prom
   return await octokit.paginate(octokit.pulls.listReviewComments.endpoint.merge(pullParams));
 }
 
-export async function getAllIssueActivity(issueParams: IssueParams) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getAllIssueActivity(issueParams: IssueParams) {
   // @DEV: this is very useful for seeing every type of event,
   // which includes the issue specification, any events, and all conversation
   //  that has occurred on the issue in chronological order
@@ -104,7 +111,8 @@ export async function getAllIssueActivity(issueParams: IssueParams) {
   return mixedEventsAndComments;
 }
 
-export async function getTimelineUsers(issueParams: IssueParams): Promise<GitHubUser[]> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getTimelineUsers(issueParams: IssueParams): Promise<GitHubUser[]> {
   const timelineEvents = await getAllTimelineEvents(issueParams);
   const users = timelineEvents.filter((event) => event.actor).map((event) => event.actor);
   return [...new Set(users)];
@@ -118,6 +126,9 @@ export async function getAllTimelineEvents(issueParams: IssueParams): Promise<Gi
 
 export function parseGitHubUrl(url: string): { owner: string; repo: string; issue_number: number } {
   const path = new URL(url).pathname.split("/");
+  if (path.length !== 5) {
+    throw new Error(`[parseGitHubUrl] Invalid url: [${url}]`);
+  }
   return {
     owner: path[1],
     repo: path[2],
