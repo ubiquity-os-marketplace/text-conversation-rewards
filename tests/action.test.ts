@@ -61,6 +61,10 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
+jest.mock("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: jest.fn(),
+}));
+
 describe("Action tests", () => {
   it("Should skip when the issue is closed without the completed status", async () => {
     jest.mock("../src/parser/command-line", () => {

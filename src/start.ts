@@ -85,7 +85,6 @@ export async function getIssueComments(issueParams: IssueParams): Promise<GitHub
     octokit.issues.listComments.endpoint.merge(issueParams)
   );
   await getMinimizedCommentStatus(comments);
-  console.log("--- comments ---", JSON.stringify(comments));
   return comments;
 }
 export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReviewState[]> {

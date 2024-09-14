@@ -57,15 +57,6 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-jest.mock("../src/start", () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const comments = require("./__mocks__/routes/issue-13-comments-get.json");
-  return {
-    ...jest.requireActual("../src/start"),
-    getIssueComments: jest.fn(() => Promise.resolve(comments)),
-  };
-});
-
 jest.mock("../src/parser/command-line", () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("./__mocks__/results/valid-configuration.json");
@@ -99,7 +90,7 @@ jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn((comments: GitHubIssueComment[]) => {
     for (let i = 0; i < comments.length; i++) {
       const comment = comments[i];
-      comment.isMinimized = i === 1;
+      comment.isMinimized = i === 0;
     }
   }),
 }));
