@@ -35,8 +35,8 @@ export const LINKED_PULL_REQUESTS = /* GraphQL */ `
 `;
 
 export const QUERY_COMMENT_DETAILS = /* GraphQL */ `
-  query commentDetails($node_id: ID!) {
-    node(id: $node_id) {
+  query commentDetails($node_ids: [ID!]!) {
+    nodes(ids: $node_ids) {
       ... on IssueComment {
         id
         isMinimized

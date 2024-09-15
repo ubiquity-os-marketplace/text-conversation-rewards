@@ -5,14 +5,17 @@ import { QUERY_COMMENT_DETAILS } from "../types/requests";
 
 export async function getMinimizedCommentStatus(comments: GitHubIssueComment[]) {
   const octokit = getOctokitInstance();
+  const commentsData = await octokit.graphql<{ nodes?: IssueComment[] }>(QUERY_COMMENT_DETAILS, {
+    node_ids: comments.map((o) => o.node_id),
+  });
 
-  for (const comment of comments) {
-    const commentData = await octokit.graphql<{ node?: IssueComment }>(QUERY_COMMENT_DETAILS, {
-      node_id: comment.node_id,
-    });
-    // For each comment we add the 'isMinimized' info, which corresponds to a collapsed comment
-    if (commentData.node) {
-      comment.isMinimized = commentData.node.isMinimized;
+  if (commentsData.nodes?.length) {
+    for (const commentNode of commentsData.nodes) {
+      const comment = comments.find((o) => o.node_id === commentNode.id);
+      // For each comment we add the 'isMinimized' info, which corresponds to a collapsed comment
+      if (comment) {
+        comment.isMinimized = commentNode.isMinimized;
+      }
     }
   }
 }
