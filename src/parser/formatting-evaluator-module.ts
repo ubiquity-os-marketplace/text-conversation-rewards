@@ -138,6 +138,7 @@ export class FormattingEvaluatorModule implements Module {
       { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }
     > = {};
     const elements = htmlElement.getElementsByTagName("*");
+    const tagCount: Record<string, { count: number; score: number }> = {};
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
@@ -155,6 +156,12 @@ export class FormattingEvaluatorModule implements Module {
         logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
       }
       logger.debug("Tag content results", { tagName, symbols, text: element.textContent });
+
+      // TODO
+      tagCount[tagName] = tagCount[tagName]
+        ? { ...tagCount[tagName], count: tagCount[tagName].count + 1 }
+        : { count: 1, score };
+
       // If we already had that tag included in the result, merge them and update total count
       if (Object.keys(tagWordCount).includes(tagName)) {
         for (const [k, v] of Object.entries(symbols)) {
@@ -172,6 +179,8 @@ export class FormattingEvaluatorModule implements Module {
         };
       }
     }
+
+    logger.info("tag count", { tagCount });
 
     return tagWordCount;
   }
