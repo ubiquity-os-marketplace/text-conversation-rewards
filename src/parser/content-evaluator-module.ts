@@ -81,8 +81,7 @@ export class ContentEvaluatorModule implements Module {
 
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
-    const { commentsToEvaluate, PrCommentsToEvaluate: prCommentsToEvaluate } =
-      this._splitCommentsByPrompt(commentsWithScore);
+    const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
     const relevancesByAI = await this._evaluateComments(specificationBody, commentsToEvaluate, prCommentsToEvaluate);
 
@@ -128,7 +127,7 @@ export class ContentEvaluatorModule implements Module {
 
   _splitCommentsByPrompt(commentsWithScore: Readonly<GithubCommentScore>[]): {
     commentsToEvaluate: CommentToEvaluate[];
-    PrCommentsToEvaluate: PrCommentToEvaluate[];
+    prCommentsToEvaluate: PrCommentToEvaluate[];
   } {
     const commentsToEvaluate: CommentToEvaluate[] = [];
     const prCommentsToEvaluate: PrCommentToEvaluate[] = [];
@@ -149,7 +148,7 @@ export class ContentEvaluatorModule implements Module {
         }
       }
     }
-    return { commentsToEvaluate, PrCommentsToEvaluate: prCommentsToEvaluate };
+    return { commentsToEvaluate, prCommentsToEvaluate };
   }
 
   async _evaluateComments(
