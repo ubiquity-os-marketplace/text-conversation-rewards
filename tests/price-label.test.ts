@@ -13,6 +13,10 @@ jest.mock("../src/helpers/label-price-extractor", () => {
   };
 });
 
+jest.mock("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: jest.fn(),
+}));
+
 jest.mock("../src/parser/command-line", () => {
   const cfg = require("./__mocks__/results/valid-configuration.json");
   const dotenv = require("dotenv");

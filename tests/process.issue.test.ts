@@ -41,6 +41,10 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
+jest.mock("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: jest.fn(),
+}));
+
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
   // eslint-disable-next-line @typescript-eslint/no-var-requires
