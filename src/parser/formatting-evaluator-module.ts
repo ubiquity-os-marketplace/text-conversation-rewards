@@ -82,20 +82,19 @@ export class FormattingEvaluatorModule implements Module {
       let sum = new Decimal(0);
 
       for (const symbol of Object.keys(curr.regex)) {
-        const count = new Decimal(curr.regex[symbol].wordCount);
-        const symbolMultiplier = new Decimal(curr.regex[symbol].wordValue);
-        const formattingElementScore = new Decimal(curr.score);
+        const wordCount = new Decimal(curr.regex[symbol].wordCount);
+        const wordValue = new Decimal(curr.regex[symbol].wordValue);
+        const score = new Decimal(curr.score);
         const exponent = this._wordCountExponent;
 
-        sum = sum.add(
-          count
-            .pow(exponent) // (count^exponent)
-            .mul(symbolMultiplier) // symbol multiplier
-            .mul(formattingElementScore) // comment type multiplier
-            .mul(multiplierFactor.multiplier) // formatting element score
-        );
+        const wordTotalValue = wordCount
+          .pow(exponent) // (count^exponent)
+          .mul(wordValue); // symbol multiplier
+        const elementTotalValue = score.mul(curr.elementCount); // comment type multiplier
+
+        sum = sum.add(wordTotalValue.add(elementTotalValue));
       }
-      return acc.add(sum);
+      return acc.add(sum.mul(multiplierFactor.multiplier)); // formatting element score
     }, new Decimal(0));
   }
 
@@ -122,11 +121,11 @@ export class FormattingEvaluatorModule implements Module {
 
   _countSymbols(regexes: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"], text: string) {
     const counts: RegexCount = {};
-    for (const [regex, multiplier] of Object.entries(regexes)) {
+    for (const [regex, wordValue] of Object.entries(regexes)) {
       const match = text.trim().match(new RegExp(regex, "g"));
       counts[regex] = {
-        wordCount: match?.length || 1,
-        wordValue: multiplier,
+        wordCount: match?.length || 0,
+        wordValue: wordValue,
       };
     }
     return counts;
