@@ -10,7 +10,7 @@ import {
 } from "../configuration/formatting-evaluator-config";
 import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
-import { GithubCommentScore, Module, Result } from "./processor";
+import { GithubCommentScore, Module, RegexCount, Result } from "./processor";
 
 interface Multiplier {
   multiplier: number;
@@ -81,9 +81,9 @@ export class FormattingEvaluatorModule implements Module {
     return Object.values(formatting).reduce((acc, curr) => {
       let sum = new Decimal(0);
 
-      for (const symbol of Object.keys(curr.symbols)) {
-        const count = new Decimal(curr.symbols[symbol].count);
-        const symbolMultiplier = new Decimal(curr.symbols[symbol].multiplier);
+      for (const symbol of Object.keys(curr.regex)) {
+        const count = new Decimal(curr.regex[symbol].wordCount);
+        const symbolMultiplier = new Decimal(curr.regex[symbol].wordValue);
         const formattingElementScore = new Decimal(curr.score);
         const exponent = this._wordCountExponent;
 
@@ -113,7 +113,7 @@ export class FormattingEvaluatorModule implements Module {
     logger.debug("Will analyze formatting for the current content", { comment: comment.content, html });
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
-      const res = this.classifyTagsWithWordCount(temp.window.document.body, comment.type);
+      const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
       return { formatting: res };
     } else {
       throw new Error(`Could not create DOM for comment [${comment}]`);
@@ -121,27 +121,24 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   _countSymbols(regexes: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"], text: string) {
-    const counts: { [p: string]: { count: number; multiplier: number } } = {};
+    const counts: RegexCount = {};
     for (const [regex, multiplier] of Object.entries(regexes)) {
       const match = text.trim().match(new RegExp(regex, "g"));
       counts[regex] = {
-        count: match?.length || 1,
-        multiplier,
+        wordCount: match?.length || 1,
+        wordValue: multiplier,
       };
     }
     return counts;
   }
 
-  classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
-    const tagWordCount: Record<
-      string,
-      { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }
-    > = {};
+  _classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
+    const tagCount: Record<string, { regex: RegexCount; score: number; elementCount: number }> = {};
     const elements = htmlElement.getElementsByTagName("*");
-    const tagCount: Record<string, { count: number; score: number }> = {};
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
+
       // We cannot use textContent otherwise we would duplicate counts, so instead we extract text nodes
       const textNodes = Array.from(element?.childNodes || []).filter((node) => node.nodeType === 3);
       const innerText = textNodes
@@ -155,33 +152,27 @@ export class FormattingEvaluatorModule implements Module {
       } else {
         logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
       }
-      logger.debug("Tag content results", { tagName, symbols, text: element.textContent });
-
-      // TODO
-      tagCount[tagName] = tagCount[tagName]
-        ? { ...tagCount[tagName], count: tagCount[tagName].count + 1 }
-        : { count: 1, score };
 
       // If we already had that tag included in the result, merge them and update total count
-      if (Object.keys(tagWordCount).includes(tagName)) {
+      if (Object.keys(tagCount).includes(tagName)) {
         for (const [k, v] of Object.entries(symbols)) {
-          if (Object.keys(tagWordCount[tagName].symbols).includes(k)) {
-            tagWordCount[tagName].symbols[k] = {
-              ...tagWordCount[tagName].symbols[k],
-              count: tagWordCount[tagName].symbols[k].count + v.count,
+          if (Object.keys(tagCount[tagName].regex).includes(k)) {
+            tagCount[tagName].regex[k] = {
+              ...tagCount[tagName].regex[k],
+              wordCount: tagCount[tagName].regex[k].wordCount + v.wordCount,
             };
+            tagCount[tagName].elementCount += 1;
           }
         }
       } else {
-        tagWordCount[tagName] = {
-          symbols: symbols,
+        tagCount[tagName] = {
+          regex: symbols,
           score,
+          elementCount: 1,
         };
       }
     }
 
-    logger.info("tag count", { tagCount });
-
-    return tagWordCount;
+    return tagCount;
   }
 }

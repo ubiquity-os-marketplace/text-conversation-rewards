@@ -80,75 +80,75 @@ with:
     dataPurge: {}
     formattingEvaluator:
       multipliers:
-          - role: [ ISSUE_SPECIFICATION ]
-            multiplier: 1
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0.1
-              scores: # Scores can be set for each item differently
-                br: 0
-                code: 1
-                p: 1
-                em: 0
-                img: 0
-                strong: 0
-                blockquote: 0
-                h1: 1
-                h2: 1
-                h3: 1
-                h4: 1
-                h5: 1
-                h6: 1
-                a: 1
-                li: 1
-                ul: 1
-                td: 1
-                hr: 0
-          - role: [ISSUE_AUTHOR]
-            multiplier: 1
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0.2
-          - role: [ISSUE_ASSIGNEE]
-            multiplier: 0
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0
-          - role: [ISSUE_COLLABORATOR]
-            multiplier: 1
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0.1
-          - role: [ISSUE_CONTRIBUTOR]
-            multiplier: 0.25
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0.1
-          - role: [PULL_SPECIFICATION]
-            multiplier: 0
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0
-          - role: [PULL_AUTHOR]
-            multiplier: 2
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0.2
-          - role: [PULL_ASSIGNEE]
-            multiplier: 1
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0.1
-          - role: [PULL_COLLABORATOR]
-            multiplier: 1
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0.1
-          - role: [PULL_CONTRIBUTOR]
-            multiplier: 0.25
-            rewards:
-              regex:
-                "\\b\\w+\\b": 0.1
+        - role: [ ISSUE_SPECIFICATION ]
+          multiplier: 1
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0.1
+            scores: # Scores can be set for each item differently
+              br: 0
+              code: 1
+              p: 1
+              em: 0
+              img: 0
+              strong: 0
+              blockquote: 0
+              h1: 1
+              h2: 1
+              h3: 1
+              h4: 1
+              h5: 1
+              h6: 1
+              a: 1
+              li: 1
+              ul: 1
+              td: 1
+              hr: 0
+        - role: [ISSUE_AUTHOR]
+          multiplier: 1
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0.2
+        - role: [ISSUE_ASSIGNEE]
+          multiplier: 0
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0
+        - role: [ISSUE_COLLABORATOR]
+          multiplier: 1
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0.1
+        - role: [ISSUE_CONTRIBUTOR]
+          multiplier: 0.25
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0.1
+        - role: [PULL_SPECIFICATION]
+          multiplier: 0
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0
+        - role: [PULL_AUTHOR]
+          multiplier: 2
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0.2
+        - role: [PULL_ASSIGNEE]
+          multiplier: 1
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0.1
+        - role: [PULL_COLLABORATOR]
+          multiplier: 1
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0.1
+        - role: [PULL_CONTRIBUTOR]
+          multiplier: 0.25
+          rewards:
+            regex:
+              "\\b\\w+\\b": 0.1
       permitGeneration: {}
       githubComment:
         post: true

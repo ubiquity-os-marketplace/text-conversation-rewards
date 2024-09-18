@@ -113,7 +113,7 @@
           ]
         },
         {
-          "multiplier": 0,
+          "multiplier": 1,
           "rewards": {
             "html": {
               "a": 1,
@@ -137,7 +137,7 @@
               "ul": 1
             },
             "regex": {
-              "\\b\\w+\\b": 0
+              "\\b\\w+\\b": 0.1
             }
           },
           "role": [

@@ -89,6 +89,10 @@ export interface Result {
   };
 }
 
+export interface RegexCount {
+  [p: string]: { wordCount: number; wordValue: number };
+}
+
 export interface GithubCommentScore {
   id: number;
   content: string;
@@ -96,7 +100,7 @@ export interface GithubCommentScore {
   type: CommentKind | CommentAssociation;
   score?: {
     formatting?: {
-      content: Record<string, { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }>;
+      content: Record<string, { regex: RegexCount; score: number; elementCount: number }>;
       multiplier: number;
     };
     relevance?: number;

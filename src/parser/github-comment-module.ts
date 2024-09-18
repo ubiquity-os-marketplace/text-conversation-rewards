@@ -52,6 +52,7 @@ export class GithubCommentModule implements Module {
         result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
         strippedBody.push(result[key].evaluationCommentHtml);
       }
+      strippedBody.push(this._encodeHTML(`\n<!--\n${getGithubWorkflowRunUrl()}\n-->`));
       return strippedBody.join("");
     }
 
