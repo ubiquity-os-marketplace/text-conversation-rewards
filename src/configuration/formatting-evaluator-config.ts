@@ -18,7 +18,7 @@ const htmlType = Type.Record(Type.String(), Type.Number(), {
     code: 1,
     p: 1,
     em: 0,
-    img: 0,
+    img: 1,
     strong: 0,
     blockquote: 0,
     h1: 1,
