@@ -111,7 +111,7 @@ export class ContentEvaluatorModule implements Module {
       currentComment.score = {
         ...(currentComment.score || {}),
         relevance: new Decimal(currentRelevance).toNumber(),
-        reward: currentReward.mul(currentRelevance).toNumber(),
+        reward: currentReward.mul(currentRelevance).toFixed(2),
       };
     }
 
