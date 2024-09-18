@@ -60,15 +60,21 @@ export class ContentEvaluatorModule implements Module {
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
     const promises: Promise<GithubCommentScore[]>[] = [];
+    const allCommentsUnClean = data.allComments || [];
+    const allComments: { id: number; comment: string; author: string }[] = [];
+    for (const commentObj of allCommentsUnClean) {
+      if (commentObj.user) {
+        allComments.push({ id: commentObj.id, comment: commentObj.body || "", author: commentObj.user.login });
+      }
+    }
 
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
       const specificationBody = data.self?.body;
-
       if (specificationBody && comments.length) {
         promises.push(
-          this._processComment(comments, specificationBody).then(
+          this._processComment(comments, specificationBody, allComments, key).then(
             (commentsWithScore) => (currentElement.comments = commentsWithScore)
           )
         );
@@ -92,7 +98,12 @@ export class ContentEvaluatorModule implements Module {
     return reward;
   }
 
-  async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
+  async _processComment(
+    comments: Readonly<GithubCommentScore>[],
+    specificationBody: string,
+    allComments: { id: number; comment: string; author: string }[],
+    author: string
+  ) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
     const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
