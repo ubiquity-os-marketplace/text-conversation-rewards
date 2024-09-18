@@ -119,7 +119,10 @@ export class FormattingEvaluatorModule implements Module {
     }
   }
 
-  _countSymbols(regexes: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"], text: string) {
+  _countSymbolsFromRegex(
+    regexes: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"],
+    text: string
+  ) {
     const counts: RegexCount = {};
     for (const [regex, wordValue] of Object.entries(regexes)) {
       const match = text.trim().match(new RegExp(regex, "g"));
@@ -131,12 +134,50 @@ export class FormattingEvaluatorModule implements Module {
     return counts;
   }
 
+  _updateTagCount(
+    tagCount: Record<string, { regex: RegexCount; score: number; elementCount: number }>,
+    tagName: string,
+    regexCount: RegexCount,
+    score: number
+  ) {
+    // If we already had that tag included in the result, merge them and update total count
+    if (Object.keys(tagCount).includes(tagName)) {
+      for (const [k, v] of Object.entries(regexCount)) {
+        if (Object.keys(tagCount[tagName].regex).includes(k)) {
+          tagCount[tagName].regex[k] = {
+            ...tagCount[tagName].regex[k],
+            wordCount: tagCount[tagName].regex[k].wordCount + v.wordCount,
+          };
+          tagCount[tagName].elementCount += 1;
+        }
+      }
+    } else {
+      tagCount[tagName] = {
+        regex: regexCount,
+        score,
+        elementCount: 1,
+      };
+    }
+  }
+
   _classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
     const tagCount: Record<string, { regex: RegexCount; score: number; elementCount: number }> = {};
     const elements = htmlElement.getElementsByTagName("*");
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
+      let score = 0;
+      if (this._multipliers[commentType]?.html[tagName] !== undefined) {
+        score = this._multipliers[commentType].html[tagName];
+        if (score === 0) {
+          element.remove();
+          continue;
+        }
+      } else {
+        logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
+        element.remove();
+        continue;
+      }
 
       // We cannot use textContent otherwise we would duplicate counts, so instead we extract text nodes
       const textNodes = Array.from(element?.childNodes || []).filter((node) => node.nodeType === 3);
@@ -144,34 +185,10 @@ export class FormattingEvaluatorModule implements Module {
         .map((node) => node.nodeValue?.trim())
         .join(" ")
         .trim();
-      const symbols = this._countSymbols(this._multipliers[commentType].regex, innerText);
-      let score = 0;
-      if (this._multipliers[commentType]?.html[tagName] !== undefined) {
-        score = this._multipliers[commentType].html[tagName];
-      } else {
-        logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
-      }
+      const regexCount = this._countSymbolsFromRegex(this._multipliers[commentType].regex, innerText);
 
-      // If we already had that tag included in the result, merge them and update total count
-      if (Object.keys(tagCount).includes(tagName)) {
-        for (const [k, v] of Object.entries(symbols)) {
-          if (Object.keys(tagCount[tagName].regex).includes(k)) {
-            tagCount[tagName].regex[k] = {
-              ...tagCount[tagName].regex[k],
-              wordCount: tagCount[tagName].regex[k].wordCount + v.wordCount,
-            };
-            tagCount[tagName].elementCount += 1;
-          }
-        }
-      } else {
-        tagCount[tagName] = {
-          regex: symbols,
-          score,
-          elementCount: 1,
-        };
-      }
+      this._updateTagCount(tagCount, tagName, regexCount, score);
     }
-
     return tagCount;
   }
 }
