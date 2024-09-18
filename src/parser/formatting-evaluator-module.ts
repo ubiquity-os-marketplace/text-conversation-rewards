@@ -174,7 +174,7 @@ export class FormattingEvaluatorModule implements Module {
           continue;
         }
       } else {
-        logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
+        logger.error(`Could not find multiplier for element <${tagName}> in comment [${element.outerHTML}]`);
         element.remove();
         continue;
       }
