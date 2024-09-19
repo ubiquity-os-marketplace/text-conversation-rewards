@@ -42,7 +42,11 @@ Be sure to review all `*.test.*` files for implementation details.
 }
 ```
 
-Reward formula: `((count * wordValue) * (score * multiplier) * n) * relevance + task.reward = total`
+Reward formula:
+
+```math
+\sum_{i=0}^{n} \left( \sum_{j=0}^{n} \left(\text{wordCount}^{exponent} \times \text{wordValue} \times \text{relevance}\right) + \left(\text{score} \times \text{elementCount}\right) \right) + \text{task.reward} = \text{total}
+```
 
 ## Plugin configuration
 
