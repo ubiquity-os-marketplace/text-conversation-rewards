@@ -59,13 +59,15 @@ export class FormattingEvaluatorModule implements Module {
         const { formatting } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(formatting, multiplierFactor).toDecimalPlaces(2);
+        const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
         comment.score = {
           ...comment.score,
+          reward,
           formatting: {
             content: formatting,
             multiplier: multiplierFactor.multiplier,
+            result: reward,
           },
-          reward: (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber(),
         };
       }
     }

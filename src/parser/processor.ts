@@ -102,6 +102,7 @@ export interface GithubCommentScore {
     formatting?: {
       content: Record<string, { regex: RegexCount; score: number; elementCount: number }>;
       multiplier: number;
+      result: number;
     };
     relevance?: number;
     clarity?: number;
