@@ -84,16 +84,16 @@ export class FormattingEvaluatorModule implements Module {
       for (const symbol of Object.keys(curr.regex)) {
         const wordCount = new Decimal(curr.regex[symbol].wordCount);
         const wordValue = new Decimal(curr.regex[symbol].wordValue);
-        const score = new Decimal(curr.score);
         const exponent = this._wordCountExponent;
-
         const wordTotalValue = wordCount
           .pow(exponent) // (count^exponent)
           .mul(wordValue); // symbol multiplier
-        const elementTotalValue = score.mul(curr.elementCount); // comment type multiplier
 
-        sum = sum.add(wordTotalValue.add(elementTotalValue));
+        sum = sum.add(wordTotalValue);
       }
+      const score = new Decimal(curr.score);
+      const elementTotalValue = score.mul(curr.elementCount); // comment type multiplier
+      sum = sum.add(elementTotalValue);
       return acc.add(sum.mul(multiplierFactor.multiplier)); // formatting element score
     }, new Decimal(0));
   }
