@@ -74,6 +74,19 @@ export class ContentEvaluatorModule implements Module {
     return result;
   }
 
+  _getRewardForComment(comment: GithubCommentScore | undefined, relevance: number) {
+    let reward = new Decimal(comment?.score?.reward || 0);
+
+    if (comment?.score?.formatting?.content) {
+      let elementTotalReward = new Decimal(0);
+      for (const [, { score, elementCount }] of Object.entries(comment.score.formatting.content)) {
+        elementTotalReward = elementTotalReward.add(elementCount * score);
+      }
+      reward = reward.sub(elementTotalReward).mul(relevance).add(elementTotalReward);
+    }
+    return reward;
+  }
+
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
 
@@ -107,11 +120,12 @@ export class ContentEvaluatorModule implements Module {
         currentRelevance = relevancesByAI[currentComment.id];
       }
 
-      const currentReward = new Decimal(currentComment.score?.reward || 0);
+      const currentReward = this._getRewardForComment(currentComment, currentRelevance);
+
       currentComment.score = {
         ...(currentComment.score || {}),
         relevance: new Decimal(currentRelevance).toNumber(),
-        reward: currentReward.mul(currentRelevance).toNumber(),
+        reward: currentReward.toNumber(),
       };
     }
 
