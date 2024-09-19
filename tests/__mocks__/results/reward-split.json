@@ -18,10 +18,11 @@
                 "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 3.77
           },
           "relevance": 0.8,
-          "reward": 3.016
+          "reward": 3.416
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186802545"
@@ -43,10 +44,11 @@
                 "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 3.66
           },
           "relevance": 0.8,
-          "reward": 2.928
+          "reward": 3.128
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186807999"
@@ -60,6 +62,10 @@
               "img": {
                 "elementCount": 1,
                 "regex": {
+                  "\\b\\W+\\b": {
+                    "wordCount": 0,
+                    "wordValue": 0.1
+                  },
                   "\\b\\w+\\b": {
                     "wordCount": 0,
                     "wordValue": 0.1
@@ -68,8 +74,12 @@
                 "score": 1
               },
               "p": {
-                "elementCount": 2,
+                "elementCount": 3,
                 "regex": {
+                  "\\b\\W+\\b": {
+                    "wordCount": 47,
+                    "wordValue": 0.1
+                  },
                   "\\b\\w+\\b": {
                     "wordCount": 48,
                     "wordValue": 0.1
@@ -78,10 +88,11 @@
                 "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 9.32
           },
           "relevance": 1,
-          "reward": 5.69
+          "reward": 9.32
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69"
@@ -103,10 +114,11 @@
                 "score": 1
               }
             },
-            "multiplier": 0
+            "multiplier": 0,
+            "result": 0
           },
           "relevance": 0.8,
-          "reward": 0
+          "reward": 0.2
         },
         "type": "PULL_SPECIFICATION",
         "url": "https://github.com/ubiquity/work.ubq.fi/pull/70"
@@ -128,7 +140,8 @@
                 "score": 1
               }
             },
-            "multiplier": 2
+            "multiplier": 2,
+            "result": 3.57
           },
           "relevance": 1,
           "reward": 3.57
@@ -163,7 +176,8 @@
                 "score": 1
               }
             },
-            "multiplier": 2
+            "multiplier": 2,
+            "result": 15.87
           },
           "relevance": 1,
           "reward": 15.87
@@ -172,13 +186,13 @@
         "url": "https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186798329"
       }
     ],
-    "evaluationCommentHtml": "<details>       <summary>         <b>           <h3>             <a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI1NjA3NDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjU2MDc0MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg4ZTQ5MDk0YTZjY2YzZDdlMjc3MzAwMzViMDIxNzQ4YjBhMDUzZGYxYTYxNzNiMTQ2YTUzOWY1NTA4NmQwMDAyMTIyNmRkOTdlODE3ZmE0NTk5MTllYjI1MDljOGQxNmY4MzcxODZlMzZhZjUyYWYzYzI3ODk2YmE1NzgzMjRlMDFjIiwibmV0d29ya0lkIjoxMDB9XQ==\" target=\"_blank\" rel=\"noopener\">               [ 56.074 WXDAI ]             </a>           </h3>           <h6>             @0x4007           </h6>         </b>       </summary>       <h6>Contributions Overview</h6>       <table>         <thead>           <tr>             <th>View</th>             <th>Contribution</th>             <th>Count</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>Issue</td>             <td>Task</td>             <td>0.5</td>             <td>25</td>           </tr>           <tr>             <td>Issue</td>             <td>Specification</td>             <td>1</td>             <td>5.69</td>           </tr>           <tr>             <td>Issue</td>             <td>Comment</td>             <td>2</td>             <td>5.944</td>           </tr>           <tr>             <td>Review</td>             <td>Comment</td>             <td>3</td>             <td>19.44</td>           </tr>         </tbody>       </table>       <h6>Conversation Incentives</h6>       <table>         <thead>           <tr>             <th>Comment</th>             <th>Formatting</th>             <th>Relevance</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69\" target=\"_blank\" rel=\"noopener\">Looks like the filters are barely useable now that we have the s&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 5.69               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 48&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 2&#13;  img:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 0&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>1</td>             <td>5.69</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186802545\" target=\"_blank\" rel=\"noopener\">Okay both bots are broken @gentlementlegen  We should have spli&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.77               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 13&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 2&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>3.016</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186807999\" target=\"_blank\" rel=\"noopener\">Actually, looks like it did the right thing for your reward on v&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.66               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 21&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>2.928</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/pull/70\" target=\"_blank\" rel=\"noopener\">Resolves https://github.com/ubiquity/work.ubq.fi/issues/69</a>               </h6>             </td>             <td>             <details>               <summary>                 0               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 10&#13;        wordValue: 0&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 0&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>-</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186530214\" target=\"_blank\" rel=\"noopener\">I always struggle with Cypress</a>               </h6>             </td>             <td>             <details>               <summary>                 3.57               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 5&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 2&#13;</pre>              </details>             </td>             <td>1</td>             <td>3.57</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186798329\" target=\"_blank\" rel=\"noopener\">Only doesn't work on my local, the guess is token expiration aft&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 15.87               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 28&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 2&#13;  a:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 11&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 2&#13;</pre>              </details>             </td>             <td>1</td>             <td>15.87</td>           </tr>         </tbody>       </table>     </details>",
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI1NjA3NDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjU2MDc0MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg4ZTQ5MDk0YTZjY2YzZDdlMjc3MzAwMzViMDIxNzQ4YjBhMDUzZGYxYTYxNzNiMTQ2YTUzOWY1NTA4NmQwMDAyMTIyNmRkOTdlODE3ZmE0NTk5MTllYjI1MDljOGQxNmY4MzcxODZlMzZhZjUyYWYzYzI3ODk2YmE1NzgzMjRlMDFjIiwibmV0d29ya0lkIjoxMDB9XQ==",
+    "evaluationCommentHtml": "<details>       <summary>         <b>           <h3>             <a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI2MDUwNDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjYwNTA0MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHgzODY5ODM0ZGZiMTY3ZjE4YzJiNjkyOGNiYTAwNzcxM2RiODk1MmJkNDQzZjI1MWU0Nzg5M2JhYjMwZmJmYmFkNGQ0NmYzMGMyNjZkYWE3ZTg2YmQyZjRmZmVhNjg0MTZmYWIzMjViMzEzODQwZmQ1Y2M2MmQ3NDY4ZDg1Y2Q4ZjFjIiwibmV0d29ya0lkIjoxMDB9XQ==\" target=\"_blank\" rel=\"noopener\">               [ 60.504 WXDAI ]             </a>           </h3>           <h6>             @0x4007           </h6>         </b>       </summary>       <h6>Contributions Overview</h6>       <table>         <thead>           <tr>             <th>View</th>             <th>Contribution</th>             <th>Count</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>Issue</td>             <td>Task</td>             <td>0.5</td>             <td>25</td>           </tr>           <tr>             <td>Issue</td>             <td>Specification</td>             <td>1</td>             <td>9.32</td>           </tr>           <tr>             <td>Issue</td>             <td>Comment</td>             <td>2</td>             <td>6.544</td>           </tr>           <tr>             <td>Review</td>             <td>Comment</td>             <td>3</td>             <td>19.64</td>           </tr>         </tbody>       </table>       <h6>Conversation Incentives</h6>       <table>         <thead>           <tr>             <th>Comment</th>             <th>Formatting</th>             <th>Relevance</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69\" target=\"_blank\" rel=\"noopener\">Looks like the filters are barely useable now that we have the s&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 9.32               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 48&#13;        wordValue: 0.1&#13;      \\b\\W+\\b:&#13;        wordCount: 47&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 3&#13;  img:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 0&#13;        wordValue: 0.1&#13;      \\b\\W+\\b:&#13;        wordCount: 0&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;result: 9.32&#13;</pre>              </details>             </td>             <td>1</td>             <td>9.32</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186802545\" target=\"_blank\" rel=\"noopener\">Okay both bots are broken @gentlementlegen  We should have spli&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.77               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 13&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 2&#13;multiplier: 1&#13;result: 3.77&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>3.416</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186807999\" target=\"_blank\" rel=\"noopener\">Actually, looks like it did the right thing for your reward on v&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.66               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 21&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;result: 3.66&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>3.128</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/pull/70\" target=\"_blank\" rel=\"noopener\">Resolves https://github.com/ubiquity/work.ubq.fi/issues/69</a>               </h6>             </td>             <td>             <details>               <summary>                 0               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 10&#13;        wordValue: 0&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 0&#13;result: 0&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>0.2</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186530214\" target=\"_blank\" rel=\"noopener\">I always struggle with Cypress</a>               </h6>             </td>             <td>             <details>               <summary>                 3.57               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 5&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 2&#13;result: 3.57&#13;</pre>              </details>             </td>             <td>1</td>             <td>3.57</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186798329\" target=\"_blank\" rel=\"noopener\">Only doesn't work on my local, the guess is token expiration aft&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 15.87               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 28&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 2&#13;  a:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 11&#13;        wordValue: 0.2&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 2&#13;result: 15.87&#13;</pre>              </details>             </td>             <td>1</td>             <td>15.87</td>           </tr>         </tbody>       </table>     </details>",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI2MDUwNDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjYwNTA0MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHgzODY5ODM0ZGZiMTY3ZjE4YzJiNjkyOGNiYTAwNzcxM2RiODk1MmJkNDQzZjI1MWU0Nzg5M2JhYjMwZmJmYmFkNGQ0NmYzMGMyNjZkYWE3ZTg2YmQyZjRmZmVhNjg0MTZmYWIzMjViMzEzODQwZmQ1Y2M2MmQ3NDY4ZDg1Y2Q4ZjFjIiwibmV0d29ya0lkIjoxMDB9XQ==",
     "task": {
       "multiplier": 0.5,
       "reward": 25
     },
-    "total": 56.074,
+    "total": 60.504,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -200,10 +214,11 @@
                 "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 2.54
           },
           "relevance": 0.8,
-          "reward": 2.032
+          "reward": 2.232
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186805818"
@@ -235,10 +250,11 @@
                 "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 3.24
           },
           "relevance": 0.8,
-          "reward": 2.592
+          "reward": 2.992
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186813200"
@@ -260,7 +276,8 @@
                 "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 3.25
           },
           "relevance": 1,
           "reward": 3.25
@@ -269,13 +286,13 @@
         "url": "https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186914050"
       }
     ],
-    "evaluationCommentHtml": "<details>       <summary>         <b>           <h3>             <a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIzMjg3NDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIzMjg3NDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4YzViOGJhYWRkZTEyN2Q5YmYxODA3MWVkYmJjMDQwMjhjM2ZlOTA0NDUwNzNhM2YzMDA0NjRmM2EzYWFkMzliNTU3ZTc3MTMwZjFhNTViNzIyZWNmODJjYTI4Y2Q4Yjk3N2YzZTYyNmRhMDdmZGIxZWUzMDNjMzI5NjcwMzI0MjUxYyIsIm5ldHdvcmtJZCI6MTAwfV0=\" target=\"_blank\" rel=\"noopener\">               [ 32.874 WXDAI ]             </a>           </h3>           <h6>             @gentlementlegen           </h6>         </b>       </summary>       <h6>Contributions Overview</h6>       <table>         <thead>           <tr>             <th>View</th>             <th>Contribution</th>             <th>Count</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>Issue</td>             <td>Task</td>             <td>0.5</td>             <td>25</td>           </tr>           <tr>             <td>Issue</td>             <td>Comment</td>             <td>2</td>             <td>4.624</td>           </tr>           <tr>             <td>Review</td>             <td>Comment</td>             <td>1</td>             <td>3.25</td>           </tr>         </tbody>       </table>       <h6>Conversation Incentives</h6>       <table>         <thead>           <tr>             <th>Comment</th>             <th>Formatting</th>             <th>Relevance</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186805818\" target=\"_blank\" rel=\"noopener\">@0x4007 So it should be 25 each? I can confirm this is not handl&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 2.54               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 25&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>2.032</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186813200\" target=\"_blank\" rel=\"noopener\">Ah yes because it doesn't apply the &#96;0.5&#96; multiplier I s&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.24               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 16&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;  code:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 2&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>2.592</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186914050\" target=\"_blank\" rel=\"noopener\">After token expiration, I could not reproduce the problem and st&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.25               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 39&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;</pre>              </details>             </td>             <td>1</td>             <td>3.25</td>           </tr>         </tbody>       </table>     </details>",
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIzMjg3NDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIzMjg3NDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4YzViOGJhYWRkZTEyN2Q5YmYxODA3MWVkYmJjMDQwMjhjM2ZlOTA0NDUwNzNhM2YzMDA0NjRmM2EzYWFkMzliNTU3ZTc3MTMwZjFhNTViNzIyZWNmODJjYTI4Y2Q4Yjk3N2YzZTYyNmRhMDdmZGIxZWUzMDNjMzI5NjcwMzI0MjUxYyIsIm5ldHdvcmtJZCI6MTAwfV0=",
+    "evaluationCommentHtml": "<details>       <summary>         <b>           <h3>             <a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIzMzQ3NDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIzMzQ3NDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4NDRiNDU1MzRiYzhhZDdhMzM1NTdhOGQzNzVhMTcxOGM1MzI4ZGY5YThhOGE5YThjYjRhZmNlZjBhZmUzMThmZDA2ZDQ5NzdmYzQxNDhmMjE3MDAyZTRkNzdmOTM1YWI5OTkzMGRmYjU3ZmZjMTVhMGMwZTIwYWZmYWJmMDZhZmMxYiIsIm5ldHdvcmtJZCI6MTAwfV0=\" target=\"_blank\" rel=\"noopener\">               [ 33.474 WXDAI ]             </a>           </h3>           <h6>             @gentlementlegen           </h6>         </b>       </summary>       <h6>Contributions Overview</h6>       <table>         <thead>           <tr>             <th>View</th>             <th>Contribution</th>             <th>Count</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>Issue</td>             <td>Task</td>             <td>0.5</td>             <td>25</td>           </tr>           <tr>             <td>Issue</td>             <td>Comment</td>             <td>2</td>             <td>5.224</td>           </tr>           <tr>             <td>Review</td>             <td>Comment</td>             <td>1</td>             <td>3.25</td>           </tr>         </tbody>       </table>       <h6>Conversation Incentives</h6>       <table>         <thead>           <tr>             <th>Comment</th>             <th>Formatting</th>             <th>Relevance</th>             <th>Reward</th>           </tr>         </thead>         <tbody>                      <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186805818\" target=\"_blank\" rel=\"noopener\">@0x4007 So it should be 25 each? I can confirm this is not handl&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 2.54               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 25&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;result: 2.54&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>2.232</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186813200\" target=\"_blank\" rel=\"noopener\">Ah yes because it doesn't apply the &#96;0.5&#96; multiplier I s&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.24               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 16&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;  code:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 2&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;result: 3.24&#13;</pre>              </details>             </td>             <td>0.8</td>             <td>2.992</td>           </tr>           <tr>             <td>               <h6>                 <a href=\"https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186914050\" target=\"_blank\" rel=\"noopener\">After token expiration, I could not reproduce the problem and st&hellip;</a>               </h6>             </td>             <td>             <details>               <summary>                 3.25               </summary>               <pre>content:&#13;  p:&#13;    regex:&#13;      \\b\\w+\\b:&#13;        wordCount: 39&#13;        wordValue: 0.1&#13;    score: 1&#13;    elementCount: 1&#13;multiplier: 1&#13;result: 3.25&#13;</pre>              </details>             </td>             <td>1</td>             <td>3.25</td>           </tr>         </tbody>       </table>     </details>",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIzMzQ3NDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIzMzQ3NDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4NDRiNDU1MzRiYzhhZDdhMzM1NTdhOGQzNzVhMTcxOGM1MzI4ZGY5YThhOGE5YThjYjRhZmNlZjBhZmUzMThmZDA2ZDQ5NzdmYzQxNDhmMjE3MDAyZTRkNzdmOTM1YWI5OTkzMGRmYjU3ZmZjMTVhMGMwZTIwYWZmYWJmMDZhZmMxYiIsIm5ldHdvcmtJZCI6MTAwfV0=",
     "task": {
       "multiplier": 0.5,
       "reward": 25
     },
-    "total": 32.874,
+    "total": 33.474,
     "userId": 9807008
   }
 }

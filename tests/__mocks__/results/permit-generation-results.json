@@ -8,19 +8,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 21,
-                    "multiplier": 0.2
+                    "wordCount": 21,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 3.66
           },
           "relevance": 0.8,
-          "reward": 2.128
+          "reward": 3.128
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948930217"
@@ -32,19 +34,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 16,
-                    "multiplier": 0.2
+                    "wordCount": 16,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 3.11
           },
           "relevance": 0.8,
-          "reward": 1.688
+          "reward": 2.688
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949201722"
@@ -56,28 +60,31 @@
           "formatting": {
             "content": {
               "code": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 2,
-                    "multiplier": 0.2
+                    "wordCount": 2,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               },
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 3,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 69,
-                    "multiplier": 0.2
+                    "wordCount": 69,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 11.67
           },
           "relevance": 0.8,
-          "reward": 6.136
+          "reward": 10.136
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949203681"
@@ -89,19 +96,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 9,
-                    "multiplier": 0.2
+                    "wordCount": 9,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 2.29
           },
           "relevance": 0.8,
-          "reward": 1.032
+          "reward": 2.032
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949633751"
@@ -113,19 +122,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 8,
-                    "multiplier": 0.2
+                    "wordCount": 8,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 2.17
           },
           "relevance": 0.8,
-          "reward": 0.936
+          "reward": 1.936
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639054"
@@ -137,19 +148,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 51,
-                    "multiplier": 0.2
+                    "wordCount": 51,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 6.66
           },
           "relevance": 0.8,
-          "reward": 4.528
+          "reward": 5.528
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949642845"
@@ -161,55 +174,39 @@
           "formatting": {
             "content": {
               "code": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
+                  "\\b\\W+\\b": {
+                    "wordCount": 0,
+                    "wordValue": 0.1
+                  },
                   "\\b\\w+\\b": {
-                    "count": 4,
-                    "multiplier": 0.1
+                    "wordCount": 1,
+                    "wordValue": 0.1
                   }
-                }
-              },
-              "em": {
-                "score": 0,
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 15,
-                    "multiplier": 0.1
-                  }
-                }
-              },
-              "li": {
-                "score": 1,
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 3,
-                    "multiplier": 0.1
-                  }
-                }
-              },
-              "ol": {
-                "score": 0,
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 1,
-                    "multiplier": 0.1
-                  }
-                }
+                },
+                "score": 1
               },
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 3,
+                "regex": {
+                  "\\b\\W+\\b": {
+                    "wordCount": 18,
+                    "wordValue": 0.1
+                  },
                   "\\b\\w+\\b": {
-                    "count": 54,
-                    "multiplier": 0.1
+                    "wordCount": 19,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 6.49
           },
           "relevance": 1,
-          "reward": 3.55
+          "reward": 6.49
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22"
@@ -221,19 +218,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 7,
-                    "multiplier": 0.1
+                    "wordCount": 7,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 1.52
           },
           "relevance": 1,
-          "reward": 0.52
+          "reward": 1.52
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949021356"
@@ -245,19 +244,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 12,
-                    "multiplier": 0.1
+                    "wordCount": 12,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 1.83
           },
           "relevance": 1,
-          "reward": 0.83
+          "reward": 1.83
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196677"
@@ -269,71 +270,68 @@
           "formatting": {
             "content": {
               "a": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 1,
-                    "multiplier": 0.1
+                    "wordCount": 0,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               },
               "code": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 2,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 205,
-                    "multiplier": 0.1
+                    "wordCount": 2,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               },
               "li": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 2,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 2,
-                    "multiplier": 0.1
+                    "wordCount": 0,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               },
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 38,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 441,
-                    "multiplier": 0.1
+                    "wordCount": 437,
+                    "wordValue": 0.1
                   }
-                }
-              },
-              "pre": {
-                "score": 0,
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 2,
-                    "multiplier": 0.1
-                  }
-                }
+                },
+                "score": 1
               },
               "ul": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 1,
-                    "multiplier": 0.1
+                    "wordCount": 0,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 1
+            "multiplier": 1,
+            "result": 61.74
           },
           "relevance": 1,
-          "reward": 27.3
+          "reward": 61.74
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949196678"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI0ODY0ODAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjQ4NjQ4MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHgwYWE5ZmRhYjAyZWYyM2MxNTcwMDlhODMxYjVkYWVkNjBkNGExNmFmZmMyNDcyOGEzNWY5M2MwNTg2YzFiZmY1NmY0MGYzMjQyMjI3YWIwNTkxZWJlZjdhZTYzODdkMzg5YTZkYmM0ODY5OTg1NDU3NGRmNTM3NTdkN2NkMDE2MjFiIiwibmV0d29ya0lkIjoxMDB9XQ==",
-    "total": 48.648,
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI5NzAyODAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6Ijk3MDI4MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHgwMDgzMjA3MmFlNjg4NWRkN2M2ZjVhNDE3ZDUxYjRhZjNhMGQxZDFiMDI2ZGEyOGFlZDVlMjQ3OGQ2ZGFkNDllM2Y5MmJhOGIxNmRlNTc0Mjk5NzIxNDk2MjQ4YWQyYzZhODE4MDMyNTQzYTI4NDE2NzU0MWRjMTA3YzBhYzBlYzFiIiwibmV0d29ya0lkIjoxMDB9XQ==",
+    "total": 97.028,
     "userId": 4975670
   },
   "gitcoindev": {
@@ -345,19 +343,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 49,
-                    "multiplier": 0
+                    "wordCount": 49,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0
+            "multiplier": 1,
+            "result": 3.73
           },
           "relevance": 0.8,
-          "reward": 0
+          "reward": 3.184
         },
         "type": "ISSUE_ASSIGNEE",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949333227"
@@ -369,19 +369,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 2,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 18,
-                    "multiplier": 0
+                    "wordCount": 18,
+                    "wordValue": 0
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0
+            "multiplier": 0,
+            "result": 0
           },
           "relevance": 0.8,
-          "reward": 0
+          "reward": 0.4
         },
         "type": "PULL_SPECIFICATION",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25"
@@ -393,19 +395,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 10,
-                    "multiplier": 0.2
+                    "wordCount": 10,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 2
+            "multiplier": 2,
+            "result": 4.83
           },
           "relevance": 1,
-          "reward": 2.83
+          "reward": 4.83
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044575"
@@ -417,30 +421,32 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 15,
-                    "multiplier": 0.2
+                    "wordCount": 15,
+                    "wordValue": 0.2
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 2
+            "multiplier": 2,
+            "result": 6
           },
           "relevance": 1,
-          "reward": 4
+          "reward": 6
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949046925"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI0NDMzMDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjU2NTUzNDk0NDU0MDk3MDE4NzcyMjE2NjE5NTI3NTk5MjE1NzUwNDQ1NjI4MjY2Njk2MjA3MzcxNjE1Mzc1NTEzMjM5NjM2MDMyMDE4IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiI0NDMzMDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4ODU0OGQ1NDJiYjI4NmU5YTBjZTRlZTNjZWM1YTA0MzU4NTQ2MGNjMmYwYjE3NzViOWYxOTY3ZWRjZWUzMTMwODBmNWMxNTQ1OTZjMGE1NzgwNWQ0YzJjMjIwNzM5N2IzMmRjZTM1ODM2Njc5MTg1YmE4MThjZjgzOGY3YjU1YjAxYyIsIm5ldHdvcmtJZCI6MTAwfV0=",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI1MTkxNDAwMDAwMDAwMDAwMDAwMCJ9LCJub25jZSI6IjU2NTUzNDk0NDU0MDk3MDE4NzcyMjE2NjE5NTI3NTk5MjE1NzUwNDQ1NjI4MjY2Njk2MjA3MzcxNjE1Mzc1NTEzMjM5NjM2MDMyMDE4IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiI1MTkxNDAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4MWRjOWFhMzdhNDJhMGY2Mjg2ZWIwMDM5YTAyNDZiZGY0YWQ1MDQ2ZDQ2YmYxOTMzMmUzMDUzY2QyYzc4YWUxZjUyOTZjNzRmNGM4YmRjODQ3MWVlZWMxODkyOTgwMWVlMzNmY2Q1NWVjNDRhZTc5ZTdlNDVlMTllODI0OGI3NmUxYyIsIm5ldHdvcmtJZCI6MTAwfV0=",
     "task": {
       "multiplier": 1,
       "reward": 37.5
     },
-    "total": 44.33,
+    "total": 51.914,
     "userId": 88761781
   },
   "molecula451": {
@@ -452,28 +458,31 @@
           "formatting": {
             "content": {
               "img": {
-                "score": 0,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 1,
-                    "multiplier": 0.1
+                    "wordCount": 0,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               },
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 3,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 16,
-                    "multiplier": 0.1
+                    "wordCount": 15,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 0.25,
+            "result": 1.25
           },
           "relevance": 0.8,
-          "reward": 0.208
+          "reward": 1.8
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343"
@@ -485,19 +494,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 5,
-                    "multiplier": 0.1
+                    "wordCount": 5,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 0.25,
+            "result": 0.35
           },
           "relevance": 0.8,
-          "reward": 0.08
+          "reward": 0.48
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948989989"
@@ -509,19 +520,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 14,
-                    "multiplier": 0.1
+                    "wordCount": 14,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 0.25,
+            "result": 0.49
           },
           "relevance": 0.8,
-          "reward": 0.192
+          "reward": 0.592
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949195772"
@@ -533,19 +546,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 12,
-                    "multiplier": 0.1
+                    "wordCount": 12,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 0.25,
+            "result": 0.46
           },
           "relevance": 0.8,
-          "reward": 0.168
+          "reward": 0.568
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949564869"
@@ -557,19 +572,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 31,
-                    "multiplier": 0.1
+                    "wordCount": 31,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 0.25,
+            "result": 0.71
           },
           "relevance": 0.8,
-          "reward": 0.368
+          "reward": 0.768
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949635137"
@@ -581,19 +598,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 2,
-                    "multiplier": 0.1
+                    "wordCount": 2,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 0.25,
+            "result": 0.3
           },
           "relevance": 0.8,
-          "reward": 0.04
+          "reward": 0.44
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639196"
@@ -605,19 +624,21 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 1,
-                    "multiplier": 0.1
+                    "wordCount": 1,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 0.25,
+            "result": 0.28
           },
           "relevance": 1,
-          "reward": 0.03
+          "reward": 0.28
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949038563"
@@ -629,26 +650,28 @@
           "formatting": {
             "content": {
               "p": {
-                "score": 1,
-                "symbols": {
+                "elementCount": 1,
+                "regex": {
                   "\\b\\w+\\b": {
-                    "count": 18,
-                    "multiplier": 0.1
+                    "wordCount": 18,
+                    "wordValue": 0.1
                   }
-                }
+                },
+                "score": 1
               }
             },
-            "multiplier": 0.25
+            "multiplier": 0.25,
+            "result": 0.54
           },
           "relevance": 1,
-          "reward": 0.29
+          "reward": 0.54
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/comment-incentives/pull/25#issuecomment-1949044855"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxMzc2MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiMTg0Mjc4OTk1ODM3NTAwODQ0Njg3NTg1NjIxNTU0MzQ5MzU5Nzc1OTU1MDg3MzA3MDMzNTgwODYxNjI3NDIzODg4NzcxNzk5MjA4NTAiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjEzNzYwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDA3YTA5YTQwYjNlMWVlZTE4ZDQ1ZjU0YmVlM2RlOGY5MDE0YWYzZGI2MDFjMjE0OTNmM2I1NzkzNjE3NmFhZGQxNGQ3ZWYwNmM1ZWE2MzQ1ZmY4MWVhMDA5NzAwZDc3ZTU1ZTE2YThmZGM4ZmNhZjljMTllYjQ3ZWMxZmRiOGNkMWMiLCJuZXR3b3JrSWQiOjEwMH1d",
-    "total": 1.376,
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI1NDY4MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiMTg0Mjc4OTk1ODM3NTAwODQ0Njg3NTg1NjIxNTU0MzQ5MzU5Nzc1OTU1MDg3MzA3MDMzNTgwODYxNjI3NDIzODg4NzcxNzk5MjA4NTAiLCJkZWFkbGluZSI6IjU3ODk2MDQ0NjE4NjU4MDk3NzExNzg1NDkyNTA0MzQzOTUzOTI2NjM0OTkyMzMyODIwMjgyMDE5NzI4NzkyMDAzOTU2NTY0ODE5OTY3In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjU0NjgwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGQ5OTc3NWI1MzU5YWY1YjI3ZDcyNTM0OTIwMTc5MWM5ODkzZTRlMGZhZjI2OGQ1YTczNjY0NThiZDJhMDZkZTMwMWE2ZjczMjE4ODQxNWYwYmMwM2M0MTUyOTNhZjA1NGE4NjAyMzRmZmIwMTlkNGQwNDVlMjA5N2E2MTA1YWZkMWIiLCJuZXR3b3JrSWQiOjEwMH1d",
+    "total": 5.468,
     "userId": 41552663
   }
 }
