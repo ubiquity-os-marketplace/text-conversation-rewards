@@ -6,7 +6,7 @@ const openAiType = Type.Object(
     /**
      * AI model to use for comment evaluation.
      */
-    model: Type.String({ default: "gpt-4o" }),
+    model: Type.String({ default: "gpt-4o-2024-08-06" }),
     /**
      * Specific endpoint to send the comments to.
      */

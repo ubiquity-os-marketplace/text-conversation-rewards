@@ -69,7 +69,7 @@
       },
       {
         "id": 1822452078,
-        "content": "Resolves #5 \r\nDepends on #8 \r\nReviews looks gigantic but it's only due to the API snapshots I promise.\r\n<!--\r\n- You must link the issue number e.g. \"Resolves #1234\"\r\n- Please do not replace the keyword \"Resolves\" https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword\r\n-->",
+        "content": "Resolves #5 \r\nDepends on #8 \r\nReviews looks gigantic but it's only due to the API snapshots I promise.",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12",
         "type": "PULL_SPECIFICATION"
       },

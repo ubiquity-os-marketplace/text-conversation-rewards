@@ -1,7 +1,7 @@
 {
   "gentlementlegen": {
     "userId": 9807008,
-    "total": 797.92,
+    "total": 611.459,
     "task": {
       "reward": 400,
       "multiplier": 1
@@ -27,7 +27,7 @@
             },
             "multiplier": 1
           },
-          "reward": 5.28,
+          "reward": 3.128,
           "relevance": 0.8
         }
       },
@@ -42,7 +42,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 12,
+                    "count": 110,
                     "multiplier": 0.2
                   }
                 },
@@ -51,7 +51,7 @@
               "ul": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 98,
+                    "count": 1,
                     "multiplier": 0.2
                   }
                 },
@@ -60,7 +60,7 @@
               "li": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 74,
+                    "count": 3,
                     "multiplier": 0.2
                   }
                 },
@@ -69,7 +69,7 @@
             },
             "multiplier": 1
           },
-          "reward": 29.44,
+          "reward": 9.264,
           "relevance": 0.8
         }
       },
@@ -84,7 +84,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 114,
+                    "count": 110,
                     "multiplier": 0.2
                   }
                 },
@@ -93,7 +93,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 2,
+                    "count": 4,
                     "multiplier": 0.2
                   }
                 },
@@ -102,7 +102,7 @@
             },
             "multiplier": 1
           },
-          "reward": 18.56,
+          "reward": 9.216,
           "relevance": 0.8
         }
       },
@@ -117,7 +117,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 134,
+                    "count": 133,
                     "multiplier": 0.2
                   }
                 },
@@ -135,7 +135,7 @@
             },
             "multiplier": 1
           },
-          "reward": 21.6,
+          "reward": 10.376,
           "relevance": 0.8
         }
       },
@@ -159,7 +159,7 @@
             },
             "multiplier": 1
           },
-          "reward": 25.44,
+          "reward": 11.896,
           "relevance": 0.8
         }
       },
@@ -183,7 +183,7 @@
             },
             "multiplier": 1
           },
-          "reward": 8.8,
+          "reward": 4.824,
           "relevance": 0.8
         }
       },
@@ -198,7 +198,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 85,
+                    "count": 84,
                     "multiplier": 0.2
                   }
                 },
@@ -216,7 +216,7 @@
             },
             "multiplier": 1
           },
-          "reward": 13.76,
+          "reward": 7.072,
           "relevance": 0.8
         }
       },
@@ -231,7 +231,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 58,
+                    "count": 54,
                     "multiplier": 0.2
                   }
                 },
@@ -240,7 +240,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 2,
+                    "count": 4,
                     "multiplier": 0.2
                   }
                 },
@@ -249,7 +249,7 @@
             },
             "multiplier": 1
           },
-          "reward": 9.6,
+          "reward": 5.272,
           "relevance": 0.8
         }
       },
@@ -264,7 +264,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 14,
+                    "count": 47,
                     "multiplier": 0.2
                   }
                 },
@@ -273,7 +273,7 @@
               "ul": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 40,
+                    "count": 1,
                     "multiplier": 0.2
                   }
                 },
@@ -282,7 +282,7 @@
               "li": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 16,
+                    "count": 3,
                     "multiplier": 0.2
                   }
                 },
@@ -291,7 +291,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 7,
                     "multiplier": 0.2
                   }
                 },
@@ -300,7 +300,7 @@
             },
             "multiplier": 1
           },
-          "reward": 11.36,
+          "reward": 5.624,
           "relevance": 0.8
         }
       },
@@ -315,7 +315,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 84,
+                    "count": 97,
                     "multiplier": 0.1
                   }
                 },
@@ -333,7 +333,7 @@
               "ul": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 14,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -351,13 +351,13 @@
             },
             "multiplier": 1
           },
-          "reward": 10.2,
+          "reward": 5.34,
           "relevance": 1
         }
       },
       {
         "id": 1822452078,
-        "content": "Resolves #5 \r\nDepends on #8 \r\nReviews looks gigantic but it's only due to the API snapshots I promise.\r\n<!--\r\n- You must link the issue number e.g. \"Resolves #1234\"\r\n- Please do not replace the keyword \"Resolves\" https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword\r\n-->",
+        "content": "Resolves #5 \r\nDepends on #8 \r\nReviews looks gigantic but it's only due to the API snapshots I promise.",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12",
         "type": "PULL_SPECIFICATION",
         "score": {
@@ -367,24 +367,6 @@
                 "symbols": {
                   "\\b\\w+\\b": {
                     "count": 19,
-                    "multiplier": 0
-                  }
-                },
-                "score": 1
-              },
-              "ul": {
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 45,
-                    "multiplier": 0
-                  }
-                },
-                "score": 1
-              },
-              "li": {
-                "symbols": {
-                  "\\b\\w+\\b": {
-                    "count": 35,
                     "multiplier": 0
                   }
                 },
@@ -409,7 +391,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 60,
+                    "count": 57,
                     "multiplier": 0.2
                   }
                 },
@@ -418,7 +400,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 4,
                     "multiplier": 0.2
                   }
                 },
@@ -427,7 +409,7 @@
             },
             "multiplier": 2
           },
-          "reward": 17.08,
+          "reward": 9.611,
           "relevance": 0.7
         }
       },
@@ -443,7 +425,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 16,
+                    "count": 15,
                     "multiplier": 0.2
                   }
                 },
@@ -461,7 +443,7 @@
             },
             "multiplier": 2
           },
-          "reward": 4.76,
+          "reward": 3.08,
           "relevance": 0.7
         }
       },
@@ -486,7 +468,7 @@
             },
             "multiplier": 2
           },
-          "reward": 5.32,
+          "reward": 3.423,
           "relevance": 0.7
         }
       },
@@ -502,7 +484,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 40,
+                    "count": 38,
                     "multiplier": 0.2
                   }
                 },
@@ -520,7 +502,7 @@
             },
             "multiplier": 2
           },
-          "reward": 11.76,
+          "reward": 6.671,
           "relevance": 0.7
         }
       },
@@ -536,7 +518,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 23,
+                    "count": 21,
                     "multiplier": 0.2
                   }
                 },
@@ -545,7 +527,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 2,
                     "multiplier": 0.2
                   }
                 },
@@ -554,7 +536,7 @@
             },
             "multiplier": 2
           },
-          "reward": 6.72,
+          "reward": 4.228,
           "relevance": 0.7
         }
       },
@@ -579,7 +561,7 @@
             },
             "multiplier": 2
           },
-          "reward": 13.16,
+          "reward": 7.385,
           "relevance": 0.7
         }
       },
@@ -604,7 +586,7 @@
             },
             "multiplier": 2
           },
-          "reward": 7,
+          "reward": 4.319,
           "relevance": 0.7
         }
       },
@@ -620,7 +602,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 41,
+                    "count": 39,
                     "multiplier": 0.2
                   }
                 },
@@ -647,7 +629,7 @@
             },
             "multiplier": 2
           },
-          "reward": 12.04,
+          "reward": 6.86,
           "relevance": 0.7
         }
       },
@@ -672,7 +654,7 @@
             },
             "multiplier": 2
           },
-          "reward": 10.08,
+          "reward": 5.887,
           "relevance": 0.7
         }
       },
@@ -697,7 +679,7 @@
             },
             "multiplier": 2
           },
-          "reward": 4.48,
+          "reward": 2.954,
           "relevance": 0.7
         }
       },
@@ -713,7 +695,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 43,
+                    "count": 40,
                     "multiplier": 0.2
                   }
                 },
@@ -731,7 +713,7 @@
             },
             "multiplier": 2
           },
-          "reward": 12.88,
+          "reward": 7.154,
           "relevance": 0.7
         }
       },
@@ -756,7 +738,7 @@
             },
             "multiplier": 2
           },
-          "reward": 3.36,
+          "reward": 2.317,
           "relevance": 0.7
         }
       },
@@ -781,7 +763,7 @@
             },
             "multiplier": 2
           },
-          "reward": 9.24,
+          "reward": 5.467,
           "relevance": 0.7
         }
       },
@@ -797,7 +779,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 68,
+                    "count": 67,
                     "multiplier": 0.2
                   }
                 },
@@ -815,7 +797,7 @@
             },
             "multiplier": 2
           },
-          "reward": 19.32,
+          "reward": 10.262,
           "relevance": 0.7
         }
       },
@@ -831,7 +813,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 25,
+                    "count": 24,
                     "multiplier": 0.2
                   }
                 },
@@ -849,7 +831,7 @@
             },
             "multiplier": 2
           },
-          "reward": 7.28,
+          "reward": 4.452,
           "relevance": 0.7
         }
       },
@@ -874,7 +856,7 @@
             },
             "multiplier": 2
           },
-          "reward": 6.72,
+          "reward": 4.172,
           "relevance": 0.7
         }
       },
@@ -899,7 +881,7 @@
             },
             "multiplier": 2
           },
-          "reward": 5.32,
+          "reward": 3.423,
           "relevance": 0.7
         }
       },
@@ -915,7 +897,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 8,
+                    "count": 41,
                     "multiplier": 0.2
                   }
                 },
@@ -924,7 +906,7 @@
               "ul": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 33,
+                    "count": 1,
                     "multiplier": 0.2
                   }
                 },
@@ -933,7 +915,7 @@
               "li": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 24,
+                    "count": 2,
                     "multiplier": 0.2
                   }
                 },
@@ -942,7 +924,7 @@
             },
             "multiplier": 2
           },
-          "reward": 18.2,
+          "reward": 7.364,
           "relevance": 0.7
         }
       },
@@ -958,7 +940,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 30,
+                    "count": 29,
                     "multiplier": 0.2
                   }
                 },
@@ -976,7 +958,7 @@
             },
             "multiplier": 2
           },
-          "reward": 8.68,
+          "reward": 5.18,
           "relevance": 0.7
         }
       },
@@ -992,7 +974,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 65,
+                    "count": 53,
                     "multiplier": 0.2
                   }
                 },
@@ -1001,7 +983,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 2,
+                    "count": 14,
                     "multiplier": 0.2
                   }
                 },
@@ -1010,7 +992,7 @@
             },
             "multiplier": 2
           },
-          "reward": 18.76,
+          "reward": 10.822,
           "relevance": 0.7
         }
       },
@@ -1035,7 +1017,7 @@
             },
             "multiplier": 2
           },
-          "reward": 13.44,
+          "reward": 7.518,
           "relevance": 0.7
         }
       },
@@ -1051,7 +1033,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 57,
+                    "count": 48,
                     "multiplier": 0.2
                   }
                 },
@@ -1060,7 +1042,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 9,
                     "multiplier": 0.2
                   }
                 },
@@ -1069,7 +1051,7 @@
             },
             "multiplier": 2
           },
-          "reward": 16.24,
+          "reward": 9.331,
           "relevance": 0.7
         }
       },
@@ -1093,7 +1075,7 @@
             },
             "multiplier": 2
           },
-          "reward": 4.48,
+          "reward": 2.954,
           "relevance": 0.7
         }
       },
@@ -1117,14 +1099,14 @@
             },
             "multiplier": 2
           },
-          "reward": 7.56,
+          "reward": 4.613,
           "relevance": 0.7
         }
       }
     ]
   },
   "0x4007": {
-    "total": 120.7,
+    "total": 65.07,
     "userId": 4975670,
     "comments": [
       {
@@ -1147,7 +1129,7 @@
               "pre": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 13,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -1165,7 +1147,7 @@
             },
             "multiplier": 1
           },
-          "reward": 3.76,
+          "reward": 2.312,
           "relevance": 0.8
         }
       },
@@ -1189,7 +1171,7 @@
             },
             "multiplier": 1
           },
-          "reward": 1.36,
+          "reward": 0.888,
           "relevance": 0.8
         }
       },
@@ -1204,7 +1186,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 108,
+                    "count": 283,
                     "multiplier": 0.1
                   }
                 },
@@ -1213,7 +1195,7 @@
               "ul": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 177,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -1222,7 +1204,7 @@
               "li": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 159,
+                    "count": 2,
                     "multiplier": 0.1
                   }
                 },
@@ -1231,7 +1213,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 2,
                     "multiplier": 0.1
                   }
                 },
@@ -1240,7 +1222,7 @@
             },
             "multiplier": 1
           },
-          "reward": 35.6,
+          "reward": 10.072,
           "relevance": 0.8
         }
       },
@@ -1255,7 +1237,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 166,
+                    "count": 160,
                     "multiplier": 0.1
                   }
                 },
@@ -1264,7 +1246,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 6,
                     "multiplier": 0.1
                   }
                 },
@@ -1273,7 +1255,7 @@
             },
             "multiplier": 1
           },
-          "reward": 13.36,
+          "reward": 6.344,
           "relevance": 0.8
         }
       },
@@ -1288,7 +1270,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 108,
+                    "count": 104,
                     "multiplier": 0.1
                   }
                 },
@@ -1297,7 +1279,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 21,
+                    "count": 25,
                     "multiplier": 0.1
                   }
                 },
@@ -1306,7 +1288,7 @@
               "pre": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 21,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -1315,7 +1297,7 @@
             },
             "multiplier": 1
           },
-          "reward": 10.32,
+          "reward": 5.376,
           "relevance": 0.8
         }
       },
@@ -1330,7 +1312,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 22,
+                    "count": 183,
                     "multiplier": 0.1
                   }
                 },
@@ -1339,7 +1321,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 19,
+                    "count": 24,
                     "multiplier": 0.1
                   }
                 },
@@ -1348,7 +1330,7 @@
               "a": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 2,
+                    "count": 3,
                     "multiplier": 0.1
                   }
                 },
@@ -1366,7 +1348,7 @@
               "pre": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 19,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -1375,7 +1357,7 @@
             },
             "multiplier": 1
           },
-          "reward": 3.52,
+          "reward": 8.176,
           "relevance": 0.8
         }
       },
@@ -1390,7 +1372,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 60,
+                    "count": 97,
                     "multiplier": 0.1
                   }
                 },
@@ -1408,7 +1390,7 @@
               "ol": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 38,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -1417,7 +1399,7 @@
               "li": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 35,
+                    "count": 2,
                     "multiplier": 0.1
                   }
                 },
@@ -1426,7 +1408,7 @@
             },
             "multiplier": 1
           },
-          "reward": 7.68,
+          "reward": 4.128,
           "relevance": 0.8
         }
       },
@@ -1450,7 +1432,7 @@
               "ol": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 67,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -1459,7 +1441,7 @@
               "li": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 48,
+                    "count": 67,
                     "multiplier": 0.1
                   }
                 },
@@ -1468,7 +1450,7 @@
             },
             "multiplier": 1
           },
-          "reward": 6.24,
+          "reward": 4.296,
           "relevance": 0.8
         }
       },
@@ -1492,7 +1474,7 @@
             },
             "multiplier": 1
           },
-          "reward": 2.32,
+          "reward": 1.4,
           "relevance": 0.8
         }
       },
@@ -1516,7 +1498,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.35,
+          "reward": 0.273,
           "relevance": 0.7
         }
       },
@@ -1541,7 +1523,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.49,
+          "reward": 0.364,
           "relevance": 0.7
         }
       },
@@ -1566,7 +1548,7 @@
             },
             "multiplier": 1
           },
-          "reward": 3.43,
+          "reward": 1.911,
           "relevance": 0.7
         }
       },
@@ -1591,7 +1573,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.42,
+          "reward": 0.322,
           "relevance": 0.7
         }
       },
@@ -1607,7 +1589,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 28,
+                    "count": 26,
                     "multiplier": 0.1
                   }
                 },
@@ -1616,7 +1598,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 2,
                     "multiplier": 0.1
                   }
                 },
@@ -1625,7 +1607,7 @@
             },
             "multiplier": 1
           },
-          "reward": 2.03,
+          "reward": 1.246,
           "relevance": 0.7
         }
       },
@@ -1641,7 +1623,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 14,
+                    "count": 13,
                     "multiplier": 0.1
                   }
                 },
@@ -1659,7 +1641,7 @@
             },
             "multiplier": 1
           },
-          "reward": 1.05,
+          "reward": 0.686,
           "relevance": 0.7
         }
       },
@@ -1684,7 +1666,7 @@
               "pre": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 9,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -1702,7 +1684,7 @@
             },
             "multiplier": 1
           },
-          "reward": 1.68,
+          "reward": 1.155,
           "relevance": 0.7
         }
       },
@@ -1727,7 +1709,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.35,
+          "reward": 0.273,
           "relevance": 0.7
         }
       },
@@ -1752,7 +1734,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.56,
+          "reward": 0.413,
           "relevance": 0.7
         }
       },
@@ -1768,7 +1750,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 57,
+                    "count": 56,
                     "multiplier": 0.1
                   }
                 },
@@ -1777,7 +1759,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 8,
+                    "count": 10,
                     "multiplier": 0.1
                   }
                 },
@@ -1786,7 +1768,7 @@
               "pre": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 8,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -1795,7 +1777,7 @@
             },
             "multiplier": 1
           },
-          "reward": 4.55,
+          "reward": 2.639,
           "relevance": 0.7
         }
       },
@@ -1820,7 +1802,7 @@
             },
             "multiplier": 1
           },
-          "reward": 1.61,
+          "reward": 1.008,
           "relevance": 0.7
         }
       },
@@ -1845,7 +1827,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.35,
+          "reward": 0.273,
           "relevance": 0.7
         }
       },
@@ -1870,7 +1852,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 2,
                     "multiplier": 0.1
                   }
                 },
@@ -1879,7 +1861,7 @@
             },
             "multiplier": 1
           },
-          "reward": 1.4,
+          "reward": 0.98,
           "relevance": 0.7
         }
       },
@@ -1904,7 +1886,7 @@
             },
             "multiplier": 1
           },
-          "reward": 1.75,
+          "reward": 1.078,
           "relevance": 0.7
         }
       },
@@ -1929,7 +1911,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.49,
+          "reward": 0.364,
           "relevance": 0.7
         }
       },
@@ -1954,7 +1936,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.14,
+          "reward": 0.126,
           "relevance": 0.7
         }
       },
@@ -1979,7 +1961,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.56,
+          "reward": 0.413,
           "relevance": 0.7
         }
       },
@@ -2004,7 +1986,7 @@
             },
             "multiplier": 1
           },
-          "reward": 0.14,
+          "reward": 0.126,
           "relevance": 0.7
         }
       },
@@ -2020,7 +2002,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 30,
+                    "count": 28,
                     "multiplier": 0.1
                   }
                 },
@@ -2029,7 +2011,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 2,
                     "multiplier": 0.1
                   }
                 },
@@ -2038,7 +2020,7 @@
             },
             "multiplier": 1
           },
-          "reward": 2.17,
+          "reward": 1.316,
           "relevance": 0.7
         }
       },
@@ -2063,7 +2045,7 @@
             },
             "multiplier": 1
           },
-          "reward": 2.87,
+          "reward": 1.645,
           "relevance": 0.7
         }
       },
@@ -2088,7 +2070,7 @@
             },
             "multiplier": 1
           },
-          "reward": 7.07,
+          "reward": 3.535,
           "relevance": 0.7
         }
       },
@@ -2113,7 +2095,7 @@
             },
             "multiplier": 1
           },
-          "reward": 1.96,
+          "reward": 1.19,
           "relevance": 0.7
         }
       },
@@ -2137,14 +2119,14 @@
             },
             "multiplier": 1
           },
-          "reward": 1.12,
+          "reward": 0.742,
           "relevance": 0.7
         }
       }
     ]
   },
   "whilefoo": {
-    "total": 6.7225,
+    "total": 4.287,
     "userId": 139262667,
     "comments": [
       {
@@ -2158,7 +2140,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 6,
+                    "count": 173,
                     "multiplier": 0.1
                   }
                 },
@@ -2167,7 +2149,7 @@
               "ol": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 167,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -2176,7 +2158,7 @@
               "li": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 114,
+                    "count": 3,
                     "multiplier": 0.1
                   }
                 },
@@ -2185,7 +2167,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 2.4,
+          "reward": 1.648,
           "relevance": 0.8
         }
       },
@@ -2201,7 +2183,7 @@
               "pre": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 2,
+                    "count": 1,
                     "multiplier": 0.1
                   }
                 },
@@ -2228,7 +2210,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.245,
+          "reward": 0.175,
           "relevance": 0.7
         }
       },
@@ -2253,7 +2235,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.4375,
+          "reward": 0.273,
           "relevance": 0.7
         }
       },
@@ -2278,7 +2260,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.175,
+          "reward": 0.126,
           "relevance": 0.7
         }
       },
@@ -2303,7 +2285,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.2275,
+          "reward": 0.154,
           "relevance": 0.7
         }
       },
@@ -2328,7 +2310,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.42,
+          "reward": 0.259,
           "relevance": 0.7
         }
       },
@@ -2353,7 +2335,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.35,
+          "reward": 0.224,
           "relevance": 0.7
         }
       },
@@ -2378,7 +2360,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.1575,
+          "reward": 0.112,
           "relevance": 0.7
         }
       },
@@ -2403,7 +2385,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 1.295,
+          "reward": 0.679,
           "relevance": 0.7
         }
       },
@@ -2428,7 +2410,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.2975,
+          "reward": 0.196,
           "relevance": 0.7
         }
       },
@@ -2444,7 +2426,7 @@
               "p": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 36,
+                    "count": 34,
                     "multiplier": 0.1
                   }
                 },
@@ -2453,7 +2435,7 @@
               "code": {
                 "symbols": {
                   "\\b\\w+\\b": {
-                    "count": 1,
+                    "count": 2,
                     "multiplier": 0.1
                   }
                 },
@@ -2462,7 +2444,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.6475,
+          "reward": 0.385,
           "relevance": 0.7
         }
       },
@@ -2487,7 +2469,7 @@
             },
             "multiplier": 0.25
           },
-          "reward": 0.07,
+          "reward": 0.056,
           "relevance": 0.7
         }
       }

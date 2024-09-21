@@ -9,12 +9,12 @@ import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-mo
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
-import { parseGitHubUrl } from "../src/start";
 import "../src/parser/command-line";
 import { db, db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
+import { parseGitHubUrl } from "../src/start";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -136,6 +136,7 @@ jest.mock("../src/parser/command-line", () => {
         name: "conversation-rewards",
         owner: {
           login: "ubiquibot",
+          id: 76412717, // https://github.com/ubiquity
         },
       },
     },
@@ -173,6 +174,10 @@ jest.mock("../src/helpers/web3", () => ({
   getERC20TokenSymbol() {
     return "WXDAI";
   },
+}));
+
+jest.mock("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: jest.fn(),
 }));
 
 beforeAll(() => server.listen());
