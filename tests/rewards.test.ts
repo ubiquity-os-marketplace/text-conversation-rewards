@@ -18,17 +18,22 @@ import { parseGitHubUrl } from "../src/start";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
-  return Promise.resolve(
-    (() => {
-      const relevance: { [k: string]: number } = {};
-      comments.forEach((comment) => {
-        relevance[`${comment.id}`] = 0.8;
-      });
-      return relevance;
-    })()
-  );
-});
+jest
+  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+  .mockImplementation((specificationBody, commentsToEvaluate, prCommentsToEvaluate) => {
+    return Promise.resolve(
+      (() => {
+        const relevance: { [k: string]: number } = {};
+        commentsToEvaluate.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        prCommentsToEvaluate.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.7;
+        });
+        return relevance;
+      })()
+    );
+  });
 
 jest.mock("@actions/github", () => ({
   context: {

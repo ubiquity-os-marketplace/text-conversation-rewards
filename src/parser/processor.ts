@@ -94,6 +94,7 @@ export interface GithubCommentScore {
   content: string;
   url: string;
   type: CommentKind | CommentAssociation;
+  diffHunk?: string;
   score?: {
     formatting?: {
       content: Record<string, { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }>;

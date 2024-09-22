@@ -4,6 +4,7 @@ import { DataPurgeConfiguration, dataPurgeConfigurationType } from "../configura
 import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
 import { Module, Result } from "./processor";
+import { GitHubPullRequestReviewComment } from "../github-types";
 
 /**
  * Removes the data in the comments that we do not want to be processed.
@@ -37,6 +38,9 @@ export class DataPurgeModule implements Module {
           // Keep only one new line needed by markdown-it package to convert to html
           .replace(/\n\s*\n/g, "\n")
           .trim();
+
+        const reviewComment = comment as GitHubPullRequestReviewComment;
+
         if (newContent.length) {
           result[comment.user.login].comments = [
             ...(result[comment.user.login].comments ?? []),
@@ -45,6 +49,7 @@ export class DataPurgeModule implements Module {
               content: newContent,
               url: comment.html_url,
               type: comment.type,
+              diffHunk: reviewComment?.pull_request_review_id ? reviewComment?.diff_hunk : undefined,
             },
           ];
         }
