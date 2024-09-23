@@ -15,10 +15,10 @@ const regexType = Type.Record(Type.String(), Type.Number(), { minProperties: 1 }
 const htmlType = Type.Record(Type.String(), Type.Number(), {
   default: {
     br: 0,
-    code: 1,
+    code: 5,
     p: 1,
     em: 0,
-    img: 1,
+    img: 5,
     strong: 0,
     blockquote: 0,
     h1: 1,
@@ -27,7 +27,7 @@ const htmlType = Type.Record(Type.String(), Type.Number(), {
     h4: 1,
     h5: 1,
     h6: 1,
-    a: 1,
+    a: 5,
     li: 1,
     ul: 1,
     td: 1,
