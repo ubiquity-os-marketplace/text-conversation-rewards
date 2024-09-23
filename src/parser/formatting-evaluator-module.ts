@@ -114,7 +114,7 @@ export class FormattingEvaluatorModule implements Module {
     logger.debug("Will analyze formatting for the current content", { comment: comment.content, html });
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
-      console.log("++++ BODY", temp.window.document.body.textContent);
+      logger.debug("++++ BODY", { textContent: temp.window.document.body.textContent });
       const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
       return { formatting: res };
     } else {
