@@ -170,9 +170,8 @@ export class FormattingEvaluatorModule implements Module {
       const tagName = element.tagName.toLowerCase();
       let score = 0;
       if (this._multipliers[commentType]?.html[tagName] !== undefined) {
-        score = this._multipliers[commentType].html[tagName];
-        if (score === 0) {
-          element.remove();
+        score = this._multipliers[commentType].html[tagName].score;
+        if (this._multipliers[commentType].html[tagName].stripTextContent) {
           continue;
         }
       } else {

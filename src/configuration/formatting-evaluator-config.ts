@@ -9,31 +9,36 @@ export const commentType = Type.Union(
 
 const regexType = Type.Record(Type.String(), Type.Number(), { minProperties: 1 });
 
+const htmlEntity = Type.Object({
+  score: Type.Number(),
+  stripTextContent: Type.Boolean({ default: false }),
+});
+
 /**
  * Attributed score per HTML entity
  */
-const htmlType = Type.Record(Type.String(), Type.Number(), {
+const htmlType = Type.Record(Type.String(), htmlEntity, {
   default: {
-    br: 0,
-    code: 5,
-    p: 1,
-    em: 0,
-    img: 5,
-    strong: 0,
-    blockquote: 0,
-    h1: 1,
-    h2: 1,
-    h3: 1,
-    h4: 1,
-    h5: 1,
-    h6: 1,
-    a: 5,
-    li: 1,
-    ul: 1,
-    td: 1,
-    hr: 0,
-    pre: 0,
-    ol: 0,
+    br: { score: 0, stripTextContent: false },
+    code: { score: 5, stripTextContent: true },
+    p: { score: 1, stripTextContent: false },
+    em: { score: 0, stripTextContent: false },
+    img: { score: 5, stripTextContent: false },
+    strong: { score: 0, stripTextContent: false },
+    blockquote: { score: 0, stripTextContent: true },
+    h1: { score: 1, stripTextContent: false },
+    h2: { score: 1, stripTextContent: false },
+    h3: { score: 1, stripTextContent: false },
+    h4: { score: 1, stripTextContent: false },
+    h5: { score: 1, stripTextContent: false },
+    h6: { score: 1, stripTextContent: false },
+    a: { score: 5, stripTextContent: false },
+    li: { score: 1, stripTextContent: false },
+    ul: { score: 1, stripTextContent: false },
+    td: { score: 1, stripTextContent: false },
+    hr: { score: 0, stripTextContent: false },
+    pre: { score: 0, stripTextContent: false },
+    ol: { score: 0, stripTextContent: false },
   },
 });
 
