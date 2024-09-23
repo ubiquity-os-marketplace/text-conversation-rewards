@@ -1,18 +1,23 @@
-import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { encodingForModel, Tiktoken } from "js-tiktoken";
 import OpenAI from "openai";
-import { commentEnum, CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
 import {
   ContentEvaluatorConfiguration,
   contentEvaluatorConfigurationType,
 } from "../configuration/content-evaluator-config";
-import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
-import openAiRelevanceResponseSchema, { RelevancesByOpenAi } from "../types/openai-type";
 import { GithubCommentScore, Module, Result } from "./processor";
+import { Value } from "@sinclair/typebox/value";
+import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
+import logger from "../helpers/logger";
+import {
+  openAiRelevanceResponseSchema,
+  CommentToEvaluate,
+  Relevances,
+  PrCommentToEvaluate,
+} from "../types/content-evaluator-module-type";
 
 /**
  * Evaluates and rates comments.
@@ -89,22 +94,9 @@ export class ContentEvaluatorModule implements Module {
 
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
+    const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
-    // exclude comments that have fixed relevance multiplier. e.g. review comments = 1
-    const commentsToEvaluate: { id: number; comment: string }[] = [];
-    for (let i = 0; i < commentsWithScore.length; i++) {
-      const currentComment = commentsWithScore[i];
-      if (!this._fixedRelevances[currentComment.type]) {
-        commentsToEvaluate.push({
-          id: currentComment.id,
-          comment: currentComment.content,
-        });
-      }
-    }
-
-    const relevancesByAI = commentsToEvaluate.length
-      ? await this._evaluateComments(specificationBody, commentsToEvaluate)
-      : {};
+    const relevancesByAI = await this._evaluateComments(specificationBody, commentsToEvaluate, prCommentsToEvaluate);
 
     if (Object.keys(relevancesByAI).length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
@@ -147,14 +139,60 @@ export class ContentEvaluatorModule implements Module {
     }, {});
   }
 
+  _splitCommentsByPrompt(commentsWithScore: Readonly<GithubCommentScore>[]): {
+    commentsToEvaluate: CommentToEvaluate[];
+    prCommentsToEvaluate: PrCommentToEvaluate[];
+  } {
+    const commentsToEvaluate: CommentToEvaluate[] = [];
+    const prCommentsToEvaluate: PrCommentToEvaluate[] = [];
+    for (let i = 0; i < commentsWithScore.length; i++) {
+      const currentComment = commentsWithScore[i];
+      if (!this._fixedRelevances[currentComment.type]) {
+        if (currentComment.type & CommentKind.PULL) {
+          prCommentsToEvaluate.push({
+            id: currentComment.id,
+            comment: currentComment.content,
+            diffHunk: currentComment?.diffHunk,
+          });
+        } else {
+          commentsToEvaluate.push({
+            id: currentComment.id,
+            comment: currentComment.content,
+          });
+        }
+      }
+    }
+    return { commentsToEvaluate, prCommentsToEvaluate };
+  }
+
   async _evaluateComments(
     specification: string,
-    comments: { id: number; comment: string }[]
-  ): Promise<RelevancesByOpenAi> {
-    const prompt = this._generatePrompt(specification, comments);
-    const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
-    const maxTokens = this._calculateMaxTokens(dummyResponse);
+    comments: CommentToEvaluate[],
+    prComments: PrCommentToEvaluate[]
+  ): Promise<Relevances> {
+    let commentRelevances: Relevances = {};
+    let prCommentRelevances: Relevances = {};
 
+    if (comments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
+
+      const promptForComments = this._generatePromptForComments(specification, comments);
+      commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
+    }
+
+    if (prComments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
+
+      const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
+      prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
+    }
+
+    return { ...commentRelevances, ...prCommentRelevances };
+  }
+
+  async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
       model: this._configuration?.openAi.model || "gpt-4o-2024-08-06",
       response_format: { type: "json_object" },
@@ -186,13 +224,24 @@ export class ContentEvaluatorModule implements Module {
     }
   }
 
-  _generatePrompt(issue: string, comments: { id: number; comment: string }[]) {
+  _generatePromptForComments(issue: string, comments: CommentToEvaluate[]) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
     return `I need to evaluate the relevance of GitHub contributors' comments to a specific issue specification. Specifically, I'm interested in how much each comment helps to further define the issue specification or contributes new information or research relevant to the issue. Please provide a float between 0 and 1 to represent the degree of relevance. A score of 1 indicates that the comment is entirely relevant and adds significant value to the issue, whereas a score of 0 indicates no relevance or added value. A stringified JSON is given below that contains the specification and contributors' comments. Each comment in the JSON has a unique ID and comment content. \n\n\`\`\`\n${JSON.stringify(
       { specification: issue, comments: comments }
     )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY a JSON where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. The float number should represent the degree of relevance and added value of the comment to the issue. The total number of properties in your JSON response should equal exactly ${
+      comments.length
+    }.`;
+  }
+
+  _generatePromptForPrComments(issue: string, comments: PrCommentToEvaluate[]) {
+    if (!issue?.length) {
+      throw new Error("Issue specification comment is missing or empty");
+    }
+    return `I need to evaluate the value of a GitHub contributor's comments in a pull request. Some of these comments are code review comments, and some are general suggestions or a part of the discussion. I'm interested in how much each comment helps to solve the GitHub issue and improve code quality. Please provide a float between 0 and 1 to represent the value of each comment. A score of 1 indicates that the comment is very valuable and significantly improves the submitted solution and code quality, whereas a score of 0 indicates a negative or zero impact. A stringified JSON is given below that contains the specification of the GitHub issue, and comments by different contributors. The property "diffHunk" presents the chunk of code being addressed for a possible change in a code review comment. \n\n\`\`\`\n${JSON.stringify(
+      { specification: issue, comments: comments }
+    )}\n\`\`\`\n\n\nTo what degree are each of the comments valuable? Please reply with ONLY a JSON where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${
       comments.length
     }.`;
   }

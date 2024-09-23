@@ -98,6 +98,7 @@ export interface GithubCommentScore {
   content: string;
   url: string;
   type: CommentKind | CommentAssociation;
+  diffHunk?: string;
   score?: {
     formatting?: {
       content: Record<string, { regex: RegexCount; score: number; elementCount: number }>;

@@ -1,0 +1,26 @@
+{
+  "gentlementlegen": {
+    "comments": [
+      {
+        "content": "Issue",
+        "id": 2524890317,
+        "type": "ISSUE_SPECIFICATION",
+        "url": "https://github.com/Meniole/conversation-rewards/issues/13"
+      }
+    ],
+    "total": 0,
+    "userId": 9807008
+  },
+  "ubiquity-ubiquibot": {
+    "comments": [
+      {
+        "content": "Other comment.",
+        "id": 2349004935,
+        "type": "ISSUE_CONTRIBUTOR",
+        "url": "https://github.com/Meniole/conversation-rewards/issues/13#issuecomment-2349004935"
+      }
+    ],
+    "total": 0,
+    "userId": 163369652
+  }
+}
