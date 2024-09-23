@@ -74,7 +74,7 @@ export class ContentEvaluatorModule implements Module {
     return result;
   }
 
-  _getRewardForComment(comment: GithubCommentScore | undefined, relevance: number) {
+  _getRewardForComment(comment: GithubCommentScore, relevance: number) {
     let reward = new Decimal(comment?.score?.reward || 0);
 
     if (comment?.score?.formatting?.content) {
