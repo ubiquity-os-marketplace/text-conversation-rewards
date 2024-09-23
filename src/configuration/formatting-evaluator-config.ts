@@ -34,7 +34,7 @@ const htmlType = Type.Record(Type.String(), htmlEntity, {
     h6: { score: 1, stripTextContent: false },
     a: { score: 5, stripTextContent: false },
     li: { score: 1, stripTextContent: false },
-    ul: { score: 1, stripTextContent: false },
+    ul: { score: 0, stripTextContent: false },
     td: { score: 1, stripTextContent: false },
     hr: { score: 0, stripTextContent: false },
     pre: { score: 0, stripTextContent: false },
