@@ -11,7 +11,7 @@ const regexType = Type.Record(Type.String(), Type.Number(), { minProperties: 1 }
 
 const htmlEntity = Type.Object({
   score: Type.Number(),
-  stripTextContent: Type.Boolean({ default: false }),
+  countWords: Type.Boolean({ default: true }),
 });
 
 /**
@@ -19,26 +19,26 @@ const htmlEntity = Type.Object({
  */
 const htmlType = Type.Record(Type.String(), htmlEntity, {
   default: {
-    br: { score: 0, stripTextContent: false },
-    code: { score: 5, stripTextContent: true },
-    p: { score: 1, stripTextContent: false },
-    em: { score: 0, stripTextContent: false },
-    img: { score: 5, stripTextContent: false },
-    strong: { score: 0, stripTextContent: false },
-    blockquote: { score: 0, stripTextContent: true },
-    h1: { score: 1, stripTextContent: false },
-    h2: { score: 1, stripTextContent: false },
-    h3: { score: 1, stripTextContent: false },
-    h4: { score: 1, stripTextContent: false },
-    h5: { score: 1, stripTextContent: false },
-    h6: { score: 1, stripTextContent: false },
-    a: { score: 5, stripTextContent: false },
-    li: { score: 1, stripTextContent: false },
-    ul: { score: 0, stripTextContent: false },
-    td: { score: 1, stripTextContent: false },
-    hr: { score: 0, stripTextContent: false },
-    pre: { score: 0, stripTextContent: false },
-    ol: { score: 0, stripTextContent: false },
+    br: { score: 0, countWords: true },
+    code: { score: 5, countWords: false },
+    p: { score: 1, countWords: true },
+    em: { score: 0, countWords: true },
+    img: { score: 5, countWords: true },
+    strong: { score: 0, countWords: true },
+    blockquote: { score: 0, countWords: false },
+    h1: { score: 1, countWords: true },
+    h2: { score: 1, countWords: true },
+    h3: { score: 1, countWords: true },
+    h4: { score: 1, countWords: true },
+    h5: { score: 1, countWords: true },
+    h6: { score: 1, countWords: true },
+    a: { score: 5, countWords: true },
+    li: { score: 1, countWords: true },
+    ul: { score: 0, countWords: true },
+    td: { score: 1, countWords: true },
+    hr: { score: 0, countWords: true },
+    pre: { score: 0, countWords: true },
+    ol: { score: 0, countWords: true },
   },
 });
 
