@@ -256,9 +256,11 @@ export class GithubCommentModule implements Module {
       <summary>
         <b>
           <h3>
+            &nbsp;
             <a href="${result.permitUrl}" target="_blank" rel="noopener">
               [ ${result.total} ${tokenSymbol} ]
             </a>
+            &nbsp;
           </h3>
           <h6>
             @${username}
@@ -299,7 +301,8 @@ export class GithubCommentModule implements Module {
       }
     </details>
     `
-      .replace(/[\n\r]+/g, " ")
+      .replace(/(\r?\n|\r)\s*/g, "") // Remove newlines and leading spaces/tabs after them
+      .replace(/\s*(<\/?[^>]+>)\s*/g, "$1") // Trim spaces around HTML tags
       .trim();
   }
 }
