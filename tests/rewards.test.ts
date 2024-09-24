@@ -180,6 +180,10 @@ jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
+jest.mock("child_process", () => ({
+  execSync: jest.fn(() => "1234"),
+}));
+
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
