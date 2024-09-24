@@ -111,10 +111,10 @@ export class FormattingEvaluatorModule implements Module {
   _getFormattingScore(comment: GithubCommentScore) {
     // Change the \r to \n to fix markup interpretation
     const html = this._md.render(comment.content.replaceAll("\r", "\n"));
-    logger.debug("Will analyze formatting for the current content", { comment: comment.content, html });
+    logger.debug("Will analyze formatting for the current content:", { comment: comment.content, html });
     const temp = new JSDOM(html);
+    logger.debug("++++ BODY", { textContent: temp.window.document.body.textContent });
     if (temp.window.document.body) {
-      logger.debug("++++ BODY", { textContent: temp.window.document.body.textContent });
       const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
       return { formatting: res };
     } else {
