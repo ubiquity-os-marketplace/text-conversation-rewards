@@ -8,6 +8,7 @@ import configuration from "../configuration/config-reader";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import logger from "../helpers/logger";
+import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
 import { getERC20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
@@ -52,9 +53,11 @@ export class GithubCommentModule implements Module {
         result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
         strippedBody.push(result[key].evaluationCommentHtml);
       }
-      strippedBody.push("\n<!--");
-      strippedBody.push(this._encodeHTML(`\n${getGithubWorkflowRunUrl()}`));
-      strippedBody.push("\n-->");
+      strippedBody.push(
+        createStructuredMetadata("GithubCommentModule", {
+          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        })
+      );
       return strippedBody.join("");
     }
 
@@ -66,11 +69,13 @@ export class GithubCommentModule implements Module {
     // Remove evaluationCommentHtml because it is superfluous
     const metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
     // Add the workflow run url and the metadata in the GitHub's comment
-    bodyArray.push("\n<!--");
     bodyArray.push(
-      this._encodeHTML(`\n${getGithubWorkflowRunUrl()}\n${JSON.stringify(metadataResult, typeReplacer, 2)}`)
+      createStructuredMetadata("GithubCommentModule", {
+        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        output: JSON.parse(JSON.stringify(metadataResult, typeReplacer, 2)),
+      })
     );
-    bodyArray.push("\n-->");
+
     const body = bodyArray.join("");
     // We check this length because GitHub has a comment length limit
     if (body.length > 65536) {
