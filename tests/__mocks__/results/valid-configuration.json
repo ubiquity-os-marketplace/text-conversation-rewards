@@ -15,8 +15,8 @@
         }
       ],
       "openAi": {
-        "endpoint": "https://api.groq.com/openai/v1",
-        "model": "llama3-groq-70b-8192-tool-use-preview"
+        "endpoint": "",
+        "model": "gpt-4o"
       }
     },
     "dataPurge": {},
