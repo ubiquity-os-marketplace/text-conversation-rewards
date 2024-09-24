@@ -256,9 +256,11 @@ export class GithubCommentModule implements Module {
       <summary>
         <b>
           <h3>
+            &nbsp;
             <a href="${result.permitUrl}" target="_blank" rel="noopener">
-              &nbsp;[ ${result.total} ${tokenSymbol} ]&nbsp;
+              [ ${result.total} ${tokenSymbol} ]
             </a>
+            &nbsp;
           </h3>
           <h6>
             @${username}
