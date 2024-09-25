@@ -90,7 +90,7 @@ export interface Result {
 }
 
 export interface RegexCount {
-  [p: string]: { wordCount: number; wordValue: number };
+  [p: string]: { wordCount: number; wordValue: number; result: number };
 }
 
 export interface GithubCommentScore {
@@ -101,10 +101,11 @@ export interface GithubCommentScore {
   diffHunk?: string;
   score?: {
     formatting?: {
-      content: Record<string, { regex: RegexCount; score: number; elementCount: number }>;
-      multiplier: number;
+      content: Record<string, { score: number; elementCount: number }>;
       result: number;
     };
+    regex?: RegexCount;
+    multiplier: number;
     relevance?: number;
     clarity?: number;
     reward: number;

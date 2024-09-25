@@ -9,31 +9,36 @@ export const commentType = Type.Union(
 
 const regexType = Type.Record(Type.String(), Type.Number(), { minProperties: 1 });
 
+const htmlEntity = Type.Object({
+  score: Type.Number(),
+  countWords: Type.Boolean({ default: true }),
+});
+
 /**
  * Attributed score per HTML entity
  */
-const htmlType = Type.Record(Type.String(), Type.Number(), {
+const htmlType = Type.Record(Type.String(), htmlEntity, {
   default: {
-    br: 0,
-    code: 5,
-    p: 1,
-    em: 0,
-    img: 5,
-    strong: 0,
-    blockquote: 0,
-    h1: 1,
-    h2: 1,
-    h3: 1,
-    h4: 1,
-    h5: 1,
-    h6: 1,
-    a: 5,
-    li: 1,
-    ul: 1,
-    td: 1,
-    hr: 0,
-    pre: 0,
-    ol: 0,
+    br: { score: 0, countWords: true },
+    code: { score: 5, countWords: false },
+    p: { score: 1, countWords: true },
+    em: { score: 0, countWords: true },
+    img: { score: 5, countWords: true },
+    strong: { score: 0, countWords: true },
+    blockquote: { score: 0, countWords: false },
+    h1: { score: 1, countWords: true },
+    h2: { score: 1, countWords: true },
+    h3: { score: 1, countWords: true },
+    h4: { score: 1, countWords: true },
+    h5: { score: 1, countWords: true },
+    h6: { score: 1, countWords: true },
+    a: { score: 5, countWords: true },
+    li: { score: 1, countWords: true },
+    ul: { score: 0, countWords: true },
+    td: { score: 1, countWords: true },
+    hr: { score: 0, countWords: true },
+    pre: { score: 0, countWords: true },
+    ol: { score: 0, countWords: true },
   },
 });
 
