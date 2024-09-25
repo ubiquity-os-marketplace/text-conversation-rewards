@@ -24,8 +24,7 @@ export async function returnDataToKernel(
 async function main() {
   const payload = github.context.payload.inputs;
 
-  payload.env = { ...(payload.env || {}), workflowName: github.context.workflow };
-  validateAndDecodeSchemas(payload.env, JSON.parse(payload.settings));
+  validateAndDecodeSchemas(process.env, JSON.parse(payload.settings));
   return { errors: [], payload };
 }
 

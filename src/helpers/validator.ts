@@ -9,7 +9,9 @@ import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type"
 export function validateAndDecodeSchemas(rawEnv: object, rawSettings: object) {
   const errors: ValueError[] = [];
 
+  console.log("++++ rawEnv", rawEnv);
   const env = Value.Default(envConfigSchema, rawEnv) as EnvConfigType;
+  console.log("++++ defaultEnv", env);
   if (!envValidator.test(env)) {
     for (const error of envValidator.errors(env)) {
       console.error(error);
