@@ -7,21 +7,30 @@
         "score": {
           "formatting": {
             "content": {
+              "code": {
+                "elementCount": 1,
+                "score": 1
+              },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 34,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
+              },
+              "pre": {
+                "elementCount": 1,
+                "score": 0
               }
             },
-            "multiplier": 1,
-            "result": 3
+            "result": 2
           },
-          "reward": 3
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.64,
+              "wordCount": 47,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 4.64
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2030164289"
@@ -34,17 +43,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 17,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 2.11
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.11,
+              "wordCount": 17,
+              "wordValue": 0.1
+            }
           },
           "reward": 2.11
         },
@@ -59,49 +69,32 @@
             "content": {
               "code": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 2,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "li": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 7,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 283,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "ul": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 24.31
+            "result": 12
           },
-          "reward": 24.31
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 12.21,
+              "wordCount": 285,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 24.21
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036355445"
@@ -114,29 +107,24 @@
             "content": {
               "code": {
                 "elementCount": 4,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 6,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 4,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 160,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 15.93
+            "result": 8
           },
-          "reward": 15.93
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 7.71,
+              "wordCount": 166,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 15.71
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036370459"
@@ -148,30 +136,29 @@
           "formatting": {
             "content": {
               "code": {
-                "elementCount": 4,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 4,
-                    "wordValue": 0.1
-                  }
-                },
+                "elementCount": 5,
                 "score": 1
               },
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 104,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
+              },
+              "pre": {
+                "elementCount": 1,
+                "score": 0
               }
             },
-            "multiplier": 1,
-            "result": 11.51
+            "result": 7
           },
-          "reward": 11.51
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 6.22,
+              "wordCount": 129,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 13.22
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036393020"
@@ -184,49 +171,36 @@
             "content": {
               "a": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 3,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "code": {
-                "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 5,
-                    "wordValue": 0.1
-                  }
-                },
+                "elementCount": 3,
                 "score": 1
               },
               "h3": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "p": {
-                "elementCount": 5,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 161,
-                    "wordValue": 0.1
-                  }
-                },
+                "elementCount": 6,
                 "score": 1
+              },
+              "pre": {
+                "elementCount": 1,
+                "score": 0
               }
             },
-            "multiplier": 1,
-            "result": 18.26
+            "result": 12
           },
-          "reward": 18.26
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 9.45,
+              "wordCount": 211,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 21.45
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036433646"
@@ -239,29 +213,32 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
-              "p": {
+              "li": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 59,
-                    "wordValue": 0.1
-                  }
-                },
+                "score": 1
+              },
+              "ol": {
+                "elementCount": 1,
+                "score": 0
+              },
+              "p": {
+                "elementCount": 5,
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 6.3
+            "result": 8
           },
-          "reward": 6.3
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 4.93,
+              "wordCount": 98,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 12.93
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036516869"
@@ -272,21 +249,30 @@
         "score": {
           "formatting": {
             "content": {
+              "li": {
+                "elementCount": 4,
+                "score": 1
+              },
+              "ol": {
+                "elementCount": 1,
+                "score": 0
+              },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 30,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 2.8
+            "result": 5
           },
-          "reward": 2.8
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 4.88,
+              "wordCount": 97,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 9.88
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2053332029"
@@ -299,17 +285,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 29,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 2.75
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.75,
+              "wordCount": 29,
+              "wordValue": 0.1
+            }
           },
           "reward": 2.75
         },
@@ -324,17 +311,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 5,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.39
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.39,
+              "wordCount": 5,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.39
         },
@@ -350,17 +338,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 7,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.52
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.52,
+              "wordCount": 7,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.52
         },
@@ -376,17 +365,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 49,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 3.73
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.73,
+              "wordCount": 49,
+              "wordValue": 0.1
+            }
           },
           "reward": 3.73
         },
@@ -402,17 +392,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 6,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.46
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.46,
+              "wordCount": 6,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.46
         },
@@ -428,29 +419,24 @@
             "content": {
               "code": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 2,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 26,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 4.78
+            "result": 3
           },
-          "reward": 4.78
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.7,
+              "wordCount": 28,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 4.7
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570133378"
@@ -464,29 +450,24 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 13,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 2.98
+            "result": 2
           },
-          "reward": 2.98
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.94,
+              "wordCount": 14,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 2.94
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570159594"
@@ -498,21 +479,30 @@
         "score": {
           "formatting": {
             "content": {
+              "code": {
+                "elementCount": 1,
+                "score": 1
+              },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 15,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
+              },
+              "pre": {
+                "elementCount": 1,
+                "score": 0
               }
             },
-            "multiplier": 1,
             "result": 2
           },
-          "reward": 2
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.49,
+              "wordCount": 24,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 3.49
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570588757"
@@ -526,17 +516,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 5,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.39
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.39,
+              "wordCount": 5,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.39
         },
@@ -552,17 +543,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 8,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.59
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.59,
+              "wordCount": 8,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.59
         },
@@ -577,30 +569,29 @@
           "formatting": {
             "content": {
               "code": {
-                "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.1
-                  }
-                },
+                "elementCount": 3,
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 56,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
+              },
+              "pre": {
+                "elementCount": 1,
+                "score": 0
               }
             },
-            "multiplier": 1,
-            "result": 6.16
+            "result": 4
           },
-          "reward": 6.16
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 3.48,
+              "wordCount": 65,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 7.48
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570596007"
@@ -614,17 +605,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 23,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 2.44
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.44,
+              "wordCount": 23,
+              "wordValue": 0.1
+            }
           },
           "reward": 2.44
         },
@@ -640,17 +632,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 5,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.39
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.39,
+              "wordCount": 5,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.39
         },
@@ -666,27 +659,22 @@
             "content": {
               "code": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 19,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 4.22
+            "result": 3
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.22,
+              "wordCount": 19,
+              "wordValue": 0.1
+            }
           },
           "reward": 4.22
         },
@@ -702,17 +690,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 25,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 2.54
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.54,
+              "wordCount": 25,
+              "wordValue": 0.1
+            }
           },
           "reward": 2.54
         },
@@ -728,17 +717,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 7,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.52
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.52,
+              "wordCount": 7,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.52
         },
@@ -754,17 +744,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 2,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.18
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.18,
+              "wordCount": 2,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.18
         },
@@ -780,17 +771,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 8,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.59
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.59,
+              "wordCount": 8,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.59
         },
@@ -806,17 +798,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 2,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 1.18
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.18,
+              "wordCount": 2,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.18
         },
@@ -832,29 +825,24 @@
             "content": {
               "code": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 2,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 28,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 4.88
+            "result": 3
           },
-          "reward": 4.88
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.8,
+              "wordCount": 30,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 4.8
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575555444"
@@ -868,17 +856,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 41,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 3.35
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.35,
+              "wordCount": 41,
+              "wordValue": 0.1
+            }
           },
           "reward": 3.35
         },
@@ -894,17 +883,18 @@
             "content": {
               "p": {
                 "elementCount": 3,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 101,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 8.05
+            "result": 3
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 5.05,
+              "wordCount": 101,
+              "wordValue": 0.1
+            }
           },
           "reward": 8.05
         },
@@ -920,17 +910,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 28,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 2.7
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.7,
+              "wordCount": 28,
+              "wordValue": 0.1
+            }
           },
           "reward": 2.7
         },
@@ -945,17 +936,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 16,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 2.06
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.06,
+              "wordCount": 16,
+              "wordValue": 0.1
+            }
           },
           "reward": 2.06
         },
@@ -963,7 +955,7 @@
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "total": 151.07,
+    "total": 173.61,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -976,17 +968,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 33,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 4.91
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 3.91,
+              "wordCount": 33,
+              "wordValue": 0.2
+            }
           },
           "reward": 4.91
         },
@@ -1001,37 +994,26 @@
             "content": {
               "li": {
                 "elementCount": 3,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 5,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 110,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "ul": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 19.87
+            "result": 9
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 10.87,
+              "wordCount": 110,
+              "wordValue": 0.2
+            }
           },
           "reward": 19.87
         },
@@ -1046,29 +1028,24 @@
             "content": {
               "code": {
                 "elementCount": 3,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 4,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 3,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 110,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 17.52
+            "result": 6
           },
-          "reward": 17.52
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 11.2,
+              "wordCount": 114,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 17.2
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036367126"
@@ -1081,29 +1058,24 @@
             "content": {
               "a": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 4,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 133,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 17.97
+            "result": 5
           },
-          "reward": 17.97
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 12.85,
+              "wordCount": 134,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 17.85
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036385985"
@@ -1116,17 +1088,18 @@
             "content": {
               "p": {
                 "elementCount": 5,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 159,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 19.87
+            "result": 5
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 14.87,
+              "wordCount": 159,
+              "wordValue": 0.2
+            }
           },
           "reward": 19.87
         },
@@ -1141,17 +1114,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 55,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 7.03
+            "result": 1
+          },
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 6.03,
+              "wordCount": 55,
+              "wordValue": 0.2
+            }
           },
           "reward": 7.03
         },
@@ -1166,29 +1140,24 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 84,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 10.84
+            "result": 2
           },
-          "reward": 10.84
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 8.73,
+              "wordCount": 85,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 10.73
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036535332"
@@ -1201,29 +1170,24 @@
             "content": {
               "code": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 4,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 54,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 9.59
+            "result": 3
           },
-          "reward": 9.59
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 6.31,
+              "wordCount": 58,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 9.31
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2051094255"
@@ -1236,49 +1200,32 @@
             "content": {
               "code": {
                 "elementCount": 7,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 7,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "li": {
                 "elementCount": 3,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 5,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 47,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "ul": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 22.32
+            "result": 16
           },
-          "reward": 22.32
+          "multiplier": 1,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 5.94,
+              "wordCount": 54,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 21.94
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2054424028"
@@ -1291,65 +1238,37 @@
             "content": {
               "a": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\W+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.1
-                  },
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "li": {
-                "elementCount": 5,
-                "regex": {
-                  "\\b\\W+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.1
-                  },
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.1
-                  }
-                },
+                "elementCount": 3,
                 "score": 1
               },
               "p": {
-                "elementCount": 11,
-                "regex": {
-                  "\\b\\W+\\b": {
-                    "wordCount": 91,
-                    "wordValue": 0.1
-                  },
-                  "\\b\\w+\\b": {
-                    "wordCount": 97,
-                    "wordValue": 0.1
-                  }
-                },
+                "elementCount": 6,
                 "score": 1
               },
               "ul": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\W+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.1
-                  },
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 1,
-            "result": 27.61
+            "result": 11
           },
-          "reward": 27.61
+          "multiplier": 1,
+          "regex": {
+            "\\b\\W+\\b": {
+              "result": 4.88,
+              "wordCount": 97,
+              "wordValue": 0.1
+            },
+            "\\b\\w+\\b": {
+              "result": 4.93,
+              "wordCount": 98,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 20.81
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5"
@@ -1362,17 +1281,18 @@
             "content": {
               "p": {
                 "elementCount": 3,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 19,
-                    "wordValue": 0
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0,
-            "result": 0
+            "result": 3
+          },
+          "multiplier": 0,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0,
+              "wordCount": 19,
+              "wordValue": 0
+            }
           },
           "reward": 0
         },
@@ -1388,29 +1308,24 @@
             "content": {
               "code": {
                 "elementCount": 4,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 3,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 57,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 25.45
+            "result": 6
           },
-          "reward": 25.45
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 6.49,
+              "wordCount": 60,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 24.98
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570010044"
@@ -1424,29 +1339,24 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 15,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 8.4
+            "result": 2
           },
-          "reward": 8.4
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.11,
+              "wordCount": 16,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 8.22
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570011467"
@@ -1460,19 +1370,20 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 19,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 6.89
+            "result": 1
           },
-          "reward": 6.89
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.44,
+              "wordCount": 19,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 6.88
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570014142"
@@ -1486,29 +1397,24 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 2,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 38,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 15.53
+            "result": 3
           },
-          "reward": 15.53
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 4.6,
+              "wordCount": 40,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 15.2
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570187141"
@@ -1522,29 +1428,24 @@
             "content": {
               "code": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 2,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 21,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 14.04
+            "result": 4
           },
-          "reward": 14.04
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.87,
+              "wordCount": 23,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 13.74
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570188450"
@@ -1558,19 +1459,20 @@
             "content": {
               "p": {
                 "elementCount": 3,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 47,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 16.55
+            "result": 3
           },
-          "reward": 16.55
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 5.28,
+              "wordCount": 47,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 16.56
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573413974"
@@ -1584,19 +1486,20 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 25,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 8.17
+            "result": 1
           },
-          "reward": 8.17
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 3.09,
+              "wordCount": 25,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 8.18
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573416633"
@@ -1610,39 +1513,28 @@
             "content": {
               "a": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 39,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 15.8
+            "result": 3
           },
-          "reward": 15.8
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 4.7,
+              "wordCount": 41,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 15.4
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573420718"
@@ -1656,19 +1548,20 @@
             "content": {
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 36,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 12.41
+            "result": 2
           },
-          "reward": 12.41
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 4.21,
+              "wordCount": 36,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 12.42
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573731420"
@@ -1682,17 +1575,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 16,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 6.22
+            "result": 1
+          },
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.11,
+              "wordCount": 16,
+              "wordValue": 0.2
+            }
           },
           "reward": 6.22
         },
@@ -1708,29 +1602,24 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 3,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 40,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 16.22
+            "result": 3
           },
-          "reward": 16.22
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 4.89,
+              "wordCount": 43,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 15.78
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573733603"
@@ -1744,19 +1633,20 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 12,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 5.31
+            "result": 1
           },
-          "reward": 5.31
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.65,
+              "wordCount": 12,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 5.3
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573737049"
@@ -1770,19 +1660,20 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 33,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 9.81
+            "result": 1
           },
-          "reward": 9.81
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 3.91,
+              "wordCount": 33,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 9.82
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574114225"
@@ -1796,29 +1687,24 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 67,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 18.66
+            "result": 2
           },
-          "reward": 18.66
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 7.22,
+              "wordCount": 68,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 18.44
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574622869"
@@ -1832,29 +1718,24 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 24,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 10.36
+            "result": 2
           },
-          "reward": 10.36
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 3.09,
+              "wordCount": 25,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 10.18
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574702577"
@@ -1868,17 +1749,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 24,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 7.96
+            "result": 1
+          },
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.98,
+              "wordCount": 24,
+              "wordValue": 0.2
+            }
           },
           "reward": 7.96
         },
@@ -1894,19 +1776,20 @@
             "content": {
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 19,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 8.89
+            "result": 2
           },
-          "reward": 8.89
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.44,
+              "wordCount": 19,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 8.88
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574767984"
@@ -1920,37 +1803,26 @@
             "content": {
               "li": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 5,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 41,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "ul": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 0,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 25.4
+            "result": 8
+          },
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 4.7,
+              "wordCount": 41,
+              "wordValue": 0.2
+            }
           },
           "reward": 25.4
         },
@@ -1966,29 +1838,24 @@
             "content": {
               "code": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 1,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 29,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 11.4
+            "result": 2
           },
-          "reward": 11.4
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 3.6,
+              "wordCount": 30,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 11.2
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575675704"
@@ -2002,29 +1869,24 @@
             "content": {
               "code": {
                 "elementCount": 7,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 14,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 8,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 51,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 45.08
+            "result": 15
           },
-          "reward": 45.08
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 6.95,
+              "wordCount": 65,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 43.9
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1576567583"
@@ -2038,17 +1900,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 48,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 12.74
+            "result": 1
+          },
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 5.37,
+              "wordCount": 48,
+              "wordValue": 0.2
+            }
           },
           "reward": 12.74
         },
@@ -2064,29 +1927,24 @@
             "content": {
               "code": {
                 "elementCount": 5,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 9,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 5,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 48,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 33.33
+            "result": 10
           },
-          "reward": 33.33
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 6.22,
+              "wordCount": 57,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 32.44
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1578162024"
@@ -2099,17 +1957,18 @@
             "content": {
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 16,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 8.22
+            "result": 2
+          },
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.11,
+              "wordCount": 16,
+              "wordValue": 0.2
+            }
           },
           "reward": 8.22
         },
@@ -2124,19 +1983,20 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 27,
-                    "wordValue": 0.2
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 2,
-            "result": 8.59
+            "result": 1
           },
-          "reward": 8.59
+          "multiplier": 2,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 3.29,
+              "wordCount": 27,
+              "wordValue": 0.2
+            }
+          },
+          "reward": 8.58
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#issuecomment-2063348339"
@@ -2146,7 +2006,7 @@
       "multiplier": 1,
       "reward": 400
     },
-    "total": 908.96,
+    "total": 896.16,
     "userId": 9807008
   },
   "whilefoo": {
@@ -2157,21 +2017,30 @@
         "score": {
           "formatting": {
             "content": {
+              "li": {
+                "elementCount": 3,
+                "score": 1
+              },
+              "ol": {
+                "elementCount": 1,
+                "score": 0
+              },
               "p": {
-                "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 43,
-                    "wordValue": 0.1
-                  }
-                },
+                "elementCount": 6,
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 1.11
+            "result": 9
           },
-          "reward": 1.11
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 7.99,
+              "wordCount": 173,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 4.25
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2035427134"
@@ -2182,11 +2051,31 @@
         "id": 1574427305,
         "score": {
           "formatting": {
-            "content": {},
-            "multiplier": 0.25,
-            "result": 0
+            "content": {
+              "code": {
+                "elementCount": 1,
+                "score": 1
+              },
+              "p": {
+                "elementCount": 1,
+                "score": 1
+              },
+              "pre": {
+                "elementCount": 1,
+                "score": 0
+              }
+            },
+            "result": 2
           },
-          "reward": 0
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.94,
+              "wordCount": 14,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 0.74
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574427305"
@@ -2200,17 +2089,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 25,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 0.64
+            "result": 1
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.54,
+              "wordCount": 25,
+              "wordValue": 0.1
+            }
           },
           "reward": 0.64
         },
@@ -2226,17 +2116,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 10,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 0.43
+            "result": 1
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.71,
+              "wordCount": 10,
+              "wordValue": 0.1
+            }
           },
           "reward": 0.43
         },
@@ -2252,17 +2143,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 13,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 0.47
+            "result": 1
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.88,
+              "wordCount": 13,
+              "wordValue": 0.1
+            }
           },
           "reward": 0.47
         },
@@ -2278,17 +2170,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 24,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 0.62
+            "result": 1
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.49,
+              "wordCount": 24,
+              "wordValue": 0.1
+            }
           },
           "reward": 0.62
         },
@@ -2304,17 +2197,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 20,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 0.57
+            "result": 1
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.28,
+              "wordCount": 20,
+              "wordValue": 0.1
+            }
           },
           "reward": 0.57
         },
@@ -2330,17 +2224,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 9,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 0.41
+            "result": 1
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.65,
+              "wordCount": 9,
+              "wordValue": 0.1
+            }
           },
           "reward": 0.41
         },
@@ -2356,17 +2251,18 @@
             "content": {
               "p": {
                 "elementCount": 3,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 74,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 1.72
+            "result": 3
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 3.88,
+              "wordCount": 74,
+              "wordValue": 0.1
+            }
           },
           "reward": 1.72
         },
@@ -2382,17 +2278,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 17,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 0.53
+            "result": 1
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 1.11,
+              "wordCount": 17,
+              "wordValue": 0.1
+            }
           },
           "reward": 0.53
         },
@@ -2408,29 +2305,24 @@
             "content": {
               "code": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 2,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               },
               "p": {
                 "elementCount": 2,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 34,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 1.55
+            "result": 4
           },
-          "reward": 1.55
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 2.1,
+              "wordCount": 36,
+              "wordValue": 0.1
+            }
+          },
+          "reward": 1.53
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1578050965"
@@ -2444,17 +2336,18 @@
             "content": {
               "p": {
                 "elementCount": 1,
-                "regex": {
-                  "\\b\\w+\\b": {
-                    "wordCount": 4,
-                    "wordValue": 0.1
-                  }
-                },
                 "score": 1
               }
             },
-            "multiplier": 0.25,
-            "result": 0.33
+            "result": 1
+          },
+          "multiplier": 0.25,
+          "regex": {
+            "\\b\\w+\\b": {
+              "result": 0.32,
+              "wordCount": 4,
+              "wordValue": 0.1
+            }
           },
           "reward": 0.33
         },
@@ -2462,7 +2355,7 @@
         "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "total": 8.38,
+    "total": 12.24,
     "userId": 139262667
   }
 }
