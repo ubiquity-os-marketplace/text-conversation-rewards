@@ -205,7 +205,7 @@ describe("Rewards tests", () => {
       new UserExtractorModule(),
       new DataPurgeModule(),
       new FormattingEvaluatorModule(),
-      // new ContentEvaluatorModule(),
+      new ContentEvaluatorModule(),
       new PermitGenerationModule(),
       githubCommentModuleInstance,
     ];

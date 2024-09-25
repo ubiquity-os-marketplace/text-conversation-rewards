@@ -59,13 +59,13 @@ export class FormattingEvaluatorModule implements Module {
         const { formatting, regex } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(formatting, regex, multiplierFactor).toDecimalPlaces(2);
-        const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber(); // TODO: add regex result sum
+        const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
         comment.score = {
           ...comment.score,
           reward,
           formatting: {
             content: formatting,
-            result: Object.values(formatting).reduce((acc, curr) => acc + curr.score * curr.elementCount, 0), // TODO: fix
+            result: Object.values(formatting).reduce((acc, curr) => acc + curr.score * curr.elementCount, 0),
           },
           regex,
           multiplier: multiplierFactor.multiplier,
@@ -84,37 +84,14 @@ export class FormattingEvaluatorModule implements Module {
 
     let sum = new Decimal(0);
     Object.values(formatting).forEach((formattingElement) => {
-      // for (const symbol of Object.keys(curr.regex)) {
-      //   const wordCount = new Decimal(curr.regex[symbol].wordCount);
-      //   const wordValue = new Decimal(curr.regex[symbol].wordValue);
-      //   const exponent = this._wordCountExponent;
-      //   const wordTotalValue = wordCount
-      //     .pow(exponent) // (count^exponent)
-      //     .mul(wordValue); // symbol multiplier
-      //
-      //   sum = sum.add(wordTotalValue);
-      // }
       const score = new Decimal(formattingElement.score);
-      const elementTotalValue = score.mul(formattingElement.elementCount); // comment type multiplier
+      const elementTotalValue = score.mul(formattingElement.elementCount);
       sum = sum.add(elementTotalValue);
-      // return acc.add(sum.mul(multiplierFactor.multiplier)); // formatting element score
     });
 
     Object.values(regex).forEach((regexElement) => {
-      // for (const symbol of Object.keys(curr.regex)) {
-      //   const wordCount = new Decimal(curr.regex[symbol].wordCount);
-      //   const wordValue = new Decimal(curr.regex[symbol].wordValue);
-      //   const exponent = this._wordCountExponent;
-      //   const wordTotalValue = wordCount
-      //     .pow(exponent) // (count^exponent)
-      //     .mul(wordValue); // symbol multiplier
-      //
-      //   sum = sum.add(wordTotalValue);
-      // }
       const result = new Decimal(regexElement.result);
-      // const elementTotalValue = result.mul(formattingElement.elementCount); // comment type multiplier
       sum = sum.add(result);
-      // return acc.add(sum.mul(multiplierFactor.multiplier)); // formatting element result
     });
     return sum.mul(multiplierFactor.multiplier);
   }
@@ -158,26 +135,12 @@ export class FormattingEvaluatorModule implements Module {
     return counts;
   }
 
-  _updateTagCount(
-    tagCount: Record<string, { score: number; elementCount: number }>,
-    tagName: string,
-    // regexCount: RegexCount,
-    score: number
-  ) {
+  _updateTagCount(tagCount: Record<string, { score: number; elementCount: number }>, tagName: string, score: number) {
     // If we already had that tag included in the result, merge them and update total count
     if (Object.keys(tagCount).includes(tagName)) {
-      // for (const [k, v] of Object.entries(regexCount)) {
-      //   if (Object.keys(tagCount).includes(tagName)) {
-      // tagCount[tagName].regex[k] = {
-      //   ...tagCount[tagName].regex[k],
-      //   // wordCount: tagCount[tagName].regex[k].wordCount + v.wordCount,
-      // };
       tagCount[tagName].elementCount += 1;
-      // }
-      // }
     } else {
       tagCount[tagName] = {
-        // regex: regexCount,
         score,
         elementCount: 1,
       };
@@ -202,15 +165,6 @@ export class FormattingEvaluatorModule implements Module {
         element.remove();
         continue;
       }
-
-      // We cannot use textContent otherwise we would duplicate counts, so instead we extract text nodes
-      // const textNodes = Array.from(element?.childNodes || []).filter((node) => node.nodeType === 3);
-      // const innerText = textNodes
-      //   .map((node) => node.nodeValue?.trim())
-      //   .join(" ")
-      //   .trim();
-      // const regexCount = this._countSymbolsFromRegex(this._multipliers[commentType].regex, innerText);
-
       this._updateTagCount(formatting, tagName, score);
     }
     const regex = this._countSymbolsFromRegex(this._multipliers[commentType].regex, htmlElement.textContent ?? "");
