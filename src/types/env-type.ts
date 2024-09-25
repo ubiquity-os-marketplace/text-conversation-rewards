@@ -1,4 +1,5 @@
 import { Type, Static } from "@sinclair/typebox";
+import { StandardValidator } from "typebox-validators";
 
 const envConfigSchema = Type.Object({
   SUPABASE_URL: Type.String(),
@@ -14,5 +15,7 @@ const envConfigSchema = Type.Object({
 });
 
 export type EnvConfigType = Static<typeof envConfigSchema>;
+
+export const envValidator = new StandardValidator(envConfigSchema);
 
 export default envConfigSchema;
