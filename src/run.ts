@@ -11,22 +11,20 @@ export async function run() {
   const { eventPayload, eventName } = program;
   if (eventName === "issues.closed") {
     if (eventPayload.issue.state_reason !== "completed") {
-      const result = logger.info("Issue was not closed as completed. Skipping.");
-      await githubCommentModuleInstance.postComment(result?.logMessage.diff || "");
-      return result?.logMessage.raw;
+      return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
     }
     const issue = parseGitHubUrl(eventPayload.issue.html_url);
     const activity = new IssueActivity(issue);
     await activity.init();
     if (configuration.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
       const result = logger.error("No price label has been set. Skipping permit generation.");
-      await githubCommentModuleInstance.postComment(result?.logMessage.diff || "");
-      return result?.logMessage.raw;
+      await githubCommentModuleInstance.postComment(result.logMessage.diff);
+      return result.logMessage.raw;
     }
     const processor = new Processor();
     await processor.run(activity);
     return processor.dump();
   } else {
-    return logger.error(`${eventName} is not supported, skipping.`)?.logMessage.raw;
+    return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }
 }
