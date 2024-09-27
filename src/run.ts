@@ -16,7 +16,7 @@ export async function run() {
       return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
     }
     if (!(await preCheck())) {
-      const result = logger.info("Some pull-request are open, will reopen the issue.");
+      const result = logger.error("All linked pull requests must be closed to generate rewards.");
       await githubCommentModuleInstance.postComment(result.logMessage.diff);
       return result.logMessage.raw;
     }

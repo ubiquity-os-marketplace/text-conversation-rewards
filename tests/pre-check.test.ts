@@ -126,7 +126,7 @@ describe("Pre-check tests", () => {
     server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
     const module = (await import("../src/index")) as unknown as { default: Promise<string> };
     const result = await module.default;
-    expect(result).toEqual("Some pull-request are open, will reopen the issue.");
+    expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
     expect(patchMock).toHaveBeenCalled();
   });
 });
