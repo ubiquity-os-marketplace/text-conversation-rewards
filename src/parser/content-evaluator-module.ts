@@ -17,6 +17,7 @@ import {
   CommentToEvaluate,
   Relevances,
   PrCommentToEvaluate,
+  AllComments,
 } from "../types/content-evaluator-module-type";
 
 /**
@@ -98,16 +99,16 @@ export class ContentEvaluatorModule implements Module {
     return reward;
   }
 
-  async _processComment(
-    comments: Readonly<GithubCommentScore>[],
-    specificationBody: string,
-    allComments: { id: number; comment: string; author: string }[],
-    author: string
-  ) {
+  async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string, allComments: AllComments) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
     const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
-    const relevancesByAI = await this._evaluateComments(specificationBody, commentsToEvaluate, prCommentsToEvaluate);
+    const relevancesByAI = await this._evaluateComments(
+      specificationBody,
+      commentsToEvaluate,
+      allComments,
+      prCommentsToEvaluate
+    );
 
     if (Object.keys(relevancesByAI).length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
@@ -179,6 +180,7 @@ export class ContentEvaluatorModule implements Module {
   async _evaluateComments(
     specification: string,
     comments: CommentToEvaluate[],
+    allComments: AllComments,
     prComments: PrCommentToEvaluate[]
   ): Promise<Relevances> {
     let commentRelevances: Relevances = {};
@@ -188,7 +190,7 @@ export class ContentEvaluatorModule implements Module {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForComments = this._generatePromptForComments(specification, comments);
+      const promptForComments = this._generatePromptForComments(specification, comments, allComments);
       commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
     }
 
@@ -235,15 +237,32 @@ export class ContentEvaluatorModule implements Module {
     }
   }
 
-  _generatePromptForComments(issue: string, comments: CommentToEvaluate[]) {
+  _generatePromptForComments(issue: string, comments: CommentToEvaluate[], allComments: AllComments) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
-    return `I need to evaluate the relevance of GitHub contributors' comments to a specific issue specification. Specifically, I'm interested in how much each comment helps to further define the issue specification or contributes new information or research relevant to the issue. Please provide a float between 0 and 1 to represent the degree of relevance. A score of 1 indicates that the comment is entirely relevant and adds significant value to the issue, whereas a score of 0 indicates no relevance or added value. A stringified JSON is given below that contains the specification and contributors' comments. Each comment in the JSON has a unique ID and comment content. \n\n\`\`\`\n${JSON.stringify(
-      { specification: issue, comments: comments }
-    )}\n\`\`\`\n\n\nTo what degree are each of the comments in the conversation relevant and valuable to further defining the issue specification? Please reply with ONLY a JSON where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. The float number should represent the degree of relevance and added value of the comment to the issue. The total number of properties in your JSON response should equal exactly ${
-      comments.length
-    }.`;
+    return `Instruction: 
+    Go through all the comments first keep them in memory, then start with the following prompt
+
+    OUTPUT FORMAT:
+    {ID: CONNECTION SCORE} For Each record, based on the average value from the CONNECTION SCORE from ALL COMMENTS, TITLE and BODY, one for each comment under evaluation
+    Global Context:
+    Specification
+    "${issue}"
+    ALL COMMENTS:
+    ${JSON.stringify(allComments, null, 2)}
+    IMPORTANT CONTEXT:
+    You have now seen all the comments made by other users, keeping the comments in mind think in what ways comments to be evaluated be connected. The comments that were related to the comment under evaluation might come after or before them in the list of all comments but they would be there in ALL COMMENTS. COULD BE BEFORE OR AFTER, you have diligently search through all the comments in ALL COMMENTS.
+    START EVALUATING:
+    ${JSON.stringify(comments, null, 2)}
+    POST EVALUATION:
+    THE RESULT FROM THIS SHOULD BE ONLY THE SCORES BASED ON THE FLOATING POINT VALUE CONNECTING HOW CLOSE THE COMMENT IS FROM ALL COMMENTS AND TITLE AND BODY.
+
+    Now Assign them scores a float value ranging from 0 to 1, where 0 is spam (lowest value), and 1 is something that's very relevant (Highest Value), here relevance should mean a variety of things, it could be a fix to the issue, it could be a bug in solution, it could a SPAM message, it could be comment, that on its own does not carry weight, but when CHECKED IN ALL COMMENTS, may be a crucial piece of information for debugging and solving the ticket. If YOU THINK ITS NOT RELATED to ALL COMMENTS or TITLE OR ISSUE SPEC, then give it a 0 SCORE.
+
+    OUTPUT:
+    RETURN ONLY A JSON with the ID and the connection score (FLOATING POINT VALUE) with ALL COMMENTS TITLE AND BODY for each comment under evaluation.  RETURN ONLY ONE CONNECTION SCORE VALUE for each comment;
+    }`;
   }
 
   _generatePromptForPrComments(issue: string, comments: PrCommentToEvaluate[]) {
