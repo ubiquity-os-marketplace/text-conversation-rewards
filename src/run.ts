@@ -19,8 +19,6 @@ export async function run() {
       const result = logger.info("Some pull-request are open, will reopen the issue.");
       await githubCommentModuleInstance.postComment(result.logMessage.diff);
       return result.logMessage.raw;
-    } else {
-      return logger.info("Should proceed as usual").logMessage.raw;
     }
     const issue = parseGitHubUrl(eventPayload.issue.html_url);
     const activity = new IssueActivity(issue);
