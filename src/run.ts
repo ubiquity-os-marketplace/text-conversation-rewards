@@ -43,6 +43,10 @@ async function preCheck() {
 
   const issue = parseGitHubUrl(eventPayload.issue.html_url);
   const linkedPulls = await collectLinkedMergedPulls(issue);
+  logger.debug("Checking open linked pull-requests for", {
+    issue,
+    linkedPulls,
+  });
   if (linkedPulls.some((linkedPull) => linkedPull.state === "OPEN")) {
     await getOctokitInstance().rest.issues.update({
       owner: issue.owner,
