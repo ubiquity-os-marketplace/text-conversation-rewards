@@ -47,10 +47,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1,
-              "\\b\\W+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["ISSUE_SPECIFICATION"]
         },
@@ -79,9 +76,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.2
-            }
+            "wordValue": 0.2
           },
           "role": ["ISSUE_AUTHOR"]
         },
@@ -110,9 +105,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["ISSUE_ASSIGNEE"]
         },
@@ -141,9 +134,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["ISSUE_COLLABORATOR"]
         },
@@ -172,9 +163,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["ISSUE_CONTRIBUTOR"]
         },
@@ -203,9 +192,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0
-            }
+            "wordValue": 0
           },
           "role": ["PULL_SPECIFICATION"]
         },
@@ -234,9 +221,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.2
-            }
+            "wordValue": 0.2
           },
           "role": ["PULL_AUTHOR"]
         },
@@ -265,9 +250,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["PULL_ASSIGNEE"]
         },
@@ -296,9 +279,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["PULL_COLLABORATOR"]
         },
@@ -327,9 +308,7 @@
               "ul": { "score": 1, "countWords": true },
               "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["PULL_CONTRIBUTOR"]
         }

@@ -7,7 +7,7 @@ export const commentType = Type.Union(
   )
 );
 
-const regexType = Type.Record(Type.String(), Type.Number(), { minProperties: 1 });
+export const wordRegex = /\b\w+\b/;
 
 const htmlEntity = Type.Object({
   score: Type.Number(),
@@ -45,7 +45,7 @@ const htmlType = Type.Record(Type.String(), htmlEntity, {
 const rewardsType = Type.Object(
   {
     html: htmlType,
-    regex: regexType,
+    wordValue: Type.Number({ default: 0.1 }),
   },
   { default: {} }
 );
@@ -67,52 +67,52 @@ export const formattingEvaluatorConfigurationType = Type.Object(
           {
             role: ["ISSUE_SPECIFICATION"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["ISSUE_AUTHOR"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.2 } },
+            rewards: { wordValue: 0.2 },
           },
           {
             role: ["ISSUE_ASSIGNEE"],
             multiplier: 0,
-            rewards: { regex: { "\\b\\w+\\b": 0 } },
+            rewards: { wordValue: 0 },
           },
           {
             role: ["ISSUE_COLLABORATOR"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["ISSUE_CONTRIBUTOR"],
             multiplier: 0.25,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["PULL_SPECIFICATION"],
             multiplier: 0,
-            rewards: { regex: { "\\b\\w+\\b": 0 } },
+            rewards: { wordValue: 0 },
           },
           {
             role: ["PULL_AUTHOR"],
             multiplier: 2,
-            rewards: { regex: { "\\b\\w+\\b": 0.2 } },
+            rewards: { wordValue: 0.2 },
           },
           {
             role: ["PULL_ASSIGNEE"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["PULL_COLLABORATOR"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["PULL_CONTRIBUTOR"],
             multiplier: 0.25,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
         ],
       }

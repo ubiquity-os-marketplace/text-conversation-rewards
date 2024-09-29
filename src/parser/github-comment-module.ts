@@ -202,7 +202,7 @@ export class GithubCommentModule implements Module {
       // Properly escape carriage returns for HTML rendering
       const formatting = stringify({
         content: commentScore.score?.formatting,
-        regex: commentScore.score?.regex,
+        regex: commentScore.score?.words,
       }).replace(/[\n\r]/g, "&#13;");
       // Makes sure any HTML injected in the templated is not rendered itself
       const sanitizedContent = commentScore.content
