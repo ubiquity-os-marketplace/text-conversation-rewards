@@ -89,8 +89,10 @@ export interface Result {
   };
 }
 
-export interface RegexCount {
-  [p: string]: { wordCount: number; wordValue: number; result: number };
+export interface WordResult {
+  wordCount: number;
+  wordValue: number;
+  result: number;
 }
 
 export interface GithubCommentScore {
@@ -104,7 +106,7 @@ export interface GithubCommentScore {
       content: Record<string, { score: number; elementCount: number }>;
       result: number;
     };
-    regex?: RegexCount;
+    words?: WordResult;
     multiplier: number;
     relevance?: number;
     clarity?: number;
