@@ -79,6 +79,19 @@ export class ContentEvaluatorModule implements Module {
     return result;
   }
 
+  _getRewardForComment(comment: GithubCommentScore, relevance: number) {
+    let reward = new Decimal(comment?.score?.reward || 0);
+
+    if (comment?.score?.formatting && comment.score.multiplier && comment.score.words) {
+      let totalRegexReward = new Decimal(0);
+      totalRegexReward = totalRegexReward.add(comment.score.words.result);
+      totalRegexReward = totalRegexReward.mul(comment.score.multiplier);
+      const totalRegexRewardWithRelevance = totalRegexReward.mul(relevance);
+      reward = reward.sub(totalRegexReward).add(totalRegexRewardWithRelevance);
+    }
+    return reward;
+  }
+
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
     const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
@@ -99,11 +112,12 @@ export class ContentEvaluatorModule implements Module {
         currentRelevance = relevancesByAI[currentComment.id];
       }
 
-      const currentReward = new Decimal(currentComment.score?.reward || 0);
+      const currentReward = this._getRewardForComment(currentComment, currentRelevance);
+
       currentComment.score = {
-        ...(currentComment.score || {}),
+        ...(currentComment.score || { multiplier: 0 }),
         relevance: new Decimal(currentRelevance).toNumber(),
-        reward: currentReward.mul(currentRelevance).toNumber(),
+        reward: currentReward.toNumber(),
       };
     }
 
