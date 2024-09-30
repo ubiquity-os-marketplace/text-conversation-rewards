@@ -20,7 +20,7 @@ const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 jest
   .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, commentsToEvaluate, prCommentsToEvaluate) => {
+  .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
     return Promise.resolve(
       (() => {
         const relevance: { [k: string]: number } = {};
