@@ -75,7 +75,7 @@ export class ContentEvaluatorModule implements Module {
       const specificationBody = data.self?.body;
       if (specificationBody && comments.length) {
         promises.push(
-          this._processComment(comments, specificationBody, allComments, key).then(
+          this._processComment(comments, specificationBody, allComments).then(
             (commentsWithScore) => (currentElement.comments = commentsWithScore)
           )
         );
@@ -245,7 +245,7 @@ export class ContentEvaluatorModule implements Module {
     Go through all the comments first keep them in memory, then start with the following prompt
 
     OUTPUT FORMAT:
-    {ID: CONNECTION SCORE} For Each record, based on the average value from the CONNECTION SCORE from ALL COMMENTS, TITLE and BODY, one for each comment under evaluation
+    {ID: CONNECTION SCORE} For Each record in the EVALUATING SECTION, based on the average value from the CONNECTION SCORE from ALL COMMENTS, TITLE and BODY, one for each comment under evaluation
     Global Context:
     Specification
     "${issue}"
@@ -261,7 +261,7 @@ export class ContentEvaluatorModule implements Module {
     Now Assign them scores a float value ranging from 0 to 1, where 0 is spam (lowest value), and 1 is something that's very relevant (Highest Value), here relevance should mean a variety of things, it could be a fix to the issue, it could be a bug in solution, it could a SPAM message, it could be comment, that on its own does not carry weight, but when CHECKED IN ALL COMMENTS, may be a crucial piece of information for debugging and solving the ticket. If YOU THINK ITS NOT RELATED to ALL COMMENTS or TITLE OR ISSUE SPEC, then give it a 0 SCORE.
 
     OUTPUT:
-    RETURN ONLY A JSON with the ID and the connection score (FLOATING POINT VALUE) with ALL COMMENTS TITLE AND BODY for each comment under evaluation.  RETURN ONLY ONE CONNECTION SCORE VALUE for each comment;
+    RETURN ONLY A JSON with the ID and the connection score (FLOATING POINT VALUE) with ALL COMMENTS TITLE AND BODY for each comment under evaluation.  RETURN ONLY ONE CONNECTION SCORE VALUE for each comment. Total number of properties in your JSON response should equal exactly ${comments.length}
     }`;
   }
 
