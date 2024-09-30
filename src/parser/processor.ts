@@ -89,16 +89,25 @@ export interface Result {
   };
 }
 
+export interface WordResult {
+  wordCount: number;
+  wordValue: number;
+  result: number;
+}
+
 export interface GithubCommentScore {
   id: number;
   content: string;
   url: string;
   type: CommentKind | CommentAssociation;
+  diffHunk?: string;
   score?: {
     formatting?: {
-      content: Record<string, { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }>;
-      multiplier: number;
+      content: Record<string, { score: number; elementCount: number }>;
+      result: number;
     };
+    words?: WordResult;
+    multiplier: number;
     relevance?: number;
     clarity?: number;
     reward: number;

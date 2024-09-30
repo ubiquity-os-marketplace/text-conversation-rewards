@@ -20,6 +20,10 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
+jest.mock("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: jest.fn(),
+}));
+
 describe("GetActivity class", () => {
   const issue = parseGitHubUrl(issueUrl);
   const activity = new IssueActivity(issue);

@@ -7,15 +7,16 @@ import configuration from "../configuration/config-reader";
 import {
   FormattingEvaluatorConfiguration,
   formattingEvaluatorConfigurationType,
+  wordRegex,
 } from "../configuration/formatting-evaluator-config";
 import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
-import { GithubCommentScore, Module, Result } from "./processor";
+import { GithubCommentScore, Module, WordResult, Result } from "./processor";
 
 interface Multiplier {
   multiplier: number;
   html: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["html"];
-  regex: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"];
+  wordValue: number;
 }
 
 export class FormattingEvaluatorModule implements Module {
@@ -23,6 +24,7 @@ export class FormattingEvaluatorModule implements Module {
     configuration.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: number]: Multiplier } = {};
+  private readonly _wordCountExponent: number;
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -41,11 +43,12 @@ export class FormattingEvaluatorModule implements Module {
           [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
             html: curr.rewards.html,
             multiplier: curr.multiplier,
-            regex: curr.rewards.regex,
+            wordValue: curr.rewards.wordValue,
           },
         };
       }, {});
     }
+    this._wordCountExponent = this._configuration?.wordCountExponent ?? 0.85;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
@@ -54,34 +57,41 @@ export class FormattingEvaluatorModule implements Module {
       const comments = currentElement.comments || [];
       for (let i = 0; i < comments.length; i++) {
         const comment = comments[i];
-        // Count with html elements if any, otherwise just treat it as plain text
-        const { formatting } = this._getFormattingScore(comment);
+        const { formatting, words } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
-        const formattingTotal = formatting
-          ? Object.values(formatting).reduce((acc, curr) => {
-              let sum = new Decimal(0);
-              for (const symbol of Object.keys(curr.symbols)) {
-                sum = sum.add(
-                  new Decimal(curr.symbols[symbol].count)
-                    .mul(curr.symbols[symbol].multiplier)
-                    .mul(multiplierFactor.multiplier)
-                    .mul(curr.score)
-                );
-              }
-              return acc.add(sum);
-            }, new Decimal(0))
-          : new Decimal(0);
+        const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
+        const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
         comment.score = {
           ...comment.score,
+          reward,
           formatting: {
             content: formatting,
-            multiplier: multiplierFactor.multiplier,
+            result: Object.values(formatting).reduce((acc, curr) => acc + curr.score * curr.elementCount, 0),
           },
-          reward: (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber(),
+          words,
+          multiplier: multiplierFactor.multiplier,
         };
       }
     }
     return result;
+  }
+
+  private _calculateFormattingTotal(
+    formatting: ReturnType<typeof this._getFormattingScore>["formatting"],
+    regex: WordResult,
+    multiplierFactor: Multiplier
+  ): Decimal {
+    if (!formatting) return new Decimal(0);
+
+    let sum = new Decimal(0);
+    Object.values(formatting).forEach((formattingElement) => {
+      const score = new Decimal(formattingElement.score);
+      const elementTotalValue = score.mul(formattingElement.elementCount);
+      sum = sum.add(elementTotalValue);
+    });
+
+    sum = sum.add(new Decimal(regex.result));
+    return sum.mul(multiplierFactor.multiplier);
   }
 
   get enabled(): boolean {
@@ -93,50 +103,65 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   _getFormattingScore(comment: GithubCommentScore) {
-    const html = this._md.render(comment.content);
+    // Change the \r to \n to fix markup interpretation
+    const html = this._md.render(comment.content.replaceAll("\r", "\n"));
+    logger.debug("Will analyze formatting for the current content:", { comment: comment.content, html });
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
-      const res = this.classifyTagsWithWordCount(temp.window.document.body, comment.type);
-      return { formatting: res };
+      const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
+      return { formatting: res.formatting, words: res.words };
     } else {
       throw new Error(`Could not create DOM for comment [${comment}]`);
     }
   }
 
-  _countWords(regexes: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["regex"], text: string) {
-    const counts: { [p: string]: { count: number; multiplier: number } } = {};
-    for (const [regex, multiplier] of Object.entries(regexes)) {
-      const match = text.trim().match(new RegExp(regex, "g"));
-      counts[regex] = {
-        count: match?.length || 1,
-        multiplier,
-      };
-    }
-    return counts;
+  _countWordsFromRegex(
+    text: string,
+    wordValue: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["wordValue"]
+  ): WordResult {
+    const match = text.trim().match(new RegExp(wordRegex, "g"));
+    const wordCount = match?.length || 0;
+    const result = new Decimal(wordCount).pow(this._wordCountExponent).mul(wordValue).toDecimalPlaces(2).toNumber();
+    return {
+      wordCount,
+      wordValue,
+      result,
+    };
   }
 
-  classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
-    const tagWordCount: Record<
-      string,
-      { symbols: { [p: string]: { count: number; multiplier: number } }; score: number }
-    > = {};
+  _updateTagCount(tagCount: Record<string, { score: number; elementCount: number }>, tagName: string, score: number) {
+    // If we already had that tag included in the result, merge them and update total count
+    if (Object.keys(tagCount).includes(tagName)) {
+      tagCount[tagName].elementCount += 1;
+    } else {
+      tagCount[tagName] = {
+        score,
+        elementCount: 1,
+      };
+    }
+  }
+
+  _classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
+    const formatting: Record<string, { score: number; elementCount: number }> = {};
     const elements = htmlElement.getElementsByTagName("*");
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
-      const wordCount = this._countWords(this._multipliers[commentType].regex, element.textContent || "");
       let score = 0;
       if (this._multipliers[commentType]?.html[tagName] !== undefined) {
-        score = this._multipliers[commentType].html[tagName];
+        score = this._multipliers[commentType].html[tagName].score;
+        if (!this._multipliers[commentType].html[tagName].countWords) {
+          element.textContent = "";
+          continue;
+        }
       } else {
-        logger.error(`Could not find multiplier for comment [${commentType}], <${tagName}>`);
+        logger.error(`Could not find multiplier for element <${tagName}> in comment [${element.outerHTML}]`);
+        element.remove();
+        continue;
       }
-      tagWordCount[tagName] = {
-        symbols: wordCount,
-        score,
-      };
+      this._updateTagCount(formatting, tagName, score);
     }
-
-    return tagWordCount;
+    const words = this._countWordsFromRegex(htmlElement.textContent ?? "", this._multipliers[commentType].wordValue);
+    return { formatting, words };
   }
 }

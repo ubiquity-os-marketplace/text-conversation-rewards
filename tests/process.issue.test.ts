@@ -22,7 +22,7 @@ import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import validConfiguration from "./__mocks__/results/valid-configuration.json";
 import "../src/parser/command-line";
 
-const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
+const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/conversation-rewards/issues/5";
 
 jest.mock("../src/helpers/web3", () => ({
   getERC20TokenSymbol() {
@@ -41,6 +41,14 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
+jest.mock("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: jest.fn(),
+}));
+
+jest.mock("child_process", () => ({
+  execSync: jest.fn(() => "1234"),
+}));
+
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -55,7 +63,7 @@ jest.mock("../src/parser/command-line", () => {
     ref: "",
     eventPayload: {
       issue: {
-        html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+        html_url: "https://github.com/ubiquibot/conversation-rewards/issues/5",
         number: 1,
         state_reason: "completed",
       },
@@ -63,6 +71,7 @@ jest.mock("../src/parser/command-line", () => {
         name: "conversation-rewards",
         owner: {
           login: "ubiquibot",
+          id: 76412717, // https://github.com/ubiquity
         },
       },
     },
@@ -138,19 +147,19 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
                   edges: [
                     {
                       node: {
-                        id: "PR_kwDOK87YcM5nHc9o",
-                        title: "chore: add new shared evmPrivateKeyEncrypted",
-                        number: 25,
-                        url: "https://github.com/ubiquibot/comment-incentives/pull/25",
+                        id: "PR_kwDOLUK0B85soGlu",
+                        title: "feat: github comment generation and posting",
+                        number: 12,
+                        url: "https://github.com/ubiquibot/conversation-rewards/pull/12",
                         author: {
-                          login: "gitcoindev",
-                          id: 88761781,
+                          login: "gentlementlegen",
+                          id: 9807008,
                         },
                         repository: {
                           owner: {
                             login: "ubiquibot",
                           },
-                          name: "comment-incentives",
+                          name: "conversation-rewards",
                         },
                       },
                     },
@@ -187,17 +196,22 @@ describe("Modules tests", () => {
   });
 
   beforeEach(async () => {
-    jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
-      return Promise.resolve(
-        (() => {
-          const relevance: { [k: string]: number } = {};
-          comments.forEach((comment) => {
-            relevance[`${comment.id}`] = 0.8;
-          });
-          return relevance;
-        })()
-      );
-    });
+    jest
+      .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+      .mockImplementation((specificationBody, commentsToEvaluate, prCommentsToEvaluate) => {
+        return Promise.resolve(
+          (() => {
+            const relevance: { [k: string]: number } = {};
+            commentsToEvaluate.forEach((comment) => {
+              relevance[`${comment.id}`] = 0.8;
+            });
+            prCommentsToEvaluate.forEach((comment) => {
+              relevance[`${comment.id}`] = 0.7;
+            });
+            return relevance;
+          })()
+        );
+      });
   });
 
   it("Should extract users from comments", async () => {

@@ -5,34 +5,18 @@
   },
   "erc20RewardToken": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
   "evmNetworkId": 100,
-  "evmPrivateEncrypted": "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ",
+  "evmPrivateEncrypted": "qGslGsT9bfY0C3uc_utvFhBN_Zwggf0sONEFOfF67E_gWDXqnV3qC-LnGj2ufIHJwdHxFLz3VVzup2MrGtFtHhZ2WZZvq_8NQi48LFbr5b6OIxL-vOXooAyQYfb2mjLmcsYaxXc5eu1mUfO9rfENSAw9dFeWfi9VKQ",
   "incentives": {
     "contentEvaluator": {
       "multipliers": [
         {
           "relevance": 1,
           "role": ["ISSUE_SPECIFICATION"]
-        },
-        {
-          "relevance": 1,
-          "role": ["PULL_AUTHOR"]
-        },
-        {
-          "relevance": 1,
-          "role": ["PULL_ASSIGNEE"]
-        },
-        {
-          "relevance": 1,
-          "role": ["PULL_COLLABORATOR"]
-        },
-        {
-          "relevance": 1,
-          "role": ["PULL_CONTRIBUTOR"]
         }
       ],
       "openAi": {
         "endpoint": "",
-        "model": "gpt-4o"
+        "model": "gtp-4o"
       }
     },
     "dataPurge": {},
@@ -42,29 +26,28 @@
           "multiplier": 1,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["ISSUE_SPECIFICATION"]
         },
@@ -72,59 +55,57 @@
           "multiplier": 1,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.2
-            }
+            "wordValue": 0.2
           },
           "role": ["ISSUE_AUTHOR"]
         },
         {
-          "multiplier": 0,
+          "multiplier": 1,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0
-            }
+            "wordValue": 0.1
           },
           "role": ["ISSUE_ASSIGNEE"]
         },
@@ -132,29 +113,28 @@
           "multiplier": 1,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["ISSUE_COLLABORATOR"]
         },
@@ -162,29 +142,28 @@
           "multiplier": 0.25,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["ISSUE_CONTRIBUTOR"]
         },
@@ -192,29 +171,28 @@
           "multiplier": 0,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0
-            }
+            "wordValue": 0
           },
           "role": ["PULL_SPECIFICATION"]
         },
@@ -222,29 +200,28 @@
           "multiplier": 2,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.2
-            }
+            "wordValue": 0.2
           },
           "role": ["PULL_AUTHOR"]
         },
@@ -252,29 +229,28 @@
           "multiplier": 1,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["PULL_ASSIGNEE"]
         },
@@ -282,29 +258,28 @@
           "multiplier": 1,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["PULL_COLLABORATOR"]
         },
@@ -312,33 +287,33 @@
           "multiplier": 0.25,
           "rewards": {
             "html": {
-              "a": 1,
-              "blockquote": 0,
-              "br": 0,
-              "code": 1,
-              "em": 0,
-              "h1": 1,
-              "h2": 1,
-              "h3": 1,
-              "h4": 1,
-              "h5": 1,
-              "h6": 1,
-              "hr": 0,
-              "img": 0,
-              "li": 1,
-              "p": 1,
-              "pre": 0,
-              "strong": 0,
-              "td": 1,
-              "ul": 1
+              "a": { "score": 1, "countWords": true },
+              "blockquote": { "score": 0, "countWords": true },
+              "br": { "score": 0, "countWords": true },
+              "code": { "score": 1, "countWords": true },
+              "em": { "score": 0, "countWords": true },
+              "h1": { "score": 1, "countWords": true },
+              "h2": { "score": 1, "countWords": true },
+              "h3": { "score": 1, "countWords": true },
+              "h4": { "score": 1, "countWords": true },
+              "h5": { "score": 1, "countWords": true },
+              "h6": { "score": 1, "countWords": true },
+              "hr": { "score": 0, "countWords": true },
+              "img": { "score": 1, "countWords": true },
+              "li": { "score": 1, "countWords": true },
+              "p": { "score": 1, "countWords": true },
+              "pre": { "score": 0, "countWords": true },
+              "strong": { "score": 0, "countWords": true },
+              "td": { "score": 1, "countWords": true },
+              "ul": { "score": 1, "countWords": true },
+              "ol": { "score": 0, "countWords": true }
             },
-            "regex": {
-              "\\b\\w+\\b": 0.1
-            }
+            "wordValue": 0.1
           },
           "role": ["PULL_CONTRIBUTOR"]
         }
-      ]
+      ],
+      "wordCountExponent": 0.85
     },
     "githubComment": {
       "debug": true,
@@ -349,5 +324,6 @@
     "userExtractor": {
       "redeemTask": true
     }
-  }
+  },
+  "logLevel": "info"
 }

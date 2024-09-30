@@ -1,4 +1,5 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
+import { LOG_LEVEL } from "@ubiquity-dao/ubiquibot-logger";
 import { StandardValidator } from "typebox-validators";
 import { contentEvaluatorConfigurationType } from "./content-evaluator-config";
 import { dataCollectionConfigurationType } from "./data-collection-config";
@@ -10,6 +11,7 @@ import { userExtractorConfigurationType } from "./user-extractor-config";
 
 export const incentivesConfigurationSchema = T.Object(
   {
+    logLevel: T.Enum(LOG_LEVEL, { default: LOG_LEVEL.INFO }),
     /**
      * Network ID to run in, default to 100
      */

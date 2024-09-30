@@ -10,6 +10,7 @@ import {
   GitHubTimelineEvent,
   GitHubUser,
 } from "./github-types";
+import { getMinimizedCommentStatus } from "./helpers/get-comment-details";
 
 // async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
 // const issueParams = parseGitHubUrl(gitHubIssueUrl);
@@ -80,7 +81,11 @@ export async function getIssueEvents(issueParams: IssueParams): Promise<GitHubIs
 
 export async function getIssueComments(issueParams: IssueParams): Promise<GitHubIssueComment[]> {
   const octokit = getOctokitInstance();
-  return await octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams));
+  const comments: GitHubIssueComment[] = await octokit.paginate(
+    octokit.issues.listComments.endpoint.merge(issueParams)
+  );
+  await getMinimizedCommentStatus(comments);
+  return comments;
 }
 export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReviewState[]> {
   const octokit = getOctokitInstance();
