@@ -16,7 +16,7 @@
       ],
       "openAi": {
         "endpoint": "",
-        "model": "gtp-4o"
+        "model": "gpt-4o"
       }
     },
     "dataPurge": {},
