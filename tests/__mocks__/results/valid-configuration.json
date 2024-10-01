@@ -15,8 +15,8 @@
         }
       ],
       "openAi": {
-        "endpoint": "https://openrouter.ai/api/v1",
-        "model": "openai/gpt-3.5-turbo"
+        "endpoint": "",
+        "model": "gpt-4o"
       }
     },
     "dataPurge": {},
