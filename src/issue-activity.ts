@@ -1,7 +1,7 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import configuration from "./configuration/config-reader";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
-import { collectLinkedMergedPull } from "./data-collection/collect-linked-pulls";
+import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -47,7 +47,7 @@ export class IssueActivity {
 
   private async _getLinkedReviews(): Promise<Review[]> {
     logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
-    const pulls = await collectLinkedMergedPull(this._issueParams);
+    const pulls = (await collectLinkedMergedPulls(this._issueParams)).slice(-1);
     logger.debug("Collected linked pull-requests", { pulls });
     const promises = pulls
       .map(async (pull) => {
