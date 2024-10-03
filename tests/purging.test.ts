@@ -125,7 +125,6 @@ describe("Purging tests", () => {
     processor["_transformers"] = [new UserExtractorModule(), new DataPurgeModule()];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    console.log(JSON.stringify(result));
     expect(result).toEqual(hiddenCommentPurged);
   });
 });

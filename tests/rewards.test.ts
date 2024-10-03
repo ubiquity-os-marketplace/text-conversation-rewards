@@ -20,7 +20,7 @@ const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 jest
   .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, commentsToEvaluate, prCommentsToEvaluate) => {
+  .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
     return Promise.resolve(
       (() => {
         const relevance: { [k: string]: number } = {};
@@ -178,6 +178,10 @@ jest.mock("../src/helpers/web3", () => ({
 
 jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
+}));
+
+jest.mock("child_process", () => ({
+  execSync: jest.fn(() => "1234"),
 }));
 
 beforeAll(() => server.listen());
