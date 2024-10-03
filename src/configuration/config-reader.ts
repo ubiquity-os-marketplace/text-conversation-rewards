@@ -1,6 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
 import program from "../parser/command-line";
-import { PluginSettings, pluginSettingsSchema, pluginSettingsValidator } from "../types/plugin-inputs";
+import { PluginSettings, pluginSettingsSchema } from "../types/plugin-inputs";
+import { validateAndDecodeSchemas } from "../helpers/validator";
 
 let configuration: PluginSettings | null = null;
 
@@ -11,14 +12,7 @@ try {
 }
 
 if (program.settings) {
-  const settings = Value.Default(pluginSettingsSchema, JSON.parse(program.settings)) as PluginSettings;
-  if (pluginSettingsValidator.test(settings)) {
-    configuration = Value.Decode(pluginSettingsSchema, settings);
-  } else {
-    console.warn("Invalid incentives configuration detected, will revert to defaults.");
-    for (const error of pluginSettingsValidator.errors(settings)) {
-      console.warn(error);
-    }
-  }
+  const { decodedSettings } = validateAndDecodeSchemas(JSON.parse(program.settings), process.env);
+  configuration = decodedSettings;
 }
 export default configuration as PluginSettings;
