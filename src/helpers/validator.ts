@@ -1,12 +1,8 @@
 import { TransformDecodeCheckError, TransformDecodeError, Value, ValueError } from "@sinclair/typebox/value";
-import {
-  IncentivesConfiguration,
-  incentivesConfigurationSchema,
-  validateIncentivesConfiguration,
-} from "../configuration/incentives";
 import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type";
 import * as github from "@actions/github";
 import { Octokit } from "@octokit/rest";
+import { PluginSettings, pluginSettingsSchema, pluginSettingsValidator } from "../types/plugin-inputs";
 
 export function validateAndDecodeSchemas(rawEnv: object, rawSettings: object) {
   const errors: ValueError[] = [];
@@ -19,9 +15,9 @@ export function validateAndDecodeSchemas(rawEnv: object, rawSettings: object) {
     }
   }
 
-  const settings = Value.Default(incentivesConfigurationSchema, rawSettings) as IncentivesConfiguration;
-  if (!validateIncentivesConfiguration.test(settings)) {
-    for (const error of validateIncentivesConfiguration.errors(settings)) {
+  const settings = Value.Default(pluginSettingsSchema, rawSettings) as PluginSettings;
+  if (!pluginSettingsValidator.test(settings)) {
+    for (const error of pluginSettingsValidator.errors(settings)) {
       console.error(error);
       errors.push(error);
     }
@@ -32,7 +28,7 @@ export function validateAndDecodeSchemas(rawEnv: object, rawSettings: object) {
   }
 
   try {
-    const decodedSettings = Value.Decode(incentivesConfigurationSchema, settings);
+    const decodedSettings = Value.Decode(pluginSettingsSchema, settings);
     const decodedEnv = Value.Decode(envConfigSchema, rawEnv || {});
     return { decodedEnv, decodedSettings };
   } catch (e) {
