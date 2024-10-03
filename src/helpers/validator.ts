@@ -5,7 +5,7 @@ export async function returnDataToKernel(
   repoToken: string,
   stateId: string,
   output: object,
-  eventType = "return_data_to_ubiquibot_kernel"
+  eventType = "return-data-to-ubiquity-os-kernel"
 ) {
   const octokit = new Octokit({ auth: repoToken });
   return octokit.repos.createDispatchEvent({
