@@ -30,7 +30,7 @@ jobs:
             const fs = require('fs');
             const path = require('path');
 
-            const { pluginSettingsSchema } = require('./src/types');
+            const { pluginSettingsSchema } = require('./src/types/plugin-inputs');
 
             const manifestPath = path.resolve("${{ github.workspace }}", './manifest.json');
             const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
