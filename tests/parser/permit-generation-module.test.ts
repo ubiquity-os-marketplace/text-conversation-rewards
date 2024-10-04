@@ -116,7 +116,7 @@ describe("permit-generation-module.ts", () => {
       process.env.PERMIT_FEE_RATE = "";
       const permitGenerationModule = new PermitGenerationModule();
       const spyConsoleLog = jest.spyOn(console, "log");
-      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
       expect(spyConsoleLog).toHaveBeenCalledWith("PERMIT_FEE_RATE is not set, skipping permit fee generation");
     });
 
@@ -124,7 +124,7 @@ describe("permit-generation-module.ts", () => {
       process.env.PERMIT_FEE_RATE = "0";
       const permitGenerationModule = new PermitGenerationModule();
       const spyConsoleLog = jest.spyOn(console, "log");
-      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
       expect(spyConsoleLog).toHaveBeenCalledWith("PERMIT_FEE_RATE is not set, skipping permit fee generation");
     });
 
@@ -132,7 +132,7 @@ describe("permit-generation-module.ts", () => {
       process.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
       const permitGenerationModule = new PermitGenerationModule();
       const spyConsoleLog = jest.spyOn(console, "log");
-      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
       expect(spyConsoleLog).toHaveBeenCalledWith(
         "PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation"
       );
@@ -141,7 +141,7 @@ describe("permit-generation-module.ts", () => {
     it("Should not apply fees if ERC20 reward token is included in PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST", async () => {
       const permitGenerationModule = new PermitGenerationModule();
       const spyConsoleLog = jest.spyOn(console, "log");
-      await permitGenerationModule._applyFees(resultOriginal, DOLLAR_ADDRESS);
+      await permitGenerationModule._applyFees(resultOriginal, DOLLAR_ADDRESS, process.env);
       expect(spyConsoleLog).toHaveBeenCalledWith(
         `Token address ${DOLLAR_ADDRESS} is whitelisted to be fee free, skipping permit fee generation`
       );
@@ -149,7 +149,7 @@ describe("permit-generation-module.ts", () => {
 
     it("Should apply fees", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const resultAfterFees = await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      const resultAfterFees = await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
 
       // check that 10% fee is subtracted from rewards
       expect(resultAfterFees["user1"].total).toEqual(90);
@@ -180,13 +180,14 @@ describe("permit-generation-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
 
-      const result = await permitGenerationModule._isPrivateKeyAllowed(
+      const isAllowed = await permitGenerationModule._isPrivateKeyAllowed(
         privateKeyEncrypted,
         githubContextOrganizationId,
-        githubContextRepositoryId
+        githubContextRepositoryId,
+        process.env
       );
 
-      expect(result).toEqual(false);
+      expect(isAllowed).toEqual(false);
       expect(spyConsoleLog).toHaveBeenCalledWith("Private key could not be decrypted");
     });
 
@@ -201,13 +202,14 @@ describe("permit-generation-module.ts", () => {
       const githubContextOrganizationId = 99;
       const githubContextRepositoryId = 2;
 
-      const result = await permitGenerationModule._isPrivateKeyAllowed(
+      const isAllowed = await permitGenerationModule._isPrivateKeyAllowed(
         privateKeyEncrypted,
         githubContextOrganizationId,
-        githubContextRepositoryId
+        githubContextRepositoryId,
+        process.env
       );
 
-      expect(result).toEqual(false);
+      expect(isAllowed).toEqual(false);
       expect(spyConsoleLog).toHaveBeenCalledWith(
         "Current organization/user id 99 is not allowed to use this private key"
       );
@@ -215,7 +217,6 @@ describe("permit-generation-module.ts", () => {
 
     it("Should return true if private key is used in allowed organization", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1"
@@ -224,13 +225,14 @@ describe("permit-generation-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
 
-      const result = await permitGenerationModule._isPrivateKeyAllowed(
+      const isAllowed = await permitGenerationModule._isPrivateKeyAllowed(
         privateKeyEncrypted,
         githubContextOrganizationId,
-        githubContextRepositoryId
+        githubContextRepositoryId,
+        process.env
       );
 
-      expect(result).toEqual(true);
+      expect(isAllowed).toEqual(true);
     });
 
     it("Should return false if private key is used in unallowed organization and allowed repository", async () => {
@@ -244,13 +246,14 @@ describe("permit-generation-module.ts", () => {
       const githubContextOrganizationId = 99;
       const githubContextRepositoryId = 2;
 
-      const result = await permitGenerationModule._isPrivateKeyAllowed(
+      const isAllowed = await permitGenerationModule._isPrivateKeyAllowed(
         privateKeyEncrypted,
         githubContextOrganizationId,
-        githubContextRepositoryId
+        githubContextRepositoryId,
+        process.env
       );
 
-      expect(result).toEqual(false);
+      expect(isAllowed).toEqual(false);
       expect(spyConsoleLog).toHaveBeenCalledWith(
         "Current organization/user id 99 and repository id 2 are not allowed to use this private key"
       );
@@ -267,13 +270,14 @@ describe("permit-generation-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 99;
 
-      const result = await permitGenerationModule._isPrivateKeyAllowed(
+      const isAllowed = await permitGenerationModule._isPrivateKeyAllowed(
         privateKeyEncrypted,
         githubContextOrganizationId,
-        githubContextRepositoryId
+        githubContextRepositoryId,
+        process.env
       );
 
-      expect(result).toEqual(false);
+      expect(isAllowed).toEqual(false);
       expect(spyConsoleLog).toHaveBeenCalledWith(
         "Current organization/user id 1 and repository id 99 are not allowed to use this private key"
       );
@@ -281,7 +285,6 @@ describe("permit-generation-module.ts", () => {
 
     it("Should return true if private key is used in allowed organization and repository", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
@@ -290,13 +293,14 @@ describe("permit-generation-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
 
-      const result = await permitGenerationModule._isPrivateKeyAllowed(
+      const isAllowed = await permitGenerationModule._isPrivateKeyAllowed(
         privateKeyEncrypted,
         githubContextOrganizationId,
-        githubContextRepositoryId
+        githubContextRepositoryId,
+        process.env
       );
 
-      expect(result).toEqual(true);
+      expect(isAllowed).toEqual(true);
     });
 
     it("Should return false if private key format is invalid", async () => {
@@ -310,13 +314,14 @@ describe("permit-generation-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
 
-      const result = await permitGenerationModule._isPrivateKeyAllowed(
+      const isAllowed = await permitGenerationModule._isPrivateKeyAllowed(
         privateKeyEncrypted,
         githubContextOrganizationId,
-        githubContextRepositoryId
+        githubContextRepositoryId,
+        process.env
       );
 
-      expect(result).toEqual(false);
+      expect(isAllowed).toEqual(false);
       expect(spyConsoleLog).toHaveBeenCalledWith("Invalid private key format");
     });
   });
