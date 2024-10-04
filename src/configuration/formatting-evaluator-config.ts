@@ -7,39 +7,45 @@ export const commentType = Type.Union(
   )
 );
 
-const regexType = Type.Record(Type.String(), Type.Number(), { minProperties: 1 });
+export const wordRegex = /\b\w+\b/;
+
+const htmlEntity = Type.Object({
+  score: Type.Number(),
+  countWords: Type.Boolean({ default: true }),
+});
 
 /**
  * Attributed score per HTML entity
  */
-const htmlType = Type.Record(Type.String(), Type.Number(), {
+const htmlType = Type.Record(Type.String(), htmlEntity, {
   default: {
-    br: 0,
-    code: 1,
-    p: 1,
-    em: 0,
-    img: 0,
-    strong: 0,
-    blockquote: 0,
-    h1: 1,
-    h2: 1,
-    h3: 1,
-    h4: 1,
-    h5: 1,
-    h6: 1,
-    a: 1,
-    li: 1,
-    ul: 1,
-    td: 1,
-    hr: 0,
-    pre: 0,
+    br: { score: 0, countWords: true },
+    code: { score: 5, countWords: false },
+    p: { score: 0, countWords: true },
+    em: { score: 0, countWords: true },
+    img: { score: 5, countWords: true },
+    strong: { score: 0, countWords: false },
+    blockquote: { score: 0, countWords: false },
+    h1: { score: 1, countWords: true },
+    h2: { score: 1, countWords: true },
+    h3: { score: 1, countWords: true },
+    h4: { score: 1, countWords: true },
+    h5: { score: 1, countWords: true },
+    h6: { score: 1, countWords: true },
+    a: { score: 5, countWords: true },
+    li: { score: 0.5, countWords: true },
+    ul: { score: 1, countWords: true },
+    td: { score: 0, countWords: true },
+    hr: { score: 0, countWords: true },
+    pre: { score: 0, countWords: true },
+    ol: { score: 1, countWords: true },
   },
 });
 
 const rewardsType = Type.Object(
   {
     html: htmlType,
-    regex: regexType,
+    wordValue: Type.Number({ default: 0.1 }),
   },
   { default: {} }
 );
@@ -61,52 +67,52 @@ export const formattingEvaluatorConfigurationType = Type.Object(
           {
             role: ["ISSUE_SPECIFICATION"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["ISSUE_AUTHOR"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.2 } },
+            rewards: { wordValue: 0.2 },
           },
           {
             role: ["ISSUE_ASSIGNEE"],
             multiplier: 0,
-            rewards: { regex: { "\\b\\w+\\b": 0 } },
+            rewards: { wordValue: 0 },
           },
           {
             role: ["ISSUE_COLLABORATOR"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["ISSUE_CONTRIBUTOR"],
             multiplier: 0.25,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["PULL_SPECIFICATION"],
             multiplier: 0,
-            rewards: { regex: { "\\b\\w+\\b": 0 } },
+            rewards: { wordValue: 0 },
           },
           {
             role: ["PULL_AUTHOR"],
             multiplier: 2,
-            rewards: { regex: { "\\b\\w+\\b": 0.2 } },
+            rewards: { wordValue: 0.2 },
           },
           {
             role: ["PULL_ASSIGNEE"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["PULL_COLLABORATOR"],
             multiplier: 1,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["PULL_CONTRIBUTOR"],
             multiplier: 0.25,
-            rewards: { regex: { "\\b\\w+\\b": 0.1 } },
+            rewards: { wordValue: 0.1 },
           },
         ],
       }

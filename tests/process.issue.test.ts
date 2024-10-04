@@ -45,6 +45,10 @@ jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
+jest.mock("child_process", () => ({
+  execSync: jest.fn(() => "1234"),
+}));
+
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -194,7 +198,7 @@ describe("Modules tests", () => {
   beforeEach(async () => {
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate, prCommentsToEvaluate) => {
+      .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
