@@ -3,6 +3,7 @@ import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls
 import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
 import { getSortedPrices } from "./helpers/label-price-extractor";
 import logger from "./helpers/logger";
+import { returnDataToKernel } from "./helpers/validator";
 import { IssueActivity } from "./issue-activity";
 import { getOctokitInstance } from "./octokit";
 import program from "./parser/command-line";
@@ -10,7 +11,7 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 
 export async function run() {
-  const { eventPayload, eventName } = program;
+  const { eventPayload, eventName, stateId } = program;
   if (eventName === "issues.closed") {
     if (eventPayload.issue.state_reason !== "completed") {
       return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
@@ -30,7 +31,9 @@ export async function run() {
     }
     const processor = new Processor();
     await processor.run(activity);
-    return processor.dump();
+    const result = processor.dump();
+    await returnDataToKernel(process.env.GITHUB_TOKEN, stateId, { result });
+    return result;
   } else {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }

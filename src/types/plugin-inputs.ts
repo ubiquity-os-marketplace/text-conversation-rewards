@@ -1,15 +1,15 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { LOG_LEVEL } from "@ubiquity-dao/ubiquibot-logger";
 import { StandardValidator } from "typebox-validators";
-import { contentEvaluatorConfigurationType } from "./content-evaluator-config";
-import { dataCollectionConfigurationType } from "./data-collection-config";
-import { dataPurgeConfigurationType } from "./data-purge-config";
-import { formattingEvaluatorConfigurationType } from "./formatting-evaluator-config";
-import { githubCommentConfigurationType } from "./github-comment-config";
-import { permitGenerationConfigurationType } from "./permit-generation-configuration";
-import { userExtractorConfigurationType } from "./user-extractor-config";
+import { contentEvaluatorConfigurationType } from "../configuration/content-evaluator-config";
+import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
+import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
+import { githubCommentConfigurationType } from "../configuration/github-comment-config";
+import { formattingEvaluatorConfigurationType } from "../configuration/formatting-evaluator-config";
+import { dataCollectionConfigurationType } from "../configuration/data-collection-config";
+import { dataPurgeConfigurationType } from "../configuration/data-purge-config";
 
-export const incentivesConfigurationSchema = T.Object(
+export const pluginSettingsSchema = T.Object(
   {
     logLevel: T.Enum(LOG_LEVEL, { default: LOG_LEVEL.INFO }),
     /**
@@ -48,6 +48,6 @@ export const incentivesConfigurationSchema = T.Object(
   { default: {} }
 );
 
-export const validateIncentivesConfiguration = new StandardValidator(incentivesConfigurationSchema);
+export const pluginSettingsValidator = new StandardValidator(pluginSettingsSchema);
 
-export type IncentivesConfiguration = StaticDecode<typeof incentivesConfigurationSchema>;
+export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;

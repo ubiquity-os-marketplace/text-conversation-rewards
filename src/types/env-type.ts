@@ -1,4 +1,4 @@
-import { Type, Static } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 
 const envConfigSchema = Type.Object({
   SUPABASE_URL: Type.String(),
