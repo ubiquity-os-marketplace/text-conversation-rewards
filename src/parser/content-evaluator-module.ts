@@ -27,7 +27,6 @@ export class ContentEvaluatorModule implements Module {
   readonly _configuration: ContentEvaluatorConfiguration | null = configuration.incentives.contentEvaluator;
   readonly _openAi = new OpenAI({
     apiKey: OPENAI_API_KEY,
-    ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
   });
   private readonly _fixedRelevances: { [k: string]: number } = {};
 
