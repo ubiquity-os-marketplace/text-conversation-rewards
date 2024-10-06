@@ -1,4 +1,3 @@
-/* eslint @typescript-eslint/no-var-requires: 0 */
 import { CommentKind } from "../../src/configuration/comment-types";
 import { PermitGenerationModule } from "../../src/parser/permit-generation-module";
 import { Result } from "../../src/parser/processor";
@@ -8,9 +7,7 @@ const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 
 jest.mock("../../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("../__mocks__/results/valid-configuration.json");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dotenv = require("dotenv");
   dotenv.config();
   return {

@@ -22,7 +22,7 @@ import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import validConfiguration from "./__mocks__/results/valid-configuration.json";
 import "../src/parser/command-line";
 
-const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/conversation-rewards/issues/5";
+const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquibot/conversation-rewards/issues/5";
 
 jest.mock("../src/helpers/web3", () => ({
   getERC20TokenSymbol() {
@@ -51,9 +51,7 @@ jest.mock("child_process", () => ({
 
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("./__mocks__/results/valid-configuration.json");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dotenv = require("dotenv");
   dotenv.config();
   return {

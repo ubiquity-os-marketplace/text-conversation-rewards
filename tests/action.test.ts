@@ -214,7 +214,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
     ].forEach((url) => {
       server.use(http.get(url, () => HttpResponse.json("", { status: 500 }), { once: true }));
     });
-    const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
+    const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquibot/comment-incentives/issues/22";
     const issue = parseGitHubUrl(issueUrl);
     const activity = new IssueActivity(issue);
     await activity.init();

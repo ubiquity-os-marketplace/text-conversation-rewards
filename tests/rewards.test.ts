@@ -116,9 +116,7 @@ jest.mock("@ubiquibot/permit-generation/core", () => {
 });
 
 jest.mock("../src/parser/command-line", () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("./__mocks__/results/valid-configuration.json");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dotenv = require("dotenv");
   dotenv.config();
   return {

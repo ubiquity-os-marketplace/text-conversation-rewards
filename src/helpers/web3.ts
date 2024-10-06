@@ -7,7 +7,7 @@ import { ethers } from "ethers";
  * @param tokenAddress ERC20 token address
  * @returns ERC20 token symbol
  */
-export async function getERC20TokenSymbol(networkId: number, tokenAddress: string) {
+export async function getErc20TokenSymbol(networkId: number, tokenAddress: string) {
   const abi = ["function symbol() view returns (string)"];
 
   // get fastest RPC

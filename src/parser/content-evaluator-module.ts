@@ -65,13 +65,13 @@ export class ContentEvaluatorModule implements Module {
     const allComments: { id: number; comment: string; author: string }[] = [];
     for (const commentObj of allCommentsUnClean) {
       if (commentObj.user) {
-        allComments.push({ id: commentObj.id, comment: commentObj.body || "", author: commentObj.user.login });
+        allComments.push({ id: commentObj.id, comment: commentObj.body ?? "", author: commentObj.user.login });
       }
     }
 
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
-      const comments = currentElement.comments || [];
+      const comments = currentElement.comments ?? [];
       const specificationBody = data.self?.body;
       if (specificationBody && comments.length) {
         promises.push(
@@ -103,25 +103,23 @@ export class ContentEvaluatorModule implements Module {
     const commentsWithScore: GithubCommentScore[] = [...comments];
     const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
-    const relevancesByAI = await this._evaluateComments(
+    const relevancesByAi = await this._evaluateComments(
       specificationBody,
       commentsToEvaluate,
       allComments,
       prCommentsToEvaluate
     );
 
-    if (Object.keys(relevancesByAI).length !== commentsToEvaluate.length) {
+    if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length) {
       console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
     }
 
-    for (let i = 0; i < commentsWithScore.length; i++) {
-      const currentComment = commentsWithScore[i];
+    for (const currentComment of commentsWithScore) {
       let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
-
       if (this._fixedRelevances[currentComment.type]) {
         currentRelevance = this._fixedRelevances[currentComment.type];
-      } else if (!isNaN(relevancesByAI[currentComment.id])) {
-        currentRelevance = relevancesByAI[currentComment.id];
+      } else if (!isNaN(relevancesByAi[currentComment.id])) {
+        currentRelevance = relevancesByAi[currentComment.id];
       }
 
       const currentReward = this._getRewardForComment(currentComment, currentRelevance);
@@ -157,8 +155,7 @@ export class ContentEvaluatorModule implements Module {
   } {
     const commentsToEvaluate: CommentToEvaluate[] = [];
     const prCommentsToEvaluate: PrCommentToEvaluate[] = [];
-    for (let i = 0; i < commentsWithScore.length; i++) {
-      const currentComment = commentsWithScore[i];
+    for (const currentComment of commentsWithScore) {
       if (!this._fixedRelevances[currentComment.type]) {
         if (currentComment.type & CommentKind.PULL) {
           prCommentsToEvaluate.push({
@@ -207,7 +204,7 @@ export class ContentEvaluatorModule implements Module {
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
-      model: this._configuration?.openAi.model || "gpt-4o-2024-08-06",
+      model: this._configuration?.openAi.model ?? "gpt-4o-2024-08-06",
       response_format: { type: "json_object" },
       messages: [
         {

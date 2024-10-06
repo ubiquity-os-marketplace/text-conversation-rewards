@@ -25,7 +25,7 @@ export class UserExtractorModule implements Module {
    * Checks if the comment is made by a human user, not empty, and not a command.
    */
   _checkEntryValidity(comment: (typeof IssueActivity.prototype.allComments)[0]) {
-    return comment.body && comment.user?.type === "User" && comment.body.trim()[0] !== "/";
+    return comment.body && comment.user?.type === "User" && comment.body.trim().startsWith("/");
   }
 
   /**
