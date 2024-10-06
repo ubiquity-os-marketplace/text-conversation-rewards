@@ -105,8 +105,21 @@ describe("Payload truncate tests", () => {
     // const patchMock = jest.fn(() => HttpResponse.json({}));
     // server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
     jest.mock("../src/parser/processor", () => ({
-      dump: jest.fn(() => "1".repeat(70000)),
+      dump: jest.fn(() =>
+        JSON.stringify({
+          user: {
+            total: 1,
+            userId: "1",
+            task: "1",
+            permitUrl: "http",
+            comments: "1".repeat(70000),
+          },
+        })
+      ),
       run: jest.fn(),
+    }));
+    jest.mock("../src/issue-activity", () => ({
+      init: jest.fn(),
     }));
     const module = (await import("../src/index")) as unknown as { default: Promise<string> };
     const result = await module.default;
