@@ -158,7 +158,7 @@ export class PermitGenerationModule implements Module {
    */
   async _applyFees(result: Result, erc20RewardToken: string, env: EnvConfigType): Promise<Result> {
     // validate fee related env variables
-    if (!env.PERMIT_FEE_RATE || +env.PERMIT_FEE_RATE === 0) {
+    if (!env.PERMIT_FEE_RATE || Number(env.PERMIT_FEE_RATE) === 0) {
       console.log("PERMIT_FEE_RATE is not set, skipping permit fee generation");
       return result;
     }
@@ -197,7 +197,7 @@ export class PermitGenerationModule implements Module {
       const totalAfterFee = new Decimal(rewardResult.total).mul(feeRateDecimal).toNumber();
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
-      rewardResult.total = +totalAfterFee.toFixed(2);
+      rewardResult.total = Number(totalAfterFee.toFixed(2));
       if (rewardResult.task) {
         rewardResult.task.reward = Number(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
       }
@@ -212,7 +212,7 @@ export class PermitGenerationModule implements Module {
 
     // Add a new result item for treasury
     result[env.PERMIT_TREASURY_GITHUB_USERNAME] = {
-      total: +permitFeeAmountDecimal.toFixed(2),
+      total: Number(permitFeeAmountDecimal.toFixed(2)),
       userId: treasuryGithubData.id,
     };
 
