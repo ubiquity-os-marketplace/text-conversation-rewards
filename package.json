@@ -29,7 +29,7 @@
     "@actions/github": "6.0.0",
     "@octokit/graphql-schema": "^15.25.0",
     "@octokit/plugin-paginate-graphql": "^5.2.3",
-    "@octokit/plugin-retry": "^7.1.2",
+    "@octokit/plugin-retry": "^6.0.1",
     "@octokit/rest": "^20.1.0",
     "@octokit/webhooks": "^13.2.7",
     "@sinclair/typebox": "0.32.23",
