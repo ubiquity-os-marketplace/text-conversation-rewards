@@ -667,7 +667,7 @@
                                 },
                                 "pre": {
                                   "score": 0,
-                                  "countWords": true
+                                  "countWords": false
                                 },
                                 "ol": {
                                   "score": 1,
