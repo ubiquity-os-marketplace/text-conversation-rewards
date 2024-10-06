@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.5.0](https://github.com/ubiquity-os-marketplace/conversation-rewards/compare/v1.4.0...v1.5.0) (2024-09-30)
+
+
+### Features
+
+* add private key formats ([43ffc4d](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/43ffc4d11692c9f4f6129288c7c0513698c60b34))
+* added log level ([f41393a](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/f41393ac5651a16b9af79a406997fcdcfdbf1d03))
+* changed word count and introduced elementCount ([6911a5d](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/6911a5d0586cfbb415e3653d3ddaf15d5dc311ea))
+* compressing html output ([741ee20](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/741ee20362c00963d8444d7cb8c0c95857420d9d))
+* content is stripped if it is too large for a comment ([f2ca2bb](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/f2ca2bb27b2a6be04304d9b6e02e5b1b9f18a286))
+* skip minimized comments ([0a7576d](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/0a7576d65ea6845f771c9b2c26c39481743ee32c))
+* support individual repos ([0d34345](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/0d343459bdd42f23c22077c8fc9d2ddce46fa2ca))
+
+
+### Bug Fixes
+
+* apply fixes to broken merge ([bbb22e6](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/bbb22e641255085bdb97c01cee4da00455239b57))
+* edited the mock results to match new calculation module ([a0d007c](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/a0d007cde2deb51385d72984e88f945deea42d41))
+* fix github comment and reward split tests ([4e24f40](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/4e24f40430473211ffed8aab72a5998f6df48660))
+* fix github comment and reward split tests ([3cee864](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/3cee86421ae55c74736380cc98beba018c75c4ff))
+* fixed decimal issues with evaluation ([1e30cd2](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/1e30cd22a30ce460859cfda45eb63fc549776ea8))
+* fixed issues with permit generation and mock results ([aa3affa](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/aa3affa772945618a51caffbc7705489b9233204))
+* html content is stripped from metadata ([a595751](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/a59575127e688503335e9d81d5790029b64bdf74))
+* include forgotten reward-split calculation changes ([b171bb6](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/b171bb68383b8d5e20dc38cd86fd052fb0334a48))
+* no message is posted on skip ([512519d](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/512519db690d81a8eeb6178e40f61bccec6e9b14))
+* refactored extra calculation and fixed mock results ([834910e](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/834910e777ab751e9bef4255f8b418ab31c8cb5b))
+* relevance is only applied to content ([8c4fe1b](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/8c4fe1b57e154581186d97148725d6c4e04ba7b1))
+* removed regex from configuration ([19e70a4](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/19e70a4e946e8b6560a9265de95198c6c2d56b46))
+* resolve conflicts ([434d28a](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/434d28a58f9aa815f5df0481e8d654190ad08176))
+* test permit related mock test result fixes ([0b6f245](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/0b6f24537696ea3d621a6b27e12e27d72136830b))
+* typo ([cd740ab](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/cd740ab0ec3c7cbe33c50c550e082631afb0704e))
+* use camel casing for property name ([2da6b86](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/2da6b868c9700b68e5bbedfb64683e42b384755c))
+* use issue.node_id for permit nonces ([1d2ad4d](https://github.com/ubiquity-os-marketplace/conversation-rewards/commit/1d2ad4d04c43184de6559aabb36be7f506287a79))
+
 ## [1.2.0](https://github.com/ubiquibot/conversation-rewards/compare/v1.1.0...v1.2.0) (2024-07-10)
 
 
