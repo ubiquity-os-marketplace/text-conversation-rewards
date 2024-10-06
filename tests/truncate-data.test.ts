@@ -3,6 +3,7 @@ import "../src/parser/command-line";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
+import * as Validator from "../src/helpers/validator";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -82,7 +83,13 @@ jest.mock("../src/parser/command-line", () => {
         },
       },
     },
-    settings: JSON.stringify(cfg),
+    settings: JSON.stringify({
+      ...cfg,
+      incentives: {
+        ...cfg.incentives,
+        requirePriceLabel: false,
+      },
+    }),
   };
 });
 
@@ -105,26 +112,30 @@ describe("Payload truncate tests", () => {
     // const patchMock = jest.fn(() => HttpResponse.json({}));
     // server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
     jest.mock("../src/parser/processor", () => ({
-      dump: jest.fn(() =>
-        JSON.stringify({
-          user: {
-            total: 1,
-            userId: "1",
-            task: "1",
-            permitUrl: "http",
-            comments: "1".repeat(70000),
-          },
-        })
-      ),
-      run: jest.fn(),
+      Processor: jest.fn(() => ({
+        dump: jest.fn(() =>
+          JSON.stringify({
+            user: {
+              total: 1,
+              userId: "1",
+              task: "1",
+              permitUrl: "http",
+              comments: "1".repeat(70000),
+            },
+          })
+        ),
+        run: jest.fn(),
+      })),
     }));
     jest.mock("../src/issue-activity", () => {
-      return jest.fn().mockImplementation(() => {
-        return { init: jest.fn() };
-      });
+      return { IssueActivity: jest.fn(() => ({ init: jest.fn() })) };
     });
+    const returnDataToKernelMock = jest.fn();
+    jest.spyOn(Validator, "returnDataToKernel").mockImplementation(returnDataToKernelMock);
     const module = (await import("../src/index")) as unknown as { default: Promise<string> };
     const result = await module.default;
-    expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
+    const expectedResult = '{"user":{"userId":"1","task":"1","permitUrl":"http","total":1}}';
+    expect(result).toEqual(expectedResult);
+    expect(returnDataToKernelMock).toHaveBeenCalledWith(process.env.GITHUB_TOKEN, 1, { result: expectedResult });
   });
 });
