@@ -1,0 +1,1 @@
+export const GITHUB_PAYLOAD_LIMIT = 65536;

@@ -1,5 +1,6 @@
 import configuration from "./configuration/config-reader";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
+import { GITHUB_PAYLOAD_LIMIT } from "./helpers/constants";
 import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
 import { getSortedPrices } from "./helpers/label-price-extractor";
 import logger from "./helpers/logger";
@@ -7,7 +8,7 @@ import { returnDataToKernel } from "./helpers/validator";
 import { IssueActivity } from "./issue-activity";
 import { getOctokitInstance } from "./octokit";
 import program from "./parser/command-line";
-import { Processor } from "./parser/processor";
+import { Processor, Result } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 
 export async function run() {
@@ -31,7 +32,19 @@ export async function run() {
     }
     const processor = new Processor();
     await processor.run(activity);
-    const result = processor.dump();
+    let result = processor.dump();
+    if (result.length > GITHUB_PAYLOAD_LIMIT) {
+      const resultObject = JSON.parse(result) as Result;
+      for (const [key, value] of Object.entries(resultObject)) {
+        resultObject[key] = {
+          userId: value.userId,
+          task: value.task,
+          permitUrl: value.permitUrl,
+          total: value.total,
+        };
+      }
+      result = JSON.stringify(resultObject);
+    }
     await returnDataToKernel(process.env.GITHUB_TOKEN, stateId, { result });
     return result;
   } else {
