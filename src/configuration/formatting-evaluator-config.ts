@@ -37,7 +37,7 @@ const htmlType = Type.Record(Type.String(), htmlEntity, {
     ul: { score: 1, countWords: true },
     td: { score: 0, countWords: true },
     hr: { score: 0, countWords: true },
-    pre: { score: 0, countWords: true },
+    pre: { score: 0, countWords: false },
     ol: { score: 1, countWords: true },
   },
 });

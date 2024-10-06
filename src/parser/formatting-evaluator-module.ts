@@ -115,10 +115,7 @@ export class FormattingEvaluatorModule implements Module {
     }
   }
 
-  _countWordsFromRegex(
-    text: string,
-    wordValue: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["wordValue"]
-  ): WordResult {
+  _countWordsFromRegex(text: string, wordValue = 0): WordResult {
     const match = text.trim().match(new RegExp(wordRegex, "g"));
     const wordCount = match?.length || 0;
     const result = new Decimal(wordCount).pow(this._wordCountExponent).mul(wordValue).toDecimalPlaces(2).toNumber();
@@ -161,7 +158,7 @@ export class FormattingEvaluatorModule implements Module {
       }
       this._updateTagCount(formatting, tagName, score);
     }
-    const words = this._countWordsFromRegex(htmlElement.textContent ?? "", this._multipliers[commentType].wordValue);
+    const words = this._countWordsFromRegex(htmlElement.textContent ?? "", this._multipliers[commentType]?.wordValue);
     return { formatting, words };
   }
 }
