@@ -118,9 +118,11 @@ describe("Payload truncate tests", () => {
       ),
       run: jest.fn(),
     }));
-    jest.mock("../src/issue-activity", () => ({
-      init: jest.fn(),
-    }));
+    jest.mock("../src/issue-activity", () => {
+      return jest.fn().mockImplementation(() => {
+        return { init: jest.fn() };
+      });
+    });
     const module = (await import("../src/index")) as unknown as { default: Promise<string> };
     const result = await module.default;
     expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
