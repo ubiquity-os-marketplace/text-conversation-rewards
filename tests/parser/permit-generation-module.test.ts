@@ -70,6 +70,7 @@ const resultOriginal: Result = {
         type: CommentKind.ISSUE,
         score: {
           reward: 10,
+          multiplier: 1,
         },
       },
     ],
@@ -89,6 +90,7 @@ const resultOriginal: Result = {
         type: CommentKind.ISSUE,
         score: {
           reward: 1.12,
+          multiplier: 1,
         },
       },
     ],

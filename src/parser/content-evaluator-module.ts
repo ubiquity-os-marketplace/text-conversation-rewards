@@ -1,5 +1,4 @@
 import Decimal from "decimal.js";
-import { encodingForModel, Tiktoken } from "js-tiktoken";
 import OpenAI from "openai";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
@@ -13,12 +12,13 @@ import { Value } from "@sinclair/typebox/value";
 import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import logger from "../helpers/logger";
 import {
-  openAiRelevanceResponseSchema,
-  CommentToEvaluate,
-  Relevances,
-  PrCommentToEvaluate,
   AllComments,
+  CommentToEvaluate,
+  openAiRelevanceResponseSchema,
+  PrCommentToEvaluate,
+  Relevances,
 } from "../types/content-evaluator-module-type";
+import { encodingForModel } from "js-tiktoken";
 
 /**
  * Evaluates and rates comments.
@@ -140,7 +140,7 @@ export class ContentEvaluatorModule implements Module {
    * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
    */
   _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
-    const tokenizer: Tiktoken = encodingForModel("gpt-4o-2024-08-06");
+    const tokenizer = encodingForModel("gpt-4o-2024-08-06");
     const inputTokens = tokenizer.encode(prompt).length;
     return Math.min(inputTokens, totalTokenLimit);
   }
