@@ -149,7 +149,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
   "metadata": {
     "caller": "IssueActivity.error"
   },
-  "caller": "_callee$"
+  "caller": "error"
 }
 -->`);
   }, 60000);
