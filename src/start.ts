@@ -7,7 +7,6 @@ import {
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
   GitHubRepository,
-  GitHubTimelineEvent,
 } from "./github-types";
 import { getMinimizedCommentStatus } from "./helpers/get-comment-details";
 
@@ -93,12 +92,6 @@ export async function getPullRequestReviews(pullParams: PullParams): Promise<Git
 export async function getPullRequestReviewComments(pullParams: PullParams): Promise<GitHubPullRequestReviewComment[]> {
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.pulls.listReviewComments.endpoint.merge(pullParams));
-}
-
-export async function getAllTimelineEvents(issueParams: IssueParams): Promise<GitHubTimelineEvent[]> {
-  const octokit = getOctokitInstance();
-  const options = octokit.issues.listEventsForTimeline.endpoint.merge(issueParams);
-  return await octokit.paginate(options);
 }
 
 export function parseGitHubUrl(url: string): { owner: string; repo: string; issue_number: number } {
