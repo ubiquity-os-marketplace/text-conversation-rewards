@@ -24,7 +24,7 @@ jobs:
         run: |
           git config --global user.name 'ubiquity-os[bot]'
           git config --global user.email 'ubiquity-os[bot]@users.noreply.github.com'
-          git add ${{ github.workspace }}/dist/\*
+          git add -f ${{ github.workspace }}/dist/\*
           if [ -n "$(git diff-index --cached --name-only HEAD)" ]; then
             git commit -m "chore: updated dist" || echo "Lint-staged check failed"
             git push origin HEAD:${{ github.ref_name }}
