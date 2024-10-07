@@ -24,6 +24,7 @@ import { getRepo, parseGitHubUrl } from "../start";
 import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type";
 import program from "./command-line";
 import { Module, Result } from "./processor";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 
 interface Payload {
   evmNetworkId: number;
@@ -186,23 +187,31 @@ export class PermitGenerationModule implements Module {
       return result;
     }
 
+    return this._deductFeeFromReward(result, treasuryGithubData, env);
+  }
+
+  _deductFeeFromReward(
+    result: Result,
+    treasuryGithubData: RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"],
+    env: EnvConfigType
+  ) {
     // Subtract fees from the final result:
     // - user.total
     // - user.task.reward
     // - user.comments[].reward
     const feeRateDecimal = new Decimal(100).minus(env.PERMIT_FEE_RATE).div(100);
     let permitFeeAmountDecimal = new Decimal(0);
-    for (const [, rewardResult] of Object.entries(result)) {
+    for (const [key, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
       const totalAfterFee = new Decimal(rewardResult.total).mul(feeRateDecimal).toNumber();
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
-      rewardResult.total = Number(totalAfterFee.toFixed(2));
-      if (rewardResult.task) {
-        rewardResult.task.reward = Number(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
+      result[key].total = Number(totalAfterFee.toFixed(2));
+      if (result[key].task) {
+        result[key].task.reward = Number(new Decimal(result[key].task.reward).mul(feeRateDecimal).toFixed(2));
       }
-      if (rewardResult.comments) {
-        for (const comment of rewardResult.comments) {
+      if (result[key].comments) {
+        for (const comment of result[key].comments) {
           if (comment.score) {
             comment.score.reward = Number(new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2));
           }
