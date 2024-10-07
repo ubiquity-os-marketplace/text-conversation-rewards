@@ -40,15 +40,12 @@ jest.mock("@actions/github", () => ({
         html_url: "https://github.com/ubiquibot/conversation-rewards",
       },
     },
+    sha: "1234",
   },
 }));
 
 jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
-}));
-
-jest.mock("child_process", () => ({
-  execSync: jest.fn(() => "1234"),
 }));
 
 jest.mock("../src/parser/command-line", () => {
