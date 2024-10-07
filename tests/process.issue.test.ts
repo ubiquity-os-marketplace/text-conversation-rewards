@@ -9,7 +9,7 @@ import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
-import { GithubCommentScore, Processor } from "../src/parser/processor";
+import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
 import { db as mockDb } from "./__mocks__/db";
@@ -76,8 +76,8 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
-jest.mock("@ubiquibot/permit-generation/core", () => {
-  const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
+jest.mock("@ubiquity-os/permit-generation", () => {
+  const originalModule = jest.requireActual("@ubiquity-os/permit-generation");
 
   return {
     __esModule: true,
@@ -248,7 +248,7 @@ describe("Modules tests", () => {
     expect(result).toEqual(contentEvaluatorResults);
   });
 
-  it("Should evaluate a failed openai evaluation with relevance 1", async () => {
+  it("Should throw on a failed openai evaluation", async () => {
     jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
       return Promise.resolve({});
     });
@@ -260,13 +260,13 @@ describe("Modules tests", () => {
       new FormattingEvaluatorModule(),
       new ContentEvaluatorModule(),
     ];
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    Object.keys(result).forEach((user) => {
-      expect(result[user]["comments"].length).toBeGreaterThan(0);
-      result[user]["comments"].forEach((comment: GithubCommentScore) => {
-        expect(comment.score?.relevance).toEqual(1);
-      });
+    await expect(processor.run(activity)).rejects.toMatchObject({
+      logMessage: {
+        diff: "```diff\n- Relevance / Comment length mistmatch!\n```",
+        level: "fatal",
+        raw: "Relevance / Comment length mistmatch!",
+        type: "fatal",
+      },
     });
   });
 

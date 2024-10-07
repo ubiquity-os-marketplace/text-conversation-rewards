@@ -5,14 +5,14 @@ import {
   Context,
   createAdapters,
   Database,
+  decrypt,
   encodePermits,
   generatePayoutPermit,
+  parseDecryptedPrivateKey,
   PermitReward,
   SupportedEvents,
   TokenType,
-  decrypt,
-  parseDecryptedPrivateKey,
-} from "@ubiquibot/permit-generation";
+} from "@ubiquity-os/permit-generation";
 import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import {
@@ -273,9 +273,9 @@ export class PermitGenerationModule implements Module {
 
         if (userData) {
           const { error } = await this._supabase.from("permits").insert({
-            amount: permit.amount.toString(),
-            nonce: permit.nonce.toString(),
-            deadline: permit.deadline.toString(),
+            amount: String(permit.amount),
+            nonce: String(permit.nonce),
+            deadline: String(permit.deadline),
             signature: permit.signature,
             beneficiary_id: userData.id,
             location_id: locationId,

@@ -2962,7 +2962,7 @@
     "@octokit/types" "^13.1.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/rest@^20.0.2", "@octokit/rest@^20.1.0":
+"@octokit/rest@^20.1.0":
   version "20.1.1"
   resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-20.1.1.tgz#ec775864f53fb42037a954b9a40d4f5275b3dc95"
   integrity sha512-MB4AYDsM5jhIHro/dq4ix1iWTLGToIGk6cWF5L6vanFaMble5jTX/UBQyiv05HsWnwUtY8JrfHy2LWfKwihqMw==
@@ -2991,7 +2991,7 @@
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-5.1.0.tgz#13b6c08f89902c1ab0ddf31c6eeeec9c2772cfe6"
   integrity sha512-yFZa3UH11VIxYnnoOYCVoJ3q4ChuSOk2IVBBQ0O3xtKX4x9bmKb/1t+Mxixv2iUhzMdOl1qeWJqEhouXXzB3rQ==
 
-"@octokit/webhooks@^13.1.0", "@octokit/webhooks@^13.2.7":
+"@octokit/webhooks@^13.2.7", "@octokit/webhooks@^13.3.0":
   version "13.3.0"
   resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.3.0.tgz#fd5d54d47c789c75d60a00eb04e982152d7c654a"
   integrity sha512-TUkJLtI163Bz5+JK0O+zDkQpn4gKwN+BovclUvCj6pI/6RXrFqQvUMRS2M+Rt8Rv0qR3wjoMoOPmpJKeOh0nBg==
@@ -3681,23 +3681,6 @@
     "@typescript-eslint/types" "8.8.0"
     eslint-visitor-keys "^3.4.3"
 
-"@ubiquibot/permit-generation@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.6.0.tgz#58073cec1b7f19dc903b4bf9d24b8290483af220"
-  integrity sha512-U0pGZqSMueE7VY4QGkd24vOPf1CaFfad7n0bpsptjHvWDxCNj99uRmuTZKHf7hue9cAUMypkPR8dcur5UuqoZQ==
-  dependencies:
-    "@actions/core" "^1.10.1"
-    "@actions/github" "^6.0.0"
-    "@octokit/rest" "^20.0.2"
-    "@octokit/webhooks" "^13.1.0"
-    "@sinclair/typebox" "^0.32.5"
-    "@supabase/supabase-js" "2.42.0"
-    "@ubiquity-dao/rpc-handler" "1.3.0"
-    "@uniswap/permit2-sdk" "^1.2.0"
-    dotenv "^16.4.4"
-    ethers "6.11.1"
-    libsodium-wrappers "^0.7.13"
-
 "@ubiquity-dao/rpc-handler@1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@ubiquity-dao/rpc-handler/-/rpc-handler-1.3.0.tgz#d6d26dda525a572539e969353070562c4cc0237c"
@@ -3711,6 +3694,23 @@
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@ubiquity-dao/ubiquibot-logger/-/ubiquibot-logger-1.3.1.tgz#c3f45d70014dcc2551442c28101046e1c8ea6886"
   integrity sha512-kDLnVP87Y3yZV6NnqIEDAOz+92IW0nIcccML2lUn93uZ5ada78vfdTPtwPJo8tkXl1Z9qMKAqqHkwBMp1Ksnag==
+
+"@ubiquity-os/permit-generation@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@ubiquity-os/permit-generation/-/permit-generation-2.0.2.tgz#d79e6639f0a5ecbaa36d73c321f36361d2cb0ff9"
+  integrity sha512-AI4gHYy+Ir/VhpDThthPSs3oYDt3RIbXAhjFKO+Uy5onrPHkwy9kNtcfZNV3yy8SHLSWY6eKFI9M+uQKDdRLYA==
+  dependencies:
+    "@actions/core" "^1.10.1"
+    "@actions/github" "^6.0.0"
+    "@octokit/rest" "^20.1.0"
+    "@octokit/webhooks" "^13.3.0"
+    "@sinclair/typebox" "^0.32.5"
+    "@supabase/supabase-js" "2.42.0"
+    "@ubiquity-dao/rpc-handler" "1.3.0"
+    "@uniswap/permit2-sdk" "^1.2.0"
+    dotenv "^16.4.4"
+    ethers "^5.7.2"
+    libsodium-wrappers "^0.7.13"
 
 "@uniswap/permit2-sdk@^1.2.0":
   version "1.3.0"
@@ -5528,20 +5528,7 @@ esutils@^2.0.2:
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
-ethers@6.11.1:
-  version "6.11.1"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.11.1.tgz#96aae00b627c2e35f9b0a4d65c7ab658259ee6af"
-  integrity sha512-mxTAE6wqJQAbp5QAe/+o+rXOID7Nw91OZXvgpjDa1r4fAbq2Nu314oEZSbjoRLacuCzs7kUC3clEvkCQowffGg==
-  dependencies:
-    "@adraffy/ens-normalize" "1.10.1"
-    "@noble/curves" "1.2.0"
-    "@noble/hashes" "1.3.2"
-    "@types/node" "18.15.13"
-    aes-js "4.0.0-beta.5"
-    tslib "2.4.0"
-    ws "8.5.0"
-
-ethers@^5.7.0:
+ethers@^5.7.0, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -9888,11 +9875,6 @@ ws@8.17.1:
   version "8.17.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.17.1.tgz#9293da530bb548febc95371d90f9c878727d919b"
   integrity sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==
-
-ws@8.5.0:
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.5.0.tgz#bfb4be96600757fe5382de12c670dab984a1ed4f"
-  integrity sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==
 
 ws@^8.14.2, ws@^8.16.0:
   version "8.18.0"
