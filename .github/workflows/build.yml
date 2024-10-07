@@ -1,0 +1,21 @@
+name: Build Action
+
+on:
+  push:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.10.0"
+
+      - uses: actions/checkout@v4
+
+      - name: Install & Build
+        run: |
+          yarn install --immutable --immutable-cache --check-cache
+          yarn build
