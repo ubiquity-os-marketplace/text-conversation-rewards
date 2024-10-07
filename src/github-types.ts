@@ -6,7 +6,6 @@ export type GitHubIssueComment = RestEndpointMethodTypes["issues"]["listComments
   isMinimized?: boolean;
 };
 export type GitHubIssueEvent = RestEndpointMethodTypes["issues"]["listEvents"]["response"]["data"][0];
-export type GitHubTimelineEvent = RestEndpointMethodTypes["issues"]["listEventsForTimeline"]["response"]["data"][0];
 export type GitHubRepository = RestEndpointMethodTypes["repos"]["get"]["response"]["data"];
 export type GitHubPullRequestReviewState = RestEndpointMethodTypes["pulls"]["listReviews"]["response"]["data"][0];
 export type GitHubPullRequestReviewComment =
