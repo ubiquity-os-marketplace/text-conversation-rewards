@@ -76,8 +76,8 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
-jest.mock("@ubiquibot/permit-generation/core", () => {
-  const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
+jest.mock("@ubiquibot/permit-generation", () => {
+  const originalModule = jest.requireActual("@ubiquibot/permit-generation");
 
   return {
     __esModule: true,
