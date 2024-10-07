@@ -84,7 +84,7 @@ with:
     dataPurge: {}
     formattingEvaluator:
       multipliers:
-        - role: [ ISSUE_SPECIFICATION ]
+        - role: [ISSUE_SPECIFICATION]
           multiplier: 1
           rewards:
             regex:
@@ -162,28 +162,35 @@ with:
 ## How to encrypt the `evmPrivateEncrypted` parameter
 
 Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards` plugin) supports 2 formats:
+
 1. `PRIVATE_KEY:GITHUB_OWNER_ID`
 2. `PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID`
 
 Here `GITHUB_OWNER_ID` can be:
+
 1. Github organization id (if ubiquibot is used within an organization)
 2. Github user id (if ubiquibot is simply installed in a user's repository)
 
-Format `PRIVATE_KEY:GITHUB_OWNER_ID` restricts in which particular organization (or user related repositories) 
+Format `PRIVATE_KEY:GITHUB_OWNER_ID` restricts in which particular organization (or user related repositories)
 this private key can be used. It can be set either in the organization wide config either in the repository wide one.
 
 Format `PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID` restricts organization (or user related repositories) and a particular repository where private key is allowed to be used.
 
 How to encrypt for you local organization for testing purposes:
+
 1. Get your organization (or user) id
+
 ```
 curl -H "Accept: application/json" -H "Authorization: token GITHUB_PAT_TOKEN" https://api.github.com/orgs/ubiquity
 ```
+
 2. Open https://keygen.ubq.fi/
 3. Click "Generate" to create a new `x25519_PRIVATE_KEY` (which will be used in the `conversation-rewards` plugin to decrypt encrypted wallet private key)
 4. Input a string in the format `PRIVATE_KEY:GITHUB_OWNER_ID` in the `PLAIN_TEXT` UI text input where:
+
 - `PRIVATE_KEY`: your ethereum wallet private key without the `0x` prefix
 - `GITHUB_OWNER_ID`: your github organization id or user id (which you got from step 1)
+
 5. Click "Encrypt" to get an encrypted value in the `CIPHER_TEXT` field
 6. Set the encrypted text (from step 5) in the `evmPrivateEncrypted` config parameter
-7. Set `X25519_PRIVATE_KEY` environment variable in github secrets of your forked instance of the `conversation-rewards` plugin 
+7. Set `X25519_PRIVATE_KEY` environment variable in github secrets of your forked instance of the `conversation-rewards` plugin

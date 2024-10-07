@@ -140,16 +140,16 @@ describe("Action tests", () => {
 <!--
 https://github.com/ubiquibot/conversation-rewards/actions/runs/1
 {
-  \"logMessage\": {
-    \"raw\": \"Could not fetch issue data: HttpError\",
-    \"diff\": \"\`\`\`diff\\n! Could not fetch issue data: HttpError\\n\`\`\`\",
-    \"type\": \"error\",
-    \"level\": \"error\"
+  "logMessage": {
+    "raw": "Could not fetch issue data: HttpError",
+    "diff": "\`\`\`diff\\n! Could not fetch issue data: HttpError\\n\`\`\`",
+    "type": "error",
+    "level": "error"
   },
-  \"metadata\": {
-    \"caller\": \"IssueActivity.error\"
+  "metadata": {
+    "caller": "IssueActivity.error"
   },
-  \"caller\": \"error\"
+  "caller": "error"
 }
 -->`);
   }, 60000);
