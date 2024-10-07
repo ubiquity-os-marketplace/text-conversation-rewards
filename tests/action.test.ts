@@ -171,7 +171,7 @@ https://github.com/ubiquibot/conversation-rewards/actions/runs/1
 https://github.com/ubiquibot/conversation-rewards/actions/runs/1
 {
   "message": "Some error",
-  "caller": "error"
+  "caller": "_callee$"
 }
 -->`);
   });

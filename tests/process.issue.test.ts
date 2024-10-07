@@ -27,7 +27,7 @@ import "../src/parser/command-line";
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquibot/conversation-rewards/issues/5";
 
 jest.mock("../src/helpers/web3", () => ({
-  getERC20TokenSymbol() {
+  getErc20TokenSymbol() {
     return "WXDAI";
   },
 }));

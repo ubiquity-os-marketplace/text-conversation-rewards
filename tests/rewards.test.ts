@@ -171,7 +171,7 @@ jest.mock("@supabase/supabase-js", () => {
 });
 
 jest.mock("../src/helpers/web3", () => ({
-  getERC20TokenSymbol() {
+  getErc20TokenSymbol() {
     return "WXDAI";
   },
 }));
