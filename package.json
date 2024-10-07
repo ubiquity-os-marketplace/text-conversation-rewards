@@ -8,7 +8,7 @@
     "node": ">=20.10.0"
   },
   "scripts": {
-    "build": "ncc build src/index.ts",
+    "build": "ncc build -m src/index.ts",
     "test": "jest --setupFiles dotenv/config --coverage",
     "start": "tsx src/index.ts",
     "format": "run-s format:lint format:prettier format:cspell",
