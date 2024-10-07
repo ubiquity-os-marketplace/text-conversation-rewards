@@ -111,7 +111,7 @@ export class ContentEvaluatorModule implements Module {
     );
 
     if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
-      throw logger.fatal("Relevance / Comment length mistmatch!", { relevancesByAi, commentsToEvaluate });
+      throw logger.fatal("Relevance / Comment length mismatch!", { relevancesByAi, commentsToEvaluate });
     }
 
     for (const currentComment of commentsWithScore) {
