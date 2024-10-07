@@ -19,3 +19,17 @@ jobs:
         run: |
           yarn install --immutable --immutable-cache --check-cache
           yarn build
+
+      - name: Commit and Push generated dist
+        run: |
+          git config --global user.name 'ubiquity-os[bot]'
+          git config --global user.email 'ubiquity-os[bot]@users.noreply.github.com'
+          git add ./dist/\*
+          if [ -n "$(git diff-index --cached --name-only HEAD)" ]; then
+            git commit -m "chore: updated dist" || echo "Lint-staged check failed"
+            git push origin HEAD:${{ github.ref_name }}
+          else
+            echo "No changes to commit"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
