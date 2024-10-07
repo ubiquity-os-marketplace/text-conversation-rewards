@@ -3720,6 +3720,11 @@
     ethers "^5.7.0"
     tiny-invariant "^1.1.0"
 
+"@vercel/ncc@0.38.2":
+  version "0.38.2"
+  resolved "https://registry.yarnpkg.com/@vercel/ncc/-/ncc-0.38.2.tgz#d35c3a74c671699ccf316f74bf0ecab6b60e312b"
+  integrity sha512-3yel3jaxUg9pHBv4+KeC9qlbdZPug+UMtUOlhvpDYCMSgcNSrS2Hv1LoqMsOV7hf2lYscx+BESfJOIla1WsmMQ==
+
 "@zkochan/retry@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@zkochan/retry/-/retry-0.2.0.tgz#cb52c9fce1976f3eed7b1979b739e70706f4a3d2"

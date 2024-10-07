@@ -10,8 +10,9 @@ import {
   PermitReward,
   SupportedEvents,
   TokenType,
-} from "@ubiquibot/permit-generation/core";
-import { decrypt, parseDecryptedPrivateKey } from "@ubiquibot/permit-generation/utils";
+  decrypt,
+  parseDecryptedPrivateKey,
+} from "@ubiquibot/permit-generation";
 import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import {
