@@ -7,6 +7,6 @@ describe("web3.ts", () => {
       const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
       const tokenSymbol = await getErc20TokenSymbol(networkId, tokenAddress);
       expect(tokenSymbol).toEqual("WXDAI");
-    });
+    }, 60000);
   });
 });
