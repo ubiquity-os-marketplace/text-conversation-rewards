@@ -69,6 +69,8 @@ export default tsEslint.config({
     "sonarjs/different-types-comparison": "off",
     "sonarjs/sonar-prefer-regexp-exec": "off",
     "sonarjs/function-return-type": "off",
+    "sonarjs/no-misleading-array-reverse": "off",
+    "sonarjs/slow-regex": "off",
     "@typescript-eslint/no-require-imports": "off",
     "@typescript-eslint/naming-convention": [
       "error",

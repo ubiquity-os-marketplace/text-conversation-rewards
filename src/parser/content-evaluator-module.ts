@@ -87,7 +87,7 @@ export class ContentEvaluatorModule implements Module {
   }
 
   _getRewardForComment(comment: GithubCommentScore, relevance: number) {
-    let reward = new Decimal(comment?.score?.reward || 0);
+    let reward = new Decimal(comment?.score?.reward ?? 0);
 
     if (comment?.score?.formatting && comment.score.multiplier && comment.score.words) {
       let totalRegexReward = new Decimal(0);

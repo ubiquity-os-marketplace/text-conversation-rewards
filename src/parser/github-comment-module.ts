@@ -222,13 +222,13 @@ export class GithubCommentModule implements Module {
             <td>
             <details>
               <summary>
-                ${new Decimal(commentScore.score?.words?.result || 0).add(new Decimal(commentScore.score?.formatting?.result || 0))}
+                ${new Decimal(commentScore.score?.words?.result ?? 0).add(new Decimal(commentScore.score?.formatting?.result ?? 0))}
               </summary>
               <pre>${formatting}</pre>
              </details>
             </td>
-            <td>${commentScore.score?.relevance || "-"}</td>
-            <td>${commentScore.score?.reward || "-"}</td>
+            <td>${commentScore.score?.relevance ?? "-"}</td>
+            <td>${commentScore.score?.reward ?? "-"}</td>
           </tr>`;
     }
 

@@ -45,7 +45,7 @@ export class PermitGenerationModule implements Module {
       evmNetworkId: configuration.evmNetworkId,
       erc20RewardToken: configuration.erc20RewardToken,
     };
-    const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[0]);
+    const issueId = Number(payload.issueUrl.match(/\d+$/)?.[0]);
     payload.issue = {
       node_id: program.eventPayload.issue.node_id,
     };
@@ -192,7 +192,7 @@ export class PermitGenerationModule implements Module {
     // - user.comments[].reward
     const feeRateDecimal = new Decimal(100).minus(env.PERMIT_FEE_RATE).div(100);
     let permitFeeAmountDecimal = new Decimal(0);
-    for (const [_, rewardResult] of Object.entries(result)) {
+    for (const [, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
       const totalAfterFee = new Decimal(rewardResult.total).mul(feeRateDecimal).toNumber();
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
@@ -250,7 +250,7 @@ export class PermitGenerationModule implements Module {
       locationId = locationData.id;
     }
     if (!locationId) {
-      throw new Error(`Failed to retrieve the related location from issue ${issue}`);
+      throw new Error(`Failed to retrieve the related location from issue ${JSON.stringify(issue)}`);
     }
     return locationId;
   }

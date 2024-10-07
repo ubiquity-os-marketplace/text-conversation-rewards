@@ -1,3 +1,5 @@
+/* eslint-disable sonarjs/no-nested-functions */
+
 import { drop } from "@mswjs/data";
 import fs from "fs";
 import { http, HttpResponse } from "msw";

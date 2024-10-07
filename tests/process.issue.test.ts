@@ -1,3 +1,5 @@
+/* eslint-disable sonarjs/no-nested-functions */
+
 import fs from "fs";
 import { http, HttpResponse } from "msw";
 import configuration from "../src/configuration/config-reader";

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-nested-functions */
 import { drop } from "@mswjs/data";
 import "../src/parser/command-line";
 import { db } from "./__mocks__/db";

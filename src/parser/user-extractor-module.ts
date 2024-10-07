@@ -44,7 +44,7 @@ export class UserExtractorModule implements Module {
   }
 
   _getTaskMultiplier(issue: GitHubIssue) {
-    return new Decimal(1).div(issue.assignees?.length || 1);
+    return new Decimal(1).div(issue.assignees?.length ?? 1);
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
