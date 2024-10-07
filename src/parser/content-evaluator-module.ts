@@ -110,8 +110,8 @@ export class ContentEvaluatorModule implements Module {
       prCommentsToEvaluate
     );
 
-    if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length) {
-      console.error("Relevance / Comment length mismatch! \nWill use 1 as relevance for missing comments.");
+    if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
+      throw logger.fatal("Relevance / Comment length mistmatch!", { relevancesByAi, commentsToEvaluate });
     }
 
     for (const currentComment of commentsWithScore) {
