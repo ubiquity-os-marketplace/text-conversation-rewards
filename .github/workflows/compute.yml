@@ -35,8 +35,8 @@ jobs:
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+#      - name: Checkout
+#        uses: actions/checkout@v4
       - name: Run compute rewards
-        uses: ./
-#        uses: Meniole/conversation-rewards@development
+#        uses: ./
+        uses: Meniole/conversation-rewards@development
