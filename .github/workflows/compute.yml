@@ -36,5 +36,5 @@ jobs:
 
     steps:
       - name: Run compute rewards
-        uses: ./
-#        uses: Meniole/conversation-rewards@development
+#        uses: ./
+        uses: Meniole/conversation-rewards@${{ github.ref }}
