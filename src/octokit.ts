@@ -10,7 +10,7 @@ type OctokitInstanceType = InstanceType<typeof customOctokit> & paginateGraphQLI
 
 let octokitInstance: OctokitInstanceType | null = null;
 
-function getOctokitInstance() {
+function getOctokitInstance(): OctokitInstanceType {
   if (!octokitInstance) {
     octokitInstance = new customOctokit({
       auth: program.authToken,
@@ -18,9 +18,9 @@ function getOctokitInstance() {
         retries: configuration.dataCollection.maxAttempts,
         retryAfterBaseValue: configuration.dataCollection.delayMs,
       },
-    }) as OctokitInstanceType;
+    });
   }
-  return octokitInstance as OctokitInstanceType;
+  return octokitInstance;
 }
 
 export { getOctokitInstance };
