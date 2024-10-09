@@ -40,10 +40,10 @@ export class Processor {
       for (const item of Object.keys(this._result)) {
         const total = this._sumRewards(this._result[item]);
         if(total <= 0){
-          delete this._result[item]
+          delete this._result[item];
           continue
         }
-        this._result[item].total = total
+        this._result[item].total = total;
         
       }
     }
