@@ -18,10 +18,10 @@ import {
   PermitGenerationConfiguration,
   permitGenerationConfigurationType,
 } from "../configuration/permit-generation-configuration";
-import { getOctokitInstance } from "../octokit";
 import { IssueActivity } from "../issue-activity";
+import { getOctokitInstance } from "../octokit";
 import { getRepo, parseGitHubUrl } from "../start";
-import envConfigSchema, { EnvConfigType } from "../types/env-type";
+import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type";
 import program from "./command-line";
 import { Module, Result } from "./processor";
 
@@ -50,14 +50,18 @@ export class PermitGenerationModule implements Module {
       node_id: program.eventPayload.issue.node_id,
     };
     const env = Value.Default(envConfigSchema, process.env) as EnvConfigType;
-    if (!Value.Check(envConfigSchema, env)) {
+    if (!envValidator.test(env)) {
       console.warn("[PermitGenerationModule] Invalid env detected, skipping.");
+      for (const error of envValidator.errors(env)) {
+        console.error(error);
+      }
       return Promise.resolve(result);
     }
     const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(
       payload.evmPrivateEncrypted,
       program.eventPayload.repository.owner.id,
-      program.eventPayload.repository.id
+      program.eventPayload.repository.id,
+      env
     );
     if (!isPrivateKeyAllowed) {
       console.warn("[PermitGenerationModule] Private key is not allowed to be used in this organization/repository.");
@@ -81,7 +85,7 @@ export class PermitGenerationModule implements Module {
     const adapters = {} as ReturnType<typeof createAdapters>;
 
     // apply fees
-    result = await this._applyFees(result, payload.erc20RewardToken);
+    result = await this._applyFees(result, payload.erc20RewardToken, env);
 
     for (const [key, value] of Object.entries(result)) {
       try {
@@ -125,8 +129,8 @@ export class PermitGenerationModule implements Module {
       }
     }
 
-    // remove treasury item from final result in order not to display permit fee in github comments
-    if (process.env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[process.env.PERMIT_TREASURY_GITHUB_USERNAME];
+    // remove treasury item from final result in order not to display permit fee in GitHub comments
+    if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
 
     return result;
   }
@@ -134,7 +138,7 @@ export class PermitGenerationModule implements Module {
   /**
    * Applies fees to the final result.
    * How it works:
-   * 1. Fee (read from ENV variable) is subtracted from all of the final result items (user.total, user.task.reward, user.comments[].reward)
+   * 1. Fee (read from ENV variable) is subtracted from all the final result items (user.total, user.task.reward, user.comments[].reward)
    * 2. Total fee is calculated
    * 3. A new item is added to the final result object, example:
    * ```
@@ -149,34 +153,35 @@ export class PermitGenerationModule implements Module {
    * This method is meant to be called before the final permit generation.
    * @param result Result object
    * @param erc20RewardToken ERC20 address of the reward token
+   * @param env The program environment
    * @returns Result object
    */
-  async _applyFees(result: Result, erc20RewardToken: string): Promise<Result> {
+  async _applyFees(result: Result, erc20RewardToken: string, env: EnvConfigType): Promise<Result> {
     // validate fee related env variables
-    if (!process.env.PERMIT_FEE_RATE || +process.env.PERMIT_FEE_RATE === 0) {
+    if (!env.PERMIT_FEE_RATE || +env.PERMIT_FEE_RATE === 0) {
       console.log("PERMIT_FEE_RATE is not set, skipping permit fee generation");
       return result;
     }
-    if (!process.env.PERMIT_TREASURY_GITHUB_USERNAME) {
+    if (!env.PERMIT_TREASURY_GITHUB_USERNAME) {
       console.log("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
       return result;
     }
-    if (process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST) {
-      const erc20TokensNoFee = process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST.split(",");
+    if (env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST) {
+      const erc20TokensNoFee = env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST.split(",");
       if (erc20TokensNoFee.includes(erc20RewardToken)) {
         console.log(`Token address ${erc20RewardToken} is whitelisted to be fee free, skipping permit fee generation`);
         return result;
       }
     }
 
-    // Get treasury github user id
+    // Get treasury GitHub user id
     const octokit = getOctokitInstance();
     const { data: treasuryGithubData } = await octokit.users.getByUsername({
-      username: process.env.PERMIT_TREASURY_GITHUB_USERNAME,
+      username: env.PERMIT_TREASURY_GITHUB_USERNAME,
     });
     if (!treasuryGithubData) {
       console.log(
-        `GitHub user was not found for username ${process.env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`
+        `GitHub user was not found for username ${env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`
       );
       return result;
     }
@@ -185,7 +190,7 @@ export class PermitGenerationModule implements Module {
     // - user.total
     // - user.task.reward
     // - user.comments[].reward
-    const feeRateDecimal = new Decimal(100).minus(process.env.PERMIT_FEE_RATE).div(100);
+    const feeRateDecimal = new Decimal(100).minus(env.PERMIT_FEE_RATE).div(100);
     let permitFeeAmountDecimal = new Decimal(0);
     for (const [_, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
@@ -206,7 +211,7 @@ export class PermitGenerationModule implements Module {
     }
 
     // Add a new result item for treasury
-    result[process.env.PERMIT_TREASURY_GITHUB_USERNAME] = {
+    result[env.PERMIT_TREASURY_GITHUB_USERNAME] = {
       total: +permitFeeAmountDecimal.toFixed(2),
       userId: treasuryGithubData.id,
     };
@@ -306,10 +311,11 @@ export class PermitGenerationModule implements Module {
   async _isPrivateKeyAllowed(
     privateKeyEncrypted: string,
     githubContextOwnerId: number,
-    githubContextRepositoryId: number
+    githubContextRepositoryId: number,
+    env: EnvConfigType
   ): Promise<boolean> {
     // decrypt private key
-    const privateKeyDecrypted = await decrypt(privateKeyEncrypted, process.env.X25519_PRIVATE_KEY);
+    const privateKeyDecrypted = await decrypt(privateKeyEncrypted, env.X25519_PRIVATE_KEY);
 
     // parse decrypted private key
     const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);

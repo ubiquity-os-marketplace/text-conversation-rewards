@@ -15,6 +15,7 @@ import { IssueActivity } from "../issue-activity";
 import { getOctokitInstance } from "../octokit";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
+import { GITHUB_PAYLOAD_LIMIT } from "../helpers/constants";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -78,11 +79,11 @@ export class GithubCommentModule implements Module {
 
     const body = bodyArray.join("");
     // We check this length because GitHub has a comment length limit
-    if (body.length > 65536) {
+    if (body.length > GITHUB_PAYLOAD_LIMIT) {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 2] = `\n${getGithubWorkflowRunUrl()}`;
       const newBody = bodyArray.join("");
-      if (newBody.length <= 65536) {
+      if (newBody.length <= GITHUB_PAYLOAD_LIMIT) {
         return newBody;
       } else {
         return this.getBodyContent(result, true);
@@ -221,7 +222,7 @@ export class GithubCommentModule implements Module {
             <td>
             <details>
               <summary>
-                ${new Decimal(commentScore.score?.formatting?.result || 0)}
+                ${new Decimal(commentScore.score?.words?.result || 0).add(new Decimal(commentScore.score?.formatting?.result || 0))}
               </summary>
               <pre>${formatting}</pre>
              </details>

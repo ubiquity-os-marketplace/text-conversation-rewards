@@ -20,7 +20,7 @@ type IssueWithClosedByPRs = {
   };
 };
 
-export async function collectLinkedMergedPull(issue: IssueParams) {
+export async function collectLinkedMergedPulls(issue: IssueParams) {
   const octokit = getOctokitInstance();
   const { owner, repo, issue_number } = issue;
 
@@ -30,5 +30,5 @@ export async function collectLinkedMergedPull(issue: IssueParams) {
     issue_number,
   });
 
-  return result.repository.issue.closedByPullRequestsReferences.edges.map((edge) => edge.node).slice(-1);
+  return result.repository.issue.closedByPullRequestsReferences.edges.map((edge) => edge.node);
 }
