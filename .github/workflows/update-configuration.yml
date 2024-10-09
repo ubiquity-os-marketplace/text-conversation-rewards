@@ -49,6 +49,7 @@ jobs:
           git config --global user.email 'ubiquity-os[bot]@users.noreply.github.com'
           git add ./manifest.json
           if [ -n "$(git diff-index --cached --name-only HEAD)" ]; then
+            git pull
             git commit -m "chore: updated generated configuration" || echo "Lint-staged check failed"
             git push origin HEAD:${{ github.ref_name }}
           else
