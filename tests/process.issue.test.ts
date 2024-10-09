@@ -262,9 +262,9 @@ describe("Modules tests", () => {
     ];
     await expect(processor.run(activity)).rejects.toMatchObject({
       logMessage: {
-        diff: "```diff\n- Relevance / Comment length mistmatch!\n```",
+        diff: "```diff\n- Relevance / Comment length mismatch!\n```",
         level: "fatal",
-        raw: "Relevance / Comment length mistmatch!",
+        raw: "Relevance / Comment length mismatch!",
         type: "fatal",
       },
     });
