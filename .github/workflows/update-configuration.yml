@@ -25,7 +25,8 @@ jobs:
 
       - uses: Meniole/action-update-manifest@main
         with:
-          location: "${{ github.workspace }}/src/types/plugin-inputs"
+#          location: "${{ github.workspace }}/src/types/plugin-inputs"
+          location: "./src/types/plugin-inputs"
 #
 #      - name: Update manifest configuration using GitHub Script
 #        uses: actions/github-script@v7
