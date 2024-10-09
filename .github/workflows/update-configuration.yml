@@ -30,15 +30,15 @@ jobs:
             (async () => {
             const fs = await import('fs/promises');
             const path = await import('path');
-            
+
             const { pluginSettingsSchema } = await import("${{ github.workspace }}/src/types/plugin-inputs.js");
-            
+
             const manifestPath = path.resolve("${{ github.workspace }}", './manifest.json');
             const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
-            
+
             const configuration = JSON.stringify(pluginSettingsSchema);
             manifest["configuration"] = JSON.parse(configuration);
-            
+
             const updatedManifest = JSON.stringify(manifest, null, 2);
             console.log('Updated manifest:', updatedManifest);
             await fs.writeFile(manifestPath, updatedManifest);
