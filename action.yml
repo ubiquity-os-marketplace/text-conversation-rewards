@@ -18,5 +18,5 @@ outputs:
     description: "The result containing all the rewards of the users"
     value: ${{ steps.main.outputs.result }}
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: "node20"
+  main: "dist/index.js"
