@@ -25,9 +25,9 @@ jobs:
 
       - uses: Meniole/action-update-manifest@main
         with:
-          manifest-path: "${{ github.workspace }}/src/types/plugin-inputs.js"
+          schema-path: "${{ github.workspace }}/src/types/plugin-inputs.js"
           commit-message: "chore: update"
-          schema-path: "${{ github.workspace }}/manifest.json"
+          manifest-path: "${{ github.workspace }}/manifest.json"
 #
 #      - name: Update manifest configuration using GitHub Script
 #        uses: actions/github-script@v7
