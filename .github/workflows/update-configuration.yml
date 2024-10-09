@@ -11,14 +11,16 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20.10.0"
+#      - uses: actions/checkout@v4
+#
+#      - name: Setup node
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: "20.10.0"
 
       - uses: Meniole/action-update-manifest@main
+        with:
+          location: "${{ github.workspace }}/src/types/plugin-inputs"
 
 #      - name: Install deps and run configuration update
 #        run: |
