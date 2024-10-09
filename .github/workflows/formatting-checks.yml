@@ -21,6 +21,6 @@ jobs:
       - name: Run formatting checks
         run: |
           yarn install
-          yarn eslint --fix-dry-run
+          yarn eslint --fix-dry-run --ignore-pattern dist/
           yarn format:cspell
           yarn prettier --check .
