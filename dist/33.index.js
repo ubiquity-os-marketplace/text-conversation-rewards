@@ -1,6 +1,6 @@
-export const id = 33;
-export const ids = [33];
-export const modules = {
+exports.id = 33;
+exports.ids = [33];
+exports.modules = {
 
 /***/ 57666:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
@@ -28,6 +28,7 @@ module.exports = globalThis.DOMException
 /***/ 42033:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -146,3 +147,4 @@ async function fileFromPath(path, filenameOrOptions, options) {
 /***/ })
 
 };
+;
