@@ -38,7 +38,13 @@ export class Processor {
       }
       // Aggregate total result
       for (const item of Object.keys(this._result)) {
-        this._result[item].total = this._sumRewards(this._result[item]);
+        const total = this._sumRewards(this._result[item]);
+        if(total <= 0){
+          delete this._result[item]
+          continue
+        }
+        this._result[item].total = total
+        
       }
     }
     return this._result;
