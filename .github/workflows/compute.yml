@@ -35,8 +35,9 @@ jobs:
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
 
     steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
+      # Note: the checkout could potentially be avoided by calling the workflow on the repo/branch directly.
+      # However, this would mean that we would be unable to call it from the branch specified in ubiquity-os-config
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Run compute rewards
-#        uses: ./
-        uses: Meniole/conversation-rewards@development
+        uses: ./
