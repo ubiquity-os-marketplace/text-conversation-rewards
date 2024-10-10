@@ -12,7 +12,7 @@ const xhrImpl = idlUtils.implForWrapper(xhr);
 
 const chunks = [];
 
-process.stdin.on("data", (chunk) => {
+process.stdin.on("data", chunk => {
   chunks.push(chunk);
 });
 
@@ -32,39 +32,29 @@ process.stdin.on("end", () => {
   const { properties } = xhrImpl;
   xhrImpl.readyState = READY_STATES.OPENED;
   try {
-    xhr.addEventListener(
-      "loadend",
-      () => {
-        if (properties.error) {
-          properties.error = properties.error.stack || util.inspect(properties.error);
-        }
-        process.stdout.write(
-          JSON.stringify({
-            responseURL: xhrImpl.responseURL,
-            status: xhrImpl.status,
-            statusText: xhrImpl.statusText,
-            properties,
-          }),
-          () => {
-            process.exit(0);
-          }
-        );
-      },
-      false
-    );
-    xhr.send(flag.body);
-  } catch (error) {
-    properties.error += error.stack || util.inspect(error);
-    process.stdout.write(
-      JSON.stringify({
+    xhr.addEventListener("loadend", () => {
+      if (properties.error) {
+        properties.error = properties.error.stack || util.inspect(properties.error);
+      }
+      process.stdout.write(JSON.stringify({
         responseURL: xhrImpl.responseURL,
         status: xhrImpl.status,
         statusText: xhrImpl.statusText,
-        properties,
-      }),
-      () => {
+        properties
+      }), () => {
         process.exit(0);
-      }
-    );
+      });
+    }, false);
+    xhr.send(flag.body);
+  } catch (error) {
+    properties.error += error.stack || util.inspect(error);
+    process.stdout.write(JSON.stringify({
+      responseURL: xhrImpl.responseURL,
+      status: xhrImpl.status,
+      statusText: xhrImpl.statusText,
+      properties
+    }), () => {
+      process.exit(0);
+    });
   }
 });
