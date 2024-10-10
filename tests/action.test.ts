@@ -140,16 +140,16 @@ describe("Action tests", () => {
 <!--
 https://github.com/ubiquity-os/conversation-rewards/actions/runs/1
 {
-  \"logMessage\": {
-    \"raw\": \"Could not fetch issue data: HttpError\",
-    \"diff\": \"\`\`\`diff\\n! Could not fetch issue data: HttpError\\n\`\`\`\",
-    \"type\": \"error\",
-    \"level\": \"error\"
+  "logMessage": {
+    "raw": "Could not fetch issue data: HttpError",
+    "diff": "\`\`\`diff\\n! Could not fetch issue data: HttpError\\n\`\`\`",
+    "type": "error",
+    "level": "error"
   },
-  \"metadata\": {
-    \"caller\": \"IssueActivity.error\"
+  "metadata": {
+    "caller": "IssueActivity.error"
   },
-  \"caller\": \"error\"
+  "caller": "error"
 }
 -->`);
   }, 60000);
@@ -214,7 +214,7 @@ https://github.com/ubiquity-os/conversation-rewards/actions/runs/1
     ].forEach((url) => {
       server.use(http.get(url, () => HttpResponse.json("", { status: 500 }), { once: true }));
     });
-    const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquity-os/comment-incentives/issues/22";
+    const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/comment-incentives/issues/22";
     const issue = parseGitHubUrl(issueUrl);
     const activity = new IssueActivity(issue);
     await activity.init();

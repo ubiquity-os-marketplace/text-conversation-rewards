@@ -1,4 +1,4 @@
-import { RPCHandler, HandlerConstructorConfig } from "@ubiquity-dao/rpc-handler/";
+import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/rpc-handler";
 import { ethers } from "ethers";
 
 /**
@@ -7,12 +7,22 @@ import { ethers } from "ethers";
  * @param tokenAddress ERC20 token address
  * @returns ERC20 token symbol
  */
-export async function getERC20TokenSymbol(networkId: number, tokenAddress: string) {
+export async function getErc20TokenSymbol(networkId: number, tokenAddress: string) {
   const abi = ["function symbol() view returns (string)"];
 
   // get fastest RPC
   const config: HandlerConstructorConfig = {
-    networkId: networkId,
+    networkName: null,
+    networkRpcs: null,
+    proxySettings: {
+      retryCount: 5,
+      retryDelay: 500,
+      logTier: null,
+      logger: null,
+      strictLogs: false,
+    },
+    runtimeRpcs: null,
+    networkId: String(networkId) as NetworkId,
     rpcTimeout: 1500,
     autoStorage: false,
     cacheRefreshCycles: 10,

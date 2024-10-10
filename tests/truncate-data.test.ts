@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-nested-functions */
 import { drop } from "@mswjs/data";
 import "../src/parser/command-line";
 import { db } from "./__mocks__/db";
@@ -59,9 +60,7 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
 }));
 
 jest.mock("../src/parser/command-line", () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("./__mocks__/results/valid-configuration.json");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dotenv = require("dotenv");
   dotenv.config();
   return {

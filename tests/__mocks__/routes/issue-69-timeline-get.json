@@ -191,15 +191,11 @@
           "type": "User",
           "site_admin": false
         },
-        "labels": [
-
-        ],
+        "labels": [],
         "state": "closed",
         "locked": false,
         "assignee": null,
-        "assignees": [
-
-        ],
+        "assignees": [],
         "milestone": null,
         "comments": 4,
         "created_at": "2024-06-24T12:54:40Z",
@@ -301,9 +297,7 @@
           "allow_forking": true,
           "is_template": false,
           "web_commit_signoff_required": false,
-          "topics": [
-
-          ],
+          "topics": [],
           "visibility": "public",
           "forks": 13,
           "open_issues": 8,
@@ -1776,9 +1770,7 @@
           "allow_forking": true,
           "is_template": false,
           "web_commit_signoff_required": false,
-          "topics": [
-
-          ],
+          "topics": [],
           "visibility": "public",
           "forks": 10,
           "open_issues": 15,

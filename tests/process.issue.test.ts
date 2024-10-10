@@ -1,3 +1,5 @@
+/* eslint-disable sonarjs/no-nested-functions */
+
 import fs from "fs";
 import { http, HttpResponse } from "msw";
 import configuration from "../src/configuration/config-reader";
@@ -7,7 +9,7 @@ import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
-import { GithubCommentScore, Processor } from "../src/parser/processor";
+import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
 import { db as mockDb } from "./__mocks__/db";
@@ -22,10 +24,10 @@ import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import validConfiguration from "./__mocks__/results/valid-configuration.json";
 import "../src/parser/command-line";
 
-const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquity-os/conversation-rewards/issues/5";
+const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
 jest.mock("../src/helpers/web3", () => ({
-  getERC20TokenSymbol() {
+  getErc20TokenSymbol() {
     return "WXDAI";
   },
 }));
@@ -38,6 +40,7 @@ jest.mock("@actions/github", () => ({
         html_url: "https://github.com/ubiquity-os/conversation-rewards",
       },
     },
+    sha: "1234",
   },
 }));
 
@@ -45,15 +48,9 @@ jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
-jest.mock("child_process", () => ({
-  execSync: jest.fn(() => "1234"),
-}));
-
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("./__mocks__/results/valid-configuration.json");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dotenv = require("dotenv");
   dotenv.config();
   return {
@@ -79,8 +76,8 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
-jest.mock("@ubiquity-os/permit-generation/core", () => {
-  const originalModule = jest.requireActual("@ubiquity-os/permit-generation/core");
+jest.mock("@ubiquity-os/permit-generation", () => {
+  const originalModule = jest.requireActual("@ubiquity-os/permit-generation");
 
   return {
     __esModule: true,
@@ -251,7 +248,7 @@ describe("Modules tests", () => {
     expect(result).toEqual(contentEvaluatorResults);
   });
 
-  it("Should evaluate a failed openai evaluation with relevance 1", async () => {
+  it("Should throw on a failed openai evaluation", async () => {
     jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
       return Promise.resolve({});
     });
@@ -263,13 +260,13 @@ describe("Modules tests", () => {
       new FormattingEvaluatorModule(),
       new ContentEvaluatorModule(),
     ];
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    Object.keys(result).forEach((user) => {
-      expect(result[user]["comments"].length).toBeGreaterThan(0);
-      result[user]["comments"].forEach((comment: GithubCommentScore) => {
-        expect(comment.score?.relevance).toEqual(1);
-      });
+    await expect(processor.run(activity)).rejects.toMatchObject({
+      logMessage: {
+        diff: "```diff\n- Relevance / Comment length mismatch!\n```",
+        level: "fatal",
+        raw: "Relevance / Comment length mismatch!",
+        type: "fatal",
+      },
     });
   });
 

@@ -1,6 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import program from "../parser/command-line";
-import { PluginSettings, pluginSettingsSchema, pluginSettingsValidator } from "../types/plugin-inputs";
+import { PluginSettings, pluginSettingsSchema, pluginSettingsValidator } from "../types/plugin-input";
 
 let configuration: PluginSettings | null = null;
 

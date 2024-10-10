@@ -10,7 +10,7 @@ import { getGithubWorkflowRunUrl } from "../helpers/github";
 import logger from "../helpers/logger";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
-import { getERC20TokenSymbol } from "../helpers/web3";
+import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { getOctokitInstance } from "../octokit";
 import program from "./command-line";
@@ -222,13 +222,13 @@ export class GithubCommentModule implements Module {
             <td>
             <details>
               <summary>
-                ${new Decimal(commentScore.score?.words?.result || 0).add(new Decimal(commentScore.score?.formatting?.result || 0))}
+                ${new Decimal(commentScore.score?.words?.result ?? 0).add(new Decimal(commentScore.score?.formatting?.result ?? 0))}
               </summary>
               <pre>${formatting}</pre>
              </details>
             </td>
-            <td>${commentScore.score?.relevance || "-"}</td>
-            <td>${commentScore.score?.reward || "-"}</td>
+            <td>${commentScore.score?.relevance ?? "-"}</td>
+            <td>${commentScore.score?.reward ?? "-"}</td>
           </tr>`;
     }
 
@@ -261,7 +261,7 @@ export class GithubCommentModule implements Module {
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
 
-    const tokenSymbol = await getERC20TokenSymbol(configuration.evmNetworkId, configuration.erc20RewardToken);
+    const tokenSymbol = await getErc20TokenSymbol(configuration.evmNetworkId, configuration.erc20RewardToken);
 
     return `
     <details>
