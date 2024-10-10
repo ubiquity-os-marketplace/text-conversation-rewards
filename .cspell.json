@@ -17,7 +17,8 @@
     "noopener",
     "knip",
     "hellip",
-    "mswjs"
+    "mswjs",
+    "Rpcs"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
