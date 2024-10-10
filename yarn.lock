@@ -2721,7 +2721,7 @@
     "@octokit/plugin-request-log" "^4.0.0"
     "@octokit/plugin-rest-endpoint-methods" "^10.2.0"
 
-"@octokit/rest@^20.0.2":
+"@octokit/rest@^20.1.0":
   version "20.1.1"
   resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-20.1.1.tgz#ec775864f53fb42037a954b9a40d4f5275b3dc95"
   integrity sha512-MB4AYDsM5jhIHro/dq4ix1iWTLGToIGk6cWF5L6vanFaMble5jTX/UBQyiv05HsWnwUtY8JrfHy2LWfKwihqMw==
@@ -2760,7 +2760,7 @@
     "@octokit/webhooks-methods" "^5.0.0"
     aggregate-error "^5.0.0"
 
-"@octokit/webhooks@^13.1.0":
+"@octokit/webhooks@^13.3.0":
   version "13.3.0"
   resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.3.0.tgz#fd5d54d47c789c75d60a00eb04e982152d7c654a"
   integrity sha512-TUkJLtI163Bz5+JK0O+zDkQpn4gKwN+BovclUvCj6pI/6RXrFqQvUMRS2M+Rt8Rv0qR3wjoMoOPmpJKeOh0nBg==
@@ -3330,23 +3330,6 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
-"@ubiquity-os/permit-generation@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@ubiquity-os/permit-generation/-/permit-generation-1.6.0.tgz#58073cec1b7f19dc903b4bf9d24b8290483af220"
-  integrity sha512-U0pGZqSMueE7VY4QGkd24vOPf1CaFfad7n0bpsptjHvWDxCNj99uRmuTZKHf7hue9cAUMypkPR8dcur5UuqoZQ==
-  dependencies:
-    "@actions/core" "^1.10.1"
-    "@actions/github" "^6.0.0"
-    "@octokit/rest" "^20.0.2"
-    "@octokit/webhooks" "^13.1.0"
-    "@sinclair/typebox" "^0.32.5"
-    "@supabase/supabase-js" "2.42.0"
-    "@ubiquity-dao/rpc-handler" "1.3.0"
-    "@uniswap/permit2-sdk" "^1.2.0"
-    dotenv "^16.4.4"
-    ethers "6.11.1"
-    libsodium-wrappers "^0.7.13"
-
 "@ubiquity-dao/rpc-handler@1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@ubiquity-dao/rpc-handler/-/rpc-handler-1.3.0.tgz#d6d26dda525a572539e969353070562c4cc0237c"
@@ -3356,10 +3339,27 @@
     axios "^1.7.1"
     node-fetch "^3.3.2"
 
-"@ubiquity-os/ubiquity-os-logger@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@ubiquity-os/ubiquity-os-logger/-/ubiquity-os-logger-1.3.1.tgz#c3f45d70014dcc2551442c28101046e1c8ea6886"
-  integrity sha512-kDLnVP87Y3yZV6NnqIEDAOz+92IW0nIcccML2lUn93uZ5ada78vfdTPtwPJo8tkXl1Z9qMKAqqHkwBMp1Ksnag==
+"@ubiquity-os/permit-generation@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@ubiquity-os/permit-generation/-/permit-generation-2.0.4.tgz#dbdc546eca1f647968128b2613028e3b7f5b286b"
+  integrity sha512-05M4QLOHf+B5rXgmaR+fEUEZIhCKeQXFJFvTCr/eRGb34hdJFAR0Z8ZGTeCjrcP60KdQ9HfMk8lp+eBcZpeLBg==
+  dependencies:
+    "@actions/core" "^1.10.1"
+    "@actions/github" "^6.0.0"
+    "@octokit/rest" "^20.1.0"
+    "@octokit/webhooks" "^13.3.0"
+    "@sinclair/typebox" "^0.32.5"
+    "@supabase/supabase-js" "2.42.0"
+    "@ubiquity-dao/rpc-handler" "1.3.0"
+    "@uniswap/permit2-sdk" "^1.2.0"
+    dotenv "^16.4.4"
+    ethers "^5.7.2"
+    libsodium-wrappers "^0.7.13"
+
+"@ubiquity-os/ubiquity-os-logger@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@ubiquity-os/ubiquity-os-logger/-/ubiquity-os-logger-1.3.2.tgz#4423bc0baeac5c2f73123d15fd961310521163cd"
+  integrity sha512-oTIzR8z4jAQmaeJp98t1bZUKE3Ws9pas0sbxt58fC37MwXclPMWrLO+a0JlhPkdJYsvpv/q/79wC2MKVhOIVXQ==
 
 "@ungap/structured-clone@^1.2.0":
   version "1.2.0"
@@ -4836,20 +4836,7 @@ esutils@^2.0.2:
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
-ethers@6.11.1:
-  version "6.11.1"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.11.1.tgz#96aae00b627c2e35f9b0a4d65c7ab658259ee6af"
-  integrity sha512-mxTAE6wqJQAbp5QAe/+o+rXOID7Nw91OZXvgpjDa1r4fAbq2Nu314oEZSbjoRLacuCzs7kUC3clEvkCQowffGg==
-  dependencies:
-    "@adraffy/ens-normalize" "1.10.1"
-    "@noble/curves" "1.2.0"
-    "@noble/hashes" "1.3.2"
-    "@types/node" "18.15.13"
-    aes-js "4.0.0-beta.5"
-    tslib "2.4.0"
-    ws "8.5.0"
-
-ethers@^5.7.0:
+ethers@^5.7.0, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -8104,16 +8091,7 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -8190,14 +8168,7 @@ string_decoder@^1.1.1:
   dependencies:
     safe-buffer "~5.2.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -8837,7 +8808,7 @@ word-wrap@^1.2.5:
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.5.tgz#d2c45c6dd4fbce621a66f136cbe328afd0410b34"
   integrity sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -8850,15 +8821,6 @@ wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
-  dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-
-wrap-ansi@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
@@ -8914,11 +8876,6 @@ ws@8.17.1:
   version "8.17.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.17.1.tgz#9293da530bb548febc95371d90f9c878727d919b"
   integrity sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==
-
-ws@8.5.0:
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.5.0.tgz#bfb4be96600757fe5382de12c670dab984a1ed4f"
-  integrity sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==
 
 ws@^8.14.2, ws@^8.16.0:
   version "8.18.0"
