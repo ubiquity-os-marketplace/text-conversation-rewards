@@ -1,4 +1,4 @@
-name: "Update Configuration"
+name: "Update Configuration and Build"
 
 on:
   workflow_dispatch:
@@ -6,15 +6,11 @@ on:
 
 jobs:
   update:
-    name: "Update Configuration in manifest.json"
+    name: "Update Configuration & Build"
     runs-on: ubuntu-latest
     permissions: write-all
 
     steps:
       - uses: Meniole/action-deploy-plugin@feat/init-repo
-#        with:
-#          schema-path: "${{ github.workspace }}/src/types/plugin-inputs.js"
-#          commit-message: "chore: update"
-#          manifest-path: "${{ github.workspace }}/manifest.json"
-#        env:
-#          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
