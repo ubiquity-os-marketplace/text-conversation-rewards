@@ -5,13 +5,14 @@ import {
   Context,
   createAdapters,
   Database,
+  decrypt,
   encodePermits,
   generatePayoutPermit,
+  parseDecryptedPrivateKey,
   PermitReward,
   SupportedEvents,
   TokenType,
-} from "@ubiquibot/permit-generation/core";
-import { decrypt, parseDecryptedPrivateKey } from "@ubiquibot/permit-generation/utils";
+} from "@ubiquity-os/permit-generation";
 import Decimal from "decimal.js";
 import configuration from "../configuration/config-reader";
 import {
@@ -24,6 +25,7 @@ import { getRepo, parseGitHubUrl } from "../start";
 import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type";
 import program from "./command-line";
 import { Module, Result } from "./processor";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 
 interface Payload {
   evmNetworkId: number;
@@ -45,7 +47,7 @@ export class PermitGenerationModule implements Module {
       evmNetworkId: configuration.evmNetworkId,
       erc20RewardToken: configuration.erc20RewardToken,
     };
-    const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[0]);
+    const issueId = Number(payload.issueUrl.match(/\d+$/)?.[0]);
     payload.issue = {
       node_id: program.eventPayload.issue.node_id,
     };
@@ -144,7 +146,7 @@ export class PermitGenerationModule implements Module {
    * ```
    * {
    *   ...other items
-   *   "ubiquibot-treasury": {
+   *   "ubiquity-os-treasury": {
    *     total: 10.00,
    *     userId: 1
    *   }
@@ -158,7 +160,7 @@ export class PermitGenerationModule implements Module {
    */
   async _applyFees(result: Result, erc20RewardToken: string, env: EnvConfigType): Promise<Result> {
     // validate fee related env variables
-    if (!env.PERMIT_FEE_RATE || +env.PERMIT_FEE_RATE === 0) {
+    if (!env.PERMIT_FEE_RATE || Number(env.PERMIT_FEE_RATE) === 0) {
       console.log("PERMIT_FEE_RATE is not set, skipping permit fee generation");
       return result;
     }
@@ -186,23 +188,31 @@ export class PermitGenerationModule implements Module {
       return result;
     }
 
+    return this._deductFeeFromReward(result, treasuryGithubData, env);
+  }
+
+  _deductFeeFromReward(
+    result: Result,
+    treasuryGithubData: RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"],
+    env: EnvConfigType
+  ) {
     // Subtract fees from the final result:
     // - user.total
     // - user.task.reward
     // - user.comments[].reward
     const feeRateDecimal = new Decimal(100).minus(env.PERMIT_FEE_RATE).div(100);
     let permitFeeAmountDecimal = new Decimal(0);
-    for (const [_, rewardResult] of Object.entries(result)) {
+    for (const [key, rewardResult] of Object.entries(result)) {
       // accumulate total permit fee amount
       const totalAfterFee = new Decimal(rewardResult.total).mul(feeRateDecimal).toNumber();
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
-      rewardResult.total = +totalAfterFee.toFixed(2);
-      if (rewardResult.task) {
-        rewardResult.task.reward = Number(new Decimal(rewardResult.task.reward).mul(feeRateDecimal).toFixed(2));
+      result[key].total = Number(totalAfterFee.toFixed(2));
+      if (result[key].task) {
+        result[key].task.reward = Number(new Decimal(result[key].task.reward).mul(feeRateDecimal).toFixed(2));
       }
-      if (rewardResult.comments) {
-        for (const comment of rewardResult.comments) {
+      if (result[key].comments) {
+        for (const comment of result[key].comments) {
           if (comment.score) {
             comment.score.reward = Number(new Decimal(comment.score.reward).mul(feeRateDecimal).toFixed(2));
           }
@@ -212,7 +222,7 @@ export class PermitGenerationModule implements Module {
 
     // Add a new result item for treasury
     result[env.PERMIT_TREASURY_GITHUB_USERNAME] = {
-      total: +permitFeeAmountDecimal.toFixed(2),
+      total: Number(permitFeeAmountDecimal.toFixed(2)),
       userId: treasuryGithubData.id,
     };
 
@@ -250,7 +260,7 @@ export class PermitGenerationModule implements Module {
       locationId = locationData.id;
     }
     if (!locationId) {
-      throw new Error(`Failed to retrieve the related location from issue ${issue}`);
+      throw new Error(`Failed to retrieve the related location from issue ${JSON.stringify(issue)}`);
     }
     return locationId;
   }
@@ -263,9 +273,9 @@ export class PermitGenerationModule implements Module {
 
         if (userData) {
           const { error } = await this._supabase.from("permits").insert({
-            amount: permit.amount.toString(),
-            nonce: permit.nonce.toString(),
-            deadline: permit.deadline.toString(),
+            amount: String(permit.amount),
+            nonce: String(permit.nonce),
+            deadline: String(permit.deadline),
             signature: permit.signature,
             beneficiary_id: userData.id,
             location_id: locationId,
@@ -294,8 +304,8 @@ export class PermitGenerationModule implements Module {
    * 2. PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID
    *
    * Here `GITHUB_OWNER_ID` can be:
-   * 1. Github organization id (if ubiquibot is used within an organization)
-   * 2. Github user id (if ubiquibot is simply installed in a user's repository)
+   * 1. Github organization id (if ubiquity-os is used within an organization)
+   * 2. Github user id (if ubiquity-os is simply installed in a user's repository)
    *
    * Format "PRIVATE_KEY:GITHUB_OWNER_ID" restricts in which particular organization (or user related repositories)
    * this private key can be used. It can be set either in the organization wide config either in the repository wide one.

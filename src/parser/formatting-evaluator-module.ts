@@ -55,8 +55,7 @@ export class FormattingEvaluatorModule implements Module {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
-      for (let i = 0; i < comments.length; i++) {
-        const comment = comments[i];
+      for (const comment of comments) {
         const { formatting, words } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
@@ -111,13 +110,13 @@ export class FormattingEvaluatorModule implements Module {
       const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
       return { formatting: res.formatting, words: res.words };
     } else {
-      throw new Error(`Could not create DOM for comment [${comment}]`);
+      throw new Error(`Could not create DOM for comment [${JSON.stringify(comment)}]`);
     }
   }
 
   _countWordsFromRegex(text: string, wordValue = 0): WordResult {
     const match = text.trim().match(new RegExp(wordRegex, "g"));
-    const wordCount = match?.length || 0;
+    const wordCount = match?.length ?? 0;
     const result = new Decimal(wordCount).pow(this._wordCountExponent).mul(wordValue).toDecimalPlaces(2).toNumber();
     return {
       wordCount,

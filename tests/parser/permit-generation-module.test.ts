@@ -1,4 +1,3 @@
-/* eslint @typescript-eslint/no-var-requires: 0 */
 import { CommentKind } from "../../src/configuration/comment-types";
 import { PermitGenerationModule } from "../../src/parser/permit-generation-module";
 import { Result } from "../../src/parser/processor";
@@ -8,9 +7,7 @@ const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 
 jest.mock("../../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("../__mocks__/results/valid-configuration.json");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dotenv = require("dotenv");
   dotenv.config();
   return {
@@ -20,14 +17,14 @@ jest.mock("../../src/parser/command-line", () => {
     ref: "",
     eventPayload: {
       issue: {
-        html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+        html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
         number: 1,
         state_reason: "not_planned",
       },
       repository: {
         name: "conversation-rewards",
         owner: {
-          login: "ubiquibot",
+          login: "ubiquity-os",
         },
       },
     },
@@ -70,6 +67,7 @@ const resultOriginal: Result = {
         type: CommentKind.ISSUE,
         score: {
           reward: 10,
+          multiplier: 1,
         },
       },
     ],
@@ -89,6 +87,7 @@ const resultOriginal: Result = {
         type: CommentKind.ISSUE,
         score: {
           reward: 1.12,
+          multiplier: 1,
         },
       },
     ],
@@ -101,8 +100,8 @@ describe("permit-generation-module.ts", () => {
       // set fee related env variables
       // treasury fee applied to the final permits, ex: 100 = 100%, 0.1 = 0.1%
       process.env.PERMIT_FEE_RATE = "10";
-      // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquibot-treasury"
-      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquibot-treasury";
+      // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquity-os-treasury"
+      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquity-os-treasury";
       // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
       process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST = `${DOLLAR_ADDRESS}`;
     });
@@ -160,7 +159,7 @@ describe("permit-generation-module.ts", () => {
       expect(resultAfterFees["user2"].comments?.[0].score?.reward).toEqual(1.01);
 
       // check that treasury item is added
-      expect(resultAfterFees["ubiquibot-treasury"].total).toEqual(11.11);
+      expect(resultAfterFees["ubiquity-os-treasury"].total).toEqual(11.11);
     });
   });
 

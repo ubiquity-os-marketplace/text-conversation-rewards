@@ -7,8 +7,6 @@ import {
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
   GitHubRepository,
-  GitHubTimelineEvent,
-  GitHubUser,
 } from "./github-types";
 import { getMinimizedCommentStatus } from "./helpers/get-comment-details";
 
@@ -94,39 +92,6 @@ export async function getPullRequestReviews(pullParams: PullParams): Promise<Git
 export async function getPullRequestReviewComments(pullParams: PullParams): Promise<GitHubPullRequestReviewComment[]> {
   const octokit = getOctokitInstance();
   return await octokit.paginate(octokit.pulls.listReviewComments.endpoint.merge(pullParams));
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getAllIssueActivity(issueParams: IssueParams) {
-  // @DEV: this is very useful for seeing every type of event,
-  // which includes the issue specification, any events, and all conversation
-  //  that has occurred on the issue in chronological order
-
-  const octokit = getOctokitInstance();
-  const [issue, events, comments] = await Promise.all([
-    octokit.issues.get(issueParams),
-    octokit.paginate(octokit.issues.listEvents.endpoint.merge(issueParams)),
-    octokit.paginate(octokit.issues.listComments.endpoint.merge(issueParams)),
-  ]);
-
-  const mixedEventsAndComments = [...events, ...comments];
-  mixedEventsAndComments.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-  // Prepend the issue to the events array
-  mixedEventsAndComments.unshift(issue.data);
-  return mixedEventsAndComments;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getTimelineUsers(issueParams: IssueParams): Promise<GitHubUser[]> {
-  const timelineEvents = await getAllTimelineEvents(issueParams);
-  const users = timelineEvents.filter((event) => event.actor).map((event) => event.actor);
-  return [...new Set(users)];
-}
-
-export async function getAllTimelineEvents(issueParams: IssueParams): Promise<GitHubTimelineEvent[]> {
-  const octokit = getOctokitInstance();
-  const options = octokit.issues.listEventsForTimeline.endpoint.merge(issueParams);
-  return await octokit.paginate(options);
 }
 
 export function parseGitHubUrl(url: string): { owner: string; repo: string; issue_number: number } {

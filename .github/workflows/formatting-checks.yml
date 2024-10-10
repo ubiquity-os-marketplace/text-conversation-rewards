@@ -1,0 +1,26 @@
+name: Formatting Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  spellcheck:
+    name: Check for formatting errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.10.0"
+
+      - name: Run formatting checks
+        run: |
+          yarn install
+          yarn eslint --fix-dry-run --ignore-pattern dist/
+          yarn format:cspell
+          yarn prettier --check .
