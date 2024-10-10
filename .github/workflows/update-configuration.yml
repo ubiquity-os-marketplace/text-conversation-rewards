@@ -11,6 +11,6 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: Meniole/action-deploy-plugin@feat/init-repo
+      - uses: ubiquity-os/action-deploy-plugin@main
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
