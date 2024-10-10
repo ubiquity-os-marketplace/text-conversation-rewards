@@ -2665,15 +2665,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mswjs/cookies@^1.1.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@mswjs/cookies/-/cookies-1.1.1.tgz#8b519e2bd8f1577c530beed44a25578eb9a6e72c"
-  integrity sha512-W68qOHEjx1iD+4VjQudlx26CPIoxmIAtK4ZCexU0/UJBG6jYhcuyzKJx+Iw8uhBIGd9eba64XgWVgo20it1qwA==
-
-"@mswjs/data@0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@mswjs/data/-/data-0.16.1.tgz#ee41b95b8f2e954a07b0eb54154592a2459064d1"
-  integrity sha512-VhJvL/VmgAuU9/tDOcKcxHfNd+8nxYntZnrkaQEQPvZZnFwQQR9bzI1FTRROGxCHVoyfv9v84AEkl/7CIw4FAg==
+"@mswjs/data@0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@mswjs/data/-/data-0.16.2.tgz#61d14dcb28851b25b2ca97e343d40d57870670ec"
+  integrity sha512-/C0d/PBcJyQJokUhcjO4HiZPc67hzllKlRtD1XELygl2t991/ATAAQJVcStn4YtVALsNodruzOHT0JIvgr0hnA==
   dependencies:
     "@types/lodash" "^4.14.172"
     "@types/md5" "^2.3.0"
@@ -2690,18 +2685,6 @@
     uuid "^8.3.1"
   optionalDependencies:
     msw "^2.0.8"
-
-"@mswjs/interceptors@^0.26.14":
-  version "0.26.15"
-  resolved "https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.26.15.tgz#256ad5c89f325c87d972cc27fc7d0d6d382ce804"
-  integrity sha512-HM47Lu1YFmnYHKMBynFfjCp0U/yRskHj/8QEJW0CBEPOlw8Gkmjfll+S9b8M7V5CNDw2/ciRxjjnWeaCiblSIQ==
-  dependencies:
-    "@open-draft/deferred-promise" "^2.2.0"
-    "@open-draft/logger" "^0.3.0"
-    "@open-draft/until" "^2.0.0"
-    is-node-process "^1.2.0"
-    outvariant "^1.2.1"
-    strict-event-emitter "^0.5.1"
 
 "@mswjs/interceptors@^0.35.8":
   version "0.35.9"
@@ -3673,10 +3656,10 @@
   resolved "https://registry.yarnpkg.com/@ubiquity-dao/ubiquibot-logger/-/ubiquibot-logger-1.3.1.tgz#c3f45d70014dcc2551442c28101046e1c8ea6886"
   integrity sha512-kDLnVP87Y3yZV6NnqIEDAOz+92IW0nIcccML2lUn93uZ5ada78vfdTPtwPJo8tkXl1Z9qMKAqqHkwBMp1Ksnag==
 
-"@ubiquity-os/permit-generation@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@ubiquity-os/permit-generation/-/permit-generation-2.0.3.tgz#161321e16ab1c44b708cd51d3b7e9025fe4599f6"
-  integrity sha512-vbVmPJLvx98GhEiYCeHRYnWUYqPcGcW3syQluoLFypeYQS4ahOp6gjgvFqPO5hfUjI3x7wxCXGfmYOPtPqM1NQ==
+"@ubiquity-os/permit-generation@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@ubiquity-os/permit-generation/-/permit-generation-2.0.4.tgz#dbdc546eca1f647968128b2613028e3b7f5b286b"
+  integrity sha512-05M4QLOHf+B5rXgmaR+fEUEZIhCKeQXFJFvTCr/eRGb34hdJFAR0Z8ZGTeCjrcP60KdQ9HfMk8lp+eBcZpeLBg==
   dependencies:
     "@actions/core" "^1.10.1"
     "@actions/github" "^6.0.0"
@@ -7651,30 +7634,7 @@ ms@^2.0.0, ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-msw@2.2.14:
-  version "2.2.14"
-  resolved "https://registry.yarnpkg.com/msw/-/msw-2.2.14.tgz#ed16b89f99ffc105a84b0295a6fcae2ee99f5c62"
-  integrity sha512-64i8rNCa1xzDK8ZYsTrVMli05D687jty8+Th+PU5VTbJ2/4P7fkQFVyDQ6ZFT5FrNR8z2BHhbY47fKNvfHrumA==
-  dependencies:
-    "@bundled-es-modules/cookie" "^2.0.0"
-    "@bundled-es-modules/statuses" "^1.0.1"
-    "@inquirer/confirm" "^3.0.0"
-    "@mswjs/cookies" "^1.1.0"
-    "@mswjs/interceptors" "^0.26.14"
-    "@open-draft/until" "^2.1.0"
-    "@types/cookie" "^0.6.0"
-    "@types/statuses" "^2.0.4"
-    chalk "^4.1.2"
-    graphql "^16.8.1"
-    headers-polyfill "^4.0.2"
-    is-node-process "^1.2.0"
-    outvariant "^1.4.2"
-    path-to-regexp "^6.2.0"
-    strict-event-emitter "^0.5.1"
-    type-fest "^4.9.0"
-    yargs "^17.7.2"
-
-msw@^2.0.8:
+msw@2.4.9, msw@^2.0.8:
   version "2.4.9"
   resolved "https://registry.yarnpkg.com/msw/-/msw-2.4.9.tgz#350a84cedb90b578a32c7764431e3750900f8407"
   integrity sha512-1m8xccT6ipN4PTqLinPwmzhxQREuxaEJYdx4nIbggxP8aM7r1e71vE7RtOUSQoAm1LydjGfZKy7370XD/tsuYg==
@@ -8159,7 +8119,7 @@ path-temp@^2.1.0:
   dependencies:
     unique-string "^2.0.0"
 
-path-to-regexp@^6.2.0, path-to-regexp@^6.3.0:
+path-to-regexp@^6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-6.3.0.tgz#2b6a26a337737a8e1416f9272ed0766b1c0389f4"
   integrity sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==
