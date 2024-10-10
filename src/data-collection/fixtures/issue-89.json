@@ -1,10 +1,10 @@
 {
-  "url": "https://api.github.com/repos/ubiquibot/production/issues/89",
-  "repository_url": "https://api.github.com/repos/ubiquibot/production",
-  "labels_url": "https://api.github.com/repos/ubiquibot/production/issues/89/labels{/name}",
-  "comments_url": "https://api.github.com/repos/ubiquibot/production/issues/89/comments",
-  "events_url": "https://api.github.com/repos/ubiquibot/production/issues/89/events",
-  "html_url": "https://github.com/ubiquibot/production/issues/89",
+  "url": "https://api.github.com/repos/ubiquity-os/production/issues/89",
+  "repository_url": "https://api.github.com/repos/ubiquity-os/production",
+  "labels_url": "https://api.github.com/repos/ubiquity-os/production/issues/89/labels{/name}",
+  "comments_url": "https://api.github.com/repos/ubiquity-os/production/issues/89/comments",
+  "events_url": "https://api.github.com/repos/ubiquity-os/production/issues/89/events",
+  "html_url": "https://github.com/ubiquity-os/production/issues/89",
   "id": 2140996624,
   "node_id": "I_kwDOJkXFU85_nQQQ",
   "number": 89,
@@ -44,7 +44,7 @@
   "body": "Link from another repository. ",
   "closed_by": null,
   "reactions": {
-    "url": "https://api.github.com/repos/ubiquibot/production/issues/89/reactions",
+    "url": "https://api.github.com/repos/ubiquity-os/production/issues/89/reactions",
     "total_count": 0,
     "+1": 0,
     "-1": 0,
@@ -55,7 +55,7 @@
     "rocket": 0,
     "eyes": 0
   },
-  "timeline_url": "https://api.github.com/repos/ubiquibot/production/issues/89/timeline",
+  "timeline_url": "https://api.github.com/repos/ubiquity-os/production/issues/89/timeline",
   "performed_via_github_app": null,
   "state_reason": null
 }

@@ -1,13 +1,13 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
-import { LOG_LEVEL } from "@ubiquity-dao/ubiquibot-logger";
+import { LOG_LEVEL } from "@ubiquity-os/ubiquity-os-logger";
 import { StandardValidator } from "typebox-validators";
 import { contentEvaluatorConfigurationType } from "../configuration/content-evaluator-config";
-import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
-import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
-import { githubCommentConfigurationType } from "../configuration/github-comment-config";
-import { formattingEvaluatorConfigurationType } from "../configuration/formatting-evaluator-config";
 import { dataCollectionConfigurationType } from "../configuration/data-collection-config";
 import { dataPurgeConfigurationType } from "../configuration/data-purge-config";
+import { formattingEvaluatorConfigurationType } from "../configuration/formatting-evaluator-config";
+import { githubCommentConfigurationType } from "../configuration/github-comment-config";
+import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
+import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
 
 export const pluginSettingsSchema = T.Object(
   {

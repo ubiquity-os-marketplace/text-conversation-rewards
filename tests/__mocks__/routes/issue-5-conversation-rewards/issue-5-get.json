@@ -1,10 +1,10 @@
 {
-  "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5",
-  "repository_url": "https://api.github.com/repos/ubiquibot/conversation-rewards",
-  "labels_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/labels{/name}",
-  "comments_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/comments",
-  "events_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/events",
-  "html_url": "https://github.com/ubiquibot/conversation-rewards/issues/5",
+  "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5",
+  "repository_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards",
+  "labels_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/labels{/name}",
+  "comments_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/comments",
+  "events_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/events",
+  "html_url": "https://github.com/ubiquity-os/conversation-rewards/issues/5",
   "id": 2218638141,
   "node_id": "I_kwDOLUK0B86EPbs9",
   "number": 5,
@@ -33,7 +33,7 @@
     {
       "id": 6694362704,
       "node_id": "LA_kwDOLUK0B88AAAABjwPeUA",
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/labels/Time:%20%3C4%20Hours",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/labels/Time:%20%3C4%20Hours",
       "name": "Time: <4 Hours",
       "color": "ededed",
       "default": false,
@@ -42,7 +42,7 @@
     {
       "id": 6694362961,
       "node_id": "LA_kwDOLUK0B88AAAABjwPfUQ",
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/labels/Priority:%204%20(Urgent)",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/labels/Priority:%204%20(Urgent)",
       "name": "Priority: 4 (Urgent)",
       "color": "ededed",
       "default": false,
@@ -51,7 +51,7 @@
     {
       "id": 6813756143,
       "node_id": "LA_kwDOLUK0B88AAAABliGq7w",
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/labels/Price:%20400%20USD",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/labels/Price:%20400%20USD",
       "name": "Price: 400 USD",
       "color": "1f883d",
       "default": false,
@@ -131,7 +131,7 @@
     "site_admin": false
   },
   "reactions": {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/reactions",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/reactions",
     "total_count": 0,
     "+1": 0,
     "-1": 0,
@@ -142,7 +142,7 @@
     "rocket": 0,
     "eyes": 0
   },
-  "timeline_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/timeline",
+  "timeline_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/timeline",
   "performed_via_github_app": null,
   "state_reason": "completed"
 }

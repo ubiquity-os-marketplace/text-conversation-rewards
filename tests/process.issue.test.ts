@@ -24,7 +24,7 @@ import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import validConfiguration from "./__mocks__/results/valid-configuration.json";
 import "../src/parser/command-line";
 
-const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquibot/conversation-rewards/issues/5";
+const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
 jest.mock("../src/helpers/web3", () => ({
   getErc20TokenSymbol() {
@@ -37,7 +37,7 @@ jest.mock("@actions/github", () => ({
     runId: "1",
     payload: {
       repository: {
-        html_url: "https://github.com/ubiquibot/conversation-rewards",
+        html_url: "https://github.com/ubiquity-os/conversation-rewards",
       },
     },
     sha: "1234",
@@ -60,14 +60,14 @@ jest.mock("../src/parser/command-line", () => {
     ref: "",
     eventPayload: {
       issue: {
-        html_url: "https://github.com/ubiquibot/conversation-rewards/issues/5",
+        html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/5",
         number: 1,
         state_reason: "completed",
       },
       repository: {
         name: "conversation-rewards",
         owner: {
-          login: "ubiquibot",
+          login: "ubiquity-os",
           id: 76412717, // https://github.com/ubiquity
         },
       },
@@ -147,14 +147,14 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
                         id: "PR_kwDOLUK0B85soGlu",
                         title: "feat: github comment generation and posting",
                         number: 12,
-                        url: "https://github.com/ubiquibot/conversation-rewards/pull/12",
+                        url: "https://github.com/ubiquity-os/conversation-rewards/pull/12",
                         author: {
                           login: "gentlementlegen",
                           id: 9807008,
                         },
                         repository: {
                           owner: {
-                            login: "ubiquibot",
+                            login: "ubiquity-os",
                           },
                           name: "conversation-rewards",
                         },

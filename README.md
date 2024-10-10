@@ -1,4 +1,4 @@
-# `@ubiquibot/conversation-rewards`
+# `@ubiquity-os/conversation-rewards`
 
 As of 28 February: test driven development to aggregate all necessary information based on a URL to an issue.
 
@@ -53,7 +53,7 @@ Reward formula:
 Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration/) for more details.
 
 ```yaml
-plugin: ubiquibot/conversation-rewards
+plugin: ubiquity-os/conversation-rewards
 with:
   logLevel: "info"
   evmNetworkId: 100
@@ -168,8 +168,8 @@ Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards
 
 Here `GITHUB_OWNER_ID` can be:
 
-1. Github organization id (if ubiquibot is used within an organization)
-2. Github user id (if ubiquibot is simply installed in a user's repository)
+1. Github organization id (if ubiquity-os is used within an organization)
+2. Github user id (if ubiquity-os is simply installed in a user's repository)
 
 Format `PRIVATE_KEY:GITHUB_OWNER_ID` restricts in which particular organization (or user related repositories)
 this private key can be used. It can be set either in the organization wide config either in the repository wide one.

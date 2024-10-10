@@ -17,14 +17,14 @@ jest.mock("../../src/parser/command-line", () => {
     ref: "",
     eventPayload: {
       issue: {
-        html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+        html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
         number: 1,
         state_reason: "not_planned",
       },
       repository: {
         name: "conversation-rewards",
         owner: {
-          login: "ubiquibot",
+          login: "ubiquity-os",
         },
       },
     },
@@ -100,8 +100,8 @@ describe("permit-generation-module.ts", () => {
       // set fee related env variables
       // treasury fee applied to the final permits, ex: 100 = 100%, 0.1 = 0.1%
       process.env.PERMIT_FEE_RATE = "10";
-      // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquibot-treasury"
-      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquibot-treasury";
+      // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquity-os-treasury"
+      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquity-os-treasury";
       // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
       process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST = `${DOLLAR_ADDRESS}`;
     });
@@ -159,7 +159,7 @@ describe("permit-generation-module.ts", () => {
       expect(resultAfterFees["user2"].comments?.[0].score?.reward).toEqual(1.01);
 
       // check that treasury item is added
-      expect(resultAfterFees["ubiquibot-treasury"].total).toEqual(11.11);
+      expect(resultAfterFees["ubiquity-os-treasury"].total).toEqual(11.11);
     });
   });
 

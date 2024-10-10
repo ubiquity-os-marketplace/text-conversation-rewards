@@ -31,50 +31,50 @@ import pullsReviewsGet from "./routes/pulls-reviews-get.json";
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5", () => {
     return HttpResponse.json(issue5Get);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/events", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/events", () => {
     return HttpResponse.json(issue5EventsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/comments", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/comments", () => {
     return HttpResponse.json(issue5CommentsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/12/comments", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/comments", () => {
     return HttpResponse.json(issue12CommentsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/issues/5/timeline", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/timeline", () => {
     return HttpResponse.json(issue5TimelineGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12", () => {
     return HttpResponse.json(pull12Get);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12/reviews", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/reviews", () => {
     return HttpResponse.json(pull12ReviewsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12/comments", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/comments", () => {
     return HttpResponse.json(pull12CommentsGet);
   }),
 
   http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13", () => {
     return HttpResponse.json(issue13Get);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22", () => {
     return HttpResponse.json(issue22Get);
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", () => {
     return HttpResponse.json(issue69Get);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives", () => {
     return HttpResponse.json(issue22Get);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/events", ({ params: { page } }) => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/events", ({ params: { page } }) => {
     return HttpResponse.json(!page ? issueEventsGet : issueEvents2Get);
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/events", () => {
     return HttpResponse.json(issue69EventsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/comments", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/comments", () => {
     return HttpResponse.json(issue22CommentsGet);
   }),
   http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13/events", () => {
@@ -83,25 +83,25 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/comments", () => {
     return HttpResponse.json(issue69CommentsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/25/comments", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/25/comments", () => {
     return HttpResponse.json(issue25CommentsGet);
   }),
   http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13/comments", () => {
     return HttpResponse.json(issue13CommentsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/timeline", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/timeline", () => {
     return HttpResponse.json(issueTimelineGet);
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/timeline", () => {
     return HttpResponse.json(issue69TimelineGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/pulls/25", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25", () => {
     return HttpResponse.json(pullsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/pulls/25/reviews", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25/reviews", () => {
     return HttpResponse.json(pullsReviewsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquibot/comment-incentives/pulls/25/comments", () => {
+  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25/comments", () => {
     return HttpResponse.json(pullsCommentsGet);
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70", () => {

@@ -146,7 +146,7 @@ export class PermitGenerationModule implements Module {
    * ```
    * {
    *   ...other items
-   *   "ubiquibot-treasury": {
+   *   "ubiquity-os-treasury": {
    *     total: 10.00,
    *     userId: 1
    *   }
@@ -304,8 +304,8 @@ export class PermitGenerationModule implements Module {
    * 2. PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID
    *
    * Here `GITHUB_OWNER_ID` can be:
-   * 1. Github organization id (if ubiquibot is used within an organization)
-   * 2. Github user id (if ubiquibot is simply installed in a user's repository)
+   * 1. Github organization id (if ubiquity-os is used within an organization)
+   * 2. Github user id (if ubiquity-os is simply installed in a user's repository)
    *
    * Format "PRIVATE_KEY:GITHUB_OWNER_ID" restricts in which particular organization (or user related repositories)
    * this private key can be used. It can be set either in the organization wide config either in the repository wide one.
