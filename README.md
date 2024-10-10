@@ -1,4 +1,4 @@
-# `@ubiquibot/conversation-rewards`
+# `@ubiquity-os/conversation-rewards`
 
 As of 28 February: test driven development to aggregate all necessary information based on a URL to an issue.
 
@@ -53,7 +53,7 @@ Reward formula:
 Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration/) for more details.
 
 ```yaml
-plugin: ubiquibot/conversation-rewards
+plugin: ubiquity-os/conversation-rewards
 with:
   logLevel: "info"
   evmNetworkId: 100
@@ -166,10 +166,10 @@ Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards
 2. `PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID`
 
 Here `GITHUB_OWNER_ID` can be:
-1. Github organization id (if ubiquibot is used within an organization)
-2. Github user id (if ubiquibot is simply installed in a user's repository)
+1. Github organization id (if ubiquity-os is used within an organization)
+2. Github user id (if ubiquity-os is simply installed in a user's repository)
 
-Format `PRIVATE_KEY:GITHUB_OWNER_ID` restricts in which particular organization (or user related repositories) 
+Format `PRIVATE_KEY:GITHUB_OWNER_ID` restricts in which particular organization (or user related repositories)
 this private key can be used. It can be set either in the organization wide config either in the repository wide one.
 
 Format `PRIVATE_KEY:GITHUB_OWNER_ID:GITHUB_REPOSITORY_ID` restricts organization (or user related repositories) and a particular repository where private key is allowed to be used.
@@ -186,4 +186,4 @@ curl -H "Accept: application/json" -H "Authorization: token GITHUB_PAT_TOKEN" ht
 - `GITHUB_OWNER_ID`: your github organization id or user id (which you got from step 1)
 5. Click "Encrypt" to get an encrypted value in the `CIPHER_TEXT` field
 6. Set the encrypted text (from step 5) in the `evmPrivateEncrypted` config parameter
-7. Set `X25519_PRIVATE_KEY` environment variable in github secrets of your forked instance of the `conversation-rewards` plugin 
+7. Set `X25519_PRIVATE_KEY` environment variable in github secrets of your forked instance of the `conversation-rewards` plugin

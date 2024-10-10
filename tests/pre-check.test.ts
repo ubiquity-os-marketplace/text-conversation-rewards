@@ -12,7 +12,7 @@ jest.mock("@actions/github", () => ({
     runId: "1",
     payload: {
       repository: {
-        html_url: "https://github.com/ubiquibot/conversation-rewards",
+        html_url: "https://github.com/ubiquity-os/conversation-rewards",
       },
     },
   },
@@ -97,7 +97,7 @@ jest.mock("../src/parser/command-line", () => {
       repository: {
         name: "conversation-rewards",
         owner: {
-          login: "ubiquibot",
+          login: "ubiquity-os",
           id: 76412717,
         },
       },

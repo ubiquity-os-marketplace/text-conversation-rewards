@@ -40,7 +40,7 @@ jest.mock("@actions/github", () => ({
     runId: "1",
     payload: {
       repository: {
-        html_url: "https://github.com/ubiquibot/conversation-rewards",
+        html_url: "https://github.com/ubiquity-os/conversation-rewards",
       },
     },
   },
@@ -85,8 +85,8 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-jest.mock("@ubiquibot/permit-generation/core", () => {
-  const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
+jest.mock("@ubiquity-os/permit-generation/core", () => {
+  const originalModule = jest.requireActual("@ubiquity-os/permit-generation/core");
 
   return {
     __esModule: true,
@@ -135,7 +135,7 @@ jest.mock("../src/parser/command-line", () => {
       repository: {
         name: "conversation-rewards",
         owner: {
-          login: "ubiquibot",
+          login: "ubiquity-os",
           id: 76412717, // https://github.com/ubiquity
         },
       },

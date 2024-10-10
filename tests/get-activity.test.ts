@@ -2,7 +2,7 @@ import { IssueActivity } from "../src/issue-activity";
 import { parseGitHubUrl } from "../src/start";
 
 // Mock process.argv
-const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquibot/comment-incentives/issues/22";
+const issueUrl = process.env.TEST_ISSUE_URL || "https://github.com/ubiquity-os/comment-incentives/issues/22";
 
 jest.mock("../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
