@@ -39,7 +39,7 @@
     "@ubiquity-os/permit-generation": "^2.0.2",
     "decimal.js": "10.4.3",
     "dotenv": "16.4.5",
-    "ethers": "^6.13.0",
+    "ethers": "^5.7.2",
     "js-tiktoken": "1.0.15",
     "jsdom": "24.0.0",
     "markdown-it": "14.1.0",
