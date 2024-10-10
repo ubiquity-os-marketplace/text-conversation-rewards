@@ -3673,10 +3673,10 @@
   resolved "https://registry.yarnpkg.com/@ubiquity-dao/ubiquibot-logger/-/ubiquibot-logger-1.3.1.tgz#c3f45d70014dcc2551442c28101046e1c8ea6886"
   integrity sha512-kDLnVP87Y3yZV6NnqIEDAOz+92IW0nIcccML2lUn93uZ5ada78vfdTPtwPJo8tkXl1Z9qMKAqqHkwBMp1Ksnag==
 
-"@ubiquity-os/permit-generation@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@ubiquity-os/permit-generation/-/permit-generation-2.0.2.tgz#d79e6639f0a5ecbaa36d73c321f36361d2cb0ff9"
-  integrity sha512-AI4gHYy+Ir/VhpDThthPSs3oYDt3RIbXAhjFKO+Uy5onrPHkwy9kNtcfZNV3yy8SHLSWY6eKFI9M+uQKDdRLYA==
+"@ubiquity-os/permit-generation@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@ubiquity-os/permit-generation/-/permit-generation-2.0.3.tgz#161321e16ab1c44b708cd51d3b7e9025fe4599f6"
+  integrity sha512-vbVmPJLvx98GhEiYCeHRYnWUYqPcGcW3syQluoLFypeYQS4ahOp6gjgvFqPO5hfUjI3x7wxCXGfmYOPtPqM1NQ==
   dependencies:
     "@actions/core" "^1.10.1"
     "@actions/github" "^6.0.0"
