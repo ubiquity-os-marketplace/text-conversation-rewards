@@ -22,6 +22,7 @@ export async function run() {
       await githubCommentModuleInstance.postComment(result.logMessage.diff);
       return result.logMessage.raw;
     }
+    console.log("All linked pull requests are closed. Generating rewards...");
     await githubCommentModuleInstance.postComment(logger.ok("Evaluating results. Please wait...").logMessage.diff);
     const issue = parseGitHubUrl(eventPayload.issue.html_url);
     const activity = new IssueActivity(issue);
