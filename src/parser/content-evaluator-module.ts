@@ -183,6 +183,7 @@ export class ContentEvaluatorModule implements Module {
     // let commentRelevances: Relevances = {};
     // let prCommentRelevances: Relevances = {};
 
+    console.log("+++ mocking AI +++");
     return Promise.resolve(
       (() => {
         const relevance: { [k: string]: number } = {};
