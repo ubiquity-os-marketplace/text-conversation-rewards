@@ -12,6 +12,7 @@ import {
 import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, WordResult, Result } from "./processor";
+import { typeReplacer } from "../helpers/result-replacer";
 
 interface Multiplier {
   multiplier: number;
@@ -152,7 +153,9 @@ export class FormattingEvaluatorModule implements Module {
           continue;
         }
       } else {
-        logger.error(`Could not find multiplier for element <${tagName}> in comment [${element.outerHTML}]`);
+        logger.error(
+          `Could not find multiplier for element <${tagName}> with association <${typeReplacer("type", commentType)}></EXTERNAL_FRAGMENT> in comment [${element.outerHTML}]`
+        );
         element.remove();
         continue;
       }
