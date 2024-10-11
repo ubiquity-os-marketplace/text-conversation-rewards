@@ -144,6 +144,7 @@ export class FormattingEvaluatorModule implements Module {
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
       let score = 0;
+      console.log("===> will evaluate", tagName, element.outerHTML);
       if (this._multipliers[commentType]?.html[tagName] !== undefined) {
         score = this._multipliers[commentType].html[tagName].score;
         if (!this._multipliers[commentType].html[tagName].countWords) {
