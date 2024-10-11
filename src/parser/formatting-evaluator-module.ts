@@ -153,7 +153,7 @@ export class FormattingEvaluatorModule implements Module {
         }
       } else {
         logger.error(
-          `Could not find multiplier for element <${tagName}> with association <${typeReplacer("type", commentType)}></EXTERNAL_FRAGMENT> in comment [${element.outerHTML}]`
+          `Could not find multiplier for element <${tagName}> with association <${typeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
         );
         element.remove();
         continue;
