@@ -1,16 +1,16 @@
+import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
+import { encodingForModel } from "js-tiktoken";
 import OpenAI from "openai";
+import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
 import {
   ContentEvaluatorConfiguration,
   contentEvaluatorConfigurationType,
 } from "../configuration/content-evaluator-config";
-import { IssueActivity } from "../issue-activity";
-import { GithubCommentScore, Module, Result } from "./processor";
-import { Value } from "@sinclair/typebox/value";
-import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import logger from "../helpers/logger";
+import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
   CommentToEvaluate,
@@ -18,7 +18,7 @@ import {
   PrCommentToEvaluate,
   Relevances,
 } from "../types/content-evaluator-module-type";
-import { encodingForModel } from "js-tiktoken";
+import { GithubCommentScore, Module, Result } from "./processor";
 
 /**
  * Evaluates and rates comments.
@@ -183,40 +183,26 @@ export class ContentEvaluatorModule implements Module {
     allComments: AllComments,
     prComments: PrCommentToEvaluate[]
   ): Promise<Relevances> {
-    // let commentRelevances: Relevances = {};
-    // let prCommentRelevances: Relevances = {};
+    let commentRelevances: Relevances = {};
+    let prCommentRelevances: Relevances = {};
 
-    console.log("+++ mocking AI +++");
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        prComments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.7;
-        });
-        return relevance;
-      })()
-    );
+    if (comments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
 
-    // if (comments.length) {
-    //   const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
-    //   const maxTokens = this._calculateMaxTokens(dummyResponse);
-    //
-    //   const promptForComments = this._generatePromptForComments(specification, comments, allComments);
-    //   commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
-    // }
-    //
-    // if (prComments.length) {
-    //   const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
-    //   const maxTokens = this._calculateMaxTokens(dummyResponse);
-    //
-    //   const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
-    //   prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
-    // }
-    //
-    // return { ...commentRelevances, ...prCommentRelevances };
+      const promptForComments = this._generatePromptForComments(specification, comments, allComments);
+      commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
+    }
+
+    if (prComments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
+
+      const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
+      prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
+    }
+
+    return { ...commentRelevances, ...prCommentRelevances };
   }
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
