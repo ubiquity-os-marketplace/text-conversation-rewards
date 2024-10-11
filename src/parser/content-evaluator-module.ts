@@ -131,6 +131,7 @@ export class ContentEvaluatorModule implements Module {
         relevance: new Decimal(currentRelevance).toNumber(),
         reward: currentReward.toNumber(),
       };
+      console.log("current reward score", currentComment);
     }
 
     return commentsWithScore;

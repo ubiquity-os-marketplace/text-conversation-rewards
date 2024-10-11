@@ -12,6 +12,7 @@ import {
 import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, WordResult, Result } from "./processor";
+import { typeReplacer } from "../helpers/result-replacer";
 
 interface Multiplier {
   multiplier: number;
@@ -40,11 +41,17 @@ export class FormattingEvaluatorModule implements Module {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
-            html: curr.rewards.html,
-            multiplier: curr.multiplier,
-            wordValue: curr.rewards.wordValue,
-          },
+          ...curr.role.reduce(
+            (acc, a) => {
+              acc[this._getEnumValue(a)] = {
+                html: curr.rewards.html,
+                multiplier: curr.multiplier,
+                wordValue: curr.rewards.wordValue,
+              };
+              return acc;
+            },
+            {} as typeof this._multipliers
+          ),
         };
       }, {});
     }
@@ -144,6 +151,7 @@ export class FormattingEvaluatorModule implements Module {
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
       let score = 0;
+      console.log("===> will evaluate", tagName, element.outerHTML);
       if (this._multipliers[commentType]?.html[tagName] !== undefined) {
         score = this._multipliers[commentType].html[tagName].score;
         if (!this._multipliers[commentType].html[tagName].countWords) {
@@ -151,7 +159,9 @@ export class FormattingEvaluatorModule implements Module {
           continue;
         }
       } else {
-        logger.error(`Could not find multiplier for element <${tagName}> in comment [${element.outerHTML}]`);
+        logger.error(
+          `Could not find multiplier for element <${tagName}> with association <${typeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
+        );
         element.remove();
         continue;
       }
