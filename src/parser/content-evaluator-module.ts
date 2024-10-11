@@ -110,6 +110,7 @@ export class ContentEvaluatorModule implements Module {
       prCommentsToEvaluate
     );
 
+    console.log("relevances", relevancesByAi);
     if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
       throw logger.fatal("Relevance / Comment length mismatch!", { relevancesByAi, commentsToEvaluate });
     }
@@ -122,6 +123,7 @@ export class ContentEvaluatorModule implements Module {
         currentRelevance = relevancesByAi[currentComment.id];
       }
 
+      console.log("getting reward for", currentComment);
       const currentReward = this._getRewardForComment(currentComment, currentRelevance);
 
       currentComment.score = {
