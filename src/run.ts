@@ -36,6 +36,7 @@ export async function run() {
     await processor.run(activity);
     let result = processor.dump();
     if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
+      logger.info("Truncating payload as it will trigger an error.");
       const resultObject = JSON.parse(result) as Result;
       for (const [key, value] of Object.entries(resultObject)) {
         resultObject[key] = {
