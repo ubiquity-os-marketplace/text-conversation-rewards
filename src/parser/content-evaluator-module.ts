@@ -180,26 +180,39 @@ export class ContentEvaluatorModule implements Module {
     allComments: AllComments,
     prComments: PrCommentToEvaluate[]
   ): Promise<Relevances> {
-    let commentRelevances: Relevances = {};
-    let prCommentRelevances: Relevances = {};
+    // let commentRelevances: Relevances = {};
+    // let prCommentRelevances: Relevances = {};
 
-    if (comments.length) {
-      const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
-      const maxTokens = this._calculateMaxTokens(dummyResponse);
+    return Promise.resolve(
+      (() => {
+        const relevance: { [k: string]: number } = {};
+        comments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        prComments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.7;
+        });
+        return relevance;
+      })()
+    );
 
-      const promptForComments = this._generatePromptForComments(specification, comments, allComments);
-      commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
-    }
-
-    if (prComments.length) {
-      const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
-      const maxTokens = this._calculateMaxTokens(dummyResponse);
-
-      const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
-      prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
-    }
-
-    return { ...commentRelevances, ...prCommentRelevances };
+    // if (comments.length) {
+    //   const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
+    //   const maxTokens = this._calculateMaxTokens(dummyResponse);
+    //
+    //   const promptForComments = this._generatePromptForComments(specification, comments, allComments);
+    //   commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
+    // }
+    //
+    // if (prComments.length) {
+    //   const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
+    //   const maxTokens = this._calculateMaxTokens(dummyResponse);
+    //
+    //   const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
+    //   prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
+    // }
+    //
+    // return { ...commentRelevances, ...prCommentRelevances };
   }
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
