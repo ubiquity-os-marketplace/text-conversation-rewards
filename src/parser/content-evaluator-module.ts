@@ -1,16 +1,16 @@
+import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
+import { encodingForModel } from "js-tiktoken";
 import OpenAI from "openai";
+import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import { OPENAI_API_KEY } from "../configuration/constants";
 import {
   ContentEvaluatorConfiguration,
   contentEvaluatorConfigurationType,
 } from "../configuration/content-evaluator-config";
-import { IssueActivity } from "../issue-activity";
-import { GithubCommentScore, Module, Result } from "./processor";
-import { Value } from "@sinclair/typebox/value";
-import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import logger from "../helpers/logger";
+import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
   CommentToEvaluate,
@@ -18,7 +18,7 @@ import {
   PrCommentToEvaluate,
   Relevances,
 } from "../types/content-evaluator-module-type";
-import { encodingForModel } from "js-tiktoken";
+import { GithubCommentScore, Module, Result } from "./processor";
 
 /**
  * Evaluates and rates comments.
