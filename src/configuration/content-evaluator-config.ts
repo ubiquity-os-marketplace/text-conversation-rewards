@@ -10,7 +10,7 @@ const openAiType = Type.Object(
     /**
      * Specific endpoint to send the comments to.
      */
-    endpoint: Type.RegExp(/http[s]:\/\/\S+/, { default: "https://api.openai.com/v1" }),
+    endpoint: Type.String({ default: "https://api.openai.com/v1", pattern: "/^https?://[^s$?#]+[a-z0-9]$/" }),
   },
   { default: {} }
 );
