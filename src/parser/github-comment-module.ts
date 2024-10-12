@@ -51,6 +51,10 @@ export class GithubCommentModule implements Module {
       strippedBody.push("> [!NOTE]\n");
       strippedBody.push("> This output has been truncated due to the comment length limit.\n\n");
       for (const [key, value] of Object.entries(result)) {
+        // Remove result with 0 total from being displayed
+        if (result[key].total <= 0) {
+          continue;
+        }
         result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
         strippedBody.push(result[key].evaluationCommentHtml);
       }
@@ -64,6 +68,10 @@ export class GithubCommentModule implements Module {
 
     const bodyArray: (string | undefined)[] = [];
     for (const [key, value] of Object.entries(result)) {
+      // Remove result with 0 total from being displayed
+      if (result[key].total <= 0) {
+        continue;
+      }
       result[key].evaluationCommentHtml = await this._generateHtml(key, value);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
