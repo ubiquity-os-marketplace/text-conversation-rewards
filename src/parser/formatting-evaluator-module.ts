@@ -41,11 +41,17 @@ export class FormattingEvaluatorModule implements Module {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
-            html: curr.rewards.html,
-            multiplier: curr.multiplier,
-            wordValue: curr.rewards.wordValue,
-          },
+          ...curr.role.reduce(
+            (acc, a) => {
+              acc[this._getEnumValue(a)] = {
+                html: curr.rewards.html,
+                multiplier: curr.multiplier,
+                wordValue: curr.rewards.wordValue,
+              };
+              return acc;
+            },
+            {} as typeof this._multipliers
+          ),
         };
       }, {});
     }

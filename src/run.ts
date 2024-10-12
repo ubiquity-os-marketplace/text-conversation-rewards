@@ -1,6 +1,6 @@
 import configuration from "./configuration/config-reader";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
-import { GITHUB_PAYLOAD_LIMIT } from "./helpers/constants";
+import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
 import { getSortedPrices } from "./helpers/label-price-extractor";
 import logger from "./helpers/logger";
@@ -35,7 +35,8 @@ export async function run() {
     const processor = new Processor();
     await processor.run(activity);
     let result = processor.dump();
-    if (result.length > GITHUB_PAYLOAD_LIMIT) {
+    if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
+      logger.info("Truncating payload as it will trigger an error.");
       const resultObject = JSON.parse(result) as Result;
       for (const [key, value] of Object.entries(resultObject)) {
         resultObject[key] = {
