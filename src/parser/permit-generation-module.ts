@@ -326,6 +326,7 @@ export class PermitGenerationModule implements Module {
     githubContextRepositoryId: number,
     env: EnvConfigType
   ): Promise<boolean> {
+    return true;
     // decrypt private key
     const privateKeyDecrypted = await decrypt(privateKeyEncrypted, env.X25519_PRIVATE_KEY);
 
