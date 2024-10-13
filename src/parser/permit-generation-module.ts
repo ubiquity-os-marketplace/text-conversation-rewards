@@ -358,7 +358,7 @@ export class PermitGenerationModule implements Module {
         privateKeyParsed.allowedOrganizationId !== githubContextOwnerId ||
         privateKeyParsed.allowedRepositoryId !== githubContextRepositoryId
       ) {
-        logger.info(
+        ubiquityLogger.info(
           `Current organization/user id ${githubContextOwnerId} and repository id ${githubContextRepositoryId} are not allowed to use this private key`
         );
         return false;
