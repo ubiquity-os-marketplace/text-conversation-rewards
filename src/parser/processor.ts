@@ -82,6 +82,7 @@ export interface Result {
     task?: {
       reward: number;
       multiplier: number;
+      feeRate?: number;
     };
     permitUrl?: string;
     userId: number;

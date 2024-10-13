@@ -130,7 +130,7 @@ export class PermitGenerationModule implements Module {
         result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
         await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
       } catch (e) {
-        console.error(e);
+        ubiquityLogger.error(`[PermitGenerationModule] Failed to generate permits for user ${key}`, { e });
       }
     }
 
@@ -215,6 +215,7 @@ export class PermitGenerationModule implements Module {
       result[key].total = Number(totalAfterFee.toFixed(2));
       if (result[key].task) {
         result[key].task.reward = Number(new Decimal(result[key].task.reward).mul(feeRateDecimal).toFixed(2));
+        result[key].task.feeRate = feeRateDecimal.toNumber();
       }
       if (result[key].comments) {
         for (const comment of result[key].comments) {
