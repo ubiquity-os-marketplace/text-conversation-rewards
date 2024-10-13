@@ -279,7 +279,7 @@ export class GithubCommentModule implements Module {
           </h6>
         </b>
       </summary>
-      ${result.feeRate !== undefined ? `⚠️ ${result.feeRate}% fee rate has been applied.` : null}
+      ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied.</h6>` : null}
       <h6>Contributions Overview</h6>
       <table>
         <thead>
