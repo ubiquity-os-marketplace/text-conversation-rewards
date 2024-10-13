@@ -26,7 +26,7 @@ import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type"
 import program from "./command-line";
 import { Module, Result } from "./processor";
 import { RestEndpointMethodTypes } from "@octokit/rest";
-import logger from "../helpers/logger";
+import ubiquityLogger from "../helpers/logger";
 
 interface Payload {
   evmNetworkId: number;
@@ -87,10 +87,12 @@ export class PermitGenerationModule implements Module {
     };
     const adapters = {} as ReturnType<typeof createAdapters>;
 
+    ubiquityLogger.info("Will attempt to apply fees...");
     // apply fees
     result = await this._applyFees(result, payload.erc20RewardToken, env);
 
     for (const [key, value] of Object.entries(result)) {
+      ubiquityLogger.debug(`Updating result for user ${key}`);
       try {
         const config: Context["config"] = {
           evmNetworkId: payload.evmNetworkId,
@@ -162,17 +164,19 @@ export class PermitGenerationModule implements Module {
   async _applyFees(result: Result, erc20RewardToken: string, env: EnvConfigType): Promise<Result> {
     // validate fee related env variables
     if (!env.PERMIT_FEE_RATE || Number(env.PERMIT_FEE_RATE) === 0) {
-      logger.info("PERMIT_FEE_RATE is not set, skipping permit fee generation");
+      ubiquityLogger.info("PERMIT_FEE_RATE is not set, skipping permit fee generation");
       return result;
     }
     if (!env.PERMIT_TREASURY_GITHUB_USERNAME) {
-      logger.info("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
+      ubiquityLogger.info("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
       return result;
     }
     if (env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST) {
       const erc20TokensNoFee = env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST.split(",");
       if (erc20TokensNoFee.includes(erc20RewardToken)) {
-        logger.info(`Token address ${erc20RewardToken} is whitelisted to be fee free, skipping permit fee generation`);
+        ubiquityLogger.info(
+          `Token address ${erc20RewardToken} is whitelisted to be fee free, skipping permit fee generation`
+        );
         return result;
       }
     }
@@ -183,7 +187,7 @@ export class PermitGenerationModule implements Module {
       username: env.PERMIT_TREASURY_GITHUB_USERNAME,
     });
     if (!treasuryGithubData) {
-      logger.info(
+      ubiquityLogger.info(
         `GitHub user was not found for username ${env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`
       );
       return result;
@@ -363,13 +367,13 @@ export class PermitGenerationModule implements Module {
     }
 
     // otherwise invalid private key format
-    logger.error("Invalid private key format");
+    ubiquityLogger.error("Invalid private key format");
     return false;
   }
 
   get enabled(): boolean {
     if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
-      logger.info("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
+      ubiquityLogger.info("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
       return false;
     }
     return true;
