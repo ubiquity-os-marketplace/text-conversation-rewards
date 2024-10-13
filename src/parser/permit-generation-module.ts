@@ -26,6 +26,7 @@ import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type"
 import program from "./command-line";
 import { Module, Result } from "./processor";
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import logger from "../helpers/logger";
 
 interface Payload {
   evmNetworkId: number;
@@ -161,17 +162,17 @@ export class PermitGenerationModule implements Module {
   async _applyFees(result: Result, erc20RewardToken: string, env: EnvConfigType): Promise<Result> {
     // validate fee related env variables
     if (!env.PERMIT_FEE_RATE || Number(env.PERMIT_FEE_RATE) === 0) {
-      console.log("PERMIT_FEE_RATE is not set, skipping permit fee generation");
+      logger.info("PERMIT_FEE_RATE is not set, skipping permit fee generation");
       return result;
     }
     if (!env.PERMIT_TREASURY_GITHUB_USERNAME) {
-      console.log("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
+      logger.info("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
       return result;
     }
     if (env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST) {
       const erc20TokensNoFee = env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST.split(",");
       if (erc20TokensNoFee.includes(erc20RewardToken)) {
-        console.log(`Token address ${erc20RewardToken} is whitelisted to be fee free, skipping permit fee generation`);
+        logger.info(`Token address ${erc20RewardToken} is whitelisted to be fee free, skipping permit fee generation`);
         return result;
       }
     }
@@ -182,7 +183,7 @@ export class PermitGenerationModule implements Module {
       username: env.PERMIT_TREASURY_GITHUB_USERNAME,
     });
     if (!treasuryGithubData) {
-      console.log(
+      logger.info(
         `GitHub user was not found for username ${env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`
       );
       return result;
@@ -316,6 +317,7 @@ export class PermitGenerationModule implements Module {
    * @param privateKeyEncrypted Encrypted private key (with "X25519_PRIVATE_KEY") string (in any of the 2 different formats)
    * @param githubContextOwnerId Github organization or used id from which the "conversation-rewards" is executed
    * @param githubContextRepositoryId Github repository id from which the "conversation-rewards" is executed
+   * @param env The current environment used by the plugin
    * @returns Whether private key is allowed to be used in current owner/repository context
    */
   async _isPrivateKeyAllowed(
@@ -351,7 +353,7 @@ export class PermitGenerationModule implements Module {
         privateKeyParsed.allowedOrganizationId !== githubContextOwnerId ||
         privateKeyParsed.allowedRepositoryId !== githubContextRepositoryId
       ) {
-        console.log(
+        logger.info(
           `Current organization/user id ${githubContextOwnerId} and repository id ${githubContextRepositoryId} are not allowed to use this private key`
         );
         return false;
@@ -360,13 +362,13 @@ export class PermitGenerationModule implements Module {
     }
 
     // otherwise invalid private key format
-    console.log("Invalid private key format");
+    logger.error("Invalid private key format");
     return false;
   }
 
   get enabled(): boolean {
     if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
-      console.warn("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
+      logger.info("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
       return false;
     }
     return true;
