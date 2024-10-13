@@ -11,7 +11,7 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: Meniole/action-deploy-plugin@main
+      - uses: ubiquity-os/action-deploy-plugin@main
         env:
           app-id: ${{ secrets.APP_ID }}
           app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
