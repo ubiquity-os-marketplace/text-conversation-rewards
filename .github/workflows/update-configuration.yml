@@ -13,6 +13,5 @@ jobs:
     steps:
       - uses: Meniole/action-deploy-plugin@main
         env:
-          APP_ID: ${{ secrets.APP_ID }}
-          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-          APP_INSTALLATION_ID: ${{ secrets.APP_INSTALLATION_ID }}
+          app-id: ${{ secrets.APP_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
