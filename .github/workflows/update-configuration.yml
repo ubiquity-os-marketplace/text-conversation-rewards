@@ -11,7 +11,7 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: MEniole/action-deploy-plugin@main
+      - uses: Meniole/action-deploy-plugin@main
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
