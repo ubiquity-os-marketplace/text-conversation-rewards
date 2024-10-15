@@ -79,7 +79,7 @@ describe("GithubCommentModule Fee Tests", () => {
       '<details><summary><b><h3>&nbsp;<a href="https://pay.ubq.fi" target="_blank" rel="noopener">[ 100 WXDAI ]</a>&nbsp;</h3><h6>@ubiquity-os</h6></b></summary><h6>⚠️ 20% fee rate has been applied. Consider using the<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>for no fees.</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Issue</td><td>Task</td><td>1.5</td><td>50</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Reward</th></tr></thead><tbody></tbody></table></details>\n' +
         "<!-- Ubiquity - GithubCommentModule - GithubCommentModule._callee$ - 1234\n" +
         "{\n" +
-        '  "workflowUrl": "undefined/actions/runs/NaN",\n' +
+        '  "workflowUrl": "https://github.com/ubiquity-os/conversation-rewards/actions/runs/1",\n' +
         '  "output": {\n' +
         '    "ubiquity-os": {\n' +
         '      "comments": [],\n' +
