@@ -12,6 +12,7 @@ import {
 import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, WordResult, Result } from "./processor";
+import { typeReplacer } from "../helpers/result-replacer";
 
 interface Multiplier {
   multiplier: number;
@@ -40,11 +41,17 @@ export class FormattingEvaluatorModule implements Module {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
           ...acc,
-          [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: {
-            html: curr.rewards.html,
-            multiplier: curr.multiplier,
-            wordValue: curr.rewards.wordValue,
-          },
+          ...curr.role.reduce(
+            (acc, a) => {
+              acc[this._getEnumValue(a)] = {
+                html: curr.rewards.html,
+                multiplier: curr.multiplier,
+                wordValue: curr.rewards.wordValue,
+              };
+              return acc;
+            },
+            {} as typeof this._multipliers
+          ),
         };
       }, {});
     }
@@ -55,8 +62,7 @@ export class FormattingEvaluatorModule implements Module {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
-      for (let i = 0; i < comments.length; i++) {
-        const comment = comments[i];
+      for (const comment of comments) {
         const { formatting, words } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
@@ -111,16 +117,13 @@ export class FormattingEvaluatorModule implements Module {
       const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
       return { formatting: res.formatting, words: res.words };
     } else {
-      throw new Error(`Could not create DOM for comment [${comment}]`);
+      throw new Error(`Could not create DOM for comment [${JSON.stringify(comment)}]`);
     }
   }
 
-  _countWordsFromRegex(
-    text: string,
-    wordValue: FormattingEvaluatorConfiguration["multipliers"][0]["rewards"]["wordValue"]
-  ): WordResult {
+  _countWordsFromRegex(text: string, wordValue = 0): WordResult {
     const match = text.trim().match(new RegExp(wordRegex, "g"));
-    const wordCount = match?.length || 0;
+    const wordCount = match?.length ?? 0;
     const result = new Decimal(wordCount).pow(this._wordCountExponent).mul(wordValue).toDecimalPlaces(2).toNumber();
     return {
       wordCount,
@@ -155,13 +158,15 @@ export class FormattingEvaluatorModule implements Module {
           continue;
         }
       } else {
-        logger.error(`Could not find multiplier for element <${tagName}> in comment [${element.outerHTML}]`);
+        logger.error(
+          `Could not find multiplier for element <${tagName}> with association <${typeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
+        );
         element.remove();
         continue;
       }
       this._updateTagCount(formatting, tagName, score);
     }
-    const words = this._countWordsFromRegex(htmlElement.textContent ?? "", this._multipliers[commentType].wordValue);
+    const words = this._countWordsFromRegex(htmlElement.textContent ?? "", this._multipliers[commentType]?.wordValue);
     return { formatting, words };
   }
 }

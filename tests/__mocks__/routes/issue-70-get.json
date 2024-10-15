@@ -37,9 +37,7 @@
   "merged_at": "2024-06-24T15:05:43Z",
   "merge_commit_sha": "2d22259b2abe38d2f763893c29efa429113905b8",
   "assignee": null,
-  "assignees": [
-
-  ],
+  "assignees": [],
   "requested_reviewers": [
     {
       "login": "gentlementlegen",
@@ -62,12 +60,8 @@
       "site_admin": false
     }
   ],
-  "requested_teams": [
-
-  ],
-  "labels": [
-
-  ],
+  "requested_teams": [],
+  "labels": [],
   "milestone": null,
   "draft": false,
   "commits_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70/commits",
@@ -192,9 +186,7 @@
       "allow_forking": true,
       "is_template": false,
       "web_commit_signoff_required": false,
-      "topics": [
-
-      ],
+      "topics": [],
       "visibility": "public",
       "forks": 0,
       "open_issues": 0,
@@ -319,9 +311,7 @@
       "allow_forking": true,
       "is_template": false,
       "web_commit_signoff_required": false,
-      "topics": [
-
-      ],
+      "topics": [],
       "visibility": "public",
       "forks": 14,
       "open_issues": 12,

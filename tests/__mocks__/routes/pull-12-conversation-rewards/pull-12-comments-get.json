@@ -1,6 +1,6 @@
 [
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569964797",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569964797",
     "pull_request_review_id": 2007841578,
     "id": 1569964797,
     "node_id": "PRRC_kwDOLUK0B85dk8L9",
@@ -31,22 +31,22 @@
     "body": "\"Comment\" implication isn't clear to me",
     "created_at": "2024-04-18T04:47:41Z",
     "updated_at": "2024-04-18T04:56:11Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1569964797",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569964797",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569964797"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569964797"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1569964797"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569964797"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569964797/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569964797/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -68,7 +68,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569970517",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569970517",
     "pull_request_review_id": 2007841578,
     "id": 1569970517,
     "node_id": "PRRC_kwDOLUK0B85dk9lV",
@@ -99,22 +99,22 @@
     "body": "I've always been anti empty string for variable declarations. It's led to too many problems with other less experienced developers. I wish for a linter rule to flag these as a consequence. \n\nConsider initializing an empty array as a buffer and then joining it at the end. ",
     "created_at": "2024-04-18T04:54:04Z",
     "updated_at": "2024-04-18T04:56:39Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1569970517",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569970517",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569970517"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569970517"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1569970517"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569970517"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569970517/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569970517/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -136,7 +136,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569971792",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569971792",
     "pull_request_review_id": 2007841578,
     "id": 1569971792,
     "node_id": "PRRC_kwDOLUK0B85dk95Q",
@@ -167,22 +167,22 @@
     "body": "Our RPCs don't work anymore ",
     "created_at": "2024-04-18T04:55:30Z",
     "updated_at": "2024-04-18T04:56:11Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1569971792",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569971792",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569971792"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569971792"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1569971792"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569971792"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1569971792/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1569971792/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -204,7 +204,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570010044",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570010044",
     "pull_request_review_id": 2007888517,
     "id": 1570010044,
     "node_id": "PRRC_kwDOLUK0B85dlHO8",
@@ -235,22 +235,22 @@
     "body": "I think in this case it makes sense because this function will return `\"\"` if nothing is found. If I return `undefined` or `null` it will be interpreted in HTML as a string and will display the text null or undefined.\r\n\r\nI changed the code to always return `content` so it forces it to be properly initialized which should avoid mistakes.",
     "created_at": "2024-04-18T05:35:07Z",
     "updated_at": "2024-04-18T05:35:15Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570010044",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570010044",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570010044"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570010044"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570010044"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570010044"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570010044/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570010044/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -273,7 +273,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570011467",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570011467",
     "pull_request_review_id": 2007889613,
     "id": 1570011467,
     "node_id": "PRRC_kwDOLUK0B85dlHlL",
@@ -304,22 +304,22 @@
     "body": "It is supposed to represent a comment. Would you prefer a descriptive action such as `COMMENTED`?",
     "created_at": "2024-04-18T05:36:18Z",
     "updated_at": "2024-04-18T05:36:18Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570011467",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570011467",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570011467"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570011467"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570011467"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570011467"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570011467/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570011467/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -342,7 +342,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570014142",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570014142",
     "pull_request_review_id": 2007892341,
     "id": 1570014142,
     "node_id": "PRRC_kwDOLUK0B85dlIO-",
@@ -373,22 +373,22 @@
     "body": "True, just picked this up from the previous codebase. https://rpc.gnosischain.com should do it for both then?",
     "created_at": "2024-04-18T05:39:05Z",
     "updated_at": "2024-04-18T05:39:06Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570014142",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570014142",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570014142"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570014142"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570014142"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570014142"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570014142/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570014142/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -411,7 +411,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570133378",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570133378",
     "pull_request_review_id": 2008041757,
     "id": 1570133378,
     "node_id": "PRRC_kwDOLUK0B85dllWC",
@@ -442,22 +442,22 @@
     "body": "Yes consider changing them to verbs \n\n`ISSUER`\n`COMMENTED`\n\nI'm not 100% the best way to name all of them I have to look at the full list ",
     "created_at": "2024-04-18T07:13:42Z",
     "updated_at": "2024-04-18T07:14:14Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570133378",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570133378",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570133378"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570133378"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570133378"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570133378"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570133378/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570133378/reactions",
       "total_count": 1,
       "+1": 1,
       "-1": 0,
@@ -480,7 +480,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570159594",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570159594",
     "pull_request_review_id": 2008075969,
     "id": 1570159594,
     "node_id": "PRRC_kwDOLUK0B85dlrvq",
@@ -511,22 +511,22 @@
     "body": "`[].join(\"\");` yields an empty string as well if there's nothing in the array.  ",
     "created_at": "2024-04-18T07:31:03Z",
     "updated_at": "2024-04-18T07:31:33Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570159594",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570159594",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570159594"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570159594"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570159594"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570159594"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570159594/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570159594/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -549,7 +549,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570187141",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570187141",
     "pull_request_review_id": 2008110387,
     "id": 1570187141,
     "node_id": "PRRC_kwDOLUK0B85dlyeF",
@@ -580,22 +580,22 @@
     "body": "Seems convoluted to me and I don't know what problem that solved, but sure can do. Because either way this will yield an empty string or populated string?\r\nEither way changed to a `const string[]` to minimize mistakes then!",
     "created_at": "2024-04-18T07:47:51Z",
     "updated_at": "2024-04-18T07:56:19Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570187141",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570187141",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570187141"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570187141"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570187141"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570187141"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570187141/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570187141/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -618,7 +618,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570188450",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570188450",
     "pull_request_review_id": 2008112006,
     "id": 1570188450,
     "node_id": "PRRC_kwDOLUK0B85dlyyi",
@@ -646,25 +646,25 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "Changed `COMMENT` to `COMMENTED`, added jsdoc description for each value\r\nhttps://github.com/ubiquibot/conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/src/issue-activity.ts#L21",
+    "body": "Changed `COMMENT` to `COMMENTED`, added jsdoc description for each value\r\nhttps://github.com/ubiquity-os/conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/src/issue-activity.ts#L21",
     "created_at": "2024-04-18T07:48:41Z",
     "updated_at": "2024-04-18T07:48:41Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570188450",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570188450",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570188450"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570188450"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570188450"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570188450"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570188450/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570188450/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -687,7 +687,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570588757",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570588757",
     "pull_request_review_id": 2008690769,
     "id": 1570588757,
     "node_id": "PRRC_kwDOLUK0B85dnUhV",
@@ -718,22 +718,22 @@
     "body": "Perhaps it will make the config more expressive if you add other properties?\n\nFor example \n\n```yml\n\nobserve:\n   views:\n      - ISSUE\n      - PULL\n   actors:\n      - ISSUER \n      - COLLABORATOR \n   actions: \n      - COMMENTED\n\n```\n",
     "created_at": "2024-04-18T12:00:37Z",
     "updated_at": "2024-04-18T12:07:58Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570588757",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570588757",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570588757"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570588757"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570588757"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570588757"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570588757/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570588757/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -755,7 +755,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570589892",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570589892",
     "pull_request_review_id": 2008690769,
     "id": 1570589892,
     "node_id": "PRRC_kwDOLUK0B85dnUzE",
@@ -786,22 +786,22 @@
     "body": "What is this @link syntax ",
     "created_at": "2024-04-18T12:01:24Z",
     "updated_at": "2024-04-18T12:06:27Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570589892",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570589892",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570589892"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570589892"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570589892"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570589892"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570589892/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570589892/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -823,7 +823,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570591425",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570591425",
     "pull_request_review_id": 2008690769,
     "id": 1570591425,
     "node_id": "PRRC_kwDOLUK0B85dnVLB",
@@ -854,22 +854,22 @@
     "body": "Just noticed the bit wise operators 1337 code ",
     "created_at": "2024-04-18T12:02:22Z",
     "updated_at": "2024-04-18T12:06:27Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570591425",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570591425",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570591425"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570591425"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570591425"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570591425"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570591425/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570591425/reactions",
       "total_count": 1,
       "+1": 0,
       "-1": 0,
@@ -891,7 +891,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570596007",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570596007",
     "pull_request_review_id": 2008690769,
     "id": 1570596007,
     "node_id": "PRRC_kwDOLUK0B85dnWSn",
@@ -922,22 +922,22 @@
     "body": "It might seem convoluted but I think that it condenses the logic to coerce everything into a string as expected. This is a suggestion to be proactive when we set up the empty string linter one day. \n\nFor example if you `push` any element into the array (compared to `+=`) when you join they should render as expected.  \n\n```js \n\n[ null, null ].join(\"\"); // \"\"\n\nnull += null; // 0 I think?\n\n```",
     "created_at": "2024-04-18T12:05:36Z",
     "updated_at": "2024-04-18T12:16:39Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570596007",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570596007",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570596007"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570596007"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1570596007"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570596007"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1570596007/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1570596007/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -960,7 +960,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573413974",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573413974",
     "pull_request_review_id": 2013179924,
     "id": 1573413974,
     "node_id": "PRRC_kwDOLUK0B85dyGRW",
@@ -988,25 +988,25 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "Simply makes the docs linking the code within the comment, for convenience, and looks like this\r\n<img width=\"598\" alt=\"image\" src=\"https://github.com/ubiquibot/conversation-rewards/assets/9807008/76a60610-f3e4-4886-a9bd-c34a4c67a198\">\r\n\r\nAlso be careful you linked a random GitHub account within your comment\r\n",
+    "body": "Simply makes the docs linking the code within the comment, for convenience, and looks like this\r\n<img width=\"598\" alt=\"image\" src=\"https://github.com/ubiquity-os/conversation-rewards/assets/9807008/76a60610-f3e4-4886-a9bd-c34a4c67a198\">\r\n\r\nAlso be careful you linked a random GitHub account within your comment\r\n",
     "created_at": "2024-04-20T21:23:57Z",
     "updated_at": "2024-04-20T21:24:46Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573413974",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573413974",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573413974"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573413974"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573413974"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573413974"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573413974/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573413974/reactions",
       "total_count": 1,
       "+1": 0,
       "-1": 0,
@@ -1029,7 +1029,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573416633",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573416633",
     "pull_request_review_id": 2013180169,
     "id": 1573416633,
     "node_id": "PRRC_kwDOLUK0B85dyG65",
@@ -1060,22 +1060,22 @@
     "body": "In the case of a string it would coerce the value and you would get \"null\" as a string so I get your point indeed",
     "created_at": "2024-04-20T21:27:14Z",
     "updated_at": "2024-04-20T21:27:14Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573416633",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573416633",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573416633"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573416633"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573416633"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573416633"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573416633/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573416633/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1098,7 +1098,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573420718",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573420718",
     "pull_request_review_id": 2013180522,
     "id": 1573420718,
     "node_id": "PRRC_kwDOLUK0B85dyH6u",
@@ -1126,25 +1126,25 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "`observe` would help to chose what we want to include and ignore? We surely can add more properties as it goes. The purpose of this section is to attribute different multipliers based on the type of comment, mimicking the old [codebase](https://github.com/ubiquibot/comment-incentives/blob/525fcdccc8f0d9032a41cdaed3b4fbc6514d44b6/src/handlers/issue/comment-scoring-by-contribution-style.ts)",
+    "body": "`observe` would help to chose what we want to include and ignore? We surely can add more properties as it goes. The purpose of this section is to attribute different multipliers based on the type of comment, mimicking the old [codebase](https://github.com/ubiquity-os/comment-incentives/blob/525fcdccc8f0d9032a41cdaed3b4fbc6514d44b6/src/handlers/issue/comment-scoring-by-contribution-style.ts)",
     "created_at": "2024-04-20T21:32:28Z",
     "updated_at": "2024-04-20T21:32:29Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573420718",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573420718",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573420718"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573420718"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573420718"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573420718"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573420718/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573420718/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1167,7 +1167,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573720820",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573720820",
     "pull_request_review_id": 2013380519,
     "id": 1573720820,
     "node_id": "PRRC_kwDOLUK0B85dzRL0",
@@ -1198,22 +1198,22 @@
     "body": "I am aware of its purpose. I am proposing to make the config more expressive so that its more intuitive to work with.",
     "created_at": "2024-04-21T11:33:15Z",
     "updated_at": "2024-04-21T11:33:15Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573720820",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573720820",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573720820"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573720820"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573720820"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573720820"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573720820/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573720820/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1236,7 +1236,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573722731",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573722731",
     "pull_request_review_id": 2013381647,
     "id": 1573722731,
     "node_id": "PRRC_kwDOLUK0B85dzRpr",
@@ -1267,22 +1267,22 @@
     "body": "Will you use array syntax?",
     "created_at": "2024-04-21T11:40:25Z",
     "updated_at": "2024-04-21T11:40:26Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573722731",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573722731",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573722731"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573722731"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573722731"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573722731"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573722731/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573722731/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1305,7 +1305,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573723262",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573723262",
     "pull_request_review_id": 2013381967,
     "id": 1573723262,
     "node_id": "PRRC_kwDOLUK0B85dzRx-",
@@ -1336,22 +1336,22 @@
     "body": "This regex appears to convert repeating spaces i.e. `\"   \"` to a single space `\" \"` what is the purpose of this?",
     "created_at": "2024-04-21T11:42:07Z",
     "updated_at": "2024-04-21T11:42:07Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573723262",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723262",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573723262"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573723262"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573723262"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723262"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573723262/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573723262/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1373,7 +1373,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573723774",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573723774",
     "pull_request_review_id": 2013382304,
     "id": 1573723774,
     "node_id": "PRRC_kwDOLUK0B85dzR5-",
@@ -1404,22 +1404,22 @@
     "body": "This doesn't seem right. Network ID 1 is mainnet. The RPC clearly is for gnosis chain. Perhaps try and find a nice mainnet RPC?\r\n",
     "created_at": "2024-04-21T11:44:13Z",
     "updated_at": "2024-04-21T11:44:13Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573723774",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723774",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573723774"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573723774"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573723774"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723774"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573723774/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573723774/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1441,7 +1441,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573724498",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573724498",
     "pull_request_review_id": 2013382757,
     "id": 1573724498,
     "node_id": "PRRC_kwDOLUK0B85dzSFS",
@@ -1472,22 +1472,22 @@
     "body": "Seems like not a very useful mock.",
     "created_at": "2024-04-21T11:47:05Z",
     "updated_at": "2024-04-21T11:47:05Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573724498",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724498",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573724498"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573724498"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573724498"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724498"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573724498/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573724498/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1509,7 +1509,7 @@
     "subject_type": "file"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573724853",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573724853",
     "pull_request_review_id": 2013382941,
     "id": 1573724853,
     "node_id": "PRRC_kwDOLUK0B85dzSK1",
@@ -1540,22 +1540,22 @@
     "body": "Same here",
     "created_at": "2024-04-21T11:48:10Z",
     "updated_at": "2024-04-21T11:48:10Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573724853",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724853",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573724853"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573724853"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573724853"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724853"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573724853/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573724853/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1577,7 +1577,7 @@
     "subject_type": "file"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573731420",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573731420",
     "pull_request_review_id": 2013386612,
     "id": 1573731420,
     "node_id": "PRRC_kwDOLUK0B85dzTxc",
@@ -1605,25 +1605,25 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "Not very useful indeed. I am working on the tests on a separate PR to avoid cluttering that one. I didn't cover all the tests cases yet!\r\nhttps://github.com/ubiquibot/conversation-rewards/pull/14",
+    "body": "Not very useful indeed. I am working on the tests on a separate PR to avoid cluttering that one. I didn't cover all the tests cases yet!\r\nhttps://github.com/ubiquity-os/conversation-rewards/pull/14",
     "created_at": "2024-04-21T12:11:42Z",
     "updated_at": "2024-04-21T12:11:43Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573731420",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731420",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573731420"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573731420"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573731420"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731420"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573731420/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573731420/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1646,7 +1646,7 @@
     "subject_type": "file"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573731649",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573731649",
     "pull_request_review_id": 2013386753,
     "id": 1573731649,
     "node_id": "PRRC_kwDOLUK0B85dzT1B",
@@ -1674,25 +1674,25 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "See https://github.com/ubiquibot/conversation-rewards/pull/14 for the soon up to date mocks",
+    "body": "See https://github.com/ubiquity-os/conversation-rewards/pull/14 for the soon up to date mocks",
     "created_at": "2024-04-21T12:12:30Z",
     "updated_at": "2024-04-21T12:12:30Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573731649",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731649",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573731649"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573731649"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573731649"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731649"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573731649/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573731649/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1715,7 +1715,7 @@
     "subject_type": "file"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573733603",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573733603",
     "pull_request_review_id": 2013387960,
     "id": 1573733603,
     "node_id": "PRRC_kwDOLUK0B85dzUTj",
@@ -1746,22 +1746,22 @@
     "body": "Good point, also symbol should not be DAI but ETH isn't it?\r\n`pay.ubq.fi` seems to be using https://rpc.mevblocker.io for its RPC which seems to have low latency, a good privacy and score according to Chainlist as well.",
     "created_at": "2024-04-21T12:19:50Z",
     "updated_at": "2024-04-21T12:19:51Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573733603",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573733603",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573733603"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573733603"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573733603"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573733603"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573733603/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573733603/reactions",
       "total_count": 1,
       "+1": 1,
       "-1": 0,
@@ -1784,7 +1784,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573737049",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573737049",
     "pull_request_review_id": 2013389883,
     "id": 1573737049,
     "node_id": "PRRC_kwDOLUK0B85dzVJZ",
@@ -1815,22 +1815,22 @@
     "body": "Had changed it everywhere else but here, now it should be fine",
     "created_at": "2024-04-21T12:32:11Z",
     "updated_at": "2024-04-21T12:32:11Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573737049",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573737049",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573737049"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573737049"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1573737049"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573737049"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1573737049/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1573737049/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1853,7 +1853,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574086028",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574086028",
     "pull_request_review_id": 2013708154,
     "id": 1574086028,
     "node_id": "PRRC_kwDOLUK0B85d0qWM",
@@ -1884,22 +1884,22 @@
     "body": "The token address indeed represents DAI on mainnet.  ",
     "created_at": "2024-04-22T03:41:54Z",
     "updated_at": "2024-04-22T03:41:54Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574086028",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086028",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574086028"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574086028"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574086028"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086028"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574086028/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574086028/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1922,7 +1922,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574086293",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574086293",
     "pull_request_review_id": 2013708476,
     "id": 1574086293,
     "node_id": "PRRC_kwDOLUK0B85d0qaV",
@@ -1953,22 +1953,22 @@
     "body": "@gentlementlegen rfc ",
     "created_at": "2024-04-22T03:42:28Z",
     "updated_at": "2024-04-22T03:42:44Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574086293",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086293",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574086293"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574086293"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574086293"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086293"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574086293/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574086293/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -1991,7 +1991,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574114225",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574114225",
     "pull_request_review_id": 2013743347,
     "id": 1574114225,
     "node_id": "PRRC_kwDOLUK0B85d0xOx",
@@ -2022,22 +2022,22 @@
     "body": "This matches any whitespace character (spaces, tabs, line breaks) so basically I make the produced HTML one liner. This helps to collect it from the CLI, makes the string shorter and more compact.",
     "created_at": "2024-04-22T04:38:15Z",
     "updated_at": "2024-04-22T04:38:16Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574114225",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574114225",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574114225"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574114225"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574114225"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574114225"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574114225/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574114225/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2060,7 +2060,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574427305",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574427305",
     "pull_request_review_id": 2014236289,
     "id": 1574427305,
     "node_id": "PRRC_kwDOLUK0B85d19qp",
@@ -2091,22 +2091,22 @@
     "body": "```suggestion\r\n    return result;\r\n```\r\nresolve is unnecessary here and some other places I saw it too",
     "created_at": "2024-04-22T09:21:18Z",
     "updated_at": "2024-04-22T10:13:35Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574427305",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574427305",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574427305"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574427305"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574427305"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574427305"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574427305/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574427305/reactions",
       "total_count": 1,
       "+1": 1,
       "-1": 0,
@@ -2128,11 +2128,11 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574441918",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574441918",
     "pull_request_review_id": 2014236289,
     "id": 1574441918,
     "node_id": "PRRC_kwDOLUK0B85d2BO-",
-    "diff_hunk": "@@ -0,0 +1,41 @@\n+import { parseGitHubUrl } from \"../src/start\";\n+import { IssueActivity } from \"../src/issue-activity\";\n+import { Processor } from \"../src/parser/processor\";\n+import { UserExtractorModule } from \"../src/parser/user-extractor-module\";\n+import { server } from \"./__mocks__/node\";\n+import { DataPurgeModule } from \"../src/parser/data-purge-module\";\n+import userCommentResults from \"./__mocks__/results/user-comment-results.json\";\n+import dataPurgeResults from \"./__mocks__/results/data-purge-result.json\";\n+\n+const issueUrl = process.env.TEST_ISSUE_URL || \"https://github.com/ubiquibot/comment-incentives/issues/22\";\n+\n+beforeAll(() => server.listen());\n+afterEach(() => server.resetHandlers());\n+afterAll(() => server.close());\n+\n+describe(\"Modules tests\", () => {\n+  const issue = parseGitHubUrl(issueUrl);\n+  const activity = new IssueActivity(issue);\n+\n+  beforeAll(async () => {\n+    await activity.init();\n+  });\n+\n+  it(\"Should extract users from comments\", async () => {\n+    const logSpy = jest.spyOn(console, \"log\");\n+    const processor = new Processor();\n+    processor[\"_transformers\"] = [new UserExtractorModule()];\n+    await processor.run(activity);\n+    processor.dump();\n+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));",
+    "diff_hunk": "@@ -0,0 +1,41 @@\n+import { parseGitHubUrl } from \"../src/start\";\n+import { IssueActivity } from \"../src/issue-activity\";\n+import { Processor } from \"../src/parser/processor\";\n+import { UserExtractorModule } from \"../src/parser/user-extractor-module\";\n+import { server } from \"./__mocks__/node\";\n+import { DataPurgeModule } from \"../src/parser/data-purge-module\";\n+import userCommentResults from \"./__mocks__/results/user-comment-results.json\";\n+import dataPurgeResults from \"./__mocks__/results/data-purge-result.json\";\n+\n+const issueUrl = process.env.TEST_ISSUE_URL || \"https://github.com/ubiquity-os/comment-incentives/issues/22\";\n+\n+beforeAll(() => server.listen());\n+afterEach(() => server.resetHandlers());\n+afterAll(() => server.close());\n+\n+describe(\"Modules tests\", () => {\n+  const issue = parseGitHubUrl(issueUrl);\n+  const activity = new IssueActivity(issue);\n+\n+  beforeAll(async () => {\n+    await activity.init();\n+  });\n+\n+  it(\"Should extract users from comments\", async () => {\n+    const logSpy = jest.spyOn(console, \"log\");\n+    const processor = new Processor();\n+    processor[\"_transformers\"] = [new UserExtractorModule()];\n+    await processor.run(activity);\n+    processor.dump();\n+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));",
     "path": "tests/process.issue.test.ts",
     "commit_id": "a12318e0a42de7481154b8162170e4a644199fc2",
     "original_commit_id": "73c650ffb68ba521c73b717dd66eba639abfba70",
@@ -2159,22 +2159,22 @@
     "body": "I'm not sure if it's a good idea to rely on logs for testing, is not possible to use output from the processor?",
     "created_at": "2024-04-22T09:31:35Z",
     "updated_at": "2024-04-22T10:13:35Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574441918",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574441918",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574441918"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574441918"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574441918"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574441918"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574441918/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574441918/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2196,7 +2196,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574458540",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574458540",
     "pull_request_review_id": 2014236289,
     "id": 1574458540,
     "node_id": "PRRC_kwDOLUK0B85d2FSs",
@@ -2227,22 +2227,22 @@
     "body": "why so many nested functions? it becomes hard to read",
     "created_at": "2024-04-22T09:43:17Z",
     "updated_at": "2024-04-22T10:13:35Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574458540",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574458540",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574458540"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574458540"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574458540"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574458540"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574458540/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574458540/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2264,7 +2264,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574460099",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574460099",
     "pull_request_review_id": 2014236289,
     "id": 1574460099,
     "node_id": "PRRC_kwDOLUK0B85d2FrD",
@@ -2295,22 +2295,22 @@
     "body": "is there a reason we are using Decimal.js instead of native BigInt?",
     "created_at": "2024-04-22T09:44:28Z",
     "updated_at": "2024-04-22T10:13:35Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574460099",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574460099",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574460099"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574460099"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574460099"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574460099"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574460099/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574460099/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2332,7 +2332,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574487172",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574487172",
     "pull_request_review_id": 2014236289,
     "id": 1574487172,
     "node_id": "PRRC_kwDOLUK0B85d2MSE",
@@ -2363,22 +2363,22 @@
     "body": "Shouldn't task be issue opening item and specification is pull request opening item? At least that's how I understand from the code.",
     "created_at": "2024-04-22T10:03:50Z",
     "updated_at": "2024-04-22T10:13:35Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574487172",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574487172",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574487172"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574487172"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574487172"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574487172"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574487172/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574487172/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2400,7 +2400,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574492061",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574492061",
     "pull_request_review_id": 2014236289,
     "id": 1574492061,
     "node_id": "PRRC_kwDOLUK0B85d2Ned",
@@ -2431,22 +2431,22 @@
     "body": "I assume this is a permit for task assignee, but where are other permits or is that not done yet?",
     "created_at": "2024-04-22T10:07:39Z",
     "updated_at": "2024-04-22T10:13:35Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574492061",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574492061",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574492061"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574492061"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574492061"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574492061"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574492061/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574492061/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2468,11 +2468,11 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574622869",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574622869",
     "pull_request_review_id": 2014542130,
     "id": 1574622869,
     "node_id": "PRRC_kwDOLUK0B85d2taV",
-    "diff_hunk": "@@ -0,0 +1,41 @@\n+import { parseGitHubUrl } from \"../src/start\";\n+import { IssueActivity } from \"../src/issue-activity\";\n+import { Processor } from \"../src/parser/processor\";\n+import { UserExtractorModule } from \"../src/parser/user-extractor-module\";\n+import { server } from \"./__mocks__/node\";\n+import { DataPurgeModule } from \"../src/parser/data-purge-module\";\n+import userCommentResults from \"./__mocks__/results/user-comment-results.json\";\n+import dataPurgeResults from \"./__mocks__/results/data-purge-result.json\";\n+\n+const issueUrl = process.env.TEST_ISSUE_URL || \"https://github.com/ubiquibot/comment-incentives/issues/22\";\n+\n+beforeAll(() => server.listen());\n+afterEach(() => server.resetHandlers());\n+afterAll(() => server.close());\n+\n+describe(\"Modules tests\", () => {\n+  const issue = parseGitHubUrl(issueUrl);\n+  const activity = new IssueActivity(issue);\n+\n+  beforeAll(async () => {\n+    await activity.init();\n+  });\n+\n+  it(\"Should extract users from comments\", async () => {\n+    const logSpy = jest.spyOn(console, \"log\");\n+    const processor = new Processor();\n+    processor[\"_transformers\"] = [new UserExtractorModule()];\n+    await processor.run(activity);\n+    processor.dump();\n+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));",
+    "diff_hunk": "@@ -0,0 +1,41 @@\n+import { parseGitHubUrl } from \"../src/start\";\n+import { IssueActivity } from \"../src/issue-activity\";\n+import { Processor } from \"../src/parser/processor\";\n+import { UserExtractorModule } from \"../src/parser/user-extractor-module\";\n+import { server } from \"./__mocks__/node\";\n+import { DataPurgeModule } from \"../src/parser/data-purge-module\";\n+import userCommentResults from \"./__mocks__/results/user-comment-results.json\";\n+import dataPurgeResults from \"./__mocks__/results/data-purge-result.json\";\n+\n+const issueUrl = process.env.TEST_ISSUE_URL || \"https://github.com/ubiquity-os/comment-incentives/issues/22\";\n+\n+beforeAll(() => server.listen());\n+afterEach(() => server.resetHandlers());\n+afterAll(() => server.close());\n+\n+describe(\"Modules tests\", () => {\n+  const issue = parseGitHubUrl(issueUrl);\n+  const activity = new IssueActivity(issue);\n+\n+  beforeAll(async () => {\n+    await activity.init();\n+  });\n+\n+  it(\"Should extract users from comments\", async () => {\n+    const logSpy = jest.spyOn(console, \"log\");\n+    const processor = new Processor();\n+    processor[\"_transformers\"] = [new UserExtractorModule()];\n+    await processor.run(activity);\n+    processor.dump();\n+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));",
     "path": "tests/process.issue.test.ts",
     "commit_id": "a12318e0a42de7481154b8162170e4a644199fc2",
     "original_commit_id": "73c650ffb68ba521c73b717dd66eba639abfba70",
@@ -2499,22 +2499,22 @@
     "body": "By definition `dump` was just outputting results to stdout, but I could make it return the result as well. Since the console log is what we want to make sure works properly to be reused by other workflows, I thought it would make sense to test it that way because potentially if we forget other logs somewhere that would mess up the output for the next Action step.",
     "created_at": "2024-04-22T11:49:30Z",
     "updated_at": "2024-04-22T11:49:30Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574622869",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574622869",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574622869"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574622869"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574622869"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574622869"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574622869/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574622869/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2537,7 +2537,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574702577",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574702577",
     "pull_request_review_id": 2014668126,
     "id": 1574702577,
     "node_id": "PRRC_kwDOLUK0B85d3A3x",
@@ -2568,22 +2568,22 @@
     "body": "Un-nested them one level. I think that the `buildXrow` should just be contained by that function because its purpose only serves inside of it.",
     "created_at": "2024-04-22T12:50:38Z",
     "updated_at": "2024-04-22T12:50:38Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574702577",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574702577",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574702577"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574702577"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574702577"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574702577"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574702577/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574702577/reactions",
       "total_count": 1,
       "+1": 1,
       "-1": 0,
@@ -2606,7 +2606,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574724902",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574724902",
     "pull_request_review_id": 2014705833,
     "id": 1574724902,
     "node_id": "PRRC_kwDOLUK0B85d3GUm",
@@ -2637,22 +2637,22 @@
     "body": "I assumed BigInt only handles integers, and we manipulate a lot of floating decimal values for our operations (mostly everything has a floating point)",
     "created_at": "2024-04-22T13:03:54Z",
     "updated_at": "2024-04-22T13:03:54Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574724902",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574724902",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574724902"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574724902"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574724902"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574724902"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574724902/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574724902/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2675,7 +2675,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574767984",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574767984",
     "pull_request_review_id": 2014778123,
     "id": 1574767984,
     "node_id": "PRRC_kwDOLUK0B85d3Q1w",
@@ -2706,22 +2706,22 @@
     "body": "There is one permit generated per participating user, last run:\r\nhttps://github.com/Meniole/test/issues/1#issuecomment-2069443938",
     "created_at": "2024-04-22T13:33:22Z",
     "updated_at": "2024-04-22T13:33:22Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574767984",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574767984",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574767984"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574767984"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574767984"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574767984"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1574767984/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1574767984/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2744,7 +2744,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575555444",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575555444",
     "pull_request_review_id": 2016111656,
     "id": 1575555444,
     "node_id": "PRRC_kwDOLUK0B85d6RF0",
@@ -2775,22 +2775,22 @@
     "body": "Why not do it in the industry standard way? All values are denominated in `1e18` without floating point. \n\nAt the end, for rendering, we just need to divide by `1e18`",
     "created_at": "2024-04-23T02:12:51Z",
     "updated_at": "2024-04-23T02:12:52Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575555444",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575555444",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575555444"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575555444"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575555444"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575555444"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575555444/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575555444/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2813,7 +2813,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575556553",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575556553",
     "pull_request_review_id": 2016113083,
     "id": 1575556553,
     "node_id": "PRRC_kwDOLUK0B85d6RXJ",
@@ -2844,22 +2844,22 @@
     "body": "I'm not sure if I understand but task reward is if you completed the task (if you are an assignee when the issue is completed) and specification reward is if you write the specification (you are the original issue author)",
     "created_at": "2024-04-23T02:14:45Z",
     "updated_at": "2024-04-23T02:15:15Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575556553",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575556553",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575556553"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575556553"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575556553"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575556553"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575556553/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575556553/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -2882,7 +2882,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575659438",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575659438",
     "pull_request_review_id": 2016265929,
     "id": 1575659438,
     "node_id": "PRRC_kwDOLUK0B85d6qeu",
@@ -2910,25 +2910,25 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "I made it according to the previous version:\r\n- Issue Specification means the item when opening an issue\r\n- Issue Task means the item that fixed the issue\r\n\r\nExample with the current comments:\r\nhttps://github.com/ubiquibot/comment-incentives/issues/31#issuecomment-1998609326\r\n\r\n",
+    "body": "I made it according to the previous version:\r\n- Issue Specification means the item when opening an issue\r\n- Issue Task means the item that fixed the issue\r\n\r\nExample with the current comments:\r\nhttps://github.com/ubiquity-os/comment-incentives/issues/31#issuecomment-1998609326\r\n\r\n",
     "created_at": "2024-04-23T05:27:59Z",
     "updated_at": "2024-04-23T05:27:59Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575659438",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575659438",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575659438"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575659438"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575659438"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575659438"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575659438/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575659438/reactions",
       "total_count": 1,
       "+1": 0,
       "-1": 0,
@@ -2951,7 +2951,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575675704",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575675704",
     "pull_request_review_id": 2016291507,
     "id": 1575675704,
     "node_id": "PRRC_kwDOLUK0B85d6uc4",
@@ -2982,22 +2982,22 @@
     "body": "Wouldn't that lead to precision loss in JS and after the division we could end up with 42.000000001 results? That's also what `DecimalJs` fixes in this case.",
     "created_at": "2024-04-23T05:51:39Z",
     "updated_at": "2024-04-23T05:51:39Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575675704",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575675704",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575675704"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575675704"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575675704"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575675704"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575675704/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575675704/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3020,7 +3020,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575851470",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575851470",
     "pull_request_review_id": 2016582024,
     "id": 1575851470,
     "node_id": "PRRC_kwDOLUK0B85d7ZXO",
@@ -3051,22 +3051,22 @@
     "body": "gotcha, I thought this html is for all users",
     "created_at": "2024-04-23T08:23:11Z",
     "updated_at": "2024-04-23T08:23:12Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575851470",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575851470",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575851470"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575851470"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1575851470"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575851470"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1575851470/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1575851470/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3089,7 +3089,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576482609",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576482609",
     "pull_request_review_id": 2017635547,
     "id": 1576482609,
     "node_id": "PRRC_kwDOLUK0B85d9zcx",
@@ -3117,25 +3117,25 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "I can see from the example that it works correctly but when reading the code I get confused\r\nhttps://github.com/ubiquibot/conversation-rewards/pull/12/files#diff-03f6b1f98f9f1df2651b65c46241c43e65d9544f7ea1de71e94255e757b3f2f0R108\r\nas I understand the if statement will be true if the comment is the first/opening comment of the issue or pull request so then it checks if it's issue then it will be TASK otherwise (if it's PR) it will be SPECIFICATION?",
+    "body": "I can see from the example that it works correctly but when reading the code I get confused\r\nhttps://github.com/ubiquity-os/conversation-rewards/pull/12/files#diff-03f6b1f98f9f1df2651b65c46241c43e65d9544f7ea1de71e94255e757b3f2f0R108\r\nas I understand the if statement will be true if the comment is the first/opening comment of the issue or pull request so then it checks if it's issue then it will be TASK otherwise (if it's PR) it will be SPECIFICATION?",
     "created_at": "2024-04-23T15:40:43Z",
     "updated_at": "2024-04-23T15:40:44Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1576482609",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576482609",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576482609"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576482609"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1576482609"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576482609"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576482609/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576482609/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3158,7 +3158,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576567583",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576567583",
     "pull_request_review_id": 2017767160,
     "id": 1576567583,
     "node_id": "PRRC_kwDOLUK0B85d-IMf",
@@ -3189,22 +3189,22 @@
     "body": "That is correct. I understand now why you're confused:\r\n\r\nThe value for the task would be\r\n`\"ISSUE|ISSUER|TASK\"`\r\nbecause it is inside the `issue`\r\n\r\nThe value for the Specification would be\r\n`\"REVIEW|ISSUER|SPECIFICATION\"`\r\nbecause it is inside the `pull`\r\n\r\nI display `Issue: Specification` and `Issue: Task` just to stick to our current display format. Maybe instead I could display `Review: Task` instead?\r\n",
     "created_at": "2024-04-23T16:43:00Z",
     "updated_at": "2024-04-23T16:43:00Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1576567583",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576567583",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576567583"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576567583"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1576567583"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576567583"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576567583/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576567583/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3227,7 +3227,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576666170",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576666170",
     "pull_request_review_id": 2017922720,
     "id": 1576666170,
     "node_id": "PRRC_kwDOLUK0B85d-gQ6",
@@ -3258,22 +3258,22 @@
     "body": "Spoke a bit on this in dms. @whilefoo my intent with referring to GitHub Issues as \"tasks\" was to emphasize that its a funded, and recognized \"real project\" so I want to refer to them as \"tasks\" instead of just \"issues.\"\r\n\r\nSince we are dealing so heavily with the GitHub API, I figured that there is benefit to being specific about what words we are using. Sure we can load in all the GitHub issues on a repository, but not all of them will be funded and recognized. \r\n\r\nWe are only primarily concerned with working with \"tasks\" aka funded GitHub issues.",
     "created_at": "2024-04-23T17:54:58Z",
     "updated_at": "2024-04-23T17:56:22Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1576666170",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576666170",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576666170"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576666170"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1576666170"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576666170"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1576666170/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1576666170/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3296,7 +3296,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1577225638",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1577225638",
     "pull_request_review_id": 2018784615,
     "id": 1577225638,
     "node_id": "PRRC_kwDOLUK0B85eAo2m",
@@ -3327,22 +3327,22 @@
     "body": "Possibly. I personally haven't had that issue but either way my suggestion is to keep everything internally without a decimal and then only convert it upon rendering. ",
     "created_at": "2024-04-24T04:08:45Z",
     "updated_at": "2024-04-24T04:08:45Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1577225638",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577225638",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "MEMBER",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1577225638"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1577225638"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1577225638"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577225638"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1577225638/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1577225638/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3365,7 +3365,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1577477616",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1577477616",
     "pull_request_review_id": 2019198962,
     "id": 1577477616,
     "node_id": "PRRC_kwDOLUK0B85eBmXw",
@@ -3396,22 +3396,22 @@
     "body": "I don't think is it relevant in this scenario because we are not manipulating big numbers. Decimaljs allows for non-precision loss on the operations because there is a lot of multiply / divide with floating points which can result in very long decimals due to Js nature.",
     "created_at": "2024-04-24T08:15:11Z",
     "updated_at": "2024-04-24T08:15:11Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1577477616",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577477616",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1577477616"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1577477616"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1577477616"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577477616"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1577477616/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1577477616/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3434,7 +3434,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578040543",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578040543",
     "pull_request_review_id": 2020125850,
     "id": 1578040543,
     "node_id": "PRRC_kwDOLUK0B85eDvzf",
@@ -3465,22 +3465,22 @@
     "body": "Ok so we need it for precise floating point calculations, in that case BigInt is not applicable.\r\n",
     "created_at": "2024-04-24T14:58:06Z",
     "updated_at": "2024-04-24T14:58:06Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1578040543",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578040543",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578040543"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578040543"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1578040543"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578040543"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578040543/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578040543/reactions",
       "total_count": 1,
       "+1": 1,
       "-1": 0,
@@ -3503,7 +3503,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578050965",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578050965",
     "pull_request_review_id": 2020144465,
     "id": 1578050965,
     "node_id": "PRRC_kwDOLUK0B85eDyWV",
@@ -3534,22 +3534,22 @@
     "body": "> The value for the task would be\r\n> `\"ISSUE|ISSUER|TASK\"`\r\n> because it is inside the `issue`\r\n\r\nwhy is it `ISSUER` which is meant for author of issue/review. wouldn't it make more sense to use `ASIGNEE`?\r\n\r\n> The value for the Specification would be\r\n> `\"REVIEW|ISSUER|SPECIFICATION\"`\r\n> because it is inside the `pull`\r\n\r\nisn't specification the first comment of the issue so how is it inside PR?",
     "created_at": "2024-04-24T15:04:04Z",
     "updated_at": "2024-04-24T15:04:05Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1578050965",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578050965",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578050965"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578050965"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1578050965"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578050965"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578050965/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578050965/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3572,7 +3572,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578162024",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578162024",
     "pull_request_review_id": 2020326790,
     "id": 1578162024,
     "node_id": "PRRC_kwDOLUK0B85eENdo",
@@ -3600,25 +3600,25 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "@whilefoo you are correct, these were wrongly used. I corrected `TASK` and replaced it by `SPECIFICATION` so we have:\r\n`\"ISSUE|ISSUER|SPECIFICATION\"` and `\"REVIEW|ISSUER|TASK\"`\r\n\r\nI used `ISSUER` for this because technically the issuer is not necessarily the assignee in both cases.\r\n\r\nFix within next PR:\r\nhttps://github.com/ubiquibot/conversation-rewards/pull/14/commits/90e150f76073c9cfa16a251f8c1ae48a75aa5408",
+    "body": "@whilefoo you are correct, these were wrongly used. I corrected `TASK` and replaced it by `SPECIFICATION` so we have:\r\n`\"ISSUE|ISSUER|SPECIFICATION\"` and `\"REVIEW|ISSUER|TASK\"`\r\n\r\nI used `ISSUER` for this because technically the issuer is not necessarily the assignee in both cases.\r\n\r\nFix within next PR:\r\nhttps://github.com/ubiquity-os/conversation-rewards/pull/14/commits/90e150f76073c9cfa16a251f8c1ae48a75aa5408",
     "created_at": "2024-04-24T16:08:53Z",
     "updated_at": "2024-04-24T16:47:09Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1578162024",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578162024",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578162024"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578162024"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1578162024"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578162024"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1578162024/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1578162024/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -3641,7 +3641,7 @@
     "subject_type": "line"
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1579556333",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1579556333",
     "pull_request_review_id": 2022648888,
     "id": 1579556333,
     "node_id": "PRRC_kwDOLUK0B85eJh3t",
@@ -3672,22 +3672,22 @@
     "body": "this makes more sense!",
     "created_at": "2024-04-25T14:14:51Z",
     "updated_at": "2024-04-25T14:14:51Z",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1579556333",
-    "pull_request_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333",
+    "pull_request_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
     "author_association": "CONTRIBUTOR",
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1579556333"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1579556333"
       },
       "html": {
-        "href": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1579556333"
+        "href": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       },
       "pull_request": {
-        "href": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/12"
+        "href": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12"
       }
     },
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/pulls/comments/1579556333/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/1579556333/reactions",
       "total_count": 1,
       "+1": 1,
       "-1": 0,

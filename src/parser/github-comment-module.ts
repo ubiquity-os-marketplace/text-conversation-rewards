@@ -10,11 +10,12 @@ import { getGithubWorkflowRunUrl } from "../helpers/github";
 import logger from "../helpers/logger";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
-import { getERC20TokenSymbol } from "../helpers/web3";
+import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { getOctokitInstance } from "../octokit";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
+import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -78,11 +79,11 @@ export class GithubCommentModule implements Module {
 
     const body = bodyArray.join("");
     // We check this length because GitHub has a comment length limit
-    if (body.length > 65536) {
+    if (body.length > GITHUB_COMMENT_PAYLOAD_LIMIT) {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 2] = `\n${getGithubWorkflowRunUrl()}`;
       const newBody = bodyArray.join("");
-      if (newBody.length <= 65536) {
+      if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
         return newBody;
       } else {
         return this.getBodyContent(result, true);
@@ -221,13 +222,13 @@ export class GithubCommentModule implements Module {
             <td>
             <details>
               <summary>
-                ${new Decimal(commentScore.score?.words?.result || 0).add(new Decimal(commentScore.score?.formatting?.result || 0))}
+                ${new Decimal(commentScore.score?.words?.result ?? 0).add(new Decimal(commentScore.score?.formatting?.result ?? 0))}
               </summary>
               <pre>${formatting}</pre>
              </details>
             </td>
-            <td>${commentScore.score?.relevance || "-"}</td>
-            <td>${commentScore.score?.reward || "-"}</td>
+            <td>${commentScore.score?.relevance ?? "-"}</td>
+            <td>${commentScore.score?.reward ?? "-"}</td>
           </tr>`;
     }
 
@@ -260,7 +261,7 @@ export class GithubCommentModule implements Module {
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
 
-    const tokenSymbol = await getERC20TokenSymbol(configuration.evmNetworkId, configuration.erc20RewardToken);
+    const tokenSymbol = await getErc20TokenSymbol(configuration.evmNetworkId, configuration.erc20RewardToken);
 
     return `
     <details>

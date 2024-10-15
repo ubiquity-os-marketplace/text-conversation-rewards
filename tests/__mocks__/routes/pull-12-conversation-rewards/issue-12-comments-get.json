@@ -1,8 +1,8 @@
 [
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/comments/2056635516",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#issuecomment-2056635516",
-    "issue_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/12",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/2056635516",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2056635516",
+    "issue_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12",
     "id": 2056635516,
     "node_id": "IC_kwDOLUK0B856lcR8",
     "user": {
@@ -30,7 +30,7 @@
     "author_association": "CONTRIBUTOR",
     "body": "Example of successful comment posting with results:\r\nhttps://github.com/Meniole/test/issues/1#issuecomment-2056572986",
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/comments/2056635516/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/2056635516/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -44,9 +44,9 @@
     "performed_via_github_app": null
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/comments/2063348339",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#issuecomment-2063348339",
-    "issue_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/12",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/2063348339",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063348339",
+    "issue_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12",
     "id": 2063348339,
     "node_id": "IC_kwDOLUK0B856_DJz",
     "user": {
@@ -74,7 +74,7 @@
     "author_association": "CONTRIBUTOR",
     "body": "@0x4007 I believe that if I had all the tests in this PR it will become enormous, maybe I ought to do it in a separate PR.",
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/comments/2063348339/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/2063348339/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
@@ -88,9 +88,9 @@
     "performed_via_github_app": null
   },
   {
-    "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/comments/2063712447",
-    "html_url": "https://github.com/ubiquibot/conversation-rewards/pull/12#issuecomment-2063712447",
-    "issue_url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/12",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/2063712447",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447",
+    "issue_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12",
     "id": 2063712447,
     "node_id": "IC_kwDOLUK0B857AcC_",
     "user": {
@@ -118,7 +118,7 @@
     "author_association": "MEMBER",
     "body": "> @0x4007 I believe that if I had all the tests in this PR it will become enormous, maybe I ought to do it in a separate PR.\n\nI think it's fine. I generally scrutinize test code less than normal program code anyways. ",
     "reactions": {
-      "url": "https://api.github.com/repos/ubiquibot/conversation-rewards/issues/comments/2063712447/reactions",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/2063712447/reactions",
       "total_count": 0,
       "+1": 0,
       "-1": 0,
