@@ -335,7 +335,7 @@ export class PermitGenerationModule implements Module {
     // parse decrypted private key
     const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
     if (!privateKeyParsed.privateKey) {
-      console.log("Private key could not be decrypted");
+      logger.error("Private key could not be decrypted");
       return false;
     }
 
@@ -343,7 +343,7 @@ export class PermitGenerationModule implements Module {
     // Format: PRIVATE_KEY:GITHUB_OWNER_ID
     if (privateKeyParsed.allowedOrganizationId && !privateKeyParsed.allowedRepositoryId) {
       if (privateKeyParsed.allowedOrganizationId !== githubContextOwnerId) {
-        console.log(`Current organization/user id ${githubContextOwnerId} is not allowed to use this private key`);
+        logger.info(`Current organization/user id ${githubContextOwnerId} is not allowed to use this private key`);
         return false;
       }
       return true;
