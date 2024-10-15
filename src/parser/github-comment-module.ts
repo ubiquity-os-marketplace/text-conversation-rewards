@@ -279,7 +279,7 @@ export class GithubCommentModule implements Module {
           </h6>
         </b>
       </summary>
-      ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the <a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a> for no fees.</h6>` : null}
+      ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the <a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a> for no fees.</h6>` : ""}
       <h6>Contributions Overview</h6>
       <table>
         <thead>
