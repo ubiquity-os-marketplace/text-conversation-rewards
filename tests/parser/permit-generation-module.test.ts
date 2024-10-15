@@ -118,6 +118,7 @@ describe("permit-generation-module.ts", () => {
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
+      spyConsoleLog.mockReset();
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is 0", async () => {
@@ -127,6 +128,7 @@ describe("permit-generation-module.ts", () => {
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
+      spyConsoleLog.mockReset();
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
@@ -136,6 +138,7 @@ describe("permit-generation-module.ts", () => {
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation/);
+      spyConsoleLog.mockReset();
     });
 
     it("Should not apply fees if ERC20 reward token is included in PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST", async () => {
@@ -146,6 +149,7 @@ describe("permit-generation-module.ts", () => {
       expect(logCallArgs[0]).toMatch(
         new RegExp(`.*Token address ${DOLLAR_ADDRESS} is whitelisted to be fee free, skipping permit fee generation`)
       );
+      spyConsoleLog.mockReset();
     });
 
     it("Should apply fees", async () => {
@@ -191,6 +195,7 @@ describe("permit-generation-module.ts", () => {
       expect(isAllowed).toEqual(false);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(new RegExp(`.*Private key could not be decrypted`));
+      spyConsoleLog.mockReset();
     });
 
     it("Should return false if private key is used in unallowed organization", async () => {
@@ -214,6 +219,7 @@ describe("permit-generation-module.ts", () => {
       expect(isAllowed).toEqual(false);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*Current organization\/user id 99 is not allowed to use this private key/);
+      spyConsoleLog.mockReset();
     });
 
     it("Should return true if private key is used in allowed organization", async () => {
@@ -257,13 +263,14 @@ describe("permit-generation-module.ts", () => {
       expect(isAllowed).toEqual(false);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(
-        new RegExp(`.*Current organization/user id 99 and repository id 2 are not allowed to use this private key`)
+        /.*Current organization\/user id 99 and repository id 2 are not allowed to use this private key/
       );
+      spyConsoleLog.mockReset();
     });
 
     it("Should return false if private key is used in allowed organization and unallowed repository", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
@@ -282,8 +289,9 @@ describe("permit-generation-module.ts", () => {
       expect(isAllowed).toEqual(false);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(
-        new RegExp(`.*Current organization/user id 1 and repository id 99 are not allowed to use this private key`)
+        /.*Current organization\/user id 1 and repository id 99 are not allowed to use this private key/
       );
+      spyConsoleLog.mockReset();
     });
 
     it("Should return true if private key is used in allowed organization and repository", async () => {
@@ -308,7 +316,7 @@ describe("permit-generation-module.ts", () => {
 
     it("Should return false if private key format is invalid", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "warn");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:0:2"
@@ -325,7 +333,9 @@ describe("permit-generation-module.ts", () => {
       );
 
       expect(isAllowed).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith("Invalid private key format");
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(/.*Invalid private key format/);
+      spyConsoleLog.mockReset();
     });
   });
 });
