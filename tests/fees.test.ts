@@ -36,6 +36,18 @@ jest.mock("../src/helpers/web3", () => ({
   },
 }));
 
+jest.mock("@actions/github", () => ({
+  context: {
+    runId: "1",
+    payload: {
+      repository: {
+        html_url: "https://github.com/ubiquity-os/conversation-rewards",
+      },
+    },
+    sha: "1234",
+  },
+}));
+
 describe("GithubCommentModule Fee Tests", () => {
   let githubCommentModule: GithubCommentModule;
 
