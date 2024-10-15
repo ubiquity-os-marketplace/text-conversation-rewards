@@ -45,6 +45,7 @@ export class GithubCommentModule implements Module {
   }
 
   async getBodyContent(result: Result, stripContent = false): Promise<string> {
+    const keysToRemove: string[] = [];
     if (stripContent) {
       const strippedBody: (string | undefined)[] = [];
       logger.info("Stripping content due to excessive length.");
@@ -52,10 +53,9 @@ export class GithubCommentModule implements Module {
       strippedBody.push("> This output has been truncated due to the comment length limit.\n\n");
       for (const [key, value] of Object.entries(result)) {
         // Remove result with 0 total from being displayed
-        if (result[key].total > 0) {
-          result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
-          strippedBody.push(result[key].evaluationCommentHtml);
-        }
+        if (result[key].total <= 0) continue;
+        result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
+        strippedBody.push(result[key].evaluationCommentHtml);
       }
       strippedBody.push(
         createStructuredMetadata("GithubCommentModule", {
@@ -68,13 +68,19 @@ export class GithubCommentModule implements Module {
     const bodyArray: (string | undefined)[] = [];
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
-      if (result[key].total > 0) {
-        result[key].evaluationCommentHtml = await this._generateHtml(key, value);
-        bodyArray.push(result[key].evaluationCommentHtml);
+      if (result[key].total <= 0) {
+        keysToRemove.push(key);
+        continue;
       }
+      result[key].evaluationCommentHtml = await this._generateHtml(key, value);
+      bodyArray.push(result[key].evaluationCommentHtml);
     }
     // Remove evaluationCommentHtml because it is superfluous
-    const metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
+    let metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
+    // Remove user with 0 result from metadataResult
+    for (const key of keysToRemove) {
+      metadataResult = removeKeyFromObject(metadataResult, key);
+    }
     // Add the workflow run url and the metadata in the GitHub's comment
     bodyArray.push(
       createStructuredMetadata("GithubCommentModule", {
