@@ -45,24 +45,24 @@ export class GithubCommentModule implements Module {
   }
 
   async getBodyContent(result: Result, stripContent = false): Promise<string> {
+    const bodyArray: (string | undefined)[] = [];
+
     if (stripContent) {
-      const strippedBody: (string | undefined)[] = [];
       logger.info("Stripping content due to excessive length.");
-      strippedBody.push("> [!NOTE]\n");
-      strippedBody.push("> This output has been truncated due to the comment length limit.\n\n");
+      bodyArray.push("> [!NOTE]\n");
+      bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
       for (const [key, value] of Object.entries(result)) {
         result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
-        strippedBody.push(result[key].evaluationCommentHtml);
+        bodyArray.push(result[key].evaluationCommentHtml);
       }
-      strippedBody.push(
+      bodyArray.push(
         createStructuredMetadata("GithubCommentModule", {
           workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
         })
       );
-      return strippedBody.join("");
+      return bodyArray.join("");
     }
 
-    const bodyArray: (string | undefined)[] = [];
     for (const [key, value] of Object.entries(result)) {
       result[key].evaluationCommentHtml = await this._generateHtml(key, value);
       bodyArray.push(result[key].evaluationCommentHtml);
@@ -279,6 +279,7 @@ export class GithubCommentModule implements Module {
           </h6>
         </b>
       </summary>
+      ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the <a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a> for no fees.</h6>` : ""}
       <h6>Contributions Overview</h6>
       <table>
         <thead>
