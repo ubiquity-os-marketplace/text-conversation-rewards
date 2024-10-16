@@ -13,7 +13,7 @@
     "format": "run-s format:lint format:prettier format:cspell",
     "format:lint": "eslint --fix .",
     "format:prettier": "prettier --write .",
-    "format:cspell": "cspell .",
+    "format:cspell": "cspell */**",
     "knip": "knip",
     "prepare": "husky install"
   },
