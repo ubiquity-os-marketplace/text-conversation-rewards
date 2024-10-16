@@ -1,10 +1,10 @@
 {
-  "url": "https://api.github.com/repos/ubiquibot/production/issues/92",
-  "repository_url": "https://api.github.com/repos/ubiquibot/production",
-  "labels_url": "https://api.github.com/repos/ubiquibot/production/issues/92/labels{/name}",
-  "comments_url": "https://api.github.com/repos/ubiquibot/production/issues/92/comments",
-  "events_url": "https://api.github.com/repos/ubiquibot/production/issues/92/events",
-  "html_url": "https://github.com/ubiquibot/production/issues/92",
+  "url": "https://api.github.com/repos/ubiquity-os/production/issues/92",
+  "repository_url": "https://api.github.com/repos/ubiquity-os/production",
+  "labels_url": "https://api.github.com/repos/ubiquity-os/production/issues/92/labels{/name}",
+  "comments_url": "https://api.github.com/repos/ubiquity-os/production/issues/92/comments",
+  "events_url": "https://api.github.com/repos/ubiquity-os/production/issues/92/events",
+  "html_url": "https://github.com/ubiquity-os/production/issues/92",
   "id": 2141012628,
   "node_id": "I_kwDOJkXFU85_nUKU",
   "number": 92,
@@ -44,7 +44,7 @@
   "body": "This is a scenario without a linked pull request. ",
   "closed_by": null,
   "reactions": {
-    "url": "https://api.github.com/repos/ubiquibot/production/issues/92/reactions",
+    "url": "https://api.github.com/repos/ubiquity-os/production/issues/92/reactions",
     "total_count": 0,
     "+1": 0,
     "-1": 0,
@@ -55,7 +55,7 @@
     "rocket": 0,
     "eyes": 0
   },
-  "timeline_url": "https://api.github.com/repos/ubiquibot/production/issues/92/timeline",
+  "timeline_url": "https://api.github.com/repos/ubiquity-os/production/issues/92/timeline",
   "performed_via_github_app": null,
   "state_reason": null
 }

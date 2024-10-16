@@ -1,3 +1,5 @@
+/* eslint-disable sonarjs/no-nested-functions */
+
 import { drop } from "@mswjs/data";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
@@ -40,9 +42,10 @@ jest.mock("@actions/github", () => ({
     runId: "1",
     payload: {
       repository: {
-        html_url: "https://github.com/ubiquibot/conversation-rewards",
+        html_url: "https://github.com/ubiquity-os/conversation-rewards",
       },
     },
+    sha: "1234",
   },
 }));
 
@@ -85,8 +88,8 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-jest.mock("@ubiquibot/permit-generation/core", () => {
-  const originalModule = jest.requireActual("@ubiquibot/permit-generation/core");
+jest.mock("@ubiquity-os/permit-generation", () => {
+  const originalModule = jest.requireActual("@ubiquity-os/permit-generation");
 
   return {
     __esModule: true,
@@ -116,9 +119,7 @@ jest.mock("@ubiquibot/permit-generation/core", () => {
 });
 
 jest.mock("../src/parser/command-line", () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("./__mocks__/results/valid-configuration.json");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dotenv = require("dotenv");
   dotenv.config();
   return {
@@ -135,7 +136,7 @@ jest.mock("../src/parser/command-line", () => {
       repository: {
         name: "conversation-rewards",
         owner: {
-          login: "ubiquibot",
+          login: "ubiquity-os",
           id: 76412717, // https://github.com/ubiquity
         },
       },
@@ -171,17 +172,13 @@ jest.mock("@supabase/supabase-js", () => {
 });
 
 jest.mock("../src/helpers/web3", () => ({
-  getERC20TokenSymbol() {
+  getErc20TokenSymbol() {
     return "WXDAI";
   },
 }));
 
 jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
-}));
-
-jest.mock("child_process", () => ({
-  execSync: jest.fn(() => "1234"),
 }));
 
 beforeAll(() => server.listen());

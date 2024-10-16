@@ -1,4 +1,3 @@
-/* eslint @typescript-eslint/no-var-requires: 0 */
 import { CommentKind } from "../../src/configuration/comment-types";
 import { PermitGenerationModule } from "../../src/parser/permit-generation-module";
 import { Result } from "../../src/parser/processor";
@@ -8,9 +7,7 @@ const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 
 jest.mock("../../src/parser/command-line", () => {
   // Require is needed because mock cannot access elements out of scope
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cfg = require("../__mocks__/results/valid-configuration.json");
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dotenv = require("dotenv");
   dotenv.config();
   return {
@@ -20,14 +17,14 @@ jest.mock("../../src/parser/command-line", () => {
     ref: "",
     eventPayload: {
       issue: {
-        html_url: "https://github.com/ubiquibot/comment-incentives/issues/22",
+        html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
         number: 1,
         state_reason: "not_planned",
       },
       repository: {
         name: "conversation-rewards",
         owner: {
-          login: "ubiquibot",
+          login: "ubiquity-os",
         },
       },
     },
@@ -70,6 +67,7 @@ const resultOriginal: Result = {
         type: CommentKind.ISSUE,
         score: {
           reward: 10,
+          multiplier: 1,
         },
       },
     ],
@@ -89,6 +87,7 @@ const resultOriginal: Result = {
         type: CommentKind.ISSUE,
         score: {
           reward: 1.12,
+          multiplier: 1,
         },
       },
     ],
@@ -101,8 +100,8 @@ describe("permit-generation-module.ts", () => {
       // set fee related env variables
       // treasury fee applied to the final permits, ex: 100 = 100%, 0.1 = 0.1%
       process.env.PERMIT_FEE_RATE = "10";
-      // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquibot-treasury"
-      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquibot-treasury";
+      // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquity-os-treasury"
+      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquity-os-treasury";
       // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
       process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST = `${DOLLAR_ADDRESS}`;
     });
@@ -115,36 +114,42 @@ describe("permit-generation-module.ts", () => {
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
       process.env.PERMIT_FEE_RATE = "";
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "info");
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
-      expect(spyConsoleLog).toHaveBeenCalledWith("PERMIT_FEE_RATE is not set, skipping permit fee generation");
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
+      spyConsoleLog.mockReset();
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is 0", async () => {
       process.env.PERMIT_FEE_RATE = "0";
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "info");
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
-      expect(spyConsoleLog).toHaveBeenCalledWith("PERMIT_FEE_RATE is not set, skipping permit fee generation");
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
+      spyConsoleLog.mockReset();
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
       process.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "info");
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
-      expect(spyConsoleLog).toHaveBeenCalledWith(
-        "PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation"
-      );
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(/.*PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation/);
+      spyConsoleLog.mockReset();
     });
 
     it("Should not apply fees if ERC20 reward token is included in PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "info");
       await permitGenerationModule._applyFees(resultOriginal, DOLLAR_ADDRESS, process.env);
-      expect(spyConsoleLog).toHaveBeenCalledWith(
-        `Token address ${DOLLAR_ADDRESS} is whitelisted to be fee free, skipping permit fee generation`
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(
+        new RegExp(`.*Token address ${DOLLAR_ADDRESS} is whitelisted to be fee free, skipping permit fee generation`)
       );
+      spyConsoleLog.mockReset();
     });
 
     it("Should apply fees", async () => {
@@ -160,7 +165,7 @@ describe("permit-generation-module.ts", () => {
       expect(resultAfterFees["user2"].comments?.[0].score?.reward).toEqual(1.01);
 
       // check that treasury item is added
-      expect(resultAfterFees["ubiquibot-treasury"].total).toEqual(11.11);
+      expect(resultAfterFees["ubiquity-os-treasury"].total).toEqual(11.11);
     });
   });
 
@@ -172,7 +177,7 @@ describe("permit-generation-module.ts", () => {
 
     it("Should return false if private key could not be decrypted", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "warn");
 
       // format: "PRIVATE_KEY"
       // encrypted value: ""
@@ -188,12 +193,14 @@ describe("permit-generation-module.ts", () => {
       );
 
       expect(isAllowed).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith("Private key could not be decrypted");
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(new RegExp(`.*Private key could not be decrypted`));
+      spyConsoleLog.mockReset();
     });
 
     it("Should return false if private key is used in unallowed organization", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1"
@@ -210,9 +217,9 @@ describe("permit-generation-module.ts", () => {
       );
 
       expect(isAllowed).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith(
-        "Current organization/user id 99 is not allowed to use this private key"
-      );
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(/.*Current organization\/user id 99 is not allowed to use this private key/);
+      spyConsoleLog.mockReset();
     });
 
     it("Should return true if private key is used in allowed organization", async () => {
@@ -235,9 +242,9 @@ describe("permit-generation-module.ts", () => {
       expect(isAllowed).toEqual(true);
     });
 
-    it("Should return false if private key is used in unallowed organization and allowed repository", async () => {
+    it("Should return false if private key is used in un-allowed organization and allowed repository", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
@@ -254,14 +261,16 @@ describe("permit-generation-module.ts", () => {
       );
 
       expect(isAllowed).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith(
-        "Current organization/user id 99 and repository id 2 are not allowed to use this private key"
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(
+        /.*Current organization\/user id 99 and repository id 2 are not allowed to use this private key/
       );
+      spyConsoleLog.mockReset();
     });
 
     it("Should return false if private key is used in allowed organization and unallowed repository", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
@@ -278,9 +287,11 @@ describe("permit-generation-module.ts", () => {
       );
 
       expect(isAllowed).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith(
-        "Current organization/user id 1 and repository id 99 are not allowed to use this private key"
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(
+        /.*Current organization\/user id 1 and repository id 99 are not allowed to use this private key/
       );
+      spyConsoleLog.mockReset();
     });
 
     it("Should return true if private key is used in allowed organization and repository", async () => {
@@ -305,7 +316,7 @@ describe("permit-generation-module.ts", () => {
 
     it("Should return false if private key format is invalid", async () => {
       const permitGenerationModule = new PermitGenerationModule();
-      const spyConsoleLog = jest.spyOn(console, "log");
+      const spyConsoleLog = jest.spyOn(console, "warn");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:0:2"
@@ -322,7 +333,9 @@ describe("permit-generation-module.ts", () => {
       );
 
       expect(isAllowed).toEqual(false);
-      expect(spyConsoleLog).toHaveBeenCalledWith("Invalid private key format");
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(/.*Invalid private key format/);
+      spyConsoleLog.mockReset();
     });
   });
 });
