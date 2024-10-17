@@ -158,19 +158,14 @@ export class GithubCommentModule implements Module {
       count: number,
       reward: number | Decimal | undefined
     ) {
-      let fee = undefined;
-      if (result.feeRate) {
-        if (reward) {
-          fee = generateFeeString(reward, result.feeRate);
-        }
-      }
+      const fee = generateFeeString(reward, result.feeRate);
       return `
           <tr>
             <td>${view}</td>
             <td>${contribution}</td>
             <td>${count}</td>
             <td>${reward || "-"}</td>
-            <td>${fee ?? "-"}</td>
+            <td>${fee}</td>
           </tr>`;
     }
 
@@ -220,12 +215,7 @@ export class GithubCommentModule implements Module {
         .replaceAll(">", "&gt;")
         .replaceAll("`", "&#96;")
         .replace(/([\s\S]{64}).[\s\S]+/, "$1&hellip;");
-      let fee = undefined;
-      if (commentScore.score?.reward) {
-        if (feeRate) {
-          fee = generateFeeString(commentScore.score.reward, feeRate);
-        }
-      }
+      const fee = generateFeeString(commentScore.score?.reward, feeRate);
       return `
           <tr>
             <td>
@@ -243,7 +233,7 @@ export class GithubCommentModule implements Module {
             </td>
             <td>${commentScore.score?.relevance ?? "-"}</td>
             <td>${commentScore.score?.reward ?? "-"}</td>
-            <td>${fee ?? "-"}</td>
+            <td>${fee}</td>
           </tr>`;
     }
 
