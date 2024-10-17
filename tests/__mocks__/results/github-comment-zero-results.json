@@ -1,0 +1,195 @@
+{
+  "0x4007": {
+    "comments": [
+      {
+        "content": "rfc on how we can deal with comment outputs. Perhaps we can have a standard recognized property on the output interface? Then the kernel can decide whether to pass it around or something. \r\n```ts\r\ninterface PluginOutput {\r\n  comment: string; // html comment\r\n  rewards: Rewards; // etc\r\n}\r\n```",
+        "id": 2030164289,
+        "score": {
+          "formatting": {
+            "content": {
+              "code": {
+                "elementCount": 1,
+                "score": 1
+              },
+              "p": {
+                "elementCount": 1,
+                "score": 1
+              },
+              "pre": {
+                "elementCount": 1,
+                "score": 0
+              }
+            },
+            "result": 2
+          },
+          "multiplier": 1,
+          "relevance": 0.8,
+          "reward": 4.112,
+          "words": {
+            "result": 2.64,
+            "wordCount": 47,
+            "wordValue": 0.1
+          }
+        },
+        "type": "ISSUE_COLLABORATOR",
+        "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2030164289"
+      },
+      {
+        "content": "I think you should fork from and overtake that second pull due to us being behind schedule",
+        "id": 2033488255,
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "elementCount": 1,
+                "score": 1
+              }
+            },
+            "result": 1
+          },
+          "multiplier": 1,
+          "relevance": 0.8,
+          "reward": 1.888,
+          "words": {
+            "result": 1.11,
+            "wordCount": 17,
+            "wordValue": 0.1
+          }
+        },
+        "type": "ISSUE_COLLABORATOR",
+        "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2033488255"
+      }
+    ],
+    "total": 154.217,
+    "userId": 4975670
+  },
+  "gentlementlegen": {
+    "comments": [
+      {
+        "content": "This needs https://github.com/ubiquibot/conversation-rewards/pull/7 to be merged first. Also probably needs https://github.com/ubiquibot/permit-generation/pull/2 to be able to generate the permits properly.",
+        "id": 2033404518,
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "elementCount": 1,
+                "score": 1
+              }
+            },
+            "result": 1
+          },
+          "multiplier": 1,
+          "relevance": 0.8,
+          "reward": 4.128,
+          "words": {
+            "result": 3.91,
+            "wordCount": 33,
+            "wordValue": 0.2
+          }
+        },
+        "type": "ISSUE_AUTHOR",
+        "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2033404518"
+      },
+      {
+        "content": "To me 1 is the most straightforward to do for few reasons:\r\n- the comment reward plugin has all the needed data already\r\n- it can import the https://github.com/ubiquibot/permit-generation to generate permits itself\r\n- if it is done this way it can be used as a complete standalone without the kernel\r\n3 might make more sense in terms of architecture however. In such case the kernel should pass down results. It is more of an architecture question. Although, if we ever have other plugins in the flow that have influence on the total incentives, it would make sense to go through the kernel to aggregate the total result.",
+        "id": 2036174312,
+        "score": {
+          "formatting": {
+            "content": {
+              "li": {
+                "elementCount": 3,
+                "score": 1
+              },
+              "p": {
+                "elementCount": 5,
+                "score": 1
+              },
+              "ul": {
+                "elementCount": 1,
+                "score": 1
+              }
+            },
+            "result": 9
+          },
+          "multiplier": 1,
+          "relevance": 0.8,
+          "reward": 17.696,
+          "words": {
+            "result": 10.87,
+            "wordCount": 110,
+            "wordValue": 0.2
+          }
+        },
+        "type": "ISSUE_AUTHOR",
+        "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2036174312"
+      }
+    ],
+    "task": {
+      "multiplier": 1,
+      "reward": 400
+    },
+    "total": 817.346,
+    "userId": 9807008
+  },
+  "whilefoo": {
+    "comments": [
+      {
+        "content": "there are a couple of options:\r\n1. we let the conversation-rewards plugin generate and post the comment\r\n2. we put comment as output and then another module is responsible for posting it or let conversation-rewards generate rewards and permit-generation generate permits and a third module that uses output from previous plugins to make a comment and post it\r\n3. we let the conversation-rewards plugin generate the comment and pass it as a standard property like you suggested.\r\nIn theory 2. option sounds good to separate concerns but it's another plugin which means another call to github actions thus more latency, so for the sake of speed it'd go with option 1 or 3, but going with these 2 options would mean there will 1 comment for rewards summary and 1 comment for permits.\r\nI'm not sure if option 3 is any better than option 1 because the plugin already has a token that has permissions to post comments so passing it to the kernel doesn't make much difference.",
+        "id": 2035427134,
+        "score": {
+          "formatting": {
+            "content": {
+              "li": {
+                "elementCount": 1,
+                "score": 0
+              }
+            },
+            "result": 9
+          },
+          "multiplier": 0.25,
+          "relevance": 0,
+          "reward": 3.8505,
+          "words": {
+            "result": 7.99,
+            "wordCount": 173,
+            "wordValue": 0.1
+          }
+        },
+        "type": "ISSUE_CONTRIBUTOR",
+        "url": "https://github.com/ubiquibot/conversation-rewards/issues/5#issuecomment-2035427134"
+      },
+      {
+        "content": "```suggestion\r\n    return result;\r\n```\r\nresolve is unnecessary here and some other places I saw it too",
+        "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);",
+        "id": 1574427305,
+        "score": {
+          "formatting": {
+            "content": {
+              "p": {
+                "elementCount": 1,
+                "score": 0
+              },
+              "pre": {
+                "elementCount": 1,
+                "score": 0
+              }
+            },
+            "result": 2
+          },
+          "multiplier": 0.25,
+          "relevance": 0.7,
+          "reward": 0.6695,
+          "words": {
+            "result": 0.94,
+            "wordCount": 14,
+            "wordValue": 0.1
+          }
+        },
+        "type": "PULL_CONTRIBUTOR",
+        "url": "https://github.com/ubiquibot/conversation-rewards/pull/12#discussion_r1574427305"
+      }
+    ],
+    "total": 0.0,
+    "userId": 139262669
+  }
+}
