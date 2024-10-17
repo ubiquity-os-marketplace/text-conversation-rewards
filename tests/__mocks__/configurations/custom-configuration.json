@@ -8,7 +8,7 @@
     "contentEvaluator": {
       "openAi": {
         "model": "gpt-4o-2024-08-06",
-        "endpoint": ""
+        "endpoint": "https://api.openai.com/v1"
       },
       "multipliers": [
         {
