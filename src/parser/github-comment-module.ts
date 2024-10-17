@@ -16,6 +16,7 @@ import { getOctokitInstance } from "../octokit";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
 import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
+import { generateFeeString } from "../helpers/fee";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -157,12 +158,19 @@ export class GithubCommentModule implements Module {
       count: number,
       reward: number | Decimal | undefined
     ) {
+      let fee = undefined;
+      if (result.feeRate) {
+        if (reward) {
+          fee = generateFeeString(reward, result.feeRate);
+        }
+      }
       return `
           <tr>
             <td>${view}</td>
             <td>${contribution}</td>
             <td>${count}</td>
             <td>${reward || "-"}</td>
+            <td>${fee ?? "-"}</td>
           </tr>`;
     }
 
@@ -192,7 +200,7 @@ export class GithubCommentModule implements Module {
     return content.join("");
   }
 
-  _createIncentiveRows(sortedTasks: SortedTasks | undefined) {
+  _createIncentiveRows(sortedTasks: SortedTasks | undefined, feeRate: number | Decimal | undefined = undefined) {
     const content: string[] = [];
 
     if (!sortedTasks) {
@@ -212,6 +220,12 @@ export class GithubCommentModule implements Module {
         .replaceAll(">", "&gt;")
         .replaceAll("`", "&#96;")
         .replace(/([\s\S]{64}).[\s\S]+/, "$1&hellip;");
+      let fee = undefined;
+      if (commentScore.score?.reward) {
+        if (feeRate) {
+          fee = generateFeeString(commentScore.score.reward, feeRate);
+        }
+      }
       return `
           <tr>
             <td>
@@ -229,6 +243,7 @@ export class GithubCommentModule implements Module {
             </td>
             <td>${commentScore.score?.relevance ?? "-"}</td>
             <td>${commentScore.score?.reward ?? "-"}</td>
+            <td>${fee ?? "-"}</td>
           </tr>`;
     }
 
@@ -288,6 +303,7 @@ export class GithubCommentModule implements Module {
             <th>Contribution</th>
             <th>Count</th>
             <th>Reward</th>
+            <th>Fee</th>
           </tr>
         </thead>
         <tbody>
@@ -304,10 +320,11 @@ export class GithubCommentModule implements Module {
             <th>Formatting</th>
             <th>Relevance</th>
             <th>Reward</th>
+            <th>Fee</th>
           </tr>
         </thead>
         <tbody>
-          ${this._createIncentiveRows(sortedTasks)}
+          ${this._createIncentiveRows(sortedTasks, result.feeRate)}
         </tbody>
       </table>`
           : ""
