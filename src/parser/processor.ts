@@ -83,6 +83,7 @@ export interface Result {
       reward: number;
       multiplier: number;
     };
+    feeRate?: number;
     permitUrl?: string;
     userId: number;
     evaluationCommentHtml?: string;
