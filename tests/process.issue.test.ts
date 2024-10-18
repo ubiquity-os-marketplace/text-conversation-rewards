@@ -9,7 +9,7 @@ import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
-import { Processor } from "../src/parser/processor";
+import { Processor, Result } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
 import { db as mockDb } from "./__mocks__/db";
@@ -338,7 +338,7 @@ describe("Modules tests", () => {
   });
   it("Should generate GitHub comment without zero total", async () => {
     const githubCommentModule = new GithubCommentModule();
-    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults);
+    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
     expect(postBody).not.toContain("whilefoo");
   });
 
