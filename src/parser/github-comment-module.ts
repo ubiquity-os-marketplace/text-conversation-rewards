@@ -93,7 +93,9 @@ export class GithubCommentModule implements Module {
     // We check this length because GitHub has a comment length limit
     if (body.length > GITHUB_COMMENT_PAYLOAD_LIMIT) {
       // First, we try to diminish the metadata content to only contain the URL
-      bodyArray[bodyArray.length - 2] = `\n${getGithubWorkflowRunUrl()}`;
+      bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
+        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+      })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
         return newBody;
