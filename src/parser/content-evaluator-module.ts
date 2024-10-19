@@ -238,25 +238,29 @@ export class ContentEvaluatorModule implements Module {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
+    const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
+    const commentsMap = comments.map((value) => `${value.id}: "${value.comment}"`);
     return `Instruction: 
     Start by thoroughly reading all comments and retaining their content for the evaluation.
+    The comments in the ALL COMMENTS section will be in the format of: {id} - {author}: "{comment}"
 
     OUTPUT FORMAT:
-    Provide a JSON object with the format: {ID: CONNECTION_SCORE} for each record in the evaluation section. 
-    The CONNECTION_SCORE should reflect the average relevance based on all comments, title, and body.
+    For every record in the START EVALUATING section, provide a JSON object in the following format: {ID: CONNECTION_SCORE}. 
+    The average relevance based on the comments in the ALL COMMENTS SECTION should be reflected in the CONNECTION_SCORE.
 
     GLOBAL CONTEXT:
     Specification
     "${issue}"
     
     ALL COMMENTS:
-    ${JSON.stringify(allComments, null, 2)}
+    ${JSON.stringify(allCommentsMap, null, 2)}
     
     IMPORTANT CONTEXT:
     Consider all comments when evaluating connections. Relevant comments may appear before or after the comment being evaluated, so examine all of them closely.
+    The comments in the start evaluating section will be in the format of: {id}: "{comment}"
     
     START EVALUATING:
-    ${JSON.stringify(comments, null, 2)}
+    ${JSON.stringify(commentsMap, null, 2)}
 
     POST EVALUATION:
     Provide only the connection scores as floating-point values indicating the relevance of each comment based on its connection to the overall context.
