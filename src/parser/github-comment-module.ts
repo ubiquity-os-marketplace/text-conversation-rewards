@@ -10,12 +10,12 @@ import { getGithubWorkflowRunUrl } from "../helpers/github";
 import logger from "../helpers/logger";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
-import { getERC20TokenSymbol } from "../helpers/web3";
+import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { getOctokitInstance } from "../octokit";
 import program from "./command-line";
 import { GithubCommentScore, Module, Result } from "./processor";
-import { GITHUB_PAYLOAD_LIMIT } from "../helpers/constants";
+import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -45,30 +45,42 @@ export class GithubCommentModule implements Module {
   }
 
   async getBodyContent(result: Result, stripContent = false): Promise<string> {
+    const keysToRemove: string[] = [];
+    const bodyArray: (string | undefined)[] = [];
+
     if (stripContent) {
-      const strippedBody: (string | undefined)[] = [];
       logger.info("Stripping content due to excessive length.");
-      strippedBody.push("> [!NOTE]\n");
-      strippedBody.push("> This output has been truncated due to the comment length limit.\n\n");
+      bodyArray.push("> [!NOTE]\n");
+      bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
       for (const [key, value] of Object.entries(result)) {
+        // Remove result with 0 total from being displayed
+        if (result[key].total <= 0) continue;
         result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
-        strippedBody.push(result[key].evaluationCommentHtml);
+        bodyArray.push(result[key].evaluationCommentHtml);
       }
-      strippedBody.push(
+      bodyArray.push(
         createStructuredMetadata("GithubCommentModule", {
           workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
         })
       );
-      return strippedBody.join("");
+      return bodyArray.join("");
     }
 
-    const bodyArray: (string | undefined)[] = [];
     for (const [key, value] of Object.entries(result)) {
+      // Remove result with 0 total from being displayed
+      if (result[key].total <= 0) {
+        keysToRemove.push(key);
+        continue;
+      }
       result[key].evaluationCommentHtml = await this._generateHtml(key, value);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
     // Remove evaluationCommentHtml because it is superfluous
-    const metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
+    let metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
+    // Remove user with 0 result from metadataResult
+    for (const key of keysToRemove) {
+      metadataResult = removeKeyFromObject(metadataResult, key);
+    }
     // Add the workflow run url and the metadata in the GitHub's comment
     bodyArray.push(
       createStructuredMetadata("GithubCommentModule", {
@@ -79,11 +91,13 @@ export class GithubCommentModule implements Module {
 
     const body = bodyArray.join("");
     // We check this length because GitHub has a comment length limit
-    if (body.length > GITHUB_PAYLOAD_LIMIT) {
+    if (body.length > GITHUB_COMMENT_PAYLOAD_LIMIT) {
       // First, we try to diminish the metadata content to only contain the URL
-      bodyArray[bodyArray.length - 2] = `\n${getGithubWorkflowRunUrl()}`;
+      bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
+        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+      })}`;
       const newBody = bodyArray.join("");
-      if (newBody.length <= GITHUB_PAYLOAD_LIMIT) {
+      if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
         return newBody;
       } else {
         return this.getBodyContent(result, true);
@@ -222,13 +236,13 @@ export class GithubCommentModule implements Module {
             <td>
             <details>
               <summary>
-                ${new Decimal(commentScore.score?.words?.result || 0).add(new Decimal(commentScore.score?.formatting?.result || 0))}
+                ${new Decimal(commentScore.score?.words?.result ?? 0).add(new Decimal(commentScore.score?.formatting?.result ?? 0))}
               </summary>
               <pre>${formatting}</pre>
              </details>
             </td>
-            <td>${commentScore.score?.relevance || "-"}</td>
-            <td>${commentScore.score?.reward || "-"}</td>
+            <td>${commentScore.score?.relevance ?? "-"}</td>
+            <td>${commentScore.score?.reward ?? "-"}</td>
           </tr>`;
     }
 
@@ -261,7 +275,7 @@ export class GithubCommentModule implements Module {
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
 
-    const tokenSymbol = await getERC20TokenSymbol(configuration.evmNetworkId, configuration.erc20RewardToken);
+    const tokenSymbol = await getErc20TokenSymbol(configuration.evmNetworkId, configuration.erc20RewardToken);
 
     return `
     <details>
@@ -279,6 +293,7 @@ export class GithubCommentModule implements Module {
           </h6>
         </b>
       </summary>
+      ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the <a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a> for no fees.</h6>` : ""}
       <h6>Contributions Overview</h6>
       <table>
         <thead>

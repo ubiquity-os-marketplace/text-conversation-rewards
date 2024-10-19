@@ -1,9 +1,7 @@
 {
   "name": "Conversation rewards",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
-  "ubiquity:listeners": [
-    "issues.closed"
-  ],
+  "ubiquity:listeners": ["issues.closed"],
   "configuration": {
     "default": {},
     "type": "object",
@@ -73,18 +71,12 @@
                         "default": "",
                         "type": "string"
                       }
-                    },
-                    "required": [
-                      "model",
-                      "endpoint"
-                    ]
+                    }
                   },
                   "multipliers": {
                     "default": [
                       {
-                        "role": [
-                          "ISSUE_SPECIFICATION"
-                        ],
+                        "role": ["ISSUE_SPECIFICATION"],
                         "relevance": 1
                       }
                     ],
@@ -263,16 +255,10 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "role"
-                      ]
+                      "required": ["role"]
                     }
                   }
-                },
-                "required": [
-                  "openAi",
-                  "multipliers"
-                ]
+                }
               },
               {
                 "type": "null"
@@ -289,10 +275,7 @@
                     "default": true,
                     "type": "boolean"
                   }
-                },
-                "required": [
-                  "redeemTask"
-                ]
+                }
               },
               {
                 "type": "null"
@@ -322,90 +305,70 @@
                     "minItems": 1,
                     "default": [
                       {
-                        "role": [
-                          "ISSUE_SPECIFICATION"
-                        ],
+                        "role": ["ISSUE_SPECIFICATION"],
                         "multiplier": 1,
                         "rewards": {
                           "wordValue": 0.1
                         }
                       },
                       {
-                        "role": [
-                          "ISSUE_AUTHOR"
-                        ],
+                        "role": ["ISSUE_AUTHOR"],
                         "multiplier": 1,
                         "rewards": {
                           "wordValue": 0.2
                         }
                       },
                       {
-                        "role": [
-                          "ISSUE_ASSIGNEE"
-                        ],
+                        "role": ["ISSUE_ASSIGNEE"],
                         "multiplier": 0,
                         "rewards": {
                           "wordValue": 0
                         }
                       },
                       {
-                        "role": [
-                          "ISSUE_COLLABORATOR"
-                        ],
+                        "role": ["ISSUE_COLLABORATOR"],
                         "multiplier": 1,
                         "rewards": {
                           "wordValue": 0.1
                         }
                       },
                       {
-                        "role": [
-                          "ISSUE_CONTRIBUTOR"
-                        ],
+                        "role": ["ISSUE_CONTRIBUTOR"],
                         "multiplier": 0.25,
                         "rewards": {
                           "wordValue": 0.1
                         }
                       },
                       {
-                        "role": [
-                          "PULL_SPECIFICATION"
-                        ],
+                        "role": ["PULL_SPECIFICATION"],
                         "multiplier": 0,
                         "rewards": {
                           "wordValue": 0
                         }
                       },
                       {
-                        "role": [
-                          "PULL_AUTHOR"
-                        ],
+                        "role": ["PULL_AUTHOR"],
                         "multiplier": 2,
                         "rewards": {
                           "wordValue": 0.2
                         }
                       },
                       {
-                        "role": [
-                          "PULL_ASSIGNEE"
-                        ],
+                        "role": ["PULL_ASSIGNEE"],
                         "multiplier": 1,
                         "rewards": {
                           "wordValue": 0.1
                         }
                       },
                       {
-                        "role": [
-                          "PULL_COLLABORATOR"
-                        ],
+                        "role": ["PULL_COLLABORATOR"],
                         "multiplier": 1,
                         "rewards": {
                           "wordValue": 0.1
                         }
                       },
                       {
-                        "role": [
-                          "PULL_CONTRIBUTOR"
-                        ],
+                        "role": ["PULL_CONTRIBUTOR"],
                         "multiplier": 0.25,
                         "rewards": {
                           "wordValue": 0.1
@@ -687,10 +650,7 @@
                                       "type": "boolean"
                                     }
                                   },
-                                  "required": [
-                                    "score",
-                                    "countWords"
-                                  ]
+                                  "required": ["score"]
                                 }
                               }
                             },
@@ -698,29 +658,17 @@
                               "default": 0.1,
                               "type": "number"
                             }
-                          },
-                          "required": [
-                            "html",
-                            "wordValue"
-                          ]
+                          }
                         }
                       },
-                      "required": [
-                        "role",
-                        "multiplier",
-                        "rewards"
-                      ]
+                      "required": ["role", "multiplier"]
                     }
                   },
                   "wordCountExponent": {
                     "default": 0.85,
                     "type": "number"
                   }
-                },
-                "required": [
-                  "multipliers",
-                  "wordCountExponent"
-                ]
+                }
               },
               {
                 "type": "null"
@@ -754,27 +702,14 @@
                     "default": false,
                     "type": "boolean"
                   }
-                },
-                "required": [
-                  "post",
-                  "debug"
-                ]
+                }
               },
               {
                 "type": "null"
               }
             ]
           }
-        },
-        "required": [
-          "requirePriceLabel",
-          "contentEvaluator",
-          "userExtractor",
-          "dataPurge",
-          "formattingEvaluator",
-          "permitGeneration",
-          "githubComment"
-        ]
+        }
       },
       "dataCollection": {
         "default": {},
@@ -790,20 +725,9 @@
             "minimum": 100,
             "type": "number"
           }
-        },
-        "required": [
-          "maxAttempts",
-          "delayMs"
-        ]
+        }
       }
     },
-    "required": [
-      "logLevel",
-      "evmNetworkId",
-      "evmPrivateEncrypted",
-      "erc20RewardToken",
-      "incentives",
-      "dataCollection"
-    ]
+    "required": ["evmPrivateEncrypted"]
   }
 }

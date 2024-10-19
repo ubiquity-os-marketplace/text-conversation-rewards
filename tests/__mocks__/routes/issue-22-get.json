@@ -1,10 +1,10 @@
 {
-  "url": "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22",
-  "repository_url": "https://api.github.com/repos/ubiquibot/comment-incentives",
-  "labels_url": "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/labels{/name}",
-  "comments_url": "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/comments",
-  "events_url": "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/events",
-  "html_url": "https://github.com/ubiquibot/comment-incentives/issues/22",
+  "url": "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22",
+  "repository_url": "https://api.github.com/repos/ubiquity-os/comment-incentives",
+  "labels_url": "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/labels{/name}",
+  "comments_url": "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/comments",
+  "events_url": "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/events",
+  "html_url": "https://github.com/ubiquity-os/comment-incentives/issues/22",
   "id": 2139000633,
   "node_id": "I_kwDOK87YcM5_fo85",
   "number": 22,
@@ -33,7 +33,7 @@
     {
       "id": 6439650896,
       "node_id": "LA_kwDOK87YcM8AAAABf9VGUA",
-      "url": "https://api.github.com/repos/ubiquibot/comment-incentives/labels/Time:%20%3C1%20Hour",
+      "url": "https://api.github.com/repos/ubiquity-os/comment-incentives/labels/Time:%20%3C1%20Hour",
       "name": "Time: \u003C1 Hour",
       "color": "ededed",
       "default": false,
@@ -42,7 +42,7 @@
     {
       "id": 6439651250,
       "node_id": "LA_kwDOK87YcM8AAAABf9VHsg",
-      "url": "https://api.github.com/repos/ubiquibot/comment-incentives/labels/Priority:%203%20(High)",
+      "url": "https://api.github.com/repos/ubiquity-os/comment-incentives/labels/Priority:%203%20(High)",
       "name": "Priority: 3 (High)",
       "color": "ededed",
       "default": false,
@@ -51,7 +51,7 @@
     {
       "id": 6495296501,
       "node_id": "LA_kwDOK87YcM8AAAABgyZb9Q",
-      "url": "https://api.github.com/repos/ubiquibot/comment-incentives/labels/Price:%2037.5%20USD",
+      "url": "https://api.github.com/repos/ubiquity-os/comment-incentives/labels/Price:%2037.5%20USD",
       "name": "Price: 37.5 USD",
       "color": "1f883d",
       "default": false,
@@ -109,7 +109,7 @@
   "closed_at": "2024-02-17T01:09:32Z",
   "author_association": "MEMBER",
   "active_lock_reason": null,
-  "body": "Can somebody work on generating a new `X25519_PRIVATE_KEY` for the ubiquibot organization? We need to share it for development purposes.\r\n\r\n1. Generate a new key\r\n2. Encrypt a new `evmPrivateKeyEncrypted` (no funds!) and add to the org bot config\r\n3. Add the shared test key to the `comment-incentives` readme. \r\n\r\nhttps://github.com/ubiquibot/comment-incentives/pull/21/commits/567419d9688e92edf698f64c697f1a7cafe1d02e\r\n\r\n_Originally posted by @pavlovcik in https://github.com/ubiquibot/comment-incentives/issues/19#issuecomment-1948876653_\r\n            ",
+  "body": "Can somebody work on generating a new `X25519_PRIVATE_KEY` for the ubiquity-os organization? We need to share it for development purposes.\r\n\r\n1. Generate a new key\r\n2. Encrypt a new `evmPrivateKeyEncrypted` (no funds!) and add to the org bot config\r\n3. Add the shared test key to the `comment-incentives` readme. \r\n\r\nhttps://github.com/ubiquity-os/comment-incentives/pull/21/commits/567419d9688e92edf698f64c697f1a7cafe1d02e\r\n\r\n_Originally posted by @pavlovcik in https://github.com/ubiquity-os/comment-incentives/issues/19#issuecomment-1948876653_\r\n            ",
   "closed_by": {
     "login": "molecula451",
     "id": 41552663,
@@ -131,7 +131,7 @@
     "site_admin": false
   },
   "reactions": {
-    "url": "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/reactions",
+    "url": "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/reactions",
     "total_count": 0,
     "+1": 0,
     "-1": 0,
@@ -142,7 +142,7 @@
     "rocket": 0,
     "eyes": 0
   },
-  "timeline_url": "https://api.github.com/repos/ubiquibot/comment-incentives/issues/22/timeline",
+  "timeline_url": "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/timeline",
   "performed_via_github_app": null,
   "state_reason": "completed"
 }
