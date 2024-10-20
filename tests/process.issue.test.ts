@@ -9,7 +9,7 @@ import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
 import { PermitGenerationModule } from "../src/parser/permit-generation-module";
-import { Processor } from "../src/parser/processor";
+import { Processor, Result } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
 import { db as mockDb } from "./__mocks__/db";
@@ -19,6 +19,7 @@ import contentEvaluatorResults from "./__mocks__/results/content-evaluator-resul
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
+import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import validConfiguration from "./__mocks__/results/valid-configuration.json";
@@ -334,6 +335,11 @@ describe("Modules tests", () => {
     expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
       fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")
     );
+  });
+  it("Should generate GitHub comment without zero total", async () => {
+    const githubCommentModule = new GithubCommentModule();
+    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
+    expect(postBody).not.toContain("whilefoo");
   });
 
   it("Should properly generate the configuration", () => {

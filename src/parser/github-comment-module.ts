@@ -46,6 +46,7 @@ export class GithubCommentModule implements Module {
   }
 
   async getBodyContent(result: Result, stripContent = false): Promise<string> {
+    const keysToRemove: string[] = [];
     const bodyArray: (string | undefined)[] = [];
 
     if (stripContent) {
@@ -53,6 +54,8 @@ export class GithubCommentModule implements Module {
       bodyArray.push("> [!NOTE]\n");
       bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
       for (const [key, value] of Object.entries(result)) {
+        // Remove result with 0 total from being displayed
+        if (result[key].total <= 0) continue;
         result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
         bodyArray.push(result[key].evaluationCommentHtml);
       }
@@ -65,11 +68,20 @@ export class GithubCommentModule implements Module {
     }
 
     for (const [key, value] of Object.entries(result)) {
+      // Remove result with 0 total from being displayed
+      if (result[key].total <= 0) {
+        keysToRemove.push(key);
+        continue;
+      }
       result[key].evaluationCommentHtml = await this._generateHtml(key, value);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
     // Remove evaluationCommentHtml because it is superfluous
-    const metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
+    let metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
+    // Remove user with 0 result from metadataResult
+    for (const key of keysToRemove) {
+      metadataResult = removeKeyFromObject(metadataResult, key);
+    }
     // Add the workflow run url and the metadata in the GitHub's comment
     bodyArray.push(
       createStructuredMetadata("GithubCommentModule", {
@@ -82,7 +94,9 @@ export class GithubCommentModule implements Module {
     // We check this length because GitHub has a comment length limit
     if (body.length > GITHUB_COMMENT_PAYLOAD_LIMIT) {
       // First, we try to diminish the metadata content to only contain the URL
-      bodyArray[bodyArray.length - 2] = `\n${getGithubWorkflowRunUrl()}`;
+      bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
+        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+      })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
         return newBody;
@@ -284,7 +298,7 @@ export class GithubCommentModule implements Module {
           </h6>
         </b>
       </summary>
-      ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the <a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a> for no fees.</h6>` : ""}
+      ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       <h6>Contributions Overview</h6>
       <table>
         <thead>
