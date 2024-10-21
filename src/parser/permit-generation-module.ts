@@ -211,7 +211,7 @@ export class PermitGenerationModule implements Module {
       permitFeeAmountDecimal = permitFeeAmountDecimal.add(new Decimal(rewardResult.total).minus(totalAfterFee));
       // subtract fees
       result[key].total = Number(totalAfterFee.toFixed(2));
-      result[key].feeRate = new Decimal(env.PERMIT_FEE_RATE).div(100).toNumber();
+      result[key].feeRate = new Decimal(env.PERMIT_FEE_RATE).toNumber();
       if (result[key].task) {
         result[key].task.reward = Number(new Decimal(result[key].task.reward).mul(feeRateDecimal).toFixed(2));
       }

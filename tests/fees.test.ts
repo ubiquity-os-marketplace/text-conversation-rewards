@@ -64,7 +64,7 @@ describe("GithubCommentModule Fee Tests", () => {
           reward: 50, // Example value
           multiplier: 1.5, // Example value
         },
-        feeRate: 0.2, // This implies a 5% fee
+        feeRate: 20, // This implies a 20% fee
         permitUrl: "https://pay.ubq.fi", // Example URL
         userId: 12345, // Example user ID
         evaluationCommentHtml: "",
@@ -88,7 +88,7 @@ describe("GithubCommentModule Fee Tests", () => {
         '        "reward": 50,\n' +
         '        "multiplier": 1.5\n' +
         "      },\n" +
-        '      "feeRate": 0.2,\n' +
+        '      "feeRate": 20,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +
         '      "userId": 12345\n' +
         "    }\n" +
@@ -106,7 +106,7 @@ describe("GithubCommentModule Fee Tests", () => {
           reward: 50, // Example value
           multiplier: 1.5, // Example value
         },
-        feeRate: 0.2, // This implies a 5% fee
+        feeRate: 20, // This implies a  20% fee
         permitUrl: "https://pay.ubq.fi", // Example URL
         userId: 12345, // Example user ID
         evaluationCommentHtml: "",
@@ -131,7 +131,7 @@ describe("GithubCommentModule Fee Tests", () => {
         '        "reward": 50,\n' +
         '        "multiplier": 1.5\n' +
         "      },\n" +
-        '      "feeRate": 0.2,\n' +
+        '      "feeRate": 20,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +
         '      "userId": 12345\n' +
         "    }\n" +
