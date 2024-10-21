@@ -240,36 +240,40 @@ export class ContentEvaluatorModule implements Module {
     }
     const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const commentsMap = comments.map((value) => `${value.id}: "${value.comment}"`);
-    return `Instruction: 
+    return `
+    ### INSTRUCTION:
     Start by thoroughly reading all comments and retaining their content for the evaluation.
     The comments in the ALL COMMENTS section will be in the format of: {id} - {author}: "{comment}"
 
-    OUTPUT FORMAT:
+    ### OUTPUT FORMAT:
     For every record in the START EVALUATING section, provide a JSON object in the following format: {ID: CONNECTION_SCORE}. 
     The average relevance based on the comments in the ALL COMMENTS SECTION should be reflected in the CONNECTION_SCORE.
+    Comments use GitHub-flavored Markdown, so words within symbols like ">" should not factor into scoring since they reference other comments.
+    Carefully distinguish between referenced words and regular words in the comments.
+    How related the comment is to the Specification below should also be considered in the scoring process.
 
-    GLOBAL CONTEXT:
+    ### GLOBAL CONTEXT:
     Specification
     "${issue}"
     
-    ALL COMMENTS:
-    ${JSON.stringify(allCommentsMap, null, 2)}
+    ### ALL COMMENTS:
+    ${allCommentsMap.join("\n")}
     
-    IMPORTANT CONTEXT:
+    ### IMPORTANT CONTEXT:
     Consider all comments when evaluating connections. Relevant comments may appear before or after the comment being evaluated, so examine all of them closely.
     The comments in the start evaluating section will be in the format of: {id}: "{comment}"
     
-    START EVALUATING:
-    ${JSON.stringify(commentsMap, null, 2)}
+    ### START EVALUATING:
+    ${commentsMap.join("\n")}
 
-    POST EVALUATION:
+    ### POST EVALUATION:
     Provide only the connection scores as floating-point values indicating the relevance of each comment based on its connection to the overall context.
 
-    SCORING CRITERIA:
+    ### SCORING CRITERIA:
     Assign scores from 0 to 1, 0: Not related (e.g., spam), 1: Highly relevant (e.g., solutions, bugs)
     Consider the context of all comments; even minor details may be significant for resolving the issue. If a comment is unrelated to all comments, title, or issue specification, assign a score of 0.
 
-    OUTPUT:
+    ### OUTPUT:
     Return a JSON object containing the ID and the connection score for each evaluated comment. The number of entries in the JSON response must match exactly ${comments.length}.
     `;
   }
