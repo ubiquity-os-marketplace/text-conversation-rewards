@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0 (2024-10-22)
+
+
+### Bug Fixes
+
+* correct null handling in fee rate message ([f3d11a6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/f3d11a6aa398e099ebbe03d14be99ae66907246b))
+* **cspell:** adjust ignorePaths to correctly exclude test files ([a86d606](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a86d6064995f90516a556002d8055dd7b6723a9c))
+* format zero result.json file ([ff2248e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ff2248e1cdb0a08a2cfea555026a2cdbf543d719))
+* **tests:** update issue URL and expected result ([e3c5338](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/e3c5338c1c377bf031c1c884713c2214205902c1))
+* update OpenAI endpoint and improve GitHub comment metadata ([7da861e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7da861eee91c50be5f39a2285440b72e2cf7056c))
+
 ## [1.5.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.5.0...v1.5.1) (2024-10-12)
 
 
