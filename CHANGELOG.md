@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.5.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.5.0...v1.5.1) (2024-10-12)
+
+
+### Bug Fixes
+
+* add log message for closed pull requests ([d640681](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d640681cbcbbf5961e61c4f41eec8b82d963444d))
+* add logging for payload truncation ([bf0f4c5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bf0f4c5f6aaa8714baf8e4653f36f275f695374f))
+* added custom configuration and related tests ([2fc8136](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2fc8136813c94553cc1631d50b87901831405484))
+* downgrade ethers to 5.7.2 and update web3 helper ([c5e8e3c](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c5e8e3c0877bd21e80d745bdae557d28c74bd7f4))
+* enhance error logging for missing multiplier cases ([a8cab80](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a8cab808e30cd1e156e795de22a63a386c39c591))
+* enhance error logging for missing multiplier cases ([72d0d47](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/72d0d4711eec68f7880e95762ccb5a853cf2299a))
+* remove redundant console log in run.ts ([7851b75](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7851b7524822c42b62e1c67dca4a00bcbe9d7f4f))
+* upgrade permit generation package ([5300022](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/5300022f2b45d0d1b5c48b2d0db46014a5643bf5))
+
 ## [1.5.0](https://github.com/ubiquity-os-marketplace/conversation-rewards/compare/v1.4.0...v1.5.0) (2024-09-30)
 
 ### Features
