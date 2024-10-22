@@ -2,7 +2,7 @@
 
 import { drop } from "@mswjs/data";
 import fs from "fs";
-import { http, HttpResponse } from "msw";
+import { http, passthrough } from "msw";
 import githubCommentModuleInstance from "../src/helpers/github-comment-module-instance";
 import { IssueActivity } from "../src/issue-activity";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
@@ -12,11 +12,11 @@ import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import "../src/parser/command-line";
+import { parseGitHubUrl } from "../src/start";
 import { db, db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
-import { parseGitHubUrl } from "../src/start";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -210,22 +210,7 @@ describe("Rewards tests", () => {
       new PermitGenerationModule(),
       githubCommentModuleInstance,
     ];
-    server.use(
-      http.post("https://*", () =>
-        HttpResponse.json([
-          {
-            jsonrpc: "2.0",
-            id: 1,
-            result: "0x64",
-          },
-          {
-            jsonrpc: "2.0",
-            id: 2,
-            result: "0x0000000000000000000000000000000000000000000000000000000000000012",
-          },
-        ])
-      )
-    );
+    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(rewardSplitResult);

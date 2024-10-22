@@ -115,10 +115,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 14.168,
+          "reward": 14.232,
           "words": {
-            "result": 7.71,
-            "wordCount": 166,
+            "result": 7.79,
+            "wordCount": 168,
             "wordValue": 0.1
           }
         },
@@ -189,10 +189,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 19.56,
+          "reward": 19.656,
           "words": {
-            "result": 9.45,
-            "wordCount": 211,
+            "result": 9.57,
+            "wordCount": 214,
             "wordValue": 0.1
           }
         },
@@ -923,7 +923,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "total": 154.217,
+    "total": 154.377,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -943,10 +943,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 4.128,
+          "reward": 4.288,
           "words": {
-            "result": 3.91,
-            "wordCount": 33,
+            "result": 4.11,
+            "wordCount": 35,
             "wordValue": 0.2
           }
         },
@@ -976,10 +976,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 17.696,
+          "reward": 17.76,
           "words": {
-            "result": 10.87,
-            "wordCount": 110,
+            "result": 10.95,
+            "wordCount": 111,
             "wordValue": 0.2
           }
         },
@@ -1005,10 +1005,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 14.96,
+          "reward": 15.032,
           "words": {
-            "result": 11.2,
-            "wordCount": 114,
+            "result": 11.29,
+            "wordCount": 115,
             "wordValue": 0.2
           }
         },
@@ -1387,10 +1387,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 12.018,
+          "reward": 12.172,
           "words": {
-            "result": 2.87,
-            "wordCount": 23,
+            "result": 2.98,
+            "wordCount": 24,
             "wordValue": 0.2
           }
         },
@@ -1413,10 +1413,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 13.392,
+          "reward": 13.518,
           "words": {
-            "result": 5.28,
-            "wordCount": 47,
+            "result": 5.37,
+            "wordCount": 48,
             "wordValue": 0.2
           }
         },
@@ -1499,10 +1499,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 9.894,
+          "reward": 10.034,
           "words": {
-            "result": 4.21,
-            "wordCount": 36,
+            "result": 4.31,
+            "wordCount": 37,
             "wordValue": 0.2
           }
         },
@@ -1525,10 +1525,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 4.954,
+          "reward": 5.108,
           "words": {
-            "result": 2.11,
-            "wordCount": 16,
+            "result": 2.22,
+            "wordCount": 17,
             "wordValue": 0.2
           }
         },
@@ -1753,10 +1753,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 22.58,
+          "reward": 22.72,
           "words": {
-            "result": 4.7,
-            "wordCount": 41,
+            "result": 4.8,
+            "wordCount": 42,
             "wordValue": 0.2
           }
         },
@@ -1869,10 +1869,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 28.708,
+          "reward": 28.834,
           "words": {
-            "result": 6.22,
-            "wordCount": 57,
+            "result": 6.31,
+            "wordCount": 58,
             "wordValue": 0.2
           }
         },
@@ -1934,7 +1934,7 @@
       "multiplier": 1,
       "reward": 400
     },
-    "total": 817.346,
+    "total": 818.482,
     "userId": 9807008
   },
   "whilefoo": {
@@ -2178,10 +2178,10 @@
           },
           "multiplier": 0.25,
           "relevance": 0.7,
-          "reward": 1.429,
+          "reward": 1.436,
           "words": {
-            "result": 3.88,
-            "wordCount": 74,
+            "result": 3.92,
+            "wordCount": 75,
             "wordValue": 0.1
           }
         },
@@ -2271,7 +2271,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "total": 10.723,
+    "total": 10.73,
     "userId": 139262667
   }
 }

@@ -15,6 +15,8 @@ on:
         description: "Auth Token"
       ref:
         description: "Ref"
+      signature:
+        description: "Payload signature from the kernel"
 
 jobs:
   compute:

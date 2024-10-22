@@ -13,4 +13,5 @@ jobs:
     steps:
       - uses: ubiquity-os/action-deploy-plugin@main
         env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}

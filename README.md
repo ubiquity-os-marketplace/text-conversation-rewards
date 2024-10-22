@@ -1,4 +1,4 @@
-# `@ubiquity-os/conversation-rewards`
+# `@ubiquity-os/text-conversation-rewards`
 
 As of 28 February: test driven development to aggregate all necessary information based on a URL to an issue.
 
@@ -12,11 +12,6 @@ Be sure to review all `*.test.*` files for implementation details.
 ```json
 {
   "userName": {
-    "total": 40.5,
-    "task": {
-      "reward": 37.5,
-      "multiplier": 1
-    },
     "comments": [
       {
         "content": "comment content",
@@ -37,7 +32,16 @@ Be sure to review all `*.test.*` files for implementation details.
           "relevance": 0.5
         }
       }
-    ]
+    ],
+    "total": 40.5,
+    "task": {
+      "reward": 37.5,
+      "multiplier": 1
+    },
+    "feeRate": 0.1,
+    "permitUrl": "https://example.com/permit",
+    "userId": 123,
+    "evaluationCommentHtml": "<p>Evaluation comment</p>"
   }
 }
 ```
@@ -83,76 +87,258 @@ with:
       redeemTask: true
     dataPurge: {}
     formattingEvaluator:
+      wordCountExponent: 0.85
       multipliers:
-        - role: [ISSUE_SPECIFICATION]
+        - role: ["ISSUE_SPECIFICATION"]
           multiplier: 1
           rewards:
-            regex:
-              "\\b\\w+\\b": 0.1
-            scores: # Scores can be set for each item differently
-              br: 0
-              code: 1
-              p: 1
-              em: 0
-              img: 0
-              strong: 0
-              blockquote: 0
-              h1: 1
-              h2: 1
-              h3: 1
-              h4: 1
-              h5: 1
-              h6: 1
-              a: 1
-              li: 1
-              ul: 1
-              td: 1
-              hr: 0
-        - role: [ISSUE_AUTHOR]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0.1
+        - role: ["ISSUE_AUTHOR"]
           multiplier: 1
           rewards:
-            regex:
-              "\\b\\w+\\b": 0.2
-        - role: [ISSUE_ASSIGNEE]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0.2
+        - role: ["ISSUE_ASSIGNEE"]
           multiplier: 0
           rewards:
-            regex:
-              "\\b\\w+\\b": 0
-        - role: [ISSUE_COLLABORATOR]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0
+        - role: ["ISSUE_COLLABORATOR"]
           multiplier: 1
           rewards:
-            regex:
-              "\\b\\w+\\b": 0.1
-        - role: [ISSUE_CONTRIBUTOR]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0.1
+        - role: ["ISSUE_CONTRIBUTOR"]
           multiplier: 0.25
           rewards:
-            regex:
-              "\\b\\w+\\b": 0.1
-        - role: [PULL_SPECIFICATION]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0.1
+        - role: ["PULL_SPECIFICATION"]
           multiplier: 0
           rewards:
-            regex:
-              "\\b\\w+\\b": 0
-        - role: [PULL_AUTHOR]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0
+        - role: ["PULL_AUTHOR"]
           multiplier: 2
           rewards:
-            regex:
-              "\\b\\w+\\b": 0.2
-        - role: [PULL_ASSIGNEE]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0.2
+        - role: ["PULL_ASSIGNEE"]
           multiplier: 1
           rewards:
-            regex:
-              "\\b\\w+\\b": 0.1
-        - role: [PULL_COLLABORATOR]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0.1
+        - role: ["PULL_COLLABORATOR"]
           multiplier: 1
           rewards:
-            regex:
-              "\\b\\w+\\b": 0.1
-        - role: [PULL_CONTRIBUTOR]
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0.1
+        - role: ["PULL_CONTRIBUTOR"]
           multiplier: 0.25
           rewards:
-            regex:
-              "\\b\\w+\\b": 0.1
+            html:
+              br: { score: 0, countWords: true }
+              code: { score: 5, countWords: false }
+              p: { score: 0, countWords: true }
+              em: { score: 0, countWords: true }
+              img: { score: 5, countWords: true }
+              strong: { score: 0, countWords: false }
+              blockquote: { score: 0, countWords: false }
+              h1: { score: 1, countWords: true }
+              h2: { score: 1, countWords: true }
+              h3: { score: 1, countWords: true }
+              h4: { score: 1, countWords: true }
+              h5: { score: 1, countWords: true }
+              h6: { score: 1, countWords: true }
+              a: { score: 5, countWords: true }
+              li: { score: 0.5, countWords: true }
+              ul: { score: 1, countWords: true }
+              td: { score: 0, countWords: true }
+              hr: { score: 0, countWords: true }
+              pre: { score: 0, countWords: false }
+              ol: { score: 1, countWords: true }
+            wordValue: 0.1
       permitGeneration: {}
       githubComment:
         post: true
