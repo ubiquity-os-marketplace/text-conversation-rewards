@@ -68,7 +68,8 @@
                         "type": "string"
                       },
                       "endpoint": {
-                        "default": "",
+                        "default": "https://api.openai.com/v1",
+                        "pattern": "^(https?:\\/\\/[^\\s$.?#].\\S*)$",
                         "type": "string"
                       }
                     }
