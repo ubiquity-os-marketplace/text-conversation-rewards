@@ -1,4 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
+import { LOG_LEVEL } from "@ubiquity-os/ubiquity-os-logger";
 import { StandardValidator } from "typebox-validators";
 
 const envConfigSchema = Type.Object({
@@ -12,9 +13,11 @@ const envConfigSchema = Type.Object({
   PERMIT_FEE_RATE: Type.String(),
   PERMIT_TREASURY_GITHUB_USERNAME: Type.String(),
   PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: Type.String(),
+  KERNEL_PUBLIC_KEY: Type.Optional(Type.String()),
+  LOG_LEVEL: Type.Enum(LOG_LEVEL, { default: LOG_LEVEL.INFO }),
 });
 
-export type EnvConfigType = Static<typeof envConfigSchema>;
+export type EnvConfig = Static<typeof envConfigSchema>;
 
 export const envValidator = new StandardValidator(envConfigSchema);
 

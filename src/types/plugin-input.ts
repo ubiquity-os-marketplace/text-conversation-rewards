@@ -1,4 +1,5 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
+import { Context } from "@ubiquity-os/ubiquity-os-kernel";
 import { LOG_LEVEL } from "@ubiquity-os/ubiquity-os-logger";
 import { StandardValidator } from "typebox-validators";
 import { contentEvaluatorConfigurationType } from "../configuration/content-evaluator-config";
@@ -8,6 +9,8 @@ import { formattingEvaluatorConfigurationType } from "../configuration/formattin
 import { githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
+import { SupportedEvents } from "../parser/command-line";
+import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
   {
@@ -51,3 +54,5 @@ export const pluginSettingsSchema = T.Object(
 export const pluginSettingsValidator = new StandardValidator(pluginSettingsSchema);
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
+
+export type ContextPlugin = Context<PluginSettings, EnvConfig, SupportedEvents>;

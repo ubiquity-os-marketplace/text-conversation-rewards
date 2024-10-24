@@ -22,7 +22,7 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { getOctokitInstance } from "../octokit";
 import { getRepo, parseGitHubUrl } from "../start";
-import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type";
+import envConfigSchema, { EnvConfig, envValidator } from "../types/env-type";
 import program from "./command-line";
 import { Module, Result } from "./processor";
 import { RestEndpointMethodTypes } from "@octokit/rest";
@@ -52,7 +52,7 @@ export class PermitGenerationModule implements Module {
     payload.issue = {
       node_id: program.eventPayload.issue.node_id,
     };
-    const env = Value.Default(envConfigSchema, process.env) as EnvConfigType;
+    const env = Value.Default(envConfigSchema, process.env) as EnvConfig;
     if (!envValidator.test(env)) {
       console.warn("[PermitGenerationModule] Invalid env detected, skipping.");
       for (const error of envValidator.errors(env)) {
@@ -165,7 +165,7 @@ export class PermitGenerationModule implements Module {
    * @param env The program environment
    * @returns Result object
    */
-  async _applyFees(result: Result, erc20RewardToken: string, env: EnvConfigType): Promise<Result> {
+  async _applyFees(result: Result, erc20RewardToken: string, env: EnvConfig): Promise<Result> {
     // validate fee related env variables
     if (!env.PERMIT_FEE_RATE || Number(env.PERMIT_FEE_RATE) === 0) {
       logger.info("PERMIT_FEE_RATE is not set, skipping permit fee generation");
@@ -201,7 +201,7 @@ export class PermitGenerationModule implements Module {
   _deductFeeFromReward(
     result: Result,
     treasuryGithubData: RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"],
-    env: EnvConfigType
+    env: EnvConfig
   ) {
     // Subtract fees from the final result:
     // - user.total
@@ -331,7 +331,7 @@ export class PermitGenerationModule implements Module {
     privateKeyEncrypted: string,
     githubContextOwnerId: number,
     githubContextRepositoryId: number,
-    env: EnvConfigType
+    env: EnvConfig
   ): Promise<boolean> {
     // decrypt private key
     const privateKeyDecrypted = await decrypt(privateKeyEncrypted, env.X25519_PRIVATE_KEY);
