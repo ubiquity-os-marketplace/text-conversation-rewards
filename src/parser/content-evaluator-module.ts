@@ -241,40 +241,35 @@ export class ContentEvaluatorModule implements Module {
     const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const commentsMap = comments.map((value) => `${value.id}: "${value.comment}"`);
     return `
-    ### INSTRUCTION:
-    Start by thoroughly reading all comments and retaining their content for the evaluation.
-    The comments in the ALL COMMENTS section will be in the format of: {id} - {author}: "{comment}"
+      Evaluate the relevance of GitHub comments to an issue. Provide a JSON object with comment IDs and their relevance scores.
+      Issue: ${issue}
 
-    ### OUTPUT FORMAT:
-    For every record in the START EVALUATING section, provide a JSON object in the following format: {ID: CONNECTION_SCORE}. 
-    The average relevance based on the comments in the ALL COMMENTS SECTION should be reflected in the CONNECTION_SCORE.
-    Comments use GitHub-flavored Markdown, so words within symbols like ">" should not factor into scoring since they reference other comments.
-    Carefully distinguish between referenced words and regular words in the comments.
-    How related the comment is to the Specification below should also be considered in the scoring process.
+      All comments:
+      ${allCommentsMap.join("\n")}
 
-    ### GLOBAL CONTEXT:
-    Specification
-    "${issue}"
-    
-    ### ALL COMMENTS:
-    ${allCommentsMap.join("\n")}
-    
-    ### IMPORTANT CONTEXT:
-    Consider all comments when evaluating connections. Relevant comments may appear before or after the comment being evaluated, so examine all of them closely.
-    The comments in the start evaluating section will be in the format of: {id}: "{comment}"
-    
-    ### START EVALUATING:
-    ${commentsMap.join("\n")}
+      Comments to evaluate:
+      ${commentsMap.join("\n")}
 
-    ### POST EVALUATION:
-    Provide only the connection scores as floating-point values indicating the relevance of each comment based on its connection to the overall context.
+      Instructions:
+      1. Read all comments carefully, considering their context and content.
+      2. Evaluate each comment in the "Comments to evaluate" section.
+      3. Assign a relevance score from 0 to 1 for each comment:
+        - 0: Not related (e.g., spam)
+        - 1: Highly relevant (e.g., solutions, bug reports)
+      4. Consider:
+        - Relation to the issue description
+        - Connection to other comments
+        - Contribution to issue resolution
+      5. Handle GitHub-flavored markdown:
+        - Ignore text beginning with '>' as it references another comment
+        - Distinguish between referenced text and the commenter's own words
+        - Only evaluate the relevance of the commenter's original content
+      6. Return a JSON object: {{ID: score}}
 
-    ### SCORING CRITERIA:
-    Assign scores from 0 to 1, 0: Not related (e.g., spam), 1: Highly relevant (e.g., solutions, bugs)
-    Consider the context of all comments; even minor details may be significant for resolving the issue. If a comment is unrelated to all comments, title, or issue specification, assign a score of 0.
-
-    ### OUTPUT:
-    Return a JSON object containing the ID and the connection score for each evaluated comment. The number of entries in the JSON response must match exactly ${comments.length}.
+      Notes:
+      - Even minor details may be significant.
+      - Comments may reference earlier comments.
+      - The number of entries in the JSON response must equal ${commentsMap.length}.
     `;
   }
 
