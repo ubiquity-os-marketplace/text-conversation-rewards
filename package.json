@@ -16,7 +16,8 @@
     "format:prettier": "prettier --write .",
     "format:cspell": "cspell **/*",
     "knip": "knip",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "dev": "bun run src/index.ts"
   },
   "keywords": [
     "typescript",
@@ -41,6 +42,7 @@
     "decimal.js": "10.4.3",
     "dotenv": "16.4.5",
     "ethers": "^5.7.2",
+    "hono": "^4.6.6",
     "js-tiktoken": "1.0.15",
     "jsdom": "24.0.0",
     "markdown-it": "14.1.0",
