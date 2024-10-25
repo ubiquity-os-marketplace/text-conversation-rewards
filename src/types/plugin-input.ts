@@ -1,7 +1,6 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { Context } from "@ubiquity-os/ubiquity-os-kernel";
 import { LOG_LEVEL } from "@ubiquity-os/ubiquity-os-logger";
-import { StandardValidator } from "typebox-validators";
 import { contentEvaluatorConfigurationType } from "../configuration/content-evaluator-config";
 import { dataCollectionConfigurationType } from "../configuration/data-collection-config";
 import { dataPurgeConfigurationType } from "../configuration/data-purge-config";
@@ -50,8 +49,6 @@ export const pluginSettingsSchema = T.Object(
   },
   { default: {} }
 );
-
-export const pluginSettingsValidator = new StandardValidator(pluginSettingsSchema);
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 

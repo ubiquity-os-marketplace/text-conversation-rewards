@@ -19,7 +19,6 @@ import {
   IssueParams,
   PullParams,
 } from "./start";
-import logger from "./helpers/logger";
 import { ContextPlugin } from "./types/plugin-input";
 
 export class IssueActivity {
@@ -48,20 +47,20 @@ export class IssueActivity {
         this._getLinkedReviews(),
       ]);
     } catch (error) {
-      throw logger.error(`Could not fetch issue data: ${error}`);
+      throw this._context.logger.error(`Could not fetch issue data: ${error}`);
     }
   }
 
   private async _getLinkedReviews(): Promise<Review[]> {
-    logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
+    this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
     const pulls = (await collectLinkedMergedPulls(this._context, this._issueParams)).slice(-1);
-    logger.debug("Collected linked pull-requests", { pulls });
+    this._context.logger.debug("Collected linked pull-requests", { pulls });
     const promises = pulls
       .map(async (pull) => {
         const repository = pull.repository;
 
         if (!repository) {
-          logger.error(`No repository found for`, { ...pull.repository });
+          this._context.logger.error(`No repository found for`, { ...pull.repository });
           return null;
         } else {
           const pullParams = {

@@ -2,7 +2,6 @@
 
 import fs from "fs";
 import { http, passthrough } from "msw";
-import configuration from "../src/configuration/config-reader";
 import { IssueActivity } from "../src/issue-activity";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
 import { DataPurgeModule } from "../src/parser/data-purge-module";

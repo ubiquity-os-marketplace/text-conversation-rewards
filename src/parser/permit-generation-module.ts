@@ -21,7 +21,7 @@ import {
 } from "../configuration/permit-generation-configuration";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
-import { EnvConfig, envValidator } from "../types/env-type";
+import { EnvConfig } from "../types/env-type";
 import { BaseModule, Result } from "./processor";
 
 interface Payload {
@@ -49,13 +49,6 @@ export class PermitGenerationModule extends BaseModule {
       node_id: this.context.payload.issue.node_id,
     };
     const env = this.context.env;
-    if (!envValidator.test(env)) {
-      this.context.logger.error("[PermitGenerationModule] Invalid env detected, skipping.");
-      for (const error of envValidator.errors(env)) {
-        this.context.logger.error("Configuration error", { err: error });
-      }
-      return Promise.resolve(result);
-    }
     const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(
       payload.evmPrivateEncrypted,
       this.context.payload.repository.owner.id,

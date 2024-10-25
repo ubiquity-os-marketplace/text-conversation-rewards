@@ -1,6 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
 import { LOG_LEVEL } from "@ubiquity-os/ubiquity-os-logger";
-import { StandardValidator } from "typebox-validators";
 
 const envConfigSchema = Type.Object({
   SUPABASE_URL: Type.String(),
@@ -18,7 +17,5 @@ const envConfigSchema = Type.Object({
 });
 
 export type EnvConfig = Static<typeof envConfigSchema>;
-
-export const envValidator = new StandardValidator(envConfigSchema);
 
 export default envConfigSchema;

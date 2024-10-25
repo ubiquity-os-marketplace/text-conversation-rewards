@@ -1,5 +1,4 @@
 import { postComment } from "@ubiquity-os/ubiquity-os-kernel";
-import configuration from "./configuration/config-reader";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { getSortedPrices } from "./helpers/label-price-extractor";
@@ -9,7 +8,7 @@ import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 
 export async function run(context: ContextPlugin) {
-  const { eventName, payload, logger } = context;
+  const { eventName, payload, logger, config } = context;
   if (eventName === "issues.closed") {
     if (payload.issue.state_reason !== "completed") {
       return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
@@ -19,12 +18,12 @@ export async function run(context: ContextPlugin) {
       await postComment(context, result);
       return result.logMessage.raw;
     }
-    logger.debug("Will use the following configuration:", { configuration });
+    logger.debug("Will use the following configuration:", { config });
     await postComment(context, logger.ok("Evaluating results. Please wait..."));
     const issue = parseGitHubUrl(payload.issue.html_url);
     const activity = new IssueActivity(context, issue);
     await activity.init();
-    if (configuration.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
+    if (config.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
       const result = logger.error("No price label has been set. Skipping permit generation.");
       await postComment(context, result);
       return result.logMessage.raw;

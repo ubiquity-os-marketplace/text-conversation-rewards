@@ -1,4 +1,3 @@
-import configuration from "../src/configuration/config-reader";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { ContextPlugin } from "../src/types/plugin-input";
 import customConfiguration from "./__mocks__/configurations/custom-configuration.json";

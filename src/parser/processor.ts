@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
-import configuration from "../configuration/config-reader";
 import { typeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
@@ -15,8 +14,8 @@ import { UserExtractorModule } from "./user-extractor-module";
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
-  private readonly _configuration = configuration.incentives;
   private _context: ContextPlugin;
+  private readonly _configuration;
 
   constructor(context: ContextPlugin) {
     this.add(new UserExtractorModule(context))
@@ -26,6 +25,7 @@ export class Processor {
       .add(new PermitGenerationModule(context))
       .add(new GithubCommentModule(context));
     this._context = context;
+    this._configuration = this._context.config.incentives;
   }
 
   add(transformer: Module) {
