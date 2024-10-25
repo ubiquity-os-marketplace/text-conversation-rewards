@@ -4,18 +4,14 @@ import * as fs from "fs";
 import { JSDOM } from "jsdom";
 import { stringify } from "yaml";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
-import configuration from "../configuration/config-reader";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
+import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
-import logger from "../helpers/logger";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
 import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
-import { getOctokitInstance } from "../octokit";
-import program from "./command-line";
-import { GithubCommentScore, Module, Result } from "./processor";
-import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
+import { BaseModule, GithubCommentScore, Result } from "./processor";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -25,8 +21,8 @@ interface SortedTasks {
 /**
  * Posts a GitHub comment according to the given results.
  */
-export class GithubCommentModule implements Module {
-  private readonly _configuration: GithubCommentConfiguration | null = configuration.incentives.githubComment;
+export class GithubCommentModule extends BaseModule {
+  private readonly _configuration: GithubCommentConfiguration | null = this.context.config.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
   /**
    * COMMENT_ID can be set in the environment to reference the id of the last comment created during this workflow.
@@ -49,7 +45,7 @@ export class GithubCommentModule implements Module {
     const bodyArray: (string | undefined)[] = [];
 
     if (stripContent) {
-      logger.info("Stripping content due to excessive length.");
+      this.context.logger.info("Stripping content due to excessive length.");
       bodyArray.push("> [!NOTE]\n");
       bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
       for (const [key, value] of Object.entries(result)) {
@@ -115,7 +111,7 @@ export class GithubCommentModule implements Module {
       try {
         await this.postComment(body);
       } catch (e) {
-        logger.error(`Could not post GitHub comment: ${e}`);
+        this.context.logger.error(`Could not post GitHub comment: ${e}`);
       }
     }
     return result;
@@ -123,32 +119,32 @@ export class GithubCommentModule implements Module {
 
   get enabled(): boolean {
     if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
-      logger.error("Invalid / missing configuration detected for GithubContentModule, disabling.");
+      this.context.logger.error("Invalid / missing configuration detected for GithubContentModule, disabling.");
       return false;
     }
     return true;
   }
 
   async postComment(body: string, updateLastComment = true) {
-    const { eventPayload } = program;
+    const { payload, logger } = this.context;
     if (!this._configuration?.post) {
       logger.debug("Won't post a comment since posting is disabled.", { body });
       return;
     }
     if (updateLastComment && this._lastCommentId !== null) {
-      await getOctokitInstance().issues.updateComment({
+      await this.context.octokit.rest.issues.updateComment({
         body,
-        repo: eventPayload.repository.name,
-        owner: eventPayload.repository.owner.login,
-        issue_number: eventPayload.issue.number,
+        repo: payload.repository.name,
+        owner: payload.repository.owner.login,
+        issue_number: payload.issue.number,
         comment_id: this._lastCommentId,
       });
     } else {
-      const comment = await getOctokitInstance().issues.createComment({
+      const comment = await this.context.octokit.rest.issues.createComment({
         body,
-        repo: eventPayload.repository.name,
-        owner: eventPayload.repository.owner.login,
-        issue_number: eventPayload.issue.number,
+        repo: payload.repository.name,
+        owner: payload.repository.owner.login,
+        issue_number: payload.issue.number,
       });
       this._lastCommentId = comment.data.id;
     }
@@ -275,7 +271,10 @@ export class GithubCommentModule implements Module {
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
 
-    const tokenSymbol = await getErc20TokenSymbol(configuration.evmNetworkId, configuration.erc20RewardToken);
+    const tokenSymbol = await getErc20TokenSymbol(
+      this.context.config.evmNetworkId,
+      this.context.config.erc20RewardToken
+    );
 
     return `
     <details>

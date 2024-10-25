@@ -1,4 +1,3 @@
-import { getOctokitInstance } from "./octokit";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -9,36 +8,13 @@ import {
   GitHubRepository,
 } from "./github-types";
 import { getMinimizedCommentStatus } from "./helpers/get-comment-details";
-
-// async function main(gitHubIssueUrl: GitHubIssue["html_url"]) {
-// const issueParams = parseGitHubUrl(gitHubIssueUrl);
-// const issue = await getIssue(issueParams);
-// const pullRequestLinks = await collectLinkedPulls(issueParams);
-// const pullRequestDetails = await Promise.all(
-//   pullRequestLinks.map((link) =>
-//     getPullRequest({
-//       owner: link.source.issue.repository.owner.login,
-//       repo: link.source.issue.repository.name,
-//       pull_number: link.source.issue.number,
-//     })
-//   )
-// );
-
-// const users = await getTimelineUsers(issueParams);
-// const users = getUsers(issueParams, pullRequestDetails);
-
-// const usersByType = {
-//   assignees: users.filter((user) => user.isAssignee),
-//   authors: users.filter((user) => user.isAuthor),
-//   collaborators: users.filter((user) => user.isCollaborator),
-//   remainder: users.filter((user) => user.isRemainder),
-// };
+import { ContextPlugin } from "./types/plugin-input";
 
 /**
    * gather context
    * * this includes:
 
-   * * * the github issue,
+   * * * the GitHub issue,
   * * * * comments
 
   * * * the linked pull request
@@ -57,41 +33,53 @@ import { getMinimizedCommentStatus } from "./helpers/get-comment-details";
 export type IssueParams = ReturnType<typeof parseGitHubUrl>;
 export type PullParams = { owner: string; repo: string; pull_number: number };
 
-export async function getRepo(params: IssueParams): Promise<GitHubRepository> {
-  const octokit = getOctokitInstance();
-  return (await octokit.repos.get(params)).data;
+// Assuming ContextPlugin contains octokitInstance or a method to get octokitInstance
+export async function getRepo(context: ContextPlugin, params: IssueParams): Promise<GitHubRepository> {
+  const { octokit } = context;
+  return (await octokit.rest.repos.get(params)).data;
 }
 
-export async function getIssue(params: IssueParams): Promise<GitHubIssue> {
-  const octokit = getOctokitInstance();
-  return (await octokit.issues.get(params)).data;
+export async function getIssue(context: ContextPlugin, params: IssueParams): Promise<GitHubIssue> {
+  const { octokit } = context;
+  return (await octokit.rest.issues.get(params)).data;
 }
 
-export async function getPullRequest(pullParams: PullParams): Promise<GitHubPullRequest> {
-  const octokit = getOctokitInstance();
-  return (await octokit.pulls.get(pullParams)).data;
+export async function getPullRequest(context: ContextPlugin, pullParams: PullParams): Promise<GitHubPullRequest> {
+  const { octokit } = context;
+  return (await octokit.rest.pulls.get(pullParams)).data;
 }
 
-export async function getIssueEvents(issueParams: IssueParams): Promise<GitHubIssueEvent[]> {
-  const octokit = getOctokitInstance();
-  return await octokit.paginate(octokit.issues.listEvents.endpoint.merge(issueParams));
+export async function getIssueEvents(context: ContextPlugin, issueParams: IssueParams): Promise<GitHubIssueEvent[]> {
+  const { octokit } = context;
+  return await octokit.paginate(octokit.rest.issues.listEvents.endpoint.merge(issueParams));
 }
 
-export async function getIssueComments(issueParams: IssueParams): Promise<GitHubIssueComment[]> {
-  const octokit = getOctokitInstance();
+export async function getIssueComments(
+  context: ContextPlugin,
+  issueParams: IssueParams
+): Promise<GitHubIssueComment[]> {
+  const { octokit } = context;
   const comments: GitHubIssueComment[] = await octokit.paginate(
-    octokit.issues.listComments.endpoint.merge(issueParams)
+    octokit.rest.issues.listComments.endpoint.merge(issueParams)
   );
-  await getMinimizedCommentStatus(comments);
+  await getMinimizedCommentStatus(context, comments);
   return comments;
 }
-export async function getPullRequestReviews(pullParams: PullParams): Promise<GitHubPullRequestReviewState[]> {
-  const octokit = getOctokitInstance();
-  return await octokit.paginate(octokit.pulls.listReviews.endpoint.merge(pullParams));
+
+export async function getPullRequestReviews(
+  context: ContextPlugin,
+  pullParams: PullParams
+): Promise<GitHubPullRequestReviewState[]> {
+  const { octokit } = context;
+  return await octokit.paginate(octokit.rest.pulls.listReviews.endpoint.merge(pullParams));
 }
-export async function getPullRequestReviewComments(pullParams: PullParams): Promise<GitHubPullRequestReviewComment[]> {
-  const octokit = getOctokitInstance();
-  return await octokit.paginate(octokit.pulls.listReviewComments.endpoint.merge(pullParams));
+
+export async function getPullRequestReviewComments(
+  context: ContextPlugin,
+  pullParams: PullParams
+): Promise<GitHubPullRequestReviewComment[]> {
+  const { octokit } = context;
+  return await octokit.paginate(octokit.rest.pulls.listReviewComments.endpoint.merge(pullParams));
 }
 
 export function parseGitHubUrl(url: string): { owner: string; repo: string; issue_number: number } {

@@ -32,18 +32,6 @@ jest.mock("../../src/parser/command-line", () => {
   };
 });
 
-jest.mock("../../src/octokit", () => ({
-  getOctokitInstance: () => ({
-    users: {
-      getByUsername: () => ({
-        data: {
-          id: 3,
-        },
-      }),
-    },
-  }),
-}));
-
 jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(),

@@ -1,4 +1,5 @@
 import { context } from "@actions/github";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -19,11 +20,9 @@ import {
   permitGenerationConfigurationType,
 } from "../configuration/permit-generation-configuration";
 import { IssueActivity } from "../issue-activity";
-import { getOctokitInstance } from "../octokit";
 import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig, envValidator } from "../types/env-type";
 import { BaseModule, Result } from "./processor";
-import { RestEndpointMethodTypes } from "@octokit/rest";
 
 interface Payload {
   evmNetworkId: number;
@@ -70,7 +69,7 @@ export class PermitGenerationModule extends BaseModule {
       return Promise.resolve(result);
     }
     const eventName = context.eventName as SupportedEvents;
-    const octokit = getOctokitInstance();
+    const octokit = this.context.octokit;
     const permitLogger = {
       debug(message: unknown, optionalParams: unknown) {
         console.log(message, optionalParams);
@@ -185,8 +184,8 @@ export class PermitGenerationModule extends BaseModule {
     }
 
     // Get treasury GitHub user id
-    const octokit = getOctokitInstance();
-    const { data: treasuryGithubData } = await octokit.users.getByUsername({
+    const octokit = this.context.octokit;
+    const { data: treasuryGithubData } = await octokit.rest.users.getByUsername({
       username: env.PERMIT_TREASURY_GITHUB_USERNAME,
     });
     if (!treasuryGithubData) {
@@ -249,7 +248,7 @@ export class PermitGenerationModule extends BaseModule {
       .single();
 
     if (!locationData) {
-      const issueItem = await getRepo(parseGitHubUrl(issue.issueUrl));
+      const issueItem = await getRepo(this.context, parseGitHubUrl(issue.issueUrl));
       const { data: newLocationData, error } = await this._supabase
         .from("locations")
         .insert({

@@ -1,5 +1,6 @@
 import { GithubCommentModule } from "../src/parser/github-comment-module";
 import { Result } from "../src/parser/processor";
+import { ContextPlugin } from "../src/types/plugin-input";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -52,7 +53,7 @@ describe("GithubCommentModule Fee Tests", () => {
   let githubCommentModule: GithubCommentModule;
 
   beforeEach(() => {
-    githubCommentModule = new GithubCommentModule();
+    githubCommentModule = new GithubCommentModule({} as unknown as ContextPlugin);
   });
 
   it("should display the fee message when a fee percentage is applied", async () => {

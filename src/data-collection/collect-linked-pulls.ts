@@ -1,6 +1,6 @@
 import { PullRequest, Repository, User } from "@octokit/graphql-schema";
-import { getOctokitInstance } from "../octokit";
 import { IssueParams } from "../start";
+import { ContextPlugin } from "../types/plugin-input";
 import { LINKED_PULL_REQUESTS } from "../types/requests";
 
 type ClosedByPullRequestsReferences = {
@@ -20,8 +20,8 @@ type IssueWithClosedByPrs = {
   };
 };
 
-export async function collectLinkedMergedPulls(issue: IssueParams) {
-  const octokit = getOctokitInstance();
+export async function collectLinkedMergedPulls(context: ContextPlugin, issue: IssueParams) {
+  const { octokit } = context;
   const { owner, repo, issue_number } = issue;
 
   const result = await octokit.graphql.paginate<IssueWithClosedByPrs>(LINKED_PULL_REQUESTS, {

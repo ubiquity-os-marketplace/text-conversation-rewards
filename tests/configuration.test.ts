@@ -1,5 +1,6 @@
 import configuration from "../src/configuration/config-reader";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
+import { ContextPlugin } from "../src/types/plugin-input";
 import customConfiguration from "./__mocks__/configurations/custom-configuration.json";
 
 jest.mock("../src/parser/command-line", () => {
@@ -35,7 +36,7 @@ describe("Configuration Tests", () => {
   });
 
   it("Formatting evaluator should parse the enums properly", () => {
-    const formattingEvaluator = new FormattingEvaluatorModule();
+    const formattingEvaluator = new FormattingEvaluatorModule({} as unknown as ContextPlugin);
 
     expect(Object.keys(formattingEvaluator["_multipliers"])).toEqual([
       "5",

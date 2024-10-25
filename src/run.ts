@@ -1,7 +1,7 @@
+import { postComment } from "@ubiquity-os/ubiquity-os-kernel";
 import configuration from "./configuration/config-reader";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
-import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
 import { getSortedPrices } from "./helpers/label-price-extractor";
 import { IssueActivity } from "./issue-activity";
 import { Processor, Result } from "./parser/processor";
@@ -16,17 +16,17 @@ export async function run(context: ContextPlugin) {
     }
     if (!(await preCheck(context))) {
       const result = logger.error("All linked pull requests must be closed to generate rewards.");
-      await githubCommentModuleInstance.postComment(result.logMessage.diff);
+      await postComment(context, result);
       return result.logMessage.raw;
     }
     logger.debug("Will use the following configuration:", { configuration });
-    await githubCommentModuleInstance.postComment(logger.ok("Evaluating results. Please wait...").logMessage.diff);
+    await postComment(context, logger.ok("Evaluating results. Please wait..."));
     const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivity(issue);
+    const activity = new IssueActivity(context, issue);
     await activity.init();
     if (configuration.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
       const result = logger.error("No price label has been set. Skipping permit generation.");
-      await githubCommentModuleInstance.postComment(result.logMessage.diff);
+      await postComment(context, result);
       return result.logMessage.raw;
     }
     const processor = new Processor(context);
@@ -55,7 +55,7 @@ async function preCheck(context: ContextPlugin) {
   const { payload, octokit, logger } = context;
 
   const issue = parseGitHubUrl(payload.issue.html_url);
-  const linkedPulls = await collectLinkedMergedPulls(issue);
+  const linkedPulls = await collectLinkedMergedPulls(context, issue);
   logger.debug("Checking open linked pull-requests for", {
     issue,
     linkedPulls,

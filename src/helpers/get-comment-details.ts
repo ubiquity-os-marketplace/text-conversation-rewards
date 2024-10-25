@@ -1,10 +1,10 @@
-import { GitHubIssueComment } from "../github-types";
-import { getOctokitInstance } from "../octokit";
 import { IssueComment } from "@octokit/graphql-schema";
+import { GitHubIssueComment } from "../github-types";
+import { ContextPlugin } from "../types/plugin-input";
 import { QUERY_COMMENT_DETAILS } from "../types/requests";
 
-export async function getMinimizedCommentStatus(comments: GitHubIssueComment[]) {
-  const octokit = getOctokitInstance();
+export async function getMinimizedCommentStatus(context: ContextPlugin, comments: GitHubIssueComment[]) {
+  const { octokit } = context;
   const commentsData = await octokit.graphql<{ nodes?: IssueComment[] }>(QUERY_COMMENT_DETAILS, {
     node_ids: comments.map((o) => o.node_id),
   });

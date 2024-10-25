@@ -1,4 +1,4 @@
-import { createPlugin } from "@ubiquity-os/ubiquity-os-kernel";
+import { createPlugin, Manifest } from "@ubiquity-os/ubiquity-os-kernel";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import manifest from "../manifest.json";
 import { SupportedEvents } from "./parser/command-line";
@@ -10,8 +10,7 @@ export default createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   (context) => {
     return run(context);
   },
-  //@ts-expect-error err
-  manifest,
+  manifest as Manifest,
   {
     logLevel: (process.env.LOG_LEVEL as LogLevel) ?? "info",
     settingsSchema: pluginSettingsSchema,

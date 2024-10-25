@@ -2,15 +2,15 @@ import Decimal from "decimal.js";
 import * as fs from "fs";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
-import githubCommentModuleInstance from "../helpers/github-comment-module-instance";
 import { typeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
+import { ContextPlugin } from "../types/plugin-input";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
+import { GithubCommentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
-import { ContextPlugin } from "../types/plugin-input";
 
 export class Processor {
   private _transformers: Module[] = [];
@@ -24,7 +24,7 @@ export class Processor {
       .add(new FormattingEvaluatorModule(context))
       .add(new ContentEvaluatorModule(context))
       .add(new PermitGenerationModule(context))
-      .add(githubCommentModuleInstance);
+      .add(new GithubCommentModule(context));
     this._context = context;
   }
 
