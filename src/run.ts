@@ -3,21 +3,18 @@ import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import githubCommentModuleInstance from "./helpers/github-comment-module-instance";
 import { getSortedPrices } from "./helpers/label-price-extractor";
-import logger from "./helpers/logger";
 import { IssueActivity } from "./issue-activity";
-import { getOctokitInstance } from "./octokit";
-import program from "./parser/command-line";
 import { Processor, Result } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 
 export async function run(context: ContextPlugin) {
-  const { eventName, payload } = context;
+  const { eventName, payload, logger } = context;
   if (eventName === "issues.closed") {
     if (payload.issue.state_reason !== "completed") {
       return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
     }
-    if (!(await preCheck())) {
+    if (!(await preCheck(context))) {
       const result = logger.error("All linked pull requests must be closed to generate rewards.");
       await githubCommentModuleInstance.postComment(result.logMessage.diff);
       return result.logMessage.raw;
@@ -32,7 +29,7 @@ export async function run(context: ContextPlugin) {
       await githubCommentModuleInstance.postComment(result.logMessage.diff);
       return result.logMessage.raw;
     }
-    const processor = new Processor();
+    const processor = new Processor(context);
     await processor.run(activity);
     let result = processor.dump();
     if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
@@ -54,17 +51,17 @@ export async function run(context: ContextPlugin) {
   }
 }
 
-async function preCheck() {
-  const { eventPayload } = program;
+async function preCheck(context: ContextPlugin) {
+  const { payload, octokit, logger } = context;
 
-  const issue = parseGitHubUrl(eventPayload.issue.html_url);
+  const issue = parseGitHubUrl(payload.issue.html_url);
   const linkedPulls = await collectLinkedMergedPulls(issue);
   logger.debug("Checking open linked pull-requests for", {
     issue,
     linkedPulls,
   });
   if (linkedPulls.some((linkedPull) => linkedPull.state === "OPEN")) {
-    await getOctokitInstance().rest.issues.update({
+    await octokit.rest.issues.update({
       owner: issue.owner,
       repo: issue.repo,
       issue_number: issue.issue_number,

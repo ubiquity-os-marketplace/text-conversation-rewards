@@ -3,16 +3,15 @@ import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
 import { commentEnum, CommentType } from "../configuration/comment-types";
-import configuration from "../configuration/config-reader";
 import {
   FormattingEvaluatorConfiguration,
   formattingEvaluatorConfigurationType,
   wordRegex,
 } from "../configuration/formatting-evaluator-config";
-import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
-import { GithubCommentScore, Module, WordResult, Result } from "./processor";
+import { BaseModule, GithubCommentScore, Result, WordResult } from "./processor";
 import { typeReplacer } from "../helpers/result-replacer";
+import { ContextPlugin } from "../types/plugin-input";
 
 interface Multiplier {
   multiplier: number;
@@ -20,9 +19,9 @@ interface Multiplier {
   wordValue: number;
 }
 
-export class FormattingEvaluatorModule implements Module {
+export class FormattingEvaluatorModule extends BaseModule {
   private readonly _configuration: FormattingEvaluatorConfiguration | null =
-    configuration.incentives.formattingEvaluator;
+    this.context.config.incentives.formattingEvaluator;
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: number]: Multiplier } = {};
   private readonly _wordCountExponent: number;
@@ -36,7 +35,8 @@ export class FormattingEvaluatorModule implements Module {
     return res;
   }
 
-  constructor() {
+  constructor(context: ContextPlugin) {
+    super(context);
     if (this._configuration?.multipliers) {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
@@ -111,7 +111,7 @@ export class FormattingEvaluatorModule implements Module {
   _getFormattingScore(comment: GithubCommentScore) {
     // Change the \r to \n to fix markup interpretation
     const html = this._md.render(comment.content.replaceAll("\r", "\n"));
-    logger.debug("Will analyze formatting for the current content:", { comment: comment.content, html });
+    this.context.logger.debug("Will analyze formatting for the current content:", { comment: comment.content, html });
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
       const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
@@ -158,7 +158,7 @@ export class FormattingEvaluatorModule implements Module {
           continue;
         }
       } else {
-        logger.error(
+        this.context.logger.error(
           `Could not find multiplier for element <${tagName}> with association <${typeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
         );
         element.remove();
