@@ -3,13 +3,7 @@ import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
 import OpenAI from "openai";
 import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
-import configuration from "../configuration/config-reader";
-import { OPENAI_API_KEY } from "../configuration/constants";
-import {
-  ContentEvaluatorConfiguration,
-  contentEvaluatorConfigurationType,
-} from "../configuration/content-evaluator-config";
-import logger from "../helpers/logger";
+import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -18,15 +12,16 @@ import {
   PrCommentToEvaluate,
   Relevances,
 } from "../types/content-evaluator-module-type";
-import { GithubCommentScore, Module, Result } from "./processor";
+import { BaseModule, GithubCommentScore, Result } from "./processor";
+import { ContextPlugin } from "../types/plugin-input";
 
 /**
  * Evaluates and rates comments.
  */
-export class ContentEvaluatorModule implements Module {
-  readonly _configuration: ContentEvaluatorConfiguration | null = configuration.incentives.contentEvaluator;
+export class ContentEvaluatorModule extends BaseModule {
+  readonly _configuration: ContentEvaluatorConfiguration | null = this.context.config.incentives.contentEvaluator;
   readonly _openAi = new OpenAI({
-    apiKey: OPENAI_API_KEY,
+    apiKey: this.context.env.OPENAI_API_KEY,
     ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
   });
   private readonly _fixedRelevances: { [k: string]: number } = {};
@@ -40,7 +35,8 @@ export class ContentEvaluatorModule implements Module {
     return res;
   }
 
-  constructor() {
+  constructor(context: ContextPlugin) {
+    super(context);
     if (this._configuration?.multipliers) {
       this._fixedRelevances = this._configuration.multipliers.reduce((acc, curr) => {
         return {
@@ -52,7 +48,7 @@ export class ContentEvaluatorModule implements Module {
   }
 
   get enabled(): boolean {
-    if (!Value.Check(contentEvaluatorConfigurationType, this._configuration)) {
+    if (!this._configuration) {
       console.warn("Invalid / missing configuration detected for ContentEvaluatorModule, disabling.");
       return false;
     }
@@ -111,7 +107,7 @@ export class ContentEvaluatorModule implements Module {
     );
 
     if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
-      throw logger.fatal("Relevance / Comment length mismatch!", { relevancesByAi, commentsToEvaluate });
+      throw this.context.logger.fatal("Relevance / Comment length mismatch!", { relevancesByAi, commentsToEvaluate });
     }
 
     for (const currentComment of commentsWithScore) {
@@ -220,16 +216,18 @@ export class ContentEvaluatorModule implements Module {
     });
 
     const rawResponse = String(response.choices[0].message.content);
-    logger.info(`OpenAI raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
+    this.context.logger.info(`OpenAI raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
     const jsonResponse = JSON.parse(rawResponse);
 
     try {
       const relevances = Value.Decode(openAiRelevanceResponseSchema, jsonResponse);
-      logger.info(`Relevances by OpenAI: ${JSON.stringify(relevances)}`);
+      this.context.logger.info(`Relevances by OpenAI: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {
-      logger.error(`Invalid response type received from openai while evaluating: ${jsonResponse} \n\nError: ${e}`);
+      this.context.logger.error(
+        `Invalid response type received from openai while evaluating: ${jsonResponse} \n\nError: ${e}`
+      );
       throw new Error("Error in evaluation by OpenAI.");
     }
   }

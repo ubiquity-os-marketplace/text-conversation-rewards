@@ -3,7 +3,6 @@ import * as fs from "fs";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import configuration from "../configuration/config-reader";
 import githubCommentModuleInstance from "../helpers/github-comment-module-instance";
-import logger from "../helpers/logger";
 import { typeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
@@ -11,19 +10,22 @@ import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
+import { ContextPlugin } from "../types/plugin-input";
 
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
   private readonly _configuration = configuration.incentives;
+  private _context: ContextPlugin;
 
-  constructor() {
-    this.add(new UserExtractorModule())
-      .add(new DataPurgeModule())
-      .add(new FormattingEvaluatorModule())
-      .add(new ContentEvaluatorModule())
-      .add(new PermitGenerationModule())
+  constructor(context: ContextPlugin) {
+    this.add(new UserExtractorModule(context))
+      .add(new DataPurgeModule(context))
+      .add(new FormattingEvaluatorModule(context))
+      .add(new ContentEvaluatorModule(context))
+      .add(new PermitGenerationModule(context))
       .add(githubCommentModuleInstance);
+    this._context = context;
   }
 
   add(transformer: Module) {
@@ -48,7 +50,7 @@ export class Processor {
     const { file } = this._configuration;
     const result = JSON.stringify(this._result, typeReplacer, 2);
     if (!file) {
-      logger.debug(result);
+      this._context.logger.debug(result);
     } else {
       fs.writeFileSync(file, result);
     }
@@ -73,6 +75,18 @@ export class Processor {
 export interface Module {
   transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
   get enabled(): boolean;
+}
+
+export abstract class BaseModule implements Module {
+  protected context: ContextPlugin;
+
+  constructor(context: ContextPlugin) {
+    this.context = context;
+  }
+
+  abstract get enabled(): boolean;
+
+  abstract transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
 }
 
 export interface Result {
