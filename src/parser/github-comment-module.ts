@@ -11,7 +11,8 @@ import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
 import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
-import { BaseModule, GithubCommentScore, Result } from "./processor";
+import { BaseModule } from "../types/module";
+import { GithubCommentScore, Result } from "./processor";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };

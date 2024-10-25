@@ -12,8 +12,9 @@ import {
   PrCommentToEvaluate,
   Relevances,
 } from "../types/content-evaluator-module-type";
-import { BaseModule, GithubCommentScore, Result } from "./processor";
+import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
+import { GithubCommentScore, Result } from "./processor";
 
 /**
  * Evaluates and rates comments.

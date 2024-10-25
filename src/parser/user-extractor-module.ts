@@ -3,7 +3,8 @@ import { UserExtractorConfiguration } from "../configuration/user-extractor-conf
 import { GitHubIssue } from "../github-types";
 import { getSortedPrices } from "../helpers/label-price-extractor";
 import { IssueActivity } from "../issue-activity";
-import { BaseModule, Result } from "./processor";
+import { BaseModule } from "../types/module";
+import { Result } from "./processor";
 
 /**
  * Creates entries for each user with its associated comments.

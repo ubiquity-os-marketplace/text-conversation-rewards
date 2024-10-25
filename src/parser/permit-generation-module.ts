@@ -22,7 +22,8 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig } from "../types/env-type";
-import { BaseModule, Result } from "./processor";
+import { BaseModule } from "../types/module";
+import { Result } from "./processor";
 
 interface Payload {
   evmNetworkId: number;

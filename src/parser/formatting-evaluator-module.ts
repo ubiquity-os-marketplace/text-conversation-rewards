@@ -9,7 +9,8 @@ import {
   wordRegex,
 } from "../configuration/formatting-evaluator-config";
 import { IssueActivity } from "../issue-activity";
-import { BaseModule, GithubCommentScore, Result, WordResult } from "./processor";
+import { BaseModule } from "../types/module";
+import { GithubCommentScore, Result, WordResult } from "./processor";
 import { typeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 

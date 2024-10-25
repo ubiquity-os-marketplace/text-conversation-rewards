@@ -3,6 +3,7 @@ import * as fs from "fs";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import { typeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
+import { Module } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
@@ -70,23 +71,6 @@ export class Processor {
 
     return totalReward.toNumber();
   }
-}
-
-export interface Module {
-  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
-  get enabled(): boolean;
-}
-
-export abstract class BaseModule implements Module {
-  protected context: ContextPlugin;
-
-  constructor(context: ContextPlugin) {
-    this.context = context;
-  }
-
-  abstract get enabled(): boolean;
-
-  abstract transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
 }
 
 export interface Result {
