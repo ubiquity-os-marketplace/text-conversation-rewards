@@ -12,7 +12,7 @@ export class DataPurgeModule extends BaseModule {
 
   get enabled(): boolean {
     if (!this._configuration) {
-      console.warn("Invalid / missing configuration detected for DataPurgeModule, disabling.");
+      this.context.logger.error("Invalid / missing configuration detected for DataPurgeModule, disabling.");
       return false;
     }
     return true;
