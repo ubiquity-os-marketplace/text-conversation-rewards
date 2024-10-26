@@ -115,10 +115,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 14.168,
+          "reward": 14.232,
           "words": {
-            "result": 7.71,
-            "wordCount": 166,
+            "result": 7.79,
+            "wordCount": 168,
             "wordValue": 0.1
           }
         },
@@ -189,10 +189,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 19.56,
+          "reward": 19.656,
           "words": {
-            "result": 9.45,
-            "wordCount": 211,
+            "result": 9.57,
+            "wordCount": 214,
             "wordValue": 0.1
           }
         },
@@ -923,8 +923,8 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxNTQyMTcwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIzMzkyOTQxNzYyNzkzOTc1NTkzMTc4MTExNTY1OTgzNzk3NDc1ODk0MDM3NDk1NDA0MTMxMjg2MzgyNzgwNDExNjg3NzA4MzUyODg4IiwiZGVhZGxpbmUiOiI1Nzg5NjA0NDYxODY1ODA5NzcxMTc4NTQ5MjUwNDM0Mzk1MzkyNjYzNDk5MjMzMjgyMDI4MjAxOTcyODc5MjAwMzk1NjU2NDgxOTk2NyJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIxNTQyMTcwMDAwMDAwMDAwMDAwMDAifSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGU1Y2QzZWVlYzg4YzNhODNlY2M1NTNiOTFlOTM2YmVhNDMyNDY0ZWEwMmM5MTZmN2ExYjc2OTk3YjI5ZGY2MzMyOWM2NzVlODAzODQzYTU3ZDUwOTNkYzMyOTA1NjJhMzYyY2FlNTBlOTZhOTYwOGQxNjUyMGM1YWI5NDAzMzQyMWMiLCJuZXR3b3JrSWQiOjEwMH1d",
-    "total": 154.217,
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxNTQzNzcwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIzMzkyOTQxNzYyNzkzOTc1NTkzMTc4MTExNTY1OTgzNzk3NDc1ODk0MDM3NDk1NDA0MTMxMjg2MzgyNzgwNDExNjg3NzA4MzUyODg4IiwiZGVhZGxpbmUiOiIxMTU3OTIwODkyMzczMTYxOTU0MjM1NzA5ODUwMDg2ODc5MDc4NTMyNjk5ODQ2NjU2NDA1NjQwMzk0NTc1ODQwMDc5MTMxMjk2Mzk5MzUifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiMTU0Mzc3MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg1YjExNDIxNTlkYTYxYjYwMjdlODU5OTE5YTYzN2I1ZGY0OTI3NGJjNzY4YmQ0MDRhZWRkYTI4YWUwMDIzMjQ4MTU1MDFjNWI1OWQ1OGE5NzY1YjlhMjk0NDFhNjkyNjQ5Yzg1ZDhmNmQ1Yjg5N2IzZDljNmEzZjA3ZjQzZGRkNTFjIiwibmV0d29ya0lkIjoxMDB9XQ==",
+    "total": 154.377,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -944,10 +944,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 4.128,
+          "reward": 4.288,
           "words": {
-            "result": 3.91,
-            "wordCount": 33,
+            "result": 4.11,
+            "wordCount": 35,
             "wordValue": 0.2
           }
         },
@@ -977,10 +977,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 17.696,
+          "reward": 17.76,
           "words": {
-            "result": 10.87,
-            "wordCount": 110,
+            "result": 10.95,
+            "wordCount": 111,
             "wordValue": 0.2
           }
         },
@@ -1006,10 +1006,10 @@
           },
           "multiplier": 1,
           "relevance": 0.8,
-          "reward": 14.96,
+          "reward": 15.032,
           "words": {
-            "result": 11.2,
-            "wordCount": 114,
+            "result": 11.29,
+            "wordCount": 115,
             "wordValue": 0.2
           }
         },
@@ -1388,10 +1388,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 12.018,
+          "reward": 12.172,
           "words": {
-            "result": 2.87,
-            "wordCount": 23,
+            "result": 2.98,
+            "wordCount": 24,
             "wordValue": 0.2
           }
         },
@@ -1414,10 +1414,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 13.392,
+          "reward": 13.518,
           "words": {
-            "result": 5.28,
-            "wordCount": 47,
+            "result": 5.37,
+            "wordCount": 48,
             "wordValue": 0.2
           }
         },
@@ -1500,10 +1500,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 9.894,
+          "reward": 10.034,
           "words": {
-            "result": 4.21,
-            "wordCount": 36,
+            "result": 4.31,
+            "wordCount": 37,
             "wordValue": 0.2
           }
         },
@@ -1526,10 +1526,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 4.954,
+          "reward": 5.108,
           "words": {
-            "result": 2.11,
-            "wordCount": 16,
+            "result": 2.22,
+            "wordCount": 17,
             "wordValue": 0.2
           }
         },
@@ -1754,10 +1754,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 22.58,
+          "reward": 22.72,
           "words": {
-            "result": 4.7,
-            "wordCount": 41,
+            "result": 4.8,
+            "wordCount": 42,
             "wordValue": 0.2
           }
         },
@@ -1870,10 +1870,10 @@
           },
           "multiplier": 2,
           "relevance": 0.7,
-          "reward": 28.708,
+          "reward": 28.834,
           "words": {
-            "result": 6.22,
-            "wordCount": 57,
+            "result": 6.31,
+            "wordCount": 58,
             "wordValue": 0.2
           }
         },
@@ -1931,12 +1931,12 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063348339"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI4MTczNDYwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiI4MzA3NjQzNzQ0NjQ5OTU4OTMwNDYxMTEyODk2MzkxNjcxMDEwNjg4NjEwMjQzNjAyMzg4MTUyMDA1ODM0NjgwMDU3ODc1NDQwMTc1NSIsImRlYWRsaW5lIjoiNTc4OTYwNDQ2MTg2NTgwOTc3MTE3ODU0OTI1MDQzNDM5NTM5MjY2MzQ5OTIzMzI4MjAyODIwMTk3Mjg3OTIwMDM5NTY1NjQ4MTk5NjcifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiODE3MzQ2MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg3ZTQ5YzQyOTc2NWYyOGFmOTRiZjMzMjRlYmQwZWRiYTc5MmNiZjY2MzkwMTlmZGI0M2I4ZjA0Y2IwNWYxMTU5NmMxNDNjMjliNzJiNTIzODVmMDlkMmQwNjllMjg1M2RmZDE1M2NiODY1MWIxNDUzY2I0MjZiYjQ1ZjI3OTAzYjFjIiwibmV0d29ya0lkIjoxMDB9XQ==",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI4MTg0ODIwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiI4MzA3NjQzNzQ0NjQ5OTU4OTMwNDYxMTEyODk2MzkxNjcxMDEwNjg4NjEwMjQzNjAyMzg4MTUyMDA1ODM0NjgwMDU3ODc1NDQwMTc1NSIsImRlYWRsaW5lIjoiMTE1NzkyMDg5MjM3MzE2MTk1NDIzNTcwOTg1MDA4Njg3OTA3ODUzMjY5OTg0NjY1NjQwNTY0MDM5NDU3NTg0MDA3OTEzMTI5NjM5OTM1In0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6IjgxODQ4MjAwMDAwMDAwMDAwMDAwMCJ9LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4NjczNTJkNzZjYzM5Yjg1MWI1NzZlNGYyZjg2M2Y2ZjcyNGNjOWFhNGIwYTgyOTNhNjE3NDcwMTEzYjZkNmJjNTVmNTYyY2FiZTU4OGIxZTdjZDg4YjJmNzQ5ZDlmODcwMTQ1YjdiNzBkMGU3OWY5MDFkOTU3MTYzOGEyMzVkZmIxYiIsIm5ldHdvcmtJZCI6MTAwfV0=",
     "task": {
       "multiplier": 1,
       "reward": 400
     },
-    "total": 817.346,
+    "total": 818.482,
     "userId": 9807008
   },
   "whilefoo": {
@@ -2180,10 +2180,10 @@
           },
           "multiplier": 0.25,
           "relevance": 0.7,
-          "reward": 1.429,
+          "reward": 1.436,
           "words": {
-            "result": 3.88,
-            "wordCount": 74,
+            "result": 3.92,
+            "wordCount": 75,
             "wordValue": 0.1
           }
         },
@@ -2273,7 +2273,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "total": 10.723,
+    "total": 10.73,
     "userId": 139262667
   }
 }

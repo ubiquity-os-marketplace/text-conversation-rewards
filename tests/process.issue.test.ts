@@ -1,7 +1,7 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import fs from "fs";
-import { http, HttpResponse } from "msw";
+import { http, passthrough } from "msw";
 import configuration from "../src/configuration/config-reader";
 import { IssueActivity } from "../src/issue-activity";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
@@ -281,22 +281,7 @@ describe("Modules tests", () => {
       new PermitGenerationModule(),
     ];
     // This catches calls by getFastestRpc
-    server.use(
-      http.post("https://*", () =>
-        HttpResponse.json([
-          {
-            jsonrpc: "2.0",
-            id: 1,
-            result: "0x64",
-          },
-          {
-            jsonrpc: "2.0",
-            id: 2,
-            result: "0x0000000000000000000000000000000000000000000000000000000000000012",
-          },
-        ])
-      )
-    );
+    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(permitGenerationResults);
@@ -313,22 +298,7 @@ describe("Modules tests", () => {
       new GithubCommentModule(),
     ];
     // This catches calls by getFastestRpc
-    server.use(
-      http.post("https://*", () =>
-        HttpResponse.json([
-          {
-            jsonrpc: "2.0",
-            id: 1,
-            result: "0x64",
-          },
-          {
-            jsonrpc: "2.0",
-            id: 2,
-            result: "0x0000000000000000000000000000000000000000000000000000000000000012",
-          },
-        ])
-      )
-    );
+    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(githubCommentResults);
