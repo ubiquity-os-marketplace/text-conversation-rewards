@@ -66,7 +66,7 @@ export class Processor {
       }
     }
 
-    return totalReward.toNumber();
+    return new Decimal(totalReward).mul(100).round().div(100).toNumber();
   }
 }
 
