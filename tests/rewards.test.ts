@@ -13,6 +13,7 @@ import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import "../src/parser/command-line";
 import { parseGitHubUrl } from "../src/start";
+import { ContextPlugin } from "../src/types/plugin-input";
 import { db, db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
@@ -22,14 +23,14 @@ const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 jest
   .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
+  .mockImplementation((specificationBody, comments, allComments, prComments) => {
     return Promise.resolve(
       (() => {
         const relevance: { [k: string]: number } = {};
-        commentsToEvaluate.forEach((comment) => {
+        comments.forEach((comment) => {
           relevance[`${comment.id}`] = 0.8;
         });
-        prCommentsToEvaluate.forEach((comment) => {
+        prComments.forEach((comment) => {
           relevance[`${comment.id}`] = 0.7;
         });
         return relevance;
@@ -187,7 +188,7 @@ afterAll(() => server.close());
 
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);
-  const activity = new IssueActivity(issue);
+  const activity = new IssueActivity({} as unknown as ContextPlugin, issue);
 
   beforeEach(async () => {
     drop(db);
@@ -201,14 +202,14 @@ describe("Rewards tests", () => {
   });
 
   it("Should split the rewards between multiple assignees", async () => {
-    const processor = new Processor();
+    const processor = new Processor({} as unknown as ContextPlugin);
     processor["_transformers"] = [
-      new UserExtractorModule(),
-      new DataPurgeModule(),
-      new FormattingEvaluatorModule(),
-      new ContentEvaluatorModule(),
-      new PermitGenerationModule(),
-      new GithubCommentModule(),
+      new UserExtractorModule({} as unknown as ContextPlugin),
+      new DataPurgeModule({} as unknown as ContextPlugin),
+      new FormattingEvaluatorModule({} as unknown as ContextPlugin),
+      new ContentEvaluatorModule({} as unknown as ContextPlugin),
+      new PermitGenerationModule({} as unknown as ContextPlugin),
+      new GithubCommentModule({} as unknown as ContextPlugin),
     ];
     server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
