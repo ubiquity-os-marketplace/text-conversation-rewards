@@ -19,6 +19,7 @@ import {
   Relevances,
 } from "../types/content-evaluator-module-type";
 import { GithubCommentScore, Module, Result } from "./processor";
+import { parsePriorityLabel } from "../helpers/label-price-extractor";
 
 /**
  * Evaluates and rates comments.
@@ -73,9 +74,12 @@ export class ContentEvaluatorModule implements Module {
       const currentElement = result[key];
       const comments = currentElement.comments ?? [];
       const specificationBody = data.self?.body;
+      const issueLabels = data.self?.labels;
+      const priority = issueLabels ? parsePriorityLabel(issueLabels) : undefined;
+
       if (specificationBody && comments.length) {
         promises.push(
-          this._processComment(comments, specificationBody, allComments).then(
+          this._processComment(comments, priority, specificationBody, allComments).then(
             (commentsWithScore) => (currentElement.comments = commentsWithScore)
           )
         );
@@ -99,7 +103,12 @@ export class ContentEvaluatorModule implements Module {
     return reward;
   }
 
-  async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string, allComments: AllComments) {
+  async _processComment(
+    comments: Readonly<GithubCommentScore>[],
+    priority: number | undefined,
+    specificationBody: string,
+    allComments: AllComments
+  ) {
     const commentsWithScore: GithubCommentScore[] = [...comments];
     const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
@@ -127,7 +136,7 @@ export class ContentEvaluatorModule implements Module {
       currentComment.score = {
         ...(currentComment.score || { multiplier: 0 }),
         relevance: new Decimal(currentRelevance).toNumber(),
-        reward: currentReward.toNumber(),
+        reward: currentReward.mul(priority ?? 1).toNumber(),
       };
     }
 

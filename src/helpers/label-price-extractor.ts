@@ -20,3 +20,45 @@ export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
   }
   return sortedPriceLabels;
 }
+
+export function parsePriorityLabel(
+  labels: (
+    | string
+    | {
+        id?: number;
+        node_id?: string;
+        url?: string;
+        name?: string;
+        description?: string | null;
+        color?: string | null;
+        default?: boolean;
+      }
+  )[]
+): number {
+  let taskPriorityEstimate = 0;
+
+  for (const label of labels) {
+    let priorityLabel = "";
+    if (typeof label === "string") {
+      priorityLabel = label;
+    } else {
+      priorityLabel = label.name ?? "";
+    }
+
+    if (priorityLabel.startsWith("Priority:")) {
+      const matched = priorityLabel.match(/Priority: (\d+)/i);
+      if (!matched) {
+        return 0;
+      }
+
+      const urgency = matched[1];
+      taskPriorityEstimate = Number(urgency);
+    }
+
+    if (taskPriorityEstimate) {
+      break;
+    }
+  }
+
+  return taskPriorityEstimate;
+}
