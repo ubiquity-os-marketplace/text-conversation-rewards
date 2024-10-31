@@ -238,28 +238,39 @@ export class ContentEvaluatorModule implements Module {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
-    return `Instruction: 
-    Go through all the comments first keep them in memory, then start with the following prompt
+    const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
+    const commentsMap = comments.map((value) => `${value.id}: "${value.comment}"`);
+    return `
+      Evaluate the relevance of GitHub comments to an issue. Provide a JSON object with comment IDs and their relevance scores.
+      Issue: ${issue}
 
-    OUTPUT FORMAT:
-    {ID: CONNECTION SCORE} For Each record in the EVALUATING SECTION, based on the average value from the CONNECTION SCORE from ALL COMMENTS, TITLE and BODY, one for each comment under evaluation
-    Global Context:
-    Specification
-    "${issue}"
-    ALL COMMENTS:
-    ${JSON.stringify(allComments, null, 2)}
-    IMPORTANT CONTEXT:
-    You have now seen all the comments made by other users, keeping the comments in mind think in what ways comments to be evaluated be connected. The comments that were related to the comment under evaluation might come after or before them in the list of all comments but they would be there in ALL COMMENTS. COULD BE BEFORE OR AFTER, you have diligently search through all the comments in ALL COMMENTS.
-    START EVALUATING:
-    ${JSON.stringify(comments, null, 2)}
-    POST EVALUATION:
-    THE RESULT FROM THIS SHOULD BE ONLY THE SCORES BASED ON THE FLOATING POINT VALUE CONNECTING HOW CLOSE THE COMMENT IS FROM ALL COMMENTS AND TITLE AND BODY.
+      All comments:
+      ${allCommentsMap.join("\n")}
 
-    Now Assign them scores a float value ranging from 0 to 1, where 0 is spam (lowest value), and 1 is something that's very relevant (Highest Value), here relevance should mean a variety of things, it could be a fix to the issue, it could be a bug in solution, it could a SPAM message, it could be comment, that on its own does not carry weight, but when CHECKED IN ALL COMMENTS, may be a crucial piece of information for debugging and solving the ticket. If YOU THINK ITS NOT RELATED to ALL COMMENTS or TITLE OR ISSUE SPEC, then give it a 0 SCORE.
+      Comments to evaluate:
+      ${commentsMap.join("\n")}
 
-    OUTPUT:
-    RETURN ONLY A JSON with the ID and the connection score (FLOATING POINT VALUE) with ALL COMMENTS TITLE AND BODY for each comment under evaluation.  RETURN ONLY ONE CONNECTION SCORE VALUE for each comment. Total number of properties in your JSON response should equal exactly ${comments.length}
-    }`;
+      Instructions:
+      1. Read all comments carefully, considering their context and content.
+      2. Evaluate each comment in the "Comments to evaluate" section.
+      3. Assign a relevance score from 0 to 1 for each comment:
+        - 0: Not related (e.g., spam)
+        - 1: Highly relevant (e.g., solutions, bug reports)
+      4. Consider:
+        - Relation to the issue description
+        - Connection to other comments
+        - Contribution to issue resolution
+      5. Handle GitHub-flavored markdown:
+        - Ignore text beginning with '>' as it references another comment
+        - Distinguish between referenced text and the commenter's own words
+        - Only evaluate the relevance of the commenter's original content
+      6. Return a JSON object: {{ID: score}}
+
+      Notes:
+      - Even minor details may be significant.
+      - Comments may reference earlier comments.
+      - The number of entries in the JSON response must equal ${commentsMap.length}.
+    `;
   }
 
   _generatePromptForPrComments(issue: string, comments: PrCommentToEvaluate[]) {
