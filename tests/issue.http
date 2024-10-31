@@ -2,11 +2,13 @@ POST http://localhost:3000
 Content-Type: application/json
 
 {
+  "ref": "development",
+  "stateId": "1234",
   "signature": "",
   "eventName": "issues.closed",
   "action": "closed",
   "settings": {
-    "evmPrivateEncrypted": "",
+    "evmPrivateEncrypted": "YfEnpznMNbSPhCQzWy1Uevi4xQC25SqJrHd87CjjS1gsu92QrCReSgvl8Z_pVI1ZM57PNC1mZSgHbNgX9ITmOJc6qaOJ_mRe_sP_8jBcNimusDCQcWEkcPIW7Md-QGDPnwuN8FIavS7I0uiOIRYK6h0NK02-3uzPqhM",
     "incentives": {
       "userExtractor": {},
       "dataPurge": {},
@@ -100,7 +102,7 @@ Content-Type: application/json
       "full_name": "meniole/conversation-rewards",
       "owner": {
         "login": "meniole",
-        "id": 1,
+        "id": 159901852,
         "node_id": "MDQ6VXNlcjE=",
         "avatar_url": "https://github.com/images/error/meniole_happy.gif",
         "gravatar_id": "",
@@ -198,7 +200,7 @@ Content-Type: application/json
     },
     "sender": {
       "login": "meniole",
-      "id": 1,
+      "id": 159901852,
       "node_id": "MDQ6VXNlcjE=",
       "avatar_url": "https://github.com/images/error/meniole_happy.gif",
       "gravatar_id": "",
