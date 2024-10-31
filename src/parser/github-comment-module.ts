@@ -241,8 +241,8 @@ export class GithubCommentModule implements Module {
               <pre>${formatting}</pre>
              </details>
             </td>
-            <td>${commentScore.score?.relevance ?? "-"}</td>
-            <td>${commentScore.score?.reward ?? "-"}</td>
+            <td>${commentScore.score?.relevance === undefined ? "-" : commentScore.score.relevance}</td>
+            <td>${commentScore.score?.reward === undefined ? "-" : commentScore.score.reward}</td>
           </tr>`;
     }
 
