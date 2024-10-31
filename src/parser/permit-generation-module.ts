@@ -262,7 +262,9 @@ export class PermitGenerationModule extends BaseModule {
       locationId = locationData.id;
     }
     if (!locationId) {
-      throw new Error(`Failed to retrieve the related location from issue ${JSON.stringify(issue)}`);
+      throw new Error(
+        this.context.logger.error("Failed to retrieve the related location from issue", { issue }).logMessage.raw
+      );
     }
     return locationId;
   }
