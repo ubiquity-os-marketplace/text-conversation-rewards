@@ -283,13 +283,13 @@ export class PermitGenerationModule extends BaseModule {
             location_id: locationId,
           });
           if (error) {
-            console.error("Failed to insert a new permit", error);
+            this.context.logger.error("Failed to insert a new permit", error);
           }
         } else {
-          console.error(`Failed to save the permit: could not find user ${userId}`);
+          this.context.logger.error(`Failed to save the permit: could not find user ${userId}`);
         }
       } catch (e) {
-        console.error("Failed to save permits to the database", e);
+        this.context.logger.error("Failed to save permits to the database", { e });
       }
     }
   }
