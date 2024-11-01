@@ -101,8 +101,7 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   get enabled(): boolean {
-    console.log("+++ cfg", this._configuration);
-    if (!this._configuration || !Value.Check(formattingEvaluatorConfigurationType, this._configuration)) {
+    if (!Value.Check(formattingEvaluatorConfigurationType, this._configuration)) {
       console.warn("Invalid / missing configuration detected for FormattingEvaluatorModule, disabling.");
       return false;
     }
