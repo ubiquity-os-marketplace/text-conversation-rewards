@@ -98,5 +98,6 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  }
+  },
+  "packageManager": "bun@1.1.33"
 }

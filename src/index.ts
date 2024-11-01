@@ -6,7 +6,7 @@ import { run } from "./run";
 import envConfigSchema, { EnvConfig } from "./types/env-type";
 import { PluginSettings, pluginSettingsSchema } from "./types/plugin-input";
 
-export default await createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
+export default createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   (context) => {
     return run(context);
   },
