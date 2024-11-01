@@ -182,6 +182,18 @@ export class ContentEvaluatorModule implements Module {
   ): Promise<Relevances> {
     let commentRelevances: Relevances = {};
     let prCommentRelevances: Relevances = {};
+    return Promise.resolve(
+      (() => {
+        const relevance: { [k: string]: number } = {};
+        comments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0;
+        });
+        prComments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0;
+        });
+        return relevance;
+      })()
+    );
 
     if (comments.length) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
