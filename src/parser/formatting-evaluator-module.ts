@@ -13,6 +13,7 @@ import logger from "../helpers/logger";
 import { IssueActivity } from "../issue-activity";
 import { GithubCommentScore, Module, WordResult, Result } from "./processor";
 import { typeReplacer } from "../helpers/result-replacer";
+import { parsePriorityLabel } from "../helpers/label-price-extractor";
 
 interface Multiplier {
   multiplier: number;
@@ -59,6 +60,8 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
+    logger.debug(JSON.stringify(data.self?.labels));
+    logger.debug(String(parsePriorityLabel(data.self?.labels)));
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
@@ -66,7 +69,9 @@ export class FormattingEvaluatorModule implements Module {
         const { formatting, words } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
-        const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
+        const priority = parsePriorityLabel(data.self?.labels);
+        const reward =
+          (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber() * priority;
         comment.score = {
           ...comment.score,
           reward,
@@ -74,6 +79,7 @@ export class FormattingEvaluatorModule implements Module {
             content: formatting,
             result: Object.values(formatting).reduce((acc, curr) => acc + curr.score * curr.elementCount, 0),
           },
+          priority: priority,
           words,
           multiplier: multiplierFactor.multiplier,
         };

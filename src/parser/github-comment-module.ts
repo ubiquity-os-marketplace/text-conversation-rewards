@@ -208,7 +208,6 @@ export class GithubCommentModule implements Module {
 
   _createIncentiveRows(sortedTasks: SortedTasks | undefined) {
     const content: string[] = [];
-
     if (!sortedTasks) {
       return content.join("");
     }
@@ -242,7 +241,9 @@ export class GithubCommentModule implements Module {
              </details>
             </td>
             <td>${commentScore.score?.relevance ?? "-"}</td>
+            <td>${commentScore.score?.priority ?? "-"}</td>
             <td>${commentScore.score?.reward ?? "-"}</td>
+            
           </tr>`;
     }
 
@@ -302,6 +303,7 @@ export class GithubCommentModule implements Module {
             <th>Contribution</th>
             <th>Count</th>
             <th>Reward</th>
+
           </tr>
         </thead>
         <tbody>
@@ -317,6 +319,7 @@ export class GithubCommentModule implements Module {
             <th>Comment</th>
             <th>Formatting</th>
             <th>Relevance</th>
+            <th>Priority</th>
             <th>Reward</th>
           </tr>
         </thead>

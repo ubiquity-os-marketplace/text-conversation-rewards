@@ -22,21 +22,23 @@ export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
 }
 
 export function parsePriorityLabel(
-  labels: (
-    | string
-    | {
-        id?: number;
-        node_id?: string;
-        url?: string;
-        name?: string;
-        description?: string | null;
-        color?: string | null;
-        default?: boolean;
-      }
-  )[]
+  labels:
+    | (
+        | string
+        | {
+            id?: number;
+            node_id?: string;
+            url?: string;
+            name?: string;
+            description?: string | null;
+            color?: string | null;
+            default?: boolean;
+          }
+      )[]
+    | undefined
 ): number {
   let taskPriorityEstimate = 0;
-
+  if (!labels) return 1;
   for (const label of labels) {
     let priorityLabel = "";
     if (typeof label === "string") {
