@@ -1,10 +1,11 @@
-/* eslint @typescript-eslint/no-var-requires: 0 */
+import { afterAll, afterEach, beforeAll, beforeEach, describe, jest, it } from "@jest/globals";
 import { http, HttpResponse } from "msw";
+import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 
 beforeAll(() => server.listen());
 beforeEach(() => {
-  jest.mock("@actions/github", () => ({
+  jest.unstable_mockModule("@actions/github", () => ({
     context: {
       runId: "1",
       payload: {
@@ -22,7 +23,7 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-jest.mock("@octokit/plugin-paginate-graphql", () => ({
+jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
   paginateGraphQL() {
     return {
       graphql: {
@@ -61,15 +62,17 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-jest.mock("../src/helpers/get-comment-details", () => ({
+jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
 describe("Action tests", () => {
   it("Should skip when the issue is closed without the completed status", async () => {
-    jest.mock("../src/parser/command-line", () => {
-      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = require("./__mocks__/results/valid-configuration.json");
-      const dotenv = require("dotenv");
+    jest.unstable_mockModule("../src/parser/command-line", async () => {
+      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = await import(
+        "./__mocks__/results/valid-configuration.json"
+      );
+      const dotenv = await import("dotenv");
       dotenv.config();
       return {
         stateId: 1,
@@ -92,14 +95,16 @@ describe("Action tests", () => {
         settings: JSON.stringify(cfg),
       };
     });
-    const run: typeof import("../src/index") = require("../src/index");
+    const run = await import("../src/index");
     await expect(run.default).resolves.toEqual("Issue was not closed as completed. Skipping.");
   });
 
   it("Should post comment network failure", async () => {
-    jest.mock("../src/parser/command-line", () => {
-      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = require("./__mocks__/results/valid-configuration.json");
-      const dotenv = require("dotenv");
+    jest.unstable_mockModule("../src/parser/command-line", async () => {
+      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = await import(
+        "./__mocks__/results/valid-configuration.json"
+      );
+      const dotenv = await import("dotenv");
       dotenv.config();
       return {
         stateId: 1,
@@ -130,9 +135,11 @@ describe("Action tests", () => {
     ].forEach((url) => {
       server.use(http.get(url, () => HttpResponse.json("", { status: 500 })));
     });
-    const githubCommentModule: typeof import("../src/parser/github-comment-module") = require("../src/parser/github-comment-module");
+    const githubCommentModule: typeof import("../src/parser/github-comment-module") = await import(
+      "../src/parser/github-comment-module"
+    );
     const spy = jest.spyOn(githubCommentModule.GithubCommentModule.prototype, "postComment");
-    const run: typeof import("../src/index") = require("../src/index");
+    const run: typeof import("../src/index") = await import("../src/index");
     await expect(run.default).resolves.toBeTruthy();
     expect(spy).toHaveBeenCalledWith(`\`\`\`diff
 ! Failed to run comment evaluation. Could not fetch issue data: HttpError
@@ -155,14 +162,16 @@ https://github.com/ubiquity-os/conversation-rewards/actions/runs/1
   }, 60000);
 
   it("Should link metadata to Github's comment", async () => {
-    jest.mock("../src/run", () => ({
+    jest.unstable_mockModule("../src/run", () => ({
       run: jest.fn(() => {
         return Promise.reject("Some error");
       }),
     }));
-    const githubCommentModule: typeof import("../src/parser/github-comment-module") = require("../src/parser/github-comment-module");
+    const githubCommentModule: typeof import("../src/parser/github-comment-module") = await import(
+      "../src/parser/github-comment-module"
+    );
     const spy = jest.spyOn(githubCommentModule.GithubCommentModule.prototype, "postComment");
-    const run: typeof import("../src/index") = require("../src/index");
+    const run: typeof import("../src/index") = await import("../src/index");
     await expect(run.default).resolves.toEqual("Some error");
     expect(spy).toHaveBeenCalledWith(`\`\`\`diff
 ! Failed to run comment evaluation. Some error
@@ -177,9 +186,11 @@ https://github.com/ubiquity-os/conversation-rewards/actions/runs/1
   });
 
   it("Should retry to fetch on network failure", async () => {
-    jest.mock("../src/parser/command-line", () => {
-      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = require("./__mocks__/results/valid-configuration.json");
-      const dotenv = require("dotenv");
+    jest.unstable_mockModule("../src/parser/command-line", async () => {
+      const cfg: typeof import("./__mocks__/results/valid-configuration.json") = await import(
+        "./__mocks__/results/valid-configuration.json"
+      );
+      const dotenv = await import("dotenv");
       dotenv.config();
       return {
         stateId: 1,
@@ -202,8 +213,8 @@ https://github.com/ubiquity-os/conversation-rewards/actions/runs/1
         settings: JSON.stringify(cfg),
       };
     });
-    const { IssueActivity }: typeof import("../src/issue-activity") = require("../src/issue-activity");
-    const { parseGitHubUrl }: typeof import("../src/start") = require("../src/start");
+    const { IssueActivity } = await import("../src/issue-activity");
+    const { parseGitHubUrl } = await import("../src/start");
     // Fakes one crash per route retrieving the data. Should succeed on retry. Timeout for the test function needs
     // to be increased since it takes 10 seconds for a retry to happen.
     [
@@ -214,9 +225,10 @@ https://github.com/ubiquity-os/conversation-rewards/actions/runs/1
     ].forEach((url) => {
       server.use(http.get(url, () => HttpResponse.json("", { status: 500 }), { once: true }));
     });
-    const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/comment-incentives/issues/22";
-    const issue = parseGitHubUrl(issueUrl);
-    const activity = new IssueActivity(issue);
+    const issueUrl = parseGitHubUrl(
+      process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/comment-incentives/issues/22"
+    );
+    const activity = new IssueActivity({} as unknown as ContextPlugin, issueUrl);
     await activity.init();
     expect(activity.self).toBeTruthy();
     expect(activity.linkedReviews.length).toBeGreaterThan(0);

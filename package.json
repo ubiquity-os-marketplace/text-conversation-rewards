@@ -9,7 +9,7 @@
   },
   "type": "module",
   "scripts": {
-    "test": "jest --setupFiles dotenv/config --coverage",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --setupFiles dotenv/config --coverage",
     "start": "tsx src/index.ts",
     "format": "run-s format:lint format:prettier format:cspell",
     "format:lint": "eslint --fix .",
@@ -42,6 +42,7 @@
     "jsdom": "24.0.0",
     "markdown-it": "14.1.0",
     "openai": "4.56.0",
+    "ts-jest": "^29.2.5",
     "tsx": "4.7.1",
     "yaml": "2.4.1"
   },

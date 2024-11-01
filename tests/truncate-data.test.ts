@@ -1,4 +1,5 @@
 /* eslint-disable sonarjs/no-nested-functions */
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import "../src/parser/command-line";
 import { db } from "./__mocks__/db";

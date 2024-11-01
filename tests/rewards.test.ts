@@ -1,5 +1,6 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
+import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import fs from "fs";
 import { http, passthrough } from "msw";
@@ -38,7 +39,7 @@ jest
     );
   });
 
-jest.mock("@actions/github", () => ({
+jest.unstable_mockModule("@actions/github", () => ({
   context: {
     runId: "1",
     payload: {
@@ -50,7 +51,7 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
-jest.mock("@octokit/plugin-paginate-graphql", () => ({
+jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
   paginateGraphQL() {
     return {
       graphql: {
@@ -89,8 +90,8 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-jest.mock("@ubiquity-os/permit-generation", () => {
-  const originalModule = jest.requireActual("@ubiquity-os/permit-generation");
+jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
+  const originalModule: object = jest.requireActual("@ubiquity-os/permit-generation");
 
   return {
     __esModule: true,
@@ -119,7 +120,7 @@ jest.mock("@ubiquity-os/permit-generation", () => {
   };
 });
 
-jest.mock("../src/parser/command-line", () => {
+jest.unstable_mockModule("../src/parser/command-line", () => {
   const cfg = require("./__mocks__/results/valid-configuration.json");
   const dotenv = require("dotenv");
   dotenv.config();
@@ -146,7 +147,7 @@ jest.mock("../src/parser/command-line", () => {
   };
 });
 
-jest.mock("@supabase/supabase-js", () => {
+jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
@@ -172,13 +173,13 @@ jest.mock("@supabase/supabase-js", () => {
   };
 });
 
-jest.mock("../src/helpers/web3", () => ({
+jest.unstable_mockModule("../src/helpers/web3", () => ({
   getErc20TokenSymbol() {
     return "WXDAI";
   },
 }));
 
-jest.mock("../src/helpers/get-comment-details", () => ({
+jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
