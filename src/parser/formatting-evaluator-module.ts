@@ -60,8 +60,6 @@ export class FormattingEvaluatorModule implements Module {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    logger.debug(JSON.stringify(data.self?.labels));
-    logger.debug(String(parsePriorityLabel(data.self?.labels)));
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments || [];
