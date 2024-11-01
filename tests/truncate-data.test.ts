@@ -4,7 +4,6 @@ import "../src/parser/command-line";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
-import * as Validator from "../src/helpers/validator";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -108,8 +107,6 @@ describe("Payload truncate tests", () => {
   });
 
   it("Should truncate the returned data if the payload is too large", async () => {
-    // const patchMock = jest.fn(() => HttpResponse.json({}));
-    // server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
     jest.mock("../src/parser/processor", () => ({
       Processor: jest.fn(() => ({
         dump: jest.fn(() =>
@@ -130,7 +127,6 @@ describe("Payload truncate tests", () => {
       return { IssueActivity: jest.fn(() => ({ init: jest.fn() })) };
     });
     const returnDataToKernelMock = jest.fn();
-    jest.spyOn(Validator, "returnDataToKernel").mockImplementation(returnDataToKernelMock);
     const module = (await import("../src/index")) as unknown as { default: Promise<string> };
     const result = await module.default;
     const expectedResult = '{"user":{"userId":"1","task":"1","permitUrl":"http","total":1}}';
