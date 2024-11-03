@@ -73,6 +73,7 @@ export class ContentEvaluatorModule implements Module {
       const currentElement = result[key];
       const comments = currentElement.comments ?? [];
       const specificationBody = data.self?.body;
+
       if (specificationBody && comments.length) {
         promises.push(
           this._processComment(comments, specificationBody, allComments).then(
@@ -127,6 +128,7 @@ export class ContentEvaluatorModule implements Module {
       currentComment.score = {
         ...(currentComment.score || { multiplier: 0 }),
         relevance: new Decimal(currentRelevance).toNumber(),
+        priority: currentComment.score?.priority ?? 1,
         reward: currentReward.toNumber(),
       };
     }

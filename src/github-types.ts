@@ -1,6 +1,11 @@
 import { RestEndpointMethodTypes } from "@octokit/rest";
 
 export type GitHubIssue = RestEndpointMethodTypes["issues"]["get"]["response"]["data"];
+export type GitHubIssueLabel = Partial<
+  Omit<RestEndpointMethodTypes["issues"]["listLabelsForRepo"]["response"]["data"][0], "color">
+> & {
+  color?: string | null;
+};
 export type GitHubPullRequest = RestEndpointMethodTypes["pulls"]["get"]["response"]["data"];
 export type GitHubIssueComment = RestEndpointMethodTypes["issues"]["listComments"]["response"]["data"][0] & {
   isMinimized?: boolean;
