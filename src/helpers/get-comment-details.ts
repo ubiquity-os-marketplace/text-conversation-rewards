@@ -9,7 +9,7 @@ export async function getMinimizedCommentStatus(context: ContextPlugin, comments
     node_ids: comments.map((o) => o.node_id),
   });
 
-  if (commentsData.nodes?.length) {
+  if (commentsData?.nodes?.length) {
     for (const commentNode of commentsData.nodes) {
       const comment = comments.find((o) => o.node_id === commentNode.id);
       // For each comment we add the 'isMinimized' info, which corresponds to a collapsed comment

@@ -2,23 +2,23 @@
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
+import { Octokit } from "@octokit/rest";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, passthrough } from "msw";
-import { IssueActivity } from "../src/issue-activity";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
 import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { GithubCommentModule } from "../src/parser/github-comment-module";
-import { PermitGenerationModule } from "../src/parser/permit-generation-module";
 import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
-import "../src/parser/command-line";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db, db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
+import cfg from "./__mocks__/results/valid-configuration.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -51,45 +51,6 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
-  paginateGraphQL() {
-    return {
-      graphql: {
-        paginate() {
-          return {
-            repository: {
-              issue: {
-                closedByPullRequestsReferences: {
-                  edges: [
-                    {
-                      node: {
-                        id: "PR_kwDOKzVPS85zXUoj",
-                        title: "fix: add state to sorting manager for bottom and top",
-                        number: 70,
-                        url: "https://github.com/ubiquity/work.ubq.fi/pull/70",
-                        author: {
-                          login: "0x4007",
-                          id: 4975670,
-                        },
-                        repository: {
-                          owner: {
-                            login: "ubiquity",
-                          },
-                          name: "work.ubq.fi",
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          };
-        },
-      },
-    };
-  },
-}));
-
 jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
   const originalModule: object = jest.requireActual("@ubiquity-os/permit-generation");
 
@@ -117,33 +78,6 @@ jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
         },
       };
     }),
-  };
-});
-
-jest.unstable_mockModule("../src/parser/command-line", () => {
-  const cfg = require("./__mocks__/results/valid-configuration.json");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  return {
-    stateId: 1,
-    eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
-    eventPayload: {
-      issue: {
-        html_url: issueUrl,
-        number: 69,
-        state_reason: "completed",
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-          id: 76412717, // https://github.com/ubiquity
-        },
-      },
-    },
-    settings: JSON.stringify(cfg),
   };
 });
 
@@ -183,13 +117,61 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
+jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+  collectLinkedMergedPulls: jest.fn(() => [
+    {
+      id: "PR_kwDOKzVPS85zXUoj",
+      title: "fix: add state to sorting manager for bottom and top",
+      number: 70,
+      url: "https://github.com/ubiquity/work.ubq.fi/pull/70",
+      author: {
+        login: "0x4007",
+        id: 4975670,
+      },
+      repository: {
+        owner: {
+          login: "ubiquity",
+        },
+        name: "work.ubq.fi",
+      },
+    },
+  ]),
+}));
+
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
+const { IssueActivity } = await import("../src/issue-activity");
+const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);
-  const activity = new IssueActivity({} as unknown as ContextPlugin, issue);
+  const ctx = {
+    stateId: 1,
+    eventName: "issues.closed",
+    authToken: process.env.GITHUB_TOKEN,
+    ref: "",
+    payload: {
+      issue: {
+        html_url: issueUrl,
+        number: 69,
+        state_reason: "completed",
+      },
+      repository: {
+        name: "conversation-rewards",
+        owner: {
+          login: "ubiquity-os",
+          id: 76412717, // https://github.com/ubiquity
+        },
+      },
+    },
+    config: cfg,
+    logger: new Logs("debug"),
+    octokit: new Octokit(),
+    env: process.env,
+  } as unknown as ContextPlugin;
+  const activity = new IssueActivity(ctx, issue);
 
   beforeEach(async () => {
     drop(db);
@@ -203,14 +185,14 @@ describe("Rewards tests", () => {
   });
 
   it("Should split the rewards between multiple assignees", async () => {
-    const processor = new Processor({} as unknown as ContextPlugin);
+    const processor = new Processor(ctx);
     processor["_transformers"] = [
-      new UserExtractorModule({} as unknown as ContextPlugin),
-      new DataPurgeModule({} as unknown as ContextPlugin),
-      new FormattingEvaluatorModule({} as unknown as ContextPlugin),
-      new ContentEvaluatorModule({} as unknown as ContextPlugin),
-      new PermitGenerationModule({} as unknown as ContextPlugin),
-      new GithubCommentModule({} as unknown as ContextPlugin),
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new PermitGenerationModule(ctx),
+      new GithubCommentModule(ctx),
     ];
     server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
