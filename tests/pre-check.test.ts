@@ -24,65 +24,6 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
-  paginateGraphQL() {
-    return {
-      graphql: {
-        paginate() {
-          return {
-            repository: {
-              issue: {
-                closedByPullRequestsReferences: {
-                  edges: [
-                    {
-                      node: {
-                        id: "PR_kwDOKzVPS85zXUoj",
-                        title: "fix: add state to sorting manager for bottom and top",
-                        number: 70,
-                        url: "https://github.com/ubiquity/work.ubq.fi/pull/70",
-                        state: "OPEN",
-                        author: {
-                          login: "0x4007",
-                          id: 4975670,
-                        },
-                        repository: {
-                          owner: {
-                            login: "ubiquity",
-                          },
-                          name: "work.ubq.fi",
-                        },
-                      },
-                    },
-                    {
-                      node: {
-                        id: "PR_kwDOKzVPS85zXUok",
-                        title: "fix: add state to sorting manager for bottom and top 2",
-                        number: 71,
-                        url: "https://github.com/ubiquity/work.ubq.fi/pull/71",
-                        state: "MERGED",
-                        author: {
-                          login: "0x4007",
-                          id: 4975670,
-                        },
-                        repository: {
-                          owner: {
-                            login: "ubiquity",
-                          },
-                          name: "work.ubq.fi",
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          };
-        },
-      },
-    };
-  },
-}));
-
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
   collectLinkedMergedPulls: jest.fn(() => [
     {

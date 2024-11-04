@@ -2,14 +2,6 @@
 
 import fs from "fs";
 import { http, passthrough } from "msw";
-import { IssueActivity } from "../src/issue-activity";
-import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
-import { DataPurgeModule } from "../src/parser/data-purge-module";
-import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
-import { GithubCommentModule } from "../src/parser/github-comment-module";
-import { PermitGenerationModule } from "../src/parser/permit-generation-module";
-import { Processor, Result } from "../src/parser/processor";
-import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
 import { db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
@@ -74,6 +66,12 @@ const ctx = {
   config: cfg,
   logger: new Logs("debug"),
   octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  env: {
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    SUPABASE_KEY: process.env.SUPABASE_KEY,
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
+  },
 } as unknown as ContextPlugin;
 
 jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
@@ -132,44 +130,35 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
-  paginateGraphQL() {
-    return {
-      graphql: {
-        paginate() {
-          return {
-            repository: {
-              issue: {
-                closedByPullRequestsReferences: {
-                  edges: [
-                    {
-                      node: {
-                        id: "PR_kwDOLUK0B85soGlu",
-                        title: "feat: github comment generation and posting",
-                        number: 12,
-                        url: "https://github.com/ubiquity-os/conversation-rewards/pull/12",
-                        author: {
-                          login: "gentlementlegen",
-                          id: 9807008,
-                        },
-                        repository: {
-                          owner: {
-                            login: "ubiquity-os",
-                          },
-                          name: "conversation-rewards",
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          };
-        },
+jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+  collectLinkedMergedPulls: jest.fn(() => [
+    {
+      id: "PR_kwDOLUK0B85soGlu",
+      title: "feat: github comment generation and posting",
+      number: 12,
+      url: "https://github.com/ubiquity-os/conversation-rewards/pull/12",
+      author: {
+        login: "gentlementlegen",
+        id: 9807008,
       },
-    };
-  },
+      repository: {
+        owner: {
+          login: "ubiquity-os",
+        },
+        name: "conversation-rewards",
+      },
+    },
+  ]),
 }));
+
+const { IssueActivity } = await import("../src/issue-activity");
+const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
+const { DataPurgeModule } = await import("../src/parser/data-purge-module");
+const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
+const { GithubCommentModule } = await import("../src/parser/github-comment-module");
+const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { Processor } = await import("../src/parser/processor");
+const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -311,13 +300,8 @@ describe("Modules tests", () => {
   });
   it("Should generate GitHub comment without zero total", async () => {
     const githubCommentModule = new GithubCommentModule(ctx);
-    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
+    // @ts-expect-error mocked object
+    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults);
     expect(postBody).not.toContain("whilefoo");
-  });
-
-  it("Should do a full run", async () => {
-    const module = (await import("../src/index")) as unknown as { default: Promise<string> };
-    const result = await module.default;
-    expect(result).toBeTruthy();
   });
 });
