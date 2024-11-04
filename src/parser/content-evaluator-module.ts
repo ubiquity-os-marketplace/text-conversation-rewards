@@ -123,7 +123,9 @@ export class ContentEvaluatorModule implements Module {
         currentRelevance = relevancesByAi[currentComment.id];
       }
 
-      const currentReward = this._getRewardForComment(currentComment, currentRelevance);
+      const currentReward = this._getRewardForComment(currentComment, currentRelevance)
+        .mul(currentComment.score?.priority ?? 1)
+        .toDecimalPlaces(2);
 
       currentComment.score = {
         ...(currentComment.score || { multiplier: 0 }),

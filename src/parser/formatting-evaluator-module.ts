@@ -68,8 +68,7 @@ export class FormattingEvaluatorModule implements Module {
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
         const priority = parsePriorityLabel(data.self?.labels);
-        const reward =
-          (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber() * priority;
+        const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
         comment.score = {
           ...comment.score,
           reward,
