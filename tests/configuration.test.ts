@@ -1,35 +1,8 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import { Value } from "@sinclair/typebox/value";
 import { formattingEvaluatorConfigurationType } from "../src/configuration/formatting-evaluator-config";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { ContextPlugin, pluginSettingsSchema } from "../src/types/plugin-input";
-
-jest.mock("../src/parser/command-line", () => {
-  const cfg = require("./__mocks__/configurations/custom-configuration.json");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  return {
-    stateId: 1,
-    eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
-    eventPayload: {
-      issue: {
-        html_url: "",
-        number: 69,
-        state_reason: "completed",
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-          id: 76412717,
-        },
-      },
-    },
-    settings: JSON.stringify(cfg),
-  };
-});
 
 describe("Configuration Tests", () => {
   it("Formatting evaluator should parse the enums properly", () => {
