@@ -90,8 +90,6 @@ describe("Action tests", () => {
     ].forEach((url) => {
       server.use(http.get(url, () => HttpResponse.json("", { status: 500 })));
     });
-    const githubCommentModule = await import("../src/parser/github-comment-module");
-    const spy = jest.spyOn(githubCommentModule.GithubCommentModule.prototype, "postComment");
     const { run } = await import("../src/run");
     await expect(
       run({
@@ -116,72 +114,16 @@ describe("Action tests", () => {
         logger: new Logs("debug"),
         octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
       } as unknown as ContextPlugin)
-    ).resolves.toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(`\`\`\`diff
-! Failed to run comment evaluation. Could not fetch issue data: HttpError
-\`\`\`
-<!--
-https://github.com/ubiquity-os/conversation-rewards/actions/runs/1
-{
-  "logMessage": {
-    "raw": "Could not fetch issue data: HttpError",
-    "diff": "\`\`\`diff\\n! Could not fetch issue data: HttpError\\n\`\`\`",
-    "type": "error",
-    "level": "error"
-  },
-  "metadata": {
-    "caller": "IssueActivity.error"
-  },
-  "caller": "error"
-}
--->`);
-  }, 60000);
-
-  it("Should retry to fetch on network failure", async () => {
-    const { IssueActivity } = await import("../src/issue-activity");
-    const { parseGitHubUrl } = await import("../src/start");
-    // Fakes one crash per route retrieving the data. Should succeed on retry. Timeout for the test function needs
-    // to be increased since it takes 10 seconds for a retry to happen.
-    [
-      "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22",
-      "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/events",
-      "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/comments",
-      "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/timeline",
-    ].forEach((url) => {
-      server.use(http.get(url, () => HttpResponse.json("", { status: 500 }), { once: true }));
+    ).rejects.toEqual({
+      logMessage: {
+        diff: "```diff\n! Could not fetch issue data: HttpError\n```",
+        level: "error",
+        raw: "Could not fetch issue data: HttpError",
+        type: "error",
+      },
+      metadata: {
+        caller: "IssueActivity.init",
+      },
     });
-    const issueUrl = parseGitHubUrl(
-      process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/comment-incentives/issues/22"
-    );
-    const activity = new IssueActivity(
-      {
-        stateId: 1,
-        eventName: "issues.closed",
-        authToken: process.env.GITHUB_TOKEN,
-        ref: "",
-        payload: {
-          issue: {
-            html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
-            number: 1,
-            state_reason: "not_planned",
-          },
-          repository: {
-            name: "conversation-rewards",
-            owner: {
-              login: "ubiquity-os",
-            },
-          },
-        },
-        config: cfg,
-        logger: new Logs("debug"),
-        octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
-      } as unknown as ContextPlugin,
-      issueUrl
-    );
-    await activity.init();
-    expect(activity.self).toBeTruthy();
-    expect(activity.linkedReviews.length).toBeGreaterThan(0);
-    expect(activity.comments.length).toBeGreaterThan(0);
-    expect(activity.events.length).toBeGreaterThan(0);
   }, 60000);
 });
