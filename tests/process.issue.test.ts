@@ -21,18 +21,22 @@ import githubCommentResults from "./__mocks__/results/github-comment-results.jso
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
-import validConfiguration from "./__mocks__/results/valid-configuration.json";
-import "../src/parser/command-line";
+import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { ContextPlugin } from "../src/types/plugin-input";
+import cfg from "./__mocks__/results/valid-configuration.json";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { Octokit } from "@octokit/rest";
+import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
-jest.mock("../src/helpers/web3", () => ({
+jest.unstable_mockModule("../src/helpers/web3", () => ({
   getErc20TokenSymbol() {
     return "WXDAI";
   },
 }));
 
-jest.mock("@actions/github", () => ({
+jest.unstable_mockModule("@actions/github", () => ({
   context: {
     runId: "1",
     payload: {
@@ -44,40 +48,36 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
-jest.mock("../src/helpers/get-comment-details", () => ({
+jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
-jest.mock("../src/parser/command-line", () => {
-  // Require is needed because mock cannot access elements out of scope
-  const cfg = require("./__mocks__/results/valid-configuration.json");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  return {
-    stateId: 1,
-    eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
-    eventPayload: {
-      issue: {
-        html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/5",
-        number: 1,
-        state_reason: "completed",
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-          id: 76412717, // https://github.com/ubiquity
-        },
+const ctx = {
+  stateId: 1,
+  eventName: "issues.closed",
+  authToken: process.env.GITHUB_TOKEN,
+  ref: "",
+  payload: {
+    issue: {
+      html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/5",
+      number: 1,
+      state_reason: "completed",
+    },
+    repository: {
+      name: "conversation-rewards",
+      owner: {
+        login: "ubiquity-os",
+        id: 76412717, // https://github.com/ubiquity
       },
     },
-    settings: JSON.stringify(cfg),
-  };
-});
+  },
+  config: cfg,
+  logger: new Logs("debug"),
+  octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+} as unknown as ContextPlugin;
 
-jest.mock("@ubiquity-os/permit-generation", () => {
-  const originalModule = jest.requireActual("@ubiquity-os/permit-generation");
+jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
+  const originalModule = jest.requireActual("@ubiquity-os/permit-generation") as object;
 
   return {
     __esModule: true,
@@ -106,7 +106,7 @@ jest.mock("@ubiquity-os/permit-generation", () => {
   };
 });
 
-jest.mock("@supabase/supabase-js", () => {
+jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
@@ -132,7 +132,7 @@ jest.mock("@supabase/supabase-js", () => {
   };
 });
 
-jest.mock("@octokit/plugin-paginate-graphql", () => ({
+jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
   paginateGraphQL() {
     return {
       graphql: {
@@ -177,7 +177,7 @@ afterAll(() => server.close());
 
 describe("Modules tests", () => {
   const issue = parseGitHubUrl(issueUrl);
-  const activity = new IssueActivity(issue);
+  const activity = new IssueActivity(ctx, issue);
 
   beforeAll(async () => {
     await activity.init();
@@ -212,36 +212,40 @@ describe("Modules tests", () => {
   });
 
   it("Should extract users from comments", async () => {
-    const processor = new Processor();
-    processor["_transformers"] = [new UserExtractorModule()];
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [new UserExtractorModule(ctx)];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(userCommentResults);
   });
 
   it("Should purge data", async () => {
-    const processor = new Processor();
-    processor["_transformers"] = [new UserExtractorModule(), new DataPurgeModule()];
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [new UserExtractorModule(ctx), new DataPurgeModule(ctx)];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(dataPurgeResults);
   });
 
   it("Should evaluate formatting", async () => {
-    const processor = new Processor();
-    processor["_transformers"] = [new UserExtractorModule(), new DataPurgeModule(), new FormattingEvaluatorModule()];
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+    ];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(formattingEvaluatorResults);
   });
 
   it("Should evaluate content", async () => {
-    const processor = new Processor();
+    const processor = new Processor(ctx);
     processor["_transformers"] = [
-      new UserExtractorModule(),
-      new DataPurgeModule(),
-      new FormattingEvaluatorModule(),
-      new ContentEvaluatorModule(),
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
     ];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
@@ -253,12 +257,12 @@ describe("Modules tests", () => {
       return Promise.resolve({});
     });
 
-    const processor = new Processor();
+    const processor = new Processor(ctx);
     processor["_transformers"] = [
-      new UserExtractorModule(),
-      new DataPurgeModule(),
-      new FormattingEvaluatorModule(),
-      new ContentEvaluatorModule(),
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
     ];
     await expect(processor.run(activity)).rejects.toMatchObject({
       logMessage: {
@@ -271,13 +275,13 @@ describe("Modules tests", () => {
   });
 
   it("Should generate permits", async () => {
-    const processor = new Processor();
+    const processor = new Processor(ctx);
     processor["_transformers"] = [
-      new UserExtractorModule(),
-      new DataPurgeModule(),
-      new FormattingEvaluatorModule(),
-      new ContentEvaluatorModule(),
-      new PermitGenerationModule(),
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new PermitGenerationModule(ctx),
     ];
     // This catches calls by getFastestRpc
     server.use(http.post("https://*", () => passthrough()));
@@ -287,14 +291,14 @@ describe("Modules tests", () => {
   });
 
   it("Should generate GitHub comment", async () => {
-    const processor = new Processor();
+    const processor = new Processor(ctx);
     processor["_transformers"] = [
-      new UserExtractorModule(),
-      new DataPurgeModule(),
-      new FormattingEvaluatorModule(),
-      new ContentEvaluatorModule(),
-      new PermitGenerationModule(),
-      new GithubCommentModule(),
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new PermitGenerationModule(ctx),
+      new GithubCommentModule(ctx),
     ];
     // This catches calls by getFastestRpc
     server.use(http.post("https://*", () => passthrough()));
@@ -306,15 +310,9 @@ describe("Modules tests", () => {
     );
   });
   it("Should generate GitHub comment without zero total", async () => {
-    const githubCommentModule = new GithubCommentModule();
+    const githubCommentModule = new GithubCommentModule(ctx);
     const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
     expect(postBody).not.toContain("whilefoo");
-  });
-
-  it("Should properly generate the configuration", () => {
-    const cfg = configuration;
-
-    expect(cfg).toEqual(validConfiguration);
   });
 
   it("Should do a full run", async () => {

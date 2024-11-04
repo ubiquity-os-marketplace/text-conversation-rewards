@@ -4,10 +4,11 @@ import "../src/parser/command-line";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
+import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.mock("@actions/github", () => ({
+jest.unstable_mockModule("@actions/github", () => ({
   context: {
     runId: "1",
     payload: {
@@ -18,7 +19,7 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
-jest.mock("@octokit/plugin-paginate-graphql", () => ({
+jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
   paginateGraphQL() {
     return {
       graphql: {
@@ -77,7 +78,7 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-jest.mock("../src/parser/command-line", () => {
+jest.unstable_mockModule("../src/parser/command-line", () => {
   const cfg = require("./__mocks__/results/valid-configuration.json");
   const dotenv = require("dotenv");
   dotenv.config();
