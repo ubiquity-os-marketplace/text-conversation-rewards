@@ -1,3 +1,4 @@
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/rest";
@@ -8,7 +9,6 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
-import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import cfg from "./__mocks__/results/valid-configuration.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";

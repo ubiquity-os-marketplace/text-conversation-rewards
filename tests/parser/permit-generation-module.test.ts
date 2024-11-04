@@ -1,13 +1,16 @@
-import { CommentKind } from "../../src/configuration/comment-types";
-import { PermitGenerationModule } from "../../src/parser/permit-generation-module";
-import { Result } from "../../src/parser/processor";
-import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import cfg from "../__mocks__/results/valid-configuration.json";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { drop } from "@mswjs/data";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/rest";
-import { ContextPlugin } from "../../src/types/plugin-input";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { CommentKind } from "../../src/configuration/comment-types";
+import { Result } from "../../src/parser/processor";
 import { EnvConfig } from "../../src/types/env-type";
+import { ContextPlugin } from "../../src/types/plugin-input";
+import { db } from "../__mocks__/db";
+import dbSeed from "../__mocks__/db-seed.json";
+import { server } from "../__mocks__/node";
+import cfg from "../__mocks__/results/valid-configuration.json";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -33,6 +36,19 @@ const ctx = {
   config: cfg,
   logger: new Logs("debug"),
   octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  env: {
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    SUPABASE_KEY: process.env.SUPABASE_KEY,
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
+    // set fee related env variables
+    // treasury fee applied to the final permits, ex: 100 = 100%, 0.1 = 0.1%
+    PERMIT_FEE_RATE: "10",
+    // GitHub account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquity-os-treasury"
+    PERMIT_TREASURY_GITHUB_USERNAME: "ubiquity-os-treasury",
+    // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
+    PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: `${DOLLAR_ADDRESS}`,
+  },
 } as unknown as ContextPlugin;
 
 jest.unstable_mockModule("@supabase/supabase-js", () => {
@@ -85,16 +101,25 @@ const resultOriginal: Result = {
   },
 };
 
+const { PermitGenerationModule } = await import("../../src/parser/permit-generation-module");
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
 describe("permit-generation-module.ts", () => {
   describe("applyFees()", () => {
     beforeEach(() => {
-      // set fee related env variables
-      // treasury fee applied to the final permits, ex: 100 = 100%, 0.1 = 0.1%
-      process.env.PERMIT_FEE_RATE = "10";
-      // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquity-os-treasury"
-      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquity-os-treasury";
-      // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
-      process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST = `${DOLLAR_ADDRESS}`;
+      ctx.env.PERMIT_FEE_RATE = "10";
+      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquity-os-treasury";
+      ctx.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST = `${DOLLAR_ADDRESS}`;
+      drop(db);
+      for (const table of Object.keys(dbSeed)) {
+        const tableName = table as keyof typeof dbSeed;
+        for (const row of dbSeed[tableName]) {
+          db[tableName].create(row);
+        }
+      }
     });
 
     afterEach(() => {
@@ -103,7 +128,7 @@ describe("permit-generation-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
-      process.env.PERMIT_FEE_RATE = "";
+      ctx.env.PERMIT_FEE_RATE = "";
       const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
@@ -113,7 +138,7 @@ describe("permit-generation-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is 0", async () => {
-      process.env.PERMIT_FEE_RATE = "0";
+      ctx.env.PERMIT_FEE_RATE = "0";
       const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
@@ -124,6 +149,7 @@ describe("permit-generation-module.ts", () => {
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
       process.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
+      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
       const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
@@ -163,7 +189,7 @@ describe("permit-generation-module.ts", () => {
   describe("_isPrivateKeyAllowed()", () => {
     beforeEach(() => {
       // set dummy X25519_PRIVATE_KEY
-      process.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+      ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
     });
 
     it("Should return false if private key could not be decrypted", async () => {
