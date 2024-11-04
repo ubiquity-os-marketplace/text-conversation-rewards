@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, jest, it } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { http, HttpResponse } from "msw";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
