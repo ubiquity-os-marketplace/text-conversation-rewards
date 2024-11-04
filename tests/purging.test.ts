@@ -1,21 +1,20 @@
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import { IssueActivity } from "../src/issue-activity";
+import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
+import { Octokit } from "@octokit/rest";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { GitHubIssueComment } from "../src/github-types";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
 import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { Processor } from "../src/parser/processor";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
+import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import hiddenCommentPurged from "./__mocks__/results/hidden-comment-purged.json";
-import { GitHubIssueComment } from "../src/github-types";
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { ContextPlugin } from "../src/types/plugin-input";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { Octokit } from "@octokit/rest";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
@@ -42,24 +41,8 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
-  paginateGraphQL() {
-    return {
-      graphql: {
-        paginate() {
-          return {
-            repository: {
-              issue: {
-                closedByPullRequestsReferences: {
-                  edges: [],
-                },
-              },
-            },
-          };
-        },
-      },
-    };
-  },
+jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+  collectLinkedMergedPulls: jest.fn(() => []),
 }));
 
 const ctx = {
@@ -84,6 +67,11 @@ const ctx = {
   config: cfg,
   logger: new Logs("debug"),
   octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  env: {
+    OPENAI_API_KEY: "1234",
+    SUPABASE_URL: "http://localhost:8080",
+    SUPABASE_KEY: "1234",
+  },
 } as unknown as ContextPlugin;
 
 jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
@@ -104,6 +92,8 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+const { IssueActivity } = await import("../src/issue-activity");
 
 describe("Purging tests", () => {
   const issue = parseGitHubUrl(issueUrl);
