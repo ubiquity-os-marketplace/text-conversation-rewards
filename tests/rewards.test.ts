@@ -6,12 +6,6 @@ import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, passthrough } from "msw";
-import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
-import { DataPurgeModule } from "../src/parser/data-purge-module";
-import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
-import { GithubCommentModule } from "../src/parser/github-comment-module";
-import { Processor } from "../src/parser/processor";
-import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db, db as mockDb } from "./__mocks__/db";
@@ -21,23 +15,6 @@ import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
-
-jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, comments, allComments, prComments) => {
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        prComments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.7;
-        });
-        return relevance;
-      })()
-    );
-  });
 
 jest.unstable_mockModule("@actions/github", () => ({
   context: {
@@ -143,7 +120,30 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 const { IssueActivity } = await import("../src/issue-activity");
+const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
+const { DataPurgeModule } = await import("../src/parser/data-purge-module");
+const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
+const { GithubCommentModule } = await import("../src/parser/github-comment-module");
 const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { Processor } = await import("../src/parser/processor");
+const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
+
+jest
+  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+  .mockImplementation((specificationBody, comments, allComments, prComments) => {
+    return Promise.resolve(
+      (() => {
+        const relevance: { [k: string]: number } = {};
+        comments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        prComments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.7;
+        });
+        return relevance;
+      })()
+    );
+  });
 
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);
