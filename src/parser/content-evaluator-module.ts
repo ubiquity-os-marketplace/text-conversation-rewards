@@ -14,7 +14,7 @@ import {
 } from "../types/content-evaluator-module-type";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
-import { GithubCommentScore, Result } from "./processor";
+import { GithubCommentScore, Result } from "../types/results";
 
 /**
  * Evaluates and rates comments.

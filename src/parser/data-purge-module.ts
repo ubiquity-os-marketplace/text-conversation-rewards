@@ -2,7 +2,7 @@ import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { Result } from "./processor";
+import { Result } from "../types/results";
 
 /**
  * Removes the data in the comments that we do not want to be processed.

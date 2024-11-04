@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { Result } from "../src/parser/processor";
 import { ContextPlugin } from "../src/types/plugin-input";
+import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";

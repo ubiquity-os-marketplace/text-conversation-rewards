@@ -4,7 +4,7 @@ import { GitHubIssue } from "../github-types";
 import { getSortedPrices } from "../helpers/label-price-extractor";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { Result } from "./processor";
+import { Result } from "../types/results";
 
 /**
  * Creates entries for each user with its associated comments.

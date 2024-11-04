@@ -11,9 +11,7 @@ export default createActionsPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   },
   {
     logLevel: (process.env.LOG_LEVEL as LogLevel) ?? "info",
-    // @ts-expect-error the schema is valid
     settingsSchema: pluginSettingsSchema,
-    // @ts-expect-error the schema is valid
     envSchema: envConfigSchema,
     ...(process.env.KERNEL_PUBLIC_KEY && { kernelPublicKey: process.env.KERNEL_PUBLIC_KEY }),
     postCommentOnError: true,

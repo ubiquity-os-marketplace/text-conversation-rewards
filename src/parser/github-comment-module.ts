@@ -12,7 +12,7 @@ import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
 import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { GithubCommentScore, Result } from "./processor";
+import { GithubCommentScore, Result } from "../types/results";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };

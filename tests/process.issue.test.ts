@@ -1,8 +1,14 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
+import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
+import { Octokit } from "@octokit/rest";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
+import { ContextPlugin } from "../src/types/plugin-input";
+import { Result } from "../src/types/results";
 import { db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
@@ -13,12 +19,7 @@ import githubCommentResults from "./__mocks__/results/github-comment-results.jso
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
-import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { ContextPlugin } from "../src/types/plugin-input";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { Octokit } from "@octokit/rest";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -300,8 +301,7 @@ describe("Modules tests", () => {
   });
   it("Should generate GitHub comment without zero total", async () => {
     const githubCommentModule = new GithubCommentModule(ctx);
-    // @ts-expect-error mocked object
-    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults);
+    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
     expect(postBody).not.toContain("whilefoo");
   });
 });

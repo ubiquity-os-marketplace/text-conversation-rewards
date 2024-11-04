@@ -23,7 +23,7 @@ import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
-import { Result } from "./processor";
+import { Result } from "../types/results";
 
 interface Payload {
   evmNetworkId: number;

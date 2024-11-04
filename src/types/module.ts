@@ -1,6 +1,6 @@
 import { IssueActivity } from "../issue-activity";
-import { Result } from "../parser/processor";
 import { ContextPlugin } from "./plugin-input";
+import { Result } from "./results";
 
 export interface Module {
   transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;

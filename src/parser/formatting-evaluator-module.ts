@@ -10,7 +10,7 @@ import {
 } from "../configuration/formatting-evaluator-config";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { GithubCommentScore, Result, WordResult } from "./processor";
+import { GithubCommentScore, Result, WordResult } from "../types/results";
 import { typeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 
