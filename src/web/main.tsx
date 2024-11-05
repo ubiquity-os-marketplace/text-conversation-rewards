@@ -260,7 +260,16 @@ function Form() {
 
   return (
     <div class="container">
-      <div class="pico" style={{ paddingTop: "16px" }}>
+      <div class="pico">
+        <nav>
+          <ul />
+          <ul>
+            <li>
+              <strong>@ubiquity-os/text-conversation-rewards</strong>
+            </li>
+          </ul>
+          <ul />
+        </nav>
         <form onSubmit={handleSubmit}>
           <fieldset role="group">
             <input name="owner" autocomplete="on" type="text" placeholder="Owner" required />
