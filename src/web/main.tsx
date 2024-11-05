@@ -2,11 +2,12 @@ import { useState, InputEvent } from "hono/jsx";
 import { render } from "hono/jsx/dom";
 
 function Form() {
-  const [url, setUrl] = useState("");
   const [response, setResponse] = useState<null | string>(null);
 
   const handleSubmit = async (event: InputEvent) => {
     event.preventDefault();
+    const ownerRepo = `${event.target.owner.value}/${event.target.repo.value}`;
+    const issueId = event.target.issue_id.value;
     try {
       const result = await fetch("http://localhost:3000", {
         method: "POST",
@@ -42,55 +43,55 @@ function Form() {
           eventPayload: {
             issue: {
               state_reason: "completed",
-              url: `https://api.github.com/repos/${url}/issues/1`,
-              repository_url: `https://api.github.com/repos/${url}`,
-              labels_url: `https://api.github.com/repos/${url}/issues/1/labels{/name}`,
-              comments_url: `https://api.github.com/repos/${url}/issues/1/comments`,
-              events_url: `https://api.github.com/repos/${url}/issues/1/events`,
-              html_url: `https://github.com/${url}/issues/1`,
+              url: `https://api.github.com/repos/${ownerRepo}/issues/${issueId}`,
+              repository_url: `https://api.github.com/repos/${ownerRepo}`,
+              labels_url: `https://api.github.com/repos/${ownerRepo}/issues/${issueId}/labels{/name}`,
+              comments_url: `https://api.github.com/repos/${ownerRepo}/issues/${issueId}/comments`,
+              events_url: `https://api.github.com/repos/${ownerRepo}/issues/${issueId}/events`,
+              html_url: `https://github.com/${ownerRepo}/issues/${issueId}`,
               id: 1,
               node_id: "MDU6SXNzdWUx",
               number: 1,
               title: "Found a bug",
               user: {
-                login: "meniole",
+                login: "ubiquity-os",
                 id: 1,
                 node_id: "MDQ6VXNlcjE=",
-                avatar_url: "https://github.com/images/error/meniole_happy.gif",
+                avatar_url: "https://github.com/images/error/ubiquity-os_happy.gif",
                 gravatar_id: "",
-                url: "https://api.github.com/users/meniole",
-                html_url: "https://github.com/meniole",
-                followers_url: "https://api.github.com/users/meniole/followers",
-                following_url: "https://api.github.com/users/meniole/following{/other_user}",
-                gists_url: "https://api.github.com/users/meniole/gists{/gist_id}",
-                starred_url: "https://api.github.com/users/meniole/starred{/owner}{/repo}",
-                subscriptions_url: "https://api.github.com/users/meniole/subscriptions",
-                organizations_url: "https://api.github.com/users/meniole/orgs",
-                repos_url: "https://api.github.com/users/meniole/repos",
-                events_url: "https://api.github.com/users/meniole/events{/privacy}",
-                received_events_url: "https://api.github.com/users/meniole/received_events",
+                url: "https://api.github.com/users/ubiquity-os",
+                html_url: "https://github.com/ubiquity-os",
+                followers_url: "https://api.github.com/users/ubiquity-os/followers",
+                following_url: "https://api.github.com/users/ubiquity-os/following{/other_user}",
+                gists_url: "https://api.github.com/users/ubiquity-os/gists{/gist_id}",
+                starred_url: "https://api.github.com/users/ubiquity-os/starred{/owner}{/repo}",
+                subscriptions_url: "https://api.github.com/users/ubiquity-os/subscriptions",
+                organizations_url: "https://api.github.com/users/ubiquity-os/orgs",
+                repos_url: "https://api.github.com/users/ubiquity-os/repos",
+                events_url: "https://api.github.com/users/ubiquity-os/events{/privacy}",
+                received_events_url: "https://api.github.com/users/ubiquity-os/received_events",
                 type: "User",
                 site_admin: false,
               },
               state: "closed",
               locked: false,
               assignee: {
-                login: "meniole",
+                login: "ubiquity-os",
                 id: 1,
                 node_id: "MDQ6VXNlcjE=",
-                avatar_url: "https://github.com/images/error/meniole_happy.gif",
+                avatar_url: "https://github.com/images/error/ubiquity-os_happy.gif",
                 gravatar_id: "",
-                url: "https://api.github.com/users/meniole",
-                html_url: "https://github.com/meniole",
-                followers_url: "https://api.github.com/users/meniole/followers",
-                following_url: "https://api.github.com/users/meniole/following{/other_user}",
-                gists_url: "https://api.github.com/users/meniole/gists{/gist_id}",
-                starred_url: "https://api.github.com/users/meniole/starred{/owner}{/repo}",
-                subscriptions_url: "https://api.github.com/users/meniole/subscriptions",
-                organizations_url: "https://api.github.com/users/meniole/orgs",
-                repos_url: "https://api.github.com/users/meniole/repos",
-                events_url: "https://api.github.com/users/meniole/events{/privacy}",
-                received_events_url: "https://api.github.com/users/meniole/received_events",
+                url: "https://api.github.com/users/ubiquity-os",
+                html_url: "https://github.com/ubiquity-os",
+                followers_url: "https://api.github.com/users/ubiquity-os/followers",
+                following_url: "https://api.github.com/users/ubiquity-os/following{/other_user}",
+                gists_url: "https://api.github.com/users/ubiquity-os/gists{/gist_id}",
+                starred_url: "https://api.github.com/users/ubiquity-os/starred{/owner}{/repo}",
+                subscriptions_url: "https://api.github.com/users/ubiquity-os/subscriptions",
+                organizations_url: "https://api.github.com/users/ubiquity-os/orgs",
+                repos_url: "https://api.github.com/users/ubiquity-os/repos",
+                events_url: "https://api.github.com/users/ubiquity-os/events{/privacy}",
+                received_events_url: "https://api.github.com/users/ubiquity-os/received_events",
                 type: "User",
                 site_admin: false,
               },
@@ -98,7 +99,7 @@ function Form() {
                 {
                   id: 208045946,
                   node_id: "MDU6TGFiZWwyMDgwNDU5NDY=",
-                  url: "https://api.github.com/repos/${url}/labels/bug",
+                  url: `https://api.github.com/repos/${ownerRepo}/labels/bug`,
                   name: "bug",
                   description: "Something isn't working",
                   color: "f29513",
@@ -116,70 +117,71 @@ function Form() {
               id: 1296269,
               node_id: "MDEwOlJlcG9zaXRvcnkxMjk2MjY5",
               name: "conversation-rewards",
-              full_name: "meniole/conversation-rewards",
+              full_name: "ubiquity-os/conversation-rewards",
               owner: {
-                login: "meniole",
+                login: "ubiquity-os",
                 id: 159901852,
                 node_id: "MDQ6VXNlcjE=",
-                avatar_url: "https://github.com/images/error/meniole_happy.gif",
+                avatar_url: "https://github.com/images/error/ubiquity-os_happy.gif",
                 gravatar_id: "",
-                url: "https://api.github.com/users/meniole",
-                html_url: "https://github.com/meniole",
-                followers_url: "https://api.github.com/users/meniole/followers",
-                following_url: "https://api.github.com/users/meniole/following{/other_user}",
-                gists_url: "https://api.github.com/users/meniole/gists{/gist_id}",
-                starred_url: "https://api.github.com/users/meniole/starred{/owner}{/repo}",
-                subscriptions_url: "https://api.github.com/users/meniole/subscriptions",
-                organizations_url: "https://api.github.com/users/meniole/orgs",
-                repos_url: "https://api.github.com/users/meniole/repos",
-                events_url: "https://api.github.com/users/meniole/events{/privacy}",
-                received_events_url: "https://api.github.com/users/meniole/received_events",
+                url: "https://api.github.com/users/ubiquity-os",
+                html_url: "https://github.com/ubiquity-os",
+                followers_url: "https://api.github.com/users/ubiquity-os/followers",
+                following_url: "https://api.github.com/users/ubiquity-os/following{/other_user}",
+                gists_url: "https://api.github.com/users/ubiquity-os/gists{/gist_id}",
+                starred_url: "https://api.github.com/users/ubiquity-os/starred{/owner}{/repo}",
+                subscriptions_url: "https://api.github.com/users/ubiquity-os/subscriptions",
+                organizations_url: "https://api.github.com/users/ubiquity-os/orgs",
+                repos_url: "https://api.github.com/users/ubiquity-os/repos",
+                events_url: "https://api.github.com/users/ubiquity-os/events{/privacy}",
+                received_events_url: "https://api.github.com/users/ubiquity-os/received_events",
                 type: "User",
                 site_admin: false,
               },
               private: false,
-              html_url: "https://github.com/meniole/conversation-rewards",
+              html_url: "https://github.com/ubiquity-os/conversation-rewards",
               description: "This your first repo!",
               fork: false,
-              url: "https://api.github.com/repos/meniole/conversation-rewards",
-              archive_url: "https://api.github.com/repos/meniole/conversation-rewards/{archive_format}{/ref}",
-              assignees_url: "https://api.github.com/repos/meniole/conversation-rewards/assignees{/user}",
-              blobs_url: "https://api.github.com/repos/meniole/conversation-rewards/git/blobs{/sha}",
-              branches_url: "https://api.github.com/repos/meniole/conversation-rewards/branches{/branch}",
+              url: "https://api.github.com/repos/ubiquity-os/conversation-rewards",
+              archive_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/{archive_format}{/ref}",
+              assignees_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/assignees{/user}",
+              blobs_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/git/blobs{/sha}",
+              branches_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/branches{/branch}",
               collaborators_url:
-                "https://api.github.com/repos/meniole/conversation-rewards/collaborators{/collaborator}",
-              comments_url: "https://api.github.com/repos/meniole/conversation-rewards/comments{/number}",
-              commits_url: "https://api.github.com/repos/meniole/conversation-rewards/commits{/sha}",
-              compare_url: "https://api.github.com/repos/meniole/conversation-rewards/compare/{base}...{head}",
-              contents_url: "https://api.github.com/repos/meniole/conversation-rewards/contents/{+path}",
-              contributors_url: "https://api.github.com/repos/meniole/conversation-rewards/contributors",
-              deployments_url: "https://api.github.com/repos/meniole/conversation-rewards/deployments",
-              downloads_url: "https://api.github.com/repos/meniole/conversation-rewards/downloads",
-              events_url: "https://api.github.com/repos/meniole/conversation-rewards/events",
-              forks_url: "https://api.github.com/repos/meniole/conversation-rewards/forks",
-              git_commits_url: "https://api.github.com/repos/meniole/conversation-rewards/git/commits{/sha}",
-              git_refs_url: "https://api.github.com/repos/meniole/conversation-rewards/git/refs{/sha}",
-              git_tags_url: "https://api.github.com/repos/meniole/conversation-rewards/git/tags{/sha}",
-              git_url: "git:github.com/meniole/conversation-rewards.git",
-              issue_comment_url: "https://api.github.com/repos/meniole/conversation-rewards/issues/comments{/number}",
-              issue_events_url: "https://api.github.com/repos/meniole/conversation-rewards/issues/events{/number}",
-              issues_url: "https://api.github.com/repos/meniole/conversation-rewards/issues{/number}",
-              keys_url: "https://api.github.com/repos/meniole/conversation-rewards/keys{/key_id}",
-              labels_url: "https://api.github.com/repos/meniole/conversation-rewards/labels{/name}",
-              languages_url: "https://api.github.com/repos/meniole/conversation-rewards/languages",
-              merges_url: "https://api.github.com/repos/meniole/conversation-rewards/merges",
-              milestones_url: "https://api.github.com/repos/meniole/conversation-rewards/milestones{/number}",
+                "https://api.github.com/repos/ubiquity-os/conversation-rewards/collaborators{/collaborator}",
+              comments_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/comments{/number}",
+              commits_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/commits{/sha}",
+              compare_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/compare/{base}...{head}",
+              contents_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/{+path}",
+              contributors_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/contributors",
+              deployments_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/deployments",
+              downloads_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/downloads",
+              events_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/events",
+              forks_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/forks",
+              git_commits_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/git/commits{/sha}",
+              git_refs_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/git/refs{/sha}",
+              git_tags_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/git/tags{/sha}",
+              git_url: "git:github.com/ubiquity-os/conversation-rewards.git",
+              issue_comment_url:
+                "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments{/number}",
+              issue_events_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/events{/number}",
+              issues_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues{/number}",
+              keys_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/keys{/key_id}",
+              labels_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/labels{/name}",
+              languages_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/languages",
+              merges_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/merges",
+              milestones_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/milestones{/number}",
               notifications_url:
-                "https://api.github.com/repos/meniole/conversation-rewards/notifications{?since,all,participating}",
-              pulls_url: "https://api.github.com/repos/meniole/conversation-rewards/pulls{/number}",
-              releases_url: "https://api.github.com/repos/meniole/conversation-rewards/releases{/id}",
-              stargazers_url: "https://api.github.com/repos/meniole/conversation-rewards/stargazers",
-              statuses_url: "https://api.github.com/repos/meniole/conversation-rewards/statuses/{sha}",
-              subscribers_url: "https://api.github.com/repos/meniole/conversation-rewards/subscribers",
-              subscription_url: "https://api.github.com/repos/meniole/conversation-rewards/subscription",
-              tags_url: "https://api.github.com/repos/meniole/conversation-rewards/tags",
-              teams_url: "https://api.github.com/repos/meniole/conversation-rewards/teams",
-              trees_url: "https://api.github.com/repos/meniole/conversation-rewards/git/trees{/sha}",
+                "https://api.github.com/repos/ubiquity-os/conversation-rewards/notifications{?since,all,participating}",
+              pulls_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls{/number}",
+              releases_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/releases{/id}",
+              stargazers_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/stargazers",
+              statuses_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/statuses/{sha}",
+              subscribers_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/subscribers",
+              subscription_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/subscription",
+              tags_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/tags",
+              teams_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/teams",
+              trees_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/git/trees{/sha}",
               homepage: "https://github.com",
               language: null,
               forks_count: 9,
@@ -218,22 +220,22 @@ function Form() {
               network_count: 0,
             },
             sender: {
-              login: "meniole",
+              login: "ubiquity-os",
               id: 159901852,
               node_id: "MDQ6VXNlcjE=",
-              avatar_url: "https://github.com/images/error/meniole_happy.gif",
+              avatar_url: "https://github.com/images/error/ubiquity-os_happy.gif",
               gravatar_id: "",
-              url: "https://api.github.com/users/meniole",
-              html_url: "https://github.com/meniole",
-              followers_url: "https://api.github.com/users/meniole/followers",
-              following_url: "https://api.github.com/users/meniole/following{/other_user}",
-              gists_url: "https://api.github.com/users/meniole/gists{/gist_id}",
-              starred_url: "https://api.github.com/users/meniole/starred{/owner}{/repo}",
-              subscriptions_url: "https://api.github.com/users/meniole/subscriptions",
-              organizations_url: "https://api.github.com/users/meniole/orgs",
-              repos_url: "https://api.github.com/users/meniole/repos",
-              events_url: "https://api.github.com/users/meniole/events{/privacy}",
-              received_events_url: "https://api.github.com/users/meniole/received_events",
+              url: "https://api.github.com/users/ubiquity-os",
+              html_url: "https://github.com/ubiquity-os",
+              followers_url: "https://api.github.com/users/ubiquity-os/followers",
+              following_url: "https://api.github.com/users/ubiquity-os/following{/other_user}",
+              gists_url: "https://api.github.com/users/ubiquity-os/gists{/gist_id}",
+              starred_url: "https://api.github.com/users/ubiquity-os/starred{/owner}{/repo}",
+              subscriptions_url: "https://api.github.com/users/ubiquity-os/subscriptions",
+              organizations_url: "https://api.github.com/users/ubiquity-os/orgs",
+              repos_url: "https://api.github.com/users/ubiquity-os/repos",
+              events_url: "https://api.github.com/users/ubiquity-os/events{/privacy}",
+              received_events_url: "https://api.github.com/users/ubiquity-os/received_events",
               type: "User",
               site_admin: false,
             },
@@ -241,37 +243,43 @@ function Form() {
         }),
       });
       const data = await result.json();
-      setResponse(data.output["gentlementlegen"].evaluationCommentHtml);
+      setResponse(
+        Object.values(data.output)
+          .map((o) => o.evaluationCommentHtml)
+          .join("\n")
+      );
     } catch (error) {
       console.error("Error:", error);
-      setResponse("Failed to run plugin, check the console for more details.");
+      setResponse("Failed to run the plugin, check the console for more details.");
     }
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="issue-url"
-          autocomplete="on"
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target?.value)}
-          placeholder="Issue URL to parse"
-          style={{
-            marginRight: "8px",
-          }}
-        />
-        <button
-          type="submit"
-          // disabled={!url}
-        >
-          Submit
-        </button>
-      </form>
+    <div class="container">
+      <div class="pico" style={{ paddingTop: "16px" }}>
+        <form onSubmit={handleSubmit}>
+          <fieldset role="group">
+            <input name="owner" autocomplete="on" type="text" placeholder="Owner" required />
+            <input name="repo" autocomplete="on" type="text" placeholder="Repo" required />
+            <input name="issue_id" autocomplete="on" type="number" placeholder="Issue ID" required />
+            <button type="submit">Generate</button>
+          </fieldset>
+        </form>
+        <fieldset>
+          <legend>Options</legend>
+          <label>
+            <input type="checkbox" name="cache" checked />
+            Enable cache
+          </label>
+          <label>
+            <input type="checkbox" name="openai" checked />
+            Enable OpenAi
+          </label>
+        </fieldset>
+      </div>
       {response && (
         <article
-          style={{ padding: "16px" }}
+          style={{ paddingLeft: "16px", paddingRight: "16px", borderRadius: "8px" }}
           class="markdown-body"
           dangerouslySetInnerHTML={{ __html: response }}
         ></article>

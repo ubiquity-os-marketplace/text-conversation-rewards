@@ -3,6 +3,7 @@ import { GitHubIssueComment } from "../github-types";
 import { ContextPlugin } from "../types/plugin-input";
 import { QUERY_COMMENT_DETAILS } from "../types/requests";
 
+// TODO: fix batch of 100 nodes
 export async function getMinimizedCommentStatus(context: ContextPlugin, comments: GitHubIssueComment[]) {
   const { octokit } = context;
   const commentsData = await octokit.graphql<{ nodes?: IssueComment[] }>(QUERY_COMMENT_DETAILS, {
