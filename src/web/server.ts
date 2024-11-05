@@ -2,14 +2,23 @@ import { createPlugin, Manifest } from "@ubiquity-os/ubiquity-os-kernel";
 import { PluginSettings, pluginSettingsSchema } from "../types/plugin-input";
 import envConfigSchema, { EnvConfig } from "../types/env-type";
 import { SupportedEvents } from "../parser/command-line";
-import { run } from "../run";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import manifest from "../../manifest.json";
 import { serveStatic } from "hono/bun";
+import { IssueActivity } from "../issue-activity";
+import { parseGitHubUrl } from "../start";
+import { Processor } from "../parser/processor";
 
 const app = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
-  (context) => {
-    return run(context);
+  async (context) => {
+    const { payload } = context;
+    const issue = parseGitHubUrl(payload.issue.html_url);
+    const activity = new IssueActivity(context, issue);
+    await activity.init();
+    const processor = new Processor(context);
+    await processor.run(activity);
+    const result = processor.dump();
+    return JSON.parse(result);
   },
   manifest as Manifest,
   {
@@ -17,7 +26,7 @@ const app = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
     settingsSchema: pluginSettingsSchema,
     envSchema: envConfigSchema,
     ...(process.env.KERNEL_PUBLIC_KEY && { kernelPublicKey: process.env.KERNEL_PUBLIC_KEY }),
-    postCommentOnError: true,
+    postCommentOnError: false,
   }
 );
 

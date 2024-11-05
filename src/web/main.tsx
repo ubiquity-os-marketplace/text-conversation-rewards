@@ -10,6 +10,7 @@ function Form() {
     setLoading(true);
     const ownerRepo = `${event.target.owner.value}/${event.target.repo.value}`;
     const issueId = event.target.issue_id.value;
+    const useOpenAi = event.target.openai.checked;
     try {
       const result = await fetch("http://localhost:3000", {
         method: "POST",
@@ -33,7 +34,13 @@ function Form() {
               userExtractor: {},
               dataPurge: {},
               formattingEvaluator: {},
-              contentEvaluator: {},
+              contentEvaluator: {
+                ...(!useOpenAi && {
+                  openAi: {
+                    endpoint: "http://localhost:3000/openai",
+                  },
+                }),
+              },
               permitGeneration: null,
               githubComment: {
                 post: false,
@@ -259,7 +266,7 @@ function Form() {
   };
 
   return (
-    <div class="container">
+    <div class="container" style={{ marginBottom: "16px" }}>
       <div class="pico">
         <nav>
           <ul />
@@ -279,18 +286,18 @@ function Form() {
               Generate
             </button>
           </fieldset>
+          <fieldset>
+            <legend>Options</legend>
+            <label>
+              <input type="checkbox" name="cache" checked />
+              Enable cache
+            </label>
+            <label>
+              <input type="checkbox" name="openai" checked />
+              Enable OpenAi
+            </label>
+          </fieldset>
         </form>
-        <fieldset>
-          <legend>Options</legend>
-          <label>
-            <input type="checkbox" name="cache" checked />
-            Enable cache
-          </label>
-          <label>
-            <input type="checkbox" name="openai" checked />
-            Enable OpenAi
-          </label>
-        </fieldset>
       </div>
       {response && (
         <article

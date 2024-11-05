@@ -20,7 +20,9 @@ export async function run(context: ContextPlugin) {
       return result.logMessage.raw;
     }
     logger.debug("Will use the following configuration:", { config });
-    await postComment(context, logger.ok("Evaluating results. Please wait..."));
+    if (config.incentives.githubComment?.post) {
+      await postComment(context, logger.ok("Evaluating results. Please wait..."));
+    }
     const issue = parseGitHubUrl(payload.issue.html_url);
     const activity = new IssueActivity(context, issue);
     await activity.init();
