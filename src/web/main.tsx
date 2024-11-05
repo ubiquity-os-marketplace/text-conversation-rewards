@@ -3,9 +3,11 @@ import { render } from "hono/jsx/dom";
 
 function Form() {
   const [response, setResponse] = useState<null | string>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event: InputEvent) => {
     event.preventDefault();
+    setLoading(true);
     const ownerRepo = `${event.target.owner.value}/${event.target.repo.value}`;
     const issueId = event.target.issue_id.value;
     try {
@@ -251,6 +253,8 @@ function Form() {
     } catch (error) {
       console.error("Error:", error);
       setResponse("Failed to run the plugin, check the console for more details.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -262,7 +266,9 @@ function Form() {
             <input name="owner" autocomplete="on" type="text" placeholder="Owner" required />
             <input name="repo" autocomplete="on" type="text" placeholder="Repo" required />
             <input name="issue_id" autocomplete="on" type="number" placeholder="Issue ID" required />
-            <button type="submit">Generate</button>
+            <button type="submit" aria-busy={loading ? "true" : undefined}>
+              Generate
+            </button>
           </fieldset>
         </form>
         <fieldset>
