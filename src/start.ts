@@ -29,11 +29,9 @@ import { ContextPlugin } from "./types/plugin-input";
    * * * * isCollaborator?
    * * * * isRemainder?
    */
-// }
 export type IssueParams = ReturnType<typeof parseGitHubUrl>;
 export type PullParams = { owner: string; repo: string; pull_number: number };
 
-// Assuming ContextPlugin contains octokitInstance or a method to get octokitInstance
 export async function getRepo(context: ContextPlugin, params: IssueParams): Promise<GitHubRepository> {
   const { octokit } = context;
   return (await octokit.rest.repos.get(params)).data;
