@@ -8,7 +8,6 @@ import { formattingEvaluatorConfigurationType } from "../configuration/formattin
 import { githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
-import { SupportedEvents } from "../parser/command-line";
 import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
@@ -52,4 +51,5 @@ export const pluginSettingsSchema = T.Object(
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
+export type SupportedEvents = "issues.closed";
 export type ContextPlugin = Context<PluginSettings, EnvConfig, SupportedEvents>;
