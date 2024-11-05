@@ -1,14 +1,13 @@
 {
-  "name": "hono-vite-jsx",
+  "name": "@ubiquity-os/text-conversation-rewards-ui",
   "scripts": {
+    "server": "bun --watch server.ts",
     "ui:dev": "bunx --bun vite",
     "ui:build": "bunx --bun vite build",
+    "ui:build-watch": "bunx --bun vite build --watch",
     "ui:preview": "bunx --bun vite preview"
   },
   "dependencies": {
     "hono": "^4.6.9"
-  },
-  "devDependencies": {
-    "@types/node": "^22.9.0"
   }
 }
