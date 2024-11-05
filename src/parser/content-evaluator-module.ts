@@ -226,9 +226,10 @@ export class ContentEvaluatorModule extends BaseModule {
       this.context.logger.info(`Relevances by OpenAI: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {
-      this.context.logger.error(
-        `Invalid response type received from openai while evaluating: ${jsonResponse} \n\nError: ${e}`
-      );
+      this.context.logger.error(`Invalid response type received from openai while evaluating: \n\nError: ${e}`, {
+        error: e as Error,
+        jsonResponse,
+      });
       throw new Error("Error in evaluation by OpenAI.");
     }
   }

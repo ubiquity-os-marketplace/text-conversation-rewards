@@ -30,6 +30,40 @@ app.use(
   })
 );
 
+app.post("/openai/*", async (c) => {
+  const text = await c.req.json();
+  const regex = /{\s*"id":\s*(\d+),\s*"comment":\s*"([^"]*)",\s*"author":\s*"([^"]*)"\s*}/g;
+
+  const comments = [];
+
+  if ("messages" in text) {
+    let match;
+    while ((match = regex.exec(text.messages[0].content)) !== null) {
+      comments.push({
+        id: parseInt(match[1], 10),
+        comment: match[2],
+        author: match[3],
+      });
+    }
+  }
+
+  const commentsObject = comments.reduce(
+    (acc, comment) => {
+      acc[comment.id] = 0.8;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  return Response.json({
+    choices: [{ message: { content: JSON.stringify(commentsObject) } }],
+  });
+});
+
+app.get("/openai/*", () => {
+  return Response.json("OpenAI GET");
+});
+
 const port = 3000;
 console.log(`Server is running on port ${port}`);
 
