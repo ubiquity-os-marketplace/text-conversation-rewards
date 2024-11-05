@@ -1,11 +1,11 @@
-import { useState, Event } from "hono/jsx";
+import { useState, InputEvent } from "hono/jsx";
 import { render } from "hono/jsx/dom";
 
 function Form() {
   const [url, setUrl] = useState("");
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState<null | string>(null);
 
-  const handleSubmit = async (event: Event) => {
+  const handleSubmit = async (event: InputEvent) => {
     event.preventDefault();
     try {
       const result = await fetch("http://localhost:3000", {
@@ -31,23 +31,23 @@ function Form() {
               dataPurge: {},
               formattingEvaluator: {},
               contentEvaluator: {},
-              permitGeneration: {},
+              permitGeneration: null,
               githubComment: {
                 post: false,
                 debug: true,
               },
             },
           },
-          authToken: "{{GITHUB_TOKEN}}",
+          authToken: import.meta.env.VITE_GITHUB_TOKEN,
           eventPayload: {
             issue: {
               state_reason: "completed",
-              url: "https://api.github.com/repos/{{OWNER_REPO}}/issues/1",
-              repository_url: "https://api.github.com/repos/{{OWNER_REPO}}",
-              labels_url: "https://api.github.com/repos/{{OWNER_REPO}}/issues/1/labels{/name}",
-              comments_url: "https://api.github.com/repos/{{OWNER_REPO}}/issues/1/comments",
-              events_url: "https://api.github.com/repos/{{OWNER_REPO}}/issues/1/events",
-              html_url: "https://github.com/{{OWNER_REPO}}/issues/1",
+              url: `https://api.github.com/repos/${url}/issues/1`,
+              repository_url: `https://api.github.com/repos/${url}`,
+              labels_url: `https://api.github.com/repos/${url}/issues/1/labels{/name}`,
+              comments_url: `https://api.github.com/repos/${url}/issues/1/comments`,
+              events_url: `https://api.github.com/repos/${url}/issues/1/events`,
+              html_url: `https://github.com/${url}/issues/1`,
               id: 1,
               node_id: "MDU6SXNzdWUx",
               number: 1,
@@ -98,7 +98,7 @@ function Form() {
                 {
                   id: 208045946,
                   node_id: "MDU6TGFiZWwyMDgwNDU5NDY=",
-                  url: "https://api.github.com/repos/{{OWNER_REPO}}/labels/bug",
+                  url: "https://api.github.com/repos/${url}/labels/bug",
                   name: "bug",
                   description: "Something isn't working",
                   color: "f29513",
@@ -241,19 +241,41 @@ function Form() {
         }),
       });
       const data = await result.json();
-      setResponse(data);
+      setResponse(data.output["gentlementlegen"].evaluationCommentHtml);
     } catch (error) {
       console.error("Error:", error);
+      setResponse("Failed to run plugin, check the console for more details.");
     }
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <input type="text" value={url} onChange={(e) => setUrl(e.target?.value)} placeholder="Enter URL" />
-        <button type="submit">Submit</button>
+        <input
+          name="issue-url"
+          autocomplete="on"
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target?.value)}
+          placeholder="Issue URL to parse"
+          style={{
+            marginRight: "8px",
+          }}
+        />
+        <button
+          type="submit"
+          // disabled={!url}
+        >
+          Submit
+        </button>
       </form>
-      {response && <div>Response: {JSON.stringify(response)}</div>}
+      {response && (
+        <article
+          style={{ padding: "16px" }}
+          class="markdown-body"
+          dangerouslySetInnerHTML={{ __html: response }}
+        ></article>
+      )}
     </div>
   );
 }
