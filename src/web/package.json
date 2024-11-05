@@ -1,0 +1,14 @@
+{
+  "name": "hono-vite-jsx",
+  "scripts": {
+    "ui:dev": "bunx --bun vite",
+    "ui:build": "bunx --bun vite build",
+    "ui:preview": "bunx --bun vite preview"
+  },
+  "dependencies": {
+    "hono": "^4.6.9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0"
+  }
+}
