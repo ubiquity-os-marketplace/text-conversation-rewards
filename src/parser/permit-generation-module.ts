@@ -41,6 +41,9 @@ export class PermitGenerationModule implements Module {
   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const canGeneratePermits = await this._canGeneratePermit(data);
+    if (!canGeneratePermits) return result;
+
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: program.eventPayload.issue.html_url,
@@ -131,11 +134,8 @@ export class PermitGenerationModule implements Module {
           },
           config.permitRequests
         );
-        const canGeneratePermits = await this._canGeneratePermit(data);
-        if (canGeneratePermits) {
-          result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-          await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
-        }
+        result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+        await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
       } catch (e) {
         logger.error(`[PermitGenerationModule] Failed to generate permits for user ${key}`, { e });
       }
