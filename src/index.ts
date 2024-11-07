@@ -1,4 +1,4 @@
-import { createActionsPlugin } from "@ubiquity-os/ubiquity-os-kernel";
+import { createActionsPlugin } from "@ubiquity-os/plugin-sdk";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { run } from "./run";
 import envConfigSchema, { EnvConfig } from "./types/env-type";

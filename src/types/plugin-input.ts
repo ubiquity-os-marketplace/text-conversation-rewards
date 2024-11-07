@@ -1,5 +1,5 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
-import { Context } from "@ubiquity-os/ubiquity-os-kernel";
+import { Context } from "@ubiquity-os/plugin-sdk";
 import { LOG_LEVEL } from "@ubiquity-os/ubiquity-os-logger";
 import { contentEvaluatorConfigurationType } from "../configuration/content-evaluator-config";
 import { dataCollectionConfigurationType } from "../configuration/data-collection-config";

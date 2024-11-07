@@ -21,7 +21,7 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@ubiquity-os/ubiquity-os-kernel", () => ({
+jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
   postComment: jest.fn(),
 }));
 
