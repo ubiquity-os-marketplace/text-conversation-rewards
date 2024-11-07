@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: Meniole/action-deploy-plugin@main
         with:
-          treatAsEsm: true
+          treatAsEsm: false
           sourcemap: false
           minify: false
         env:
