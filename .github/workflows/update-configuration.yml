@@ -15,6 +15,7 @@ jobs:
         with:
           treatAsEsm: true
           sourcemap: true
+          minify: false
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
