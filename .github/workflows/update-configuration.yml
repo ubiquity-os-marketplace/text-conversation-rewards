@@ -11,11 +11,10 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: Meniole/action-deploy-plugin@main
+      - uses: ubiquity-os/action-deploy-plugin@main
         with:
-          treatAsEsm: false
+          treatAsEsm: true
           sourcemap: false
-          minify: false
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
