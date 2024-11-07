@@ -131,8 +131,11 @@ export class PermitGenerationModule implements Module {
           },
           config.permitRequests
         );
-        result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-        await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
+        const canGeneratePermits = await this._canGeneratePermit(data);
+        if (canGeneratePermits) {
+          result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+          await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
+        }
       } catch (e) {
         logger.error(`[PermitGenerationModule] Failed to generate permits for user ${key}`, { e });
       }
@@ -196,6 +199,33 @@ export class PermitGenerationModule implements Module {
     }
 
     return this._deductFeeFromReward(result, treasuryGithubData, env);
+  }
+
+  async _canGeneratePermit(data: Readonly<IssueActivity>) {
+    if (!data.self?.closed_by || !data.self.assignee || !data.self.repository) return false;
+
+    const octokit = getOctokitInstance();
+    const assignee = data.self?.assignee;
+
+    const assigneePerms = await octokit.request("GET /repos/{owner}/{repo}/collaborators/{username}/permission", {
+      owner: data.self.repository.owner.login,
+      repo: data.self.repository.name,
+      username: assignee.login,
+    });
+    const isAdmin = assigneePerms.data.role_name === "admin";
+
+    if (data.self.closed_by.id === assignee.id && !isAdmin) {
+      const pricingEventsByNonAssignee = data.events.find(
+        (event) =>
+          event.event === "labeled" &&
+          "label" in event &&
+          (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
+          event.actor.id !== assignee.id
+      );
+      return !!pricingEventsByNonAssignee;
+    } else {
+      return true;
+    }
   }
 
   _deductFeeFromReward(
