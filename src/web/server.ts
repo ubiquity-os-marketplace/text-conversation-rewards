@@ -42,17 +42,20 @@ app.use(
 
 app.post("/openai/*", async (c) => {
   const text = await c.req.json();
-  const regex = /{\s*"id":\s*(\d+),\s*"comment":\s*"([^"]*)",\s*"author":\s*"([^"]*)"\s*}/g;
+  const regex = /START EVALUATING:\s*\[([\s\S]*?)]/g;
 
-  const comments = [];
+  const comments: { id: string; comment: string; author: string }[] = [];
 
   if ("messages" in text) {
     let match;
     while ((match = regex.exec(text.messages[0].content)) !== null) {
-      comments.push({
-        id: parseInt(match[1], 10),
-        comment: match[2],
-        author: match[3],
+      const jsonArray = JSON.parse(`[${match[1]}]`);
+      jsonArray.forEach((item: { id: string; comment: string; author: string }) => {
+        comments.push({
+          id: item.id,
+          comment: item.comment,
+          author: item.author,
+        });
       });
     }
   }
