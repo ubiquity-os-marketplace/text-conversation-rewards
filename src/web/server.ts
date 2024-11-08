@@ -1,13 +1,13 @@
-import { createPlugin, Manifest } from "@ubiquity-os/ubiquity-os-kernel";
-import { PluginSettings, pluginSettingsSchema } from "../types/plugin-input";
-import envConfigSchema, { EnvConfig } from "../types/env-type";
-import { SupportedEvents } from "../parser/command-line";
+import { createPlugin } from "@ubiquity-os/plugin-sdk";
+import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
-import manifest from "../../manifest.json";
 import { serveStatic } from "hono/bun";
+import manifest from "../../manifest.json";
 import { IssueActivity } from "../issue-activity";
-import { parseGitHubUrl } from "../start";
 import { Processor } from "../parser/processor";
+import { parseGitHubUrl } from "../start";
+import envConfigSchema, { EnvConfig } from "../types/env-type";
+import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../types/plugin-input";
 
 const app = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   async (context) => {
@@ -27,6 +27,7 @@ const app = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
     envSchema: envConfigSchema,
     ...(process.env.KERNEL_PUBLIC_KEY && { kernelPublicKey: process.env.KERNEL_PUBLIC_KEY }),
     postCommentOnError: false,
+    bypassSignatureVerification: true,
   }
 );
 
