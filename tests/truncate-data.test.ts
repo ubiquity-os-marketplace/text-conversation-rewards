@@ -1,7 +1,6 @@
 /* eslint-disable sonarjs/no-nested-functions */
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import "../src/parser/command-line";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
@@ -22,7 +21,7 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@ubiquity-os/ubiquity-os-kernel", () => ({
+jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
   postComment: jest.fn(),
 }));
 

@@ -1,4 +1,4 @@
-import { postComment } from "@ubiquity-os/ubiquity-os-kernel";
+import { postComment } from "@ubiquity-os/plugin-sdk";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { getSortedPrices } from "./helpers/label-price-extractor";
@@ -10,47 +10,52 @@ import { Result } from "./types/results";
 
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config } = context;
-  if (eventName === "issues.closed") {
-    if (payload.issue.state_reason !== "completed") {
-      return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
-    }
-    if (!(await preCheck(context))) {
-      const result = logger.error("All linked pull requests must be closed to generate rewards.");
-      await postComment(context, result);
-      return result.logMessage.raw;
-    }
-    logger.debug("Will use the following configuration:", { config });
-    if (config.incentives.githubComment?.post) {
-      await postComment(context, logger.ok("Evaluating results. Please wait..."));
-    }
-    const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivity(context, issue);
-    await activity.init();
-    if (config.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
-      const result = logger.error("No price label has been set. Skipping permit generation.");
-      await postComment(context, result);
-      return result.logMessage.raw;
-    }
-    const processor = new Processor(context);
-    await processor.run(activity);
-    let result = processor.dump();
-    if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
-      logger.info("Truncating payload as it will trigger an error.");
-      const resultObject = JSON.parse(result) as Result;
-      for (const [key, value] of Object.entries(resultObject)) {
-        resultObject[key] = {
-          userId: value.userId,
-          task: value.task,
-          permitUrl: value.permitUrl,
-          total: value.total,
-        };
-      }
-      result = JSON.stringify(resultObject);
-    }
-    return JSON.parse(result);
-  } else {
+
+  if (eventName !== "issues.closed") {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }
+
+  if (payload.issue.state_reason !== "completed") {
+    return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
+  }
+
+  if (!(await preCheck(context))) {
+    const result = logger.error("All linked pull requests must be closed to generate rewards.");
+    await postComment(context, result);
+    return result.logMessage.raw;
+  }
+
+  logger.debug("Will use the following configuration:", { config });
+
+  if (config.incentives.githubComment?.post) {
+    await postComment(context, logger.ok("Evaluating results. Please wait..."));
+  }
+
+  const issue = parseGitHubUrl(payload.issue.html_url);
+  const activity = new IssueActivity(context, issue);
+  await activity.init();
+  if (config.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
+    const result = logger.error("No price label has been set. Skipping permit generation.");
+    await postComment(context, result);
+    return result.logMessage.raw;
+  }
+  const processor = new Processor(context);
+  await processor.run(activity);
+  let result = processor.dump();
+  if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
+    logger.info("Truncating payload as it will trigger an error.");
+    const resultObject = JSON.parse(result) as Result;
+    for (const [key, value] of Object.entries(resultObject)) {
+      resultObject[key] = {
+        userId: value.userId,
+        task: value.task,
+        permitUrl: value.permitUrl,
+        total: value.total,
+      };
+    }
+    result = JSON.stringify(resultObject);
+  }
+  return JSON.parse(result);
 }
 
 async function preCheck(context: ContextPlugin) {

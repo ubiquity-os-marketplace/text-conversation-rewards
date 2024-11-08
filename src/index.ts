@@ -1,9 +1,8 @@
-import { createActionsPlugin } from "@ubiquity-os/ubiquity-os-kernel";
+import { createActionsPlugin } from "@ubiquity-os/plugin-sdk";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
-import { SupportedEvents } from "./parser/command-line";
 import { run } from "./run";
 import envConfigSchema, { EnvConfig } from "./types/env-type";
-import { PluginSettings, pluginSettingsSchema } from "./types/plugin-input";
+import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "./types/plugin-input";
 
 export default createActionsPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   (context) => {

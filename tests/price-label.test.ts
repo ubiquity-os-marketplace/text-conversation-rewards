@@ -3,7 +3,7 @@ import { afterAll, afterEach, beforeAll, expect, it, jest } from "@jest/globals"
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { Octokit } from "@octokit/rest";
+import { Octokit } from "@octokit/core";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());

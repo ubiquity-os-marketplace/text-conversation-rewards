@@ -1,5 +1,5 @@
 import { context } from "@actions/github";
-import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -63,7 +63,7 @@ export class PermitGenerationModule extends BaseModule {
       return Promise.resolve(result);
     }
     const eventName = context.eventName as SupportedEvents;
-    const octokit = this.context.octokit as unknown as Octokit;
+    const octokit = this.context.octokit as unknown as Context["octokit"];
     const permitLogger = {
       debug(message: unknown, optionalParams: unknown) {
         console.log(message, optionalParams);
