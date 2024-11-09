@@ -1,30 +1,35 @@
+import { beforeAll, describe, expect, it, jest } from "@jest/globals";
+import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
+import { Octokit } from "@octokit/core";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { IssueActivity } from "../src/issue-activity";
 import { parseGitHubUrl } from "../src/start";
+import { ContextPlugin } from "../src/types/plugin-input";
+import cfg from "./__mocks__/results/valid-configuration.json";
 
-// Mock process.argv
 const issueUrl =
   process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/issues/22";
 
-jest.mock("../src/parser/command-line", () => {
-  const cfg = require("./__mocks__/results/valid-configuration.json");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  return {
-    stateId: 1,
-    eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
-    eventPayload: JSON.stringify(cfg),
-  };
-});
-
-jest.mock("../src/helpers/get-comment-details", () => ({
+jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
+const customOctokit = Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN });
+
 describe("GetActivity class", () => {
   const issue = parseGitHubUrl(issueUrl);
-  const activity = new IssueActivity(issue);
+  const activity = new IssueActivity(
+    {
+      stateId: 1,
+      eventName: "issues.closed",
+      authToken: process.env.GITHUB_TOKEN,
+      ref: "",
+      config: cfg,
+      logger: new Logs("debug"),
+      octokit: new customOctokit(),
+    } as unknown as ContextPlugin,
+    issue
+  );
   beforeAll(async () => {
     await activity.init();
   });

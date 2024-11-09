@@ -1,29 +1,32 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
-import { CommentAssociation, CommentKind } from "../configuration/comment-types";
-import configuration from "../configuration/config-reader";
-import githubCommentModuleInstance from "../helpers/github-comment-module-instance";
-import logger from "../helpers/logger";
 import { typeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
+import { Module } from "../types/module";
+import { ContextPlugin } from "../types/plugin-input";
+import { Result } from "../types/results";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
+import { GithubCommentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
 
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
-  private readonly _configuration = configuration.incentives;
+  private _context: ContextPlugin;
+  private readonly _configuration;
 
-  constructor() {
-    this.add(new UserExtractorModule())
-      .add(new DataPurgeModule())
-      .add(new FormattingEvaluatorModule())
-      .add(new ContentEvaluatorModule())
-      .add(new PermitGenerationModule())
-      .add(githubCommentModuleInstance);
+  constructor(context: ContextPlugin) {
+    this.add(new UserExtractorModule(context))
+      .add(new DataPurgeModule(context))
+      .add(new FormattingEvaluatorModule(context))
+      .add(new ContentEvaluatorModule(context))
+      .add(new PermitGenerationModule(context))
+      .add(new GithubCommentModule(context));
+    this._context = context;
+    this._configuration = this._context.config.incentives;
   }
 
   add(transformer: Module) {
@@ -48,7 +51,7 @@ export class Processor {
     const { file } = this._configuration;
     const result = JSON.stringify(this._result, typeReplacer, 2);
     if (!file) {
-      logger.debug(result);
+      this._context.logger.debug(result);
     } else {
       fs.writeFileSync(file, result);
     }
@@ -68,50 +71,4 @@ export class Processor {
 
     return totalReward.toNumber();
   }
-}
-
-export interface Module {
-  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
-  get enabled(): boolean;
-}
-
-export interface Result {
-  [k: string]: {
-    comments?: GithubCommentScore[];
-    total: number;
-    task?: {
-      reward: number;
-      multiplier: number;
-    };
-    feeRate?: number;
-    permitUrl?: string;
-    userId: number;
-    evaluationCommentHtml?: string;
-  };
-}
-
-export interface WordResult {
-  wordCount: number;
-  wordValue: number;
-  result: number;
-}
-
-export interface GithubCommentScore {
-  id: number;
-  content: string;
-  url: string;
-  type: CommentKind | CommentAssociation;
-  diffHunk?: string;
-  score?: {
-    formatting?: {
-      content: Record<string, { score: number; elementCount: number }>;
-      result: number;
-    };
-    words?: WordResult;
-    multiplier: number;
-    relevance?: number;
-    clarity?: number;
-    priority?: number;
-    reward: number;
-  };
 }

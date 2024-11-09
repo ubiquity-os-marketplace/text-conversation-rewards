@@ -1,50 +1,57 @@
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { drop } from "@mswjs/data";
+import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
+import { Octokit } from "@octokit/core";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { CommentKind } from "../../src/configuration/comment-types";
-import { PermitGenerationModule } from "../../src/parser/permit-generation-module";
-import { Result } from "../../src/parser/processor";
+import { EnvConfig } from "../../src/types/env-type";
+import { ContextPlugin } from "../../src/types/plugin-input";
+import { Result } from "../../src/types/results";
+import { db } from "../__mocks__/db";
+import dbSeed from "../__mocks__/db-seed.json";
+import { server } from "../__mocks__/node";
+import cfg from "../__mocks__/results/valid-configuration.json";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 
-jest.mock("../../src/parser/command-line", () => {
-  // Require is needed because mock cannot access elements out of scope
-  const cfg = require("../__mocks__/results/valid-configuration.json");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  return {
-    stateId: 1,
-    eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
-    eventPayload: {
-      issue: {
-        html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
-        number: 1,
-        state_reason: "not_planned",
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-        },
+const ctx = {
+  stateId: 1,
+  eventName: "issues.closed",
+  authToken: process.env.GITHUB_TOKEN,
+  ref: "",
+  payload: {
+    issue: {
+      html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
+      number: 1,
+      state_reason: "not_planned",
+    },
+    repository: {
+      name: "conversation-rewards",
+      owner: {
+        login: "ubiquity-os",
       },
     },
-    settings: JSON.stringify(cfg),
-  };
-});
+  },
+  config: cfg,
+  logger: new Logs("debug"),
+  octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  env: {
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    SUPABASE_KEY: process.env.SUPABASE_KEY,
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
+    // set fee related env variables
+    // treasury fee applied to the final permits, ex: 100 = 100%, 0.1 = 0.1%
+    PERMIT_FEE_RATE: "10",
+    // GitHub account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquity-os-treasury"
+    PERMIT_TREASURY_GITHUB_USERNAME: "ubiquity-os-treasury",
+    // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
+    PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: `${DOLLAR_ADDRESS}`,
+  },
+} as unknown as ContextPlugin;
 
-jest.mock("../../src/octokit", () => ({
-  getOctokitInstance: () => ({
-    users: {
-      getByUsername: () => ({
-        data: {
-          id: 3,
-        },
-      }),
-    },
-  }),
-}));
-
-jest.mock("@supabase/supabase-js", () => {
+jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(),
   };
@@ -94,16 +101,25 @@ const resultOriginal: Result = {
   },
 };
 
+const { PermitGenerationModule } = await import("../../src/parser/permit-generation-module");
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
 describe("permit-generation-module.ts", () => {
   describe("applyFees()", () => {
     beforeEach(() => {
-      // set fee related env variables
-      // treasury fee applied to the final permits, ex: 100 = 100%, 0.1 = 0.1%
-      process.env.PERMIT_FEE_RATE = "10";
-      // github account associated with EVM treasury address allowed to claim permit fees, ex: "ubiquity-os-treasury"
-      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquity-os-treasury";
-      // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
-      process.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST = `${DOLLAR_ADDRESS}`;
+      ctx.env.PERMIT_FEE_RATE = "10";
+      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = "ubiquity-os-treasury";
+      ctx.env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST = `${DOLLAR_ADDRESS}`;
+      drop(db);
+      for (const table of Object.keys(dbSeed)) {
+        const tableName = table as keyof typeof dbSeed;
+        for (const row of dbSeed[tableName]) {
+          db[tableName].create(row);
+        }
+      }
     });
 
     afterEach(() => {
@@ -112,20 +128,20 @@ describe("permit-generation-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
-      process.env.PERMIT_FEE_RATE = "";
-      const permitGenerationModule = new PermitGenerationModule();
+      ctx.env.PERMIT_FEE_RATE = "";
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
-      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
+      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
       spyConsoleLog.mockReset();
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is 0", async () => {
-      process.env.PERMIT_FEE_RATE = "0";
-      const permitGenerationModule = new PermitGenerationModule();
+      ctx.env.PERMIT_FEE_RATE = "0";
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
-      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
+      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
       spyConsoleLog.mockReset();
@@ -133,18 +149,19 @@ describe("permit-generation-module.ts", () => {
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
       process.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
-      const permitGenerationModule = new PermitGenerationModule();
+      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
-      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
+      await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation/);
       spyConsoleLog.mockReset();
     });
 
     it("Should not apply fees if ERC20 reward token is included in PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
-      await permitGenerationModule._applyFees(resultOriginal, DOLLAR_ADDRESS, process.env);
+      await permitGenerationModule._applyFees(resultOriginal, DOLLAR_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(
         new RegExp(`.*Token address ${DOLLAR_ADDRESS} is whitelisted to be fee free, skipping permit fee generation`)
@@ -153,8 +170,8 @@ describe("permit-generation-module.ts", () => {
     });
 
     it("Should apply fees", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
-      const resultAfterFees = await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS, process.env);
+      const permitGenerationModule = new PermitGenerationModule(ctx);
+      const resultAfterFees = await permitGenerationModule._applyFees(resultOriginal, WXDAI_ADDRESS);
 
       // check that 10% fee is subtracted from rewards
       expect(resultAfterFees["user1"].total).toEqual(90);
@@ -172,11 +189,11 @@ describe("permit-generation-module.ts", () => {
   describe("_isPrivateKeyAllowed()", () => {
     beforeEach(() => {
       // set dummy X25519_PRIVATE_KEY
-      process.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+      ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
     });
 
     it("Should return false if private key could not be decrypted", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "warn");
 
       // format: "PRIVATE_KEY"
@@ -189,7 +206,7 @@ describe("permit-generation-module.ts", () => {
         privateKeyEncrypted,
         githubContextOrganizationId,
         githubContextRepositoryId,
-        process.env
+        process.env as unknown as EnvConfig
       );
 
       expect(isAllowed).toEqual(false);
@@ -199,7 +216,7 @@ describe("permit-generation-module.ts", () => {
     });
 
     it("Should return false if private key is used in unallowed organization", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
@@ -213,7 +230,7 @@ describe("permit-generation-module.ts", () => {
         privateKeyEncrypted,
         githubContextOrganizationId,
         githubContextRepositoryId,
-        process.env
+        process.env as unknown as EnvConfig
       );
 
       expect(isAllowed).toEqual(false);
@@ -223,7 +240,7 @@ describe("permit-generation-module.ts", () => {
     });
 
     it("Should return true if private key is used in allowed organization", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
+      const permitGenerationModule = new PermitGenerationModule(ctx);
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1"
@@ -236,14 +253,14 @@ describe("permit-generation-module.ts", () => {
         privateKeyEncrypted,
         githubContextOrganizationId,
         githubContextRepositoryId,
-        process.env
+        process.env as unknown as EnvConfig
       );
 
       expect(isAllowed).toEqual(true);
     });
 
     it("Should return false if private key is used in un-allowed organization and allowed repository", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
@@ -257,7 +274,7 @@ describe("permit-generation-module.ts", () => {
         privateKeyEncrypted,
         githubContextOrganizationId,
         githubContextRepositoryId,
-        process.env
+        process.env as unknown as EnvConfig
       );
 
       expect(isAllowed).toEqual(false);
@@ -269,7 +286,7 @@ describe("permit-generation-module.ts", () => {
     });
 
     it("Should return false if private key is used in allowed organization and unallowed repository", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
@@ -283,7 +300,7 @@ describe("permit-generation-module.ts", () => {
         privateKeyEncrypted,
         githubContextOrganizationId,
         githubContextRepositoryId,
-        process.env
+        process.env as unknown as EnvConfig
       );
 
       expect(isAllowed).toEqual(false);
@@ -295,7 +312,7 @@ describe("permit-generation-module.ts", () => {
     });
 
     it("Should return true if private key is used in allowed organization and repository", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
+      const permitGenerationModule = new PermitGenerationModule(ctx);
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
@@ -308,14 +325,14 @@ describe("permit-generation-module.ts", () => {
         privateKeyEncrypted,
         githubContextOrganizationId,
         githubContextRepositoryId,
-        process.env
+        process.env as unknown as EnvConfig
       );
 
       expect(isAllowed).toEqual(true);
     });
 
     it("Should return false if private key format is invalid", async () => {
-      const permitGenerationModule = new PermitGenerationModule();
+      const permitGenerationModule = new PermitGenerationModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "warn");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
@@ -329,7 +346,7 @@ describe("permit-generation-module.ts", () => {
         privateKeyEncrypted,
         githubContextOrganizationId,
         githubContextRepositoryId,
-        process.env
+        process.env as unknown as EnvConfig
       );
 
       expect(isAllowed).toEqual(false);

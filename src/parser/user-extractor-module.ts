@@ -1,21 +1,20 @@
-import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
-import configuration from "../configuration/config-reader";
-import { UserExtractorConfiguration, userExtractorConfigurationType } from "../configuration/user-extractor-config";
+import { UserExtractorConfiguration } from "../configuration/user-extractor-config";
 import { GitHubIssue } from "../github-types";
 import { getSortedPrices } from "../helpers/label-price-extractor";
 import { IssueActivity } from "../issue-activity";
-import { Module, Result } from "./processor";
+import { BaseModule } from "../types/module";
+import { Result } from "../types/results";
 
 /**
  * Creates entries for each user with its associated comments.
  */
-export class UserExtractorModule implements Module {
-  private readonly _configuration: UserExtractorConfiguration | null = configuration.incentives.userExtractor;
+export class UserExtractorModule extends BaseModule {
+  private readonly _configuration: UserExtractorConfiguration | null = this.context.config.incentives.userExtractor;
 
   get enabled(): boolean {
-    if (!Value.Check(userExtractorConfigurationType, this._configuration)) {
-      console.warn("Invalid / missing configuration detected for UserExtractorModule, disabling.");
+    if (!this._configuration) {
+      this.context.logger.error("Invalid / missing configuration detected for UserExtractorModule, disabling.");
       return false;
     }
     return true;

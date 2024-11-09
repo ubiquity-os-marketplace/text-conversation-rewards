@@ -1,14 +1,16 @@
 /* eslint-disable sonarjs/no-nested-functions */
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import "../src/parser/command-line";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
-import * as Validator from "../src/helpers/validator";
+import cfg from "./__mocks__/results/valid-configuration.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.mock("@actions/github", () => ({
+jest.unstable_mockModule("@actions/github", () => ({
   context: {
     runId: "1",
     payload: {
@@ -19,7 +21,11 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
-jest.mock("@octokit/plugin-paginate-graphql", () => ({
+jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
+  postComment: jest.fn(),
+}));
+
+jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
   paginateGraphQL() {
     return {
       graphql: {
@@ -59,39 +65,6 @@ jest.mock("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-jest.mock("../src/parser/command-line", () => {
-  const cfg = require("./__mocks__/results/valid-configuration.json");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  return {
-    stateId: 1,
-    eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
-    eventPayload: {
-      issue: {
-        html_url: issueUrl,
-        number: 1,
-        state_reason: "completed",
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-          id: 76412717,
-        },
-      },
-    },
-    settings: JSON.stringify({
-      ...cfg,
-      incentives: {
-        ...cfg.incentives,
-        requirePriceLabel: false,
-      },
-    }),
-  };
-});
-
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -108,9 +81,7 @@ describe("Payload truncate tests", () => {
   });
 
   it("Should truncate the returned data if the payload is too large", async () => {
-    // const patchMock = jest.fn(() => HttpResponse.json({}));
-    // server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
-    jest.mock("../src/parser/processor", () => ({
+    jest.unstable_mockModule("../src/parser/processor", () => ({
       Processor: jest.fn(() => ({
         dump: jest.fn(() =>
           JSON.stringify({
@@ -126,15 +97,67 @@ describe("Payload truncate tests", () => {
         run: jest.fn(),
       })),
     }));
-    jest.mock("../src/issue-activity", () => {
+    jest.unstable_mockModule("../src/issue-activity", () => {
       return { IssueActivity: jest.fn(() => ({ init: jest.fn() })) };
     });
-    const returnDataToKernelMock = jest.fn();
-    jest.spyOn(Validator, "returnDataToKernel").mockImplementation(returnDataToKernelMock);
-    const module = (await import("../src/index")) as unknown as { default: Promise<string> };
-    const result = await module.default;
-    const expectedResult = '{"user":{"userId":"1","task":"1","permitUrl":"http","total":1}}';
+    const module = await import("../src/run");
+    const result = await module.run({
+      stateId: 1,
+      eventName: "issues.closed",
+      authToken: process.env.GITHUB_TOKEN,
+      ref: "",
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717,
+          },
+        },
+      },
+      octokit: {
+        graphql: {
+          paginate: jest.fn(() => ({
+            repository: {
+              issue: {
+                closedByPullRequestsReferences: {
+                  edges: [
+                    {
+                      node: {
+                        id: "PR_kwDOKzVPS85zXUok",
+                        title: "fix: add state to sorting manager for bottom and top 2",
+                        number: 71,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          })),
+        },
+      },
+      logger: new Logs("debug"),
+      config: {
+        ...cfg,
+        incentives: {
+          ...cfg.incentives,
+          requirePriceLabel: false,
+        },
+      },
+    } as unknown as ContextPlugin);
+    const expectedResult = {
+      user: {
+        permitUrl: "http",
+        task: "1",
+        total: 1,
+        userId: "1",
+      },
+    };
     expect(result).toEqual(expectedResult);
-    expect(returnDataToKernelMock).toHaveBeenCalledWith(process.env.GITHUB_TOKEN, 1, { result: expectedResult });
   });
 });
