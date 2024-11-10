@@ -4,7 +4,7 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { Octokit } from "@octokit/core";
+import { Octokit } from "@octokit/rest";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 
 beforeAll(() => server.listen());
