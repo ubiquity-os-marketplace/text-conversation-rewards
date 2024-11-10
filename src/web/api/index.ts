@@ -71,21 +71,22 @@ app.use(
 // Fakes OpenAi routes
 app.post("/openai/*", async (c) => {
   const text = await c.req.json();
-  const regex = /START EVALUATING:\s*\[([\s\S]*?)]/g;
+  const regex = /JSON response should equal exactly (\d+)/g;
 
   const comments: { id: string; comment: string; author: string }[] = [];
 
   if ("messages" in text) {
     let match;
     while ((match = regex.exec(text.messages[0].content)) !== null) {
-      const jsonArray = JSON.parse(`[${match[1]}]`);
-      jsonArray.forEach((item: { id: string; comment: string; author: string }) => {
-        comments.push({
-          id: item.id,
-          comment: item.comment,
-          author: item.author,
-        });
-      });
+      const length = JSON.parse(`[${match[1]}]`);
+
+      comments.push(
+        ...Array.from({ length }, (item, i) => ({
+          id: i.toString(),
+          comment: "Generic comment",
+          author: "Generic author",
+        }))
+      );
     }
   }
 
