@@ -38,9 +38,16 @@ export class PermitGenerationModule extends BaseModule {
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const canGeneratePermits = await this._canGeneratePermit(data);
-    if (!canGeneratePermits) return result;
+    const canGeneratePermits = await this._canGeneratePermit(
+      data,
+      this.context.payload.repository.owner.login,
+      this.context.payload.repository.name
+    );
 
+    if (!canGeneratePermits) {
+      console.warn("[PermitGenerationModule] Non collaborative issue detected, skipping.");
+      return Promise.resolve(result);
+    }
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
@@ -195,18 +202,18 @@ export class PermitGenerationModule extends BaseModule {
     return this._deductFeeFromReward(result, treasuryGithubData);
   }
 
-  async _canGeneratePermit(data: Readonly<IssueActivity>) {
-    if (!data.self?.closed_by || !data.self.assignee || !data.self.repository) return false;
+  async _canGeneratePermit(data: Readonly<IssueActivity>, repoOwner: string, repoName: string) {
+    if (!data.self?.closed_by || !data.self.assignee) return false;
 
     const octokit = this.context.octokit as unknown as Context["octokit"];
     const assignee = data.self?.assignee;
 
     const assigneePerms = await octokit.request("GET /repos/{owner}/{repo}/collaborators/{username}/permission", {
-      owner: data.self.repository.owner.login,
-      repo: data.self.repository.name,
+      owner: repoOwner,
+      repo: repoName,
       username: assignee.login,
     });
-    const isAdmin = assigneePerms.data.role_name === "admin";
+    const isAdmin = assigneePerms.data.role_name === "admin" || assigneePerms.data.role_name === "billing_manager";
 
     if (data.self.closed_by.id === assignee.id && !isAdmin) {
       const pricingEventsByNonAssignee = data.events.find(
@@ -221,7 +228,6 @@ export class PermitGenerationModule extends BaseModule {
       return true;
     }
   }
-
   _deductFeeFromReward(
     result: Result,
     treasuryGithubData: RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"]

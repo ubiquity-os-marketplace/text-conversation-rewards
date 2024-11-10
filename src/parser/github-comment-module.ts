@@ -110,7 +110,11 @@ export class GithubCommentModule extends BaseModule {
     }
     if (this._configuration?.post) {
       try {
-        await this.postComment(body);
+        await this.postComment(
+          Object.values(result).some((v) => v.permitUrl)
+            ? body
+            : "Skipping generating permits due to issue being non collaborative"
+        );
       } catch (e) {
         this.context.logger.error(`Could not post GitHub comment: ${e}`);
       }
