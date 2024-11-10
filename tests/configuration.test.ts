@@ -1,41 +1,19 @@
-import configuration from "../src/configuration/config-reader";
+import { describe, expect, it } from "@jest/globals";
+import { Value } from "@sinclair/typebox/value";
+import { formattingEvaluatorConfigurationType } from "../src/configuration/formatting-evaluator-config";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
-import customConfiguration from "./__mocks__/configurations/custom-configuration.json";
-
-jest.mock("../src/parser/command-line", () => {
-  const cfg = require("./__mocks__/configurations/custom-configuration.json");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  return {
-    stateId: 1,
-    eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
-    eventPayload: {
-      issue: {
-        html_url: "",
-        number: 69,
-        state_reason: "completed",
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-          id: 76412717,
-        },
-      },
-    },
-    settings: JSON.stringify(cfg),
-  };
-});
+import { ContextPlugin, pluginSettingsSchema } from "../src/types/plugin-input";
 
 describe("Configuration Tests", () => {
-  it("Should populate default values in configuration", () => {
-    expect(configuration).toEqual(customConfiguration);
-  });
-
   it("Formatting evaluator should parse the enums properly", () => {
-    const formattingEvaluator = new FormattingEvaluatorModule();
+    const config = Value.Default(pluginSettingsSchema, {
+      incentives: {
+        formattingEvaluator: Value.Default(formattingEvaluatorConfigurationType, {}),
+      },
+    });
+    const formattingEvaluator = new FormattingEvaluatorModule({
+      config,
+    } as unknown as ContextPlugin);
 
     expect(Object.keys(formattingEvaluator["_multipliers"])).toEqual([
       "5",

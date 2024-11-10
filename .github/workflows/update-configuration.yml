@@ -12,6 +12,9 @@ jobs:
 
     steps:
       - uses: ubiquity-os/action-deploy-plugin@main
+        with:
+          treatAsEsm: true
+          sourcemap: false
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}

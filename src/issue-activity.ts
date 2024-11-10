@@ -1,5 +1,4 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
-import configuration from "./configuration/config-reader";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import {
@@ -20,12 +19,19 @@ import {
   IssueParams,
   PullParams,
 } from "./start";
-import logger from "./helpers/logger";
+import { ContextPlugin } from "./types/plugin-input";
 
 export class IssueActivity {
-  readonly _configuration: DataCollectionConfiguration = configuration.dataCollection;
+  private readonly _context: ContextPlugin;
+  readonly _configuration: DataCollectionConfiguration;
 
-  constructor(private _issueParams: IssueParams) {}
+  constructor(
+    context: ContextPlugin,
+    private _issueParams: IssueParams
+  ) {
+    this._context = context;
+    this._configuration = this._context.config.dataCollection;
+  }
 
   self: GitHubIssue | null = null;
   events: GitHubIssueEvent[] = [];
@@ -35,26 +41,26 @@ export class IssueActivity {
   async init() {
     try {
       [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
-        getIssue(this._issueParams),
-        getIssueEvents(this._issueParams),
-        getIssueComments(this._issueParams),
+        getIssue(this._context, this._issueParams),
+        getIssueEvents(this._context, this._issueParams),
+        getIssueComments(this._context, this._issueParams),
         this._getLinkedReviews(),
       ]);
     } catch (error) {
-      throw logger.error(`Could not fetch issue data: ${error}`);
+      throw this._context.logger.error(`Could not fetch issue data: ${error}`);
     }
   }
 
   private async _getLinkedReviews(): Promise<Review[]> {
-    logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
-    const pulls = (await collectLinkedMergedPulls(this._issueParams)).slice(-1);
-    logger.debug("Collected linked pull-requests", { pulls });
+    this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
+    const pulls = (await collectLinkedMergedPulls(this._context, this._issueParams)).slice(-1);
+    this._context.logger.debug("Collected linked pull-requests", { pulls });
     const promises = pulls
       .map(async (pull) => {
         const repository = pull.repository;
 
         if (!repository) {
-          logger.error(`No repository found for`, { ...pull.repository });
+          this._context.logger.error(`No repository found for`, { ...pull.repository });
           return null;
         } else {
           const pullParams = {
@@ -62,7 +68,7 @@ export class IssueActivity {
             repo: repository.name,
             pull_number: pull.number,
           };
-          const review = new Review(pullParams);
+          const review = new Review(this._context, pullParams);
           await review.init();
           return review;
         }
@@ -147,15 +153,18 @@ export class Review {
   reviewComments: GitHubPullRequestReviewComment[] | null = null;
   comments: GitHubIssueComment[] | null = null;
 
-  constructor(private _pullParams: PullParams) {}
+  constructor(
+    private _context: ContextPlugin,
+    private _pullParams: PullParams
+  ) {}
 
   async init() {
     [this.self, this.reviews, this.reviewComments, this.comments] = await Promise.all([
-      getPullRequest(this._pullParams),
-      getPullRequestReviews(this._pullParams),
-      getPullRequestReviewComments(this._pullParams),
+      getPullRequest(this._context, this._pullParams),
+      getPullRequestReviews(this._context, this._pullParams),
+      getPullRequestReviewComments(this._context, this._pullParams),
       // This fetches all the comments inside the Pull Request that were not created in a reviewing context
-      getIssueComments({
+      getIssueComments(this._context, {
         owner: this._pullParams.owner,
         repo: this._pullParams.repo,
         issue_number: this._pullParams.pull_number,
