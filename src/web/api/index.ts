@@ -1,15 +1,16 @@
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
+import { ExecutionContext } from "hono";
 import { serveStatic } from "hono/bun";
-import manifest from "../../manifest.json";
-import { IssueActivity } from "../issue-activity";
-import { Processor } from "../parser/processor";
-import { parseGitHubUrl } from "../start";
-import envConfigSchema, { EnvConfig } from "../types/env-type";
-import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../types/plugin-input";
+import manifest from "../../../manifest.json";
+import { IssueActivity } from "../../issue-activity";
+import { Processor } from "../../parser/processor";
+import { parseGitHubUrl } from "../../start";
+import envConfigSchema, { EnvConfig } from "../../types/env-type";
+import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 
-const app = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
+const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   async (context) => {
     const { payload } = context;
     const issue = parseGitHubUrl(payload.issue.html_url);
@@ -31,7 +32,32 @@ const app = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   }
 );
 
-// You will need to build the client code first `bun run ui:build`
+const app = {
+  fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
+    if (request.method === "POST" && new URL(request.url).pathname === "/") {
+      console.log("Pre-processing POST / request");
+      // read config file
+      // create JSON body from FE received body
+      // disable open ai routes accordingly?
+
+      // Clone the request since we need to read it twice
+      const clonedRequest = request.clone();
+      try {
+        const body = await clonedRequest.json();
+        console.log("Request body:", body);
+      } catch (error) {
+        console.error(error);
+        return new Response("Invalid JSON", { status: 400 });
+      }
+    }
+    return baseApp.fetch(request, env, ctx);
+  },
+  use: baseApp.use.bind(baseApp),
+  post: baseApp.post.bind(baseApp),
+  get: baseApp.get.bind(baseApp),
+};
+
+// Serves the statically compiled frontend
 app.use(
   "/*",
   serveStatic({
@@ -40,6 +66,7 @@ app.use(
   })
 );
 
+// Fakes OpenAi routes
 app.post("/openai/*", async (c) => {
   const text = await c.req.json();
   const regex = /START EVALUATING:\s*\[([\s\S]*?)]/g;

@@ -1,7 +1,7 @@
 {
   "name": "@ubiquity-os/text-conversation-rewards-ui",
   "scripts": {
-    "server": "bun --watch server.ts",
+    "server": "bun --watch api/index.ts",
     "ui:dev": "bunx --bun vite",
     "ui:build": "bunx --bun vite build",
     "ui:build-watch": "bunx --bun vite build --watch",
