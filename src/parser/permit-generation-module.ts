@@ -198,7 +198,7 @@ export class PermitGenerationModule extends BaseModule {
   async _canGeneratePermit(data: Readonly<IssueActivity>) {
     if (!data.self?.closed_by || !data.self.assignee || !data.self.repository) return false;
 
-    const octokit = getOctokitInstance();
+    const octokit = this.context.octokit as unknown as Context["octokit"];
     const assignee = data.self?.assignee;
 
     const assigneePerms = await octokit.request("GET /repos/{owner}/{repo}/collaborators/{username}/permission", {
