@@ -17,7 +17,8 @@
     "format:cspell": "cspell **/*",
     "knip": "knip",
     "prepare": "husky install",
-    "dev": "bun --watch src/index.ts"
+    "dev": "bun --watch src/index.ts",
+    "server": "bun --watch src/web/api/index.ts"
   },
   "keywords": [
     "typescript",

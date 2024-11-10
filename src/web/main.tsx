@@ -1,6 +1,5 @@
 import { useState, InputEvent } from "hono/jsx";
 import { render } from "hono/jsx/dom";
-import { getPayload } from "./api/payload";
 
 function Form() {
   const [response, setResponse] = useState<null | string>(null);
@@ -12,14 +11,18 @@ function Form() {
     const ownerRepo = `${event.target.owner.value}/${event.target.repo.value}`;
     const issueId = event.target.issue_id.value;
     const useOpenAi = event.target.openai.checked;
-    const payload = getPayload(ownerRepo, issueId, useOpenAi);
+    const payload = {
+      ownerRepo,
+      issueId,
+      useOpenAi,
+    };
     try {
       const result = await fetch("http://localhost:3000", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: payload.body,
+        body: JSON.stringify(payload),
       });
       const data = await result.json();
       setResponse(

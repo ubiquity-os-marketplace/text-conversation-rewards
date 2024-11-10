@@ -9,6 +9,7 @@ import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
+import { getPayload } from "./payload";
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   async (context) => {
@@ -35,16 +36,17 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
     if (request.method === "POST" && new URL(request.url).pathname === "/") {
-      console.log("Pre-processing POST / request");
       // read config file
-      // create JSON body from FE received body
-      // disable open ai routes accordingly?
 
-      // Clone the request since we need to read it twice
-      const clonedRequest = request.clone();
       try {
-        const body = await clonedRequest.json();
-        console.log("Request body:", body);
+        const originalBody = await request.json();
+        const modifiedBody = getPayload(originalBody.ownerRepo, originalBody.issueId, originalBody.useOpenAi);
+        const modifiedRequest = new Request(request.url, {
+          method: request.method,
+          headers: request.headers,
+          body: JSON.stringify(modifiedBody),
+        });
+        return baseApp.fetch(modifiedRequest, env, ctx);
       } catch (error) {
         console.error(error);
         return new Response("Invalid JSON", { status: 400 });
@@ -62,7 +64,7 @@ app.use(
   "/*",
   serveStatic({
     root: "./",
-    rewriteRequestPath: (path) => `./dist${path}`,
+    rewriteRequestPath: (path) => `./src/web/dist${path}`,
   })
 );
 
@@ -89,7 +91,7 @@ app.post("/openai/*", async (c) => {
 
   const commentsObject = comments.reduce(
     (acc, comment) => {
-      acc[comment.id] = 0.8;
+      acc[comment.id] = 0.83;
       return acc;
     },
     {} as Record<string, number>
@@ -105,7 +107,6 @@ app.get("/openai/*", () => {
 });
 
 const port = 3000;
-console.log(`Server is running on port ${port}`);
 
 export default {
   fetch: app.fetch,
