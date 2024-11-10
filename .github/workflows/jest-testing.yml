@@ -32,8 +32,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: oven-sh/setup-bun@v2
+
       - name: Jest With Coverage
-        run: yarn install --immutable --immutable-cache --check-cache && yarn test
+        # we install with bun but test with Jest because bun doesn't support network mocking yet
+        run: bun install && yarn test
 
       - name: Add Jest Report to Summary
         if: always()
