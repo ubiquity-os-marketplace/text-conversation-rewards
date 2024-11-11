@@ -1,9 +1,7 @@
 # This file serves as a base to elaborate a custom configuration
 
-logLevel: "info"
 evmNetworkId: 100
 incentives:
-  requirePriceLabel: true
   contentEvaluator: {}
   userExtractor: {}
   dataPurge: {}

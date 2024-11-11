@@ -4,18 +4,18 @@ import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { ExecutionContext } from "hono";
 import { serveStatic } from "hono/bun";
 import manifest from "../../../manifest.json";
-import { IssueActivity } from "../../issue-activity";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { getPayload } from "./payload";
+import { IssueActivityCache } from "../db/issue-activity-cache";
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   async (context) => {
     const { payload } = context;
     const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivity(context, issue);
+    const activity = new IssueActivityCache(context, issue, true);
     await activity.init();
     const processor = new Processor(context);
     await processor.run(activity);
