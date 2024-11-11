@@ -27,7 +27,6 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
     logLevel: (process.env.LOG_LEVEL as LogLevel) ?? "info",
     settingsSchema: pluginSettingsSchema,
     envSchema: envConfigSchema,
-    ...(process.env.KERNEL_PUBLIC_KEY && { kernelPublicKey: process.env.KERNEL_PUBLIC_KEY }),
     postCommentOnError: false,
     bypassSignatureVerification: true,
   }
@@ -36,11 +35,9 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
     if (request.method === "POST" && new URL(request.url).pathname === "/") {
-      // read config file
-
       try {
         const originalBody = await request.json();
-        const modifiedBody = getPayload(originalBody.ownerRepo, originalBody.issueId, originalBody.useOpenAi);
+        const modifiedBody = await getPayload(originalBody.ownerRepo, originalBody.issueId, originalBody.useOpenAi);
         const modifiedRequest = new Request(request.url, {
           method: request.method,
           headers: request.headers,

@@ -1,4 +1,18 @@
-export function getPayload(ownerRepo: string, issueId: number, useOpenAi: boolean) {
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import YAML from "yaml";
+
+export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: boolean) {
+  const filePath = path.resolve(__dirname, "../.ubiquity-os.config.yml");
+  const fileContent = await fs.readFile(filePath, "utf8");
+  const cfgFile = YAML.parse(fileContent);
+
+  if (!useOpenAi) {
+    cfgFile.incentives.contentEvaluator.openAi = {
+      endpoint: "http://localhost:3000/openai",
+    };
+  }
+
   return {
     ref: "development",
     stateId: "1234",
@@ -7,25 +21,8 @@ export function getPayload(ownerRepo: string, issueId: number, useOpenAi: boolea
     action: "closed",
     env: process.env,
     settings: {
-      evmPrivateEncrypted:
-        "YfEnpznMNbSPhCQzWy1Uevi4xQC25SqJrHd87CjjS1gsu92QrCReSgvl8Z_pVI1ZM57PNC1mZSgHbNgX9ITmOJc6qaOJ_mRe_sP_8jBcNimusDCQcWEkcPIW7Md-QGDPnwuN8FIavS7I0uiOIRYK6h0NK02-3uzPqhM",
-      incentives: {
-        userExtractor: {},
-        dataPurge: {},
-        formattingEvaluator: {},
-        contentEvaluator: {
-          ...(!useOpenAi && {
-            openAi: {
-              endpoint: "http://localhost:3000/openai",
-            },
-          }),
-        },
-        permitGeneration: null,
-        githubComment: {
-          post: true,
-          debug: false,
-        },
-      },
+      ...cfgFile,
+      evmPrivateEncrypted: process.env.EVM_PRIVATE_ENCRYPTED,
     },
     authToken: process.env.GITHUB_TOKEN,
     eventPayload: {

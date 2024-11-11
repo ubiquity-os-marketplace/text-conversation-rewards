@@ -46,7 +46,7 @@
     "openai": "4.56.0",
     "ts-jest": "^29.2.5",
     "tsx": "4.7.1",
-    "yaml": "2.4.1"
+    "yaml": "^2.6.0"
   },
   "devDependencies": {
     "@babel/core": "7.23.9",
