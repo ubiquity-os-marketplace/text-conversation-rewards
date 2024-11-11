@@ -131,6 +131,22 @@ export const handlers = [
     }
     return HttpResponse.json(user);
   }),
+  http.get("https://api.github.com/repos/:owner/:repo/collaborators/:username/permission", ({ params }) => {
+    const { username } = params;
+
+    if (username === "0x4007") {
+      return HttpResponse.json({
+        data: {
+          role_name: "admin"
+        }
+      });
+    }
+    return HttpResponse.json({
+      data: {
+        role_name: "triage"
+      }
+    });
+  }),
   http.post("https://api.github.com/app/installations/48381972/access_tokens", () => {
     return HttpResponse.json({});
   }),
