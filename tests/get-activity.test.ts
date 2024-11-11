@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it, jest } from "@jest/globals";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/core";
+import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { IssueActivity } from "../src/issue-activity";
 import { parseGitHubUrl } from "../src/start";
