@@ -1,4 +1,4 @@
-import { GitHubIssue, GitHubIssueLabel } from "../github-types";
+import { GitHubIssue } from "../github-types";
 
 export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
   if (!labels) return [];
@@ -19,33 +19,4 @@ export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
     return [];
   }
   return sortedPriceLabels;
-}
-
-export function parsePriorityLabel(labels: (string | GitHubIssueLabel)[] | undefined): number {
-  let taskPriorityEstimate = 0;
-  if (!labels) return 1;
-  for (const label of labels) {
-    let priorityLabel = "";
-    if (typeof label === "string") {
-      priorityLabel = label;
-    } else {
-      priorityLabel = label.name ?? "";
-    }
-
-    if (priorityLabel.startsWith("Priority:")) {
-      const matched = priorityLabel.match(/Priority: (\d+)/i);
-      if (!matched) {
-        return 0;
-      }
-
-      const urgency = matched[1];
-      taskPriorityEstimate = Number(urgency);
-    }
-
-    if (taskPriorityEstimate) {
-      break;
-    }
-  }
-
-  return taskPriorityEstimate;
 }
