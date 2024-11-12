@@ -13,6 +13,7 @@ import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result } from "../types/results";
+import { postComment } from "@ubiquity-os/plugin-sdk";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -110,11 +111,12 @@ export class GithubCommentModule extends BaseModule {
     }
     if (this._configuration?.post) {
       try {
-        await this.postComment(
-          Object.values(result).some((v) => v.permitUrl)
-            ? body
-            : "Skipping generating permits due to issue being non collaborative"
-        );
+        if (Object.values(result).some((v) => v.permitUrl)) {
+          await this.postComment(body);
+        } else {
+          const errorLog = this.context.logger.error("Issue is non collaborative. Skipping permit generation.");
+          await postComment(this.context, errorLog);
+        }
       } catch (e) {
         this.context.logger.error(`Could not post GitHub comment: ${e}`);
       }

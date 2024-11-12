@@ -45,7 +45,7 @@ export class PermitGenerationModule extends BaseModule {
     );
 
     if (!canGeneratePermits) {
-      console.warn("[PermitGenerationModule] Non collaborative issue detected, skipping.");
+      this.context.logger.error("[PermitGenerationModule] Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
     const payload: Context["payload"] & Payload = {
