@@ -1,10 +1,9 @@
-import { IssueActivity, Review } from "../../issue-activity";
+import { IssueActivity } from "../../issue-activity";
 import { ContextPlugin } from "../../types/plugin-input";
 import { IssueParams } from "../../start";
 import { open } from "sqlite";
 import path from "node:path";
 import sqlite3 from "sqlite3";
-import { GitHubIssue, GitHubIssueComment, GitHubIssueEvent } from "../../github-types";
 
 export class IssueActivityCache extends IssueActivity {
   constructor(
@@ -25,43 +24,36 @@ export class IssueActivityCache extends IssueActivity {
         driver: sqlite3.cached.Database,
       });
       try {
-        const relatedIssue = await db.get<GitHubIssue>(
-          "SELECT * FROM issues WHERE html_url = ?",
-          this._context.payload.issue.html_url
-        );
+        const relatedIssue = await db.get<{
+          issue: string;
+          events: string;
+          comments: string;
+          reviews: string;
+        }>("SELECT * FROM issues WHERE html_url = ?", this._context.payload.issue.html_url);
         this._context.logger.debug(`Fetched related issues from the cache.`, { relatedIssue });
         if (!relatedIssue) {
           await super.init();
-          // TODO: insert new data after fetch
+          await db.run(
+            `INSERT INTO issues (html_url, issue, events, comments, reviews) VALUES (?, ?, ?, ?, ?)`,
+            this._context.payload.issue.html_url,
+            JSON.stringify(this.self),
+            JSON.stringify(this.events),
+            JSON.stringify(this.comments),
+            JSON.stringify(this.linkedReviews)
+          );
         } else {
-          const events = await db.all<GitHubIssueEvent[]>(
-            "SELECT * FROM events WHERE html_url_fk = ?",
-            this._context.payload.issue.html_url
-          );
-          const comments = await db.all<GitHubIssueComment[]>(
-            "SELECT * FROM comments WHERE html_url_fk = ?",
-            this._context.payload.issue.html_url
-          );
-          const reviews = await db.all<Review[]>(
-            "SELECT * FROM reviews WHERE html_url_fk = ?",
-            this._context.payload.issue.html_url
-          );
-          this.self = relatedIssue;
-          this.events = events;
-          this.comments = comments;
-          this.linkedReviews = reviews;
-          this._context.logger.debug("cached values", {
-            self: this.self,
-            events: this.events,
-            comments: this.comments,
-            linkedReviews: this.linkedReviews,
-          });
+          this.self = JSON.parse(relatedIssue.issue);
+          this.events = JSON.parse(relatedIssue.events);
+          this.comments = JSON.parse(relatedIssue.comments);
+          this.linkedReviews = JSON.parse(relatedIssue.reviews);
         }
       } catch (error) {
         if (error && typeof error === "object" && "errno" in error) {
           console.error(error);
         } else {
-          this._context.logger.error("Error fetching related issues from the database:", { error: error as Error });
+          this._context.logger.error(`Error fetching related issues from the database: ${error}`, {
+            error: error as Error,
+          });
         }
       }
     }
