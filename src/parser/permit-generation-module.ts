@@ -208,7 +208,7 @@ export class PermitGenerationModule extends BaseModule {
     const octokit = this.context.octokit as unknown as Context["octokit"];
     const assignee = data.self?.assignee;
 
-    const assigneePerms = await octokit.request("GET /repos/{owner}/{repo}/collaborators/{username}/permission", {
+    const assigneePerms = await octokit.rest.repos.getCollaboratorPermissionLevel({
       owner: repoOwner,
       repo: repoName,
       username: assignee.login,
