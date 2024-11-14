@@ -1,7 +1,7 @@
 import { IssueActivity } from "../../issue-activity";
 import { ContextPlugin } from "../../types/plugin-input";
 import { IssueParams } from "../../start";
-import { open } from "sqlite";
+import { Database, open } from "sqlite";
 import path from "node:path";
 import sqlite3 from "sqlite3";
 
@@ -23,6 +23,8 @@ export class IssueActivityCache extends IssueActivity {
         filename: path.resolve(__dirname, "./database.db"),
         driver: sqlite3.cached.Database,
       });
+      await this._initDatabase(db);
+
       try {
         const relatedIssue = await db.get<{
           issue: string;
@@ -57,5 +59,17 @@ export class IssueActivityCache extends IssueActivity {
         }
       }
     }
+  }
+
+  private async _initDatabase(db: Database): Promise<void> {
+    await db.exec(`
+         CREATE TABLE IF NOT EXISTS issues (
+           html_url TEXT PRIMARY KEY,
+           issue TEXT,
+           events TEXT,
+           comments TEXT,
+           reviews TEXT
+         );
+       `);
   }
 }
