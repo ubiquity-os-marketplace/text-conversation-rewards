@@ -13,6 +13,7 @@ import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, WordResult } from "../types/results";
 import { typeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
+import { GitHubIssue } from "../github-types";
 
 interface Multiplier {
   multiplier: number;
@@ -67,6 +68,7 @@ export class FormattingEvaluatorModule extends BaseModule {
         const { formatting, words } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
+        const priority = this._parsePriorityLabel(data.self?.labels);
         const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
         comment.score = {
           ...comment.score,
@@ -75,6 +77,7 @@ export class FormattingEvaluatorModule extends BaseModule {
             content: formatting,
             result: Object.values(formatting).reduce((acc, curr) => acc + curr.score * curr.elementCount, 0),
           },
+          priority: priority,
           words,
           multiplier: multiplierFactor.multiplier,
         };
@@ -169,5 +172,34 @@ export class FormattingEvaluatorModule extends BaseModule {
     }
     const words = this._countWordsFromRegex(htmlElement.textContent ?? "", this._multipliers[commentType]?.wordValue);
     return { formatting, words };
+  }
+
+  _parsePriorityLabel(labels: GitHubIssue["labels"] | undefined): number {
+    let taskPriorityEstimate = 0;
+    if (!labels) return 1;
+    for (const label of labels) {
+      let priorityLabel = "";
+      if (typeof label === "string") {
+        priorityLabel = label;
+      } else {
+        priorityLabel = label.name ?? "";
+      }
+
+      if (priorityLabel.startsWith("Priority:")) {
+        const matched = priorityLabel.match(/Priority: (\d+)/i);
+        if (!matched) {
+          return 0;
+        }
+
+        const urgency = matched[1];
+        taskPriorityEstimate = Number(urgency);
+      }
+
+      if (taskPriorityEstimate) {
+        break;
+      }
+    }
+
+    return taskPriorityEstimate;
   }
 }

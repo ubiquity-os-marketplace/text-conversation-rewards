@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
+import { Octokit } from "@octokit/core";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { EnvConfig } from "../../src/types/env-type";

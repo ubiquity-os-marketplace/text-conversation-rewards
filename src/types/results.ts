@@ -36,6 +36,7 @@ export interface GithubCommentScore {
     multiplier: number;
     relevance?: number;
     clarity?: number;
+    priority?: number;
     reward: number;
   };
 }

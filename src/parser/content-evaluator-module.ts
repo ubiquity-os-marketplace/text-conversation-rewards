@@ -70,6 +70,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const currentElement = result[key];
       const comments = currentElement.comments ?? [];
       const specificationBody = data.self?.body;
+
       if (specificationBody && comments.length) {
         promises.push(
           this._processComment(comments, specificationBody, allComments).then(
@@ -123,11 +124,14 @@ export class ContentEvaluatorModule extends BaseModule {
         currentRelevance = relevancesByAi[currentComment.id];
       }
 
-      const currentReward = this._getRewardForComment(currentComment, currentRelevance);
+      const currentReward = this._getRewardForComment(currentComment, currentRelevance).mul(
+        currentComment.score?.priority ?? 1
+      );
 
       currentComment.score = {
         ...(currentComment.score || { multiplier: 0 }),
         relevance: new Decimal(currentRelevance).toNumber(),
+        priority: currentComment.score?.priority ?? 1,
         reward: currentReward.toNumber(),
       };
     }
