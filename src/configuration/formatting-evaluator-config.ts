@@ -126,19 +126,15 @@ export const formattingEvaluatorConfigurationType = Type.Object(
       )
     )
       .Decode((value) => {
-        const result = [];
         const resultMap = new Map();
         for (const item of value) {
           for (const role of item.role) {
             if (!resultMap.has(role)) {
-              resultMap.set(role, item);
+              resultMap.set(role, { ...item, role: [role] });
             }
           }
         }
-        for (const [key, value] of resultMap) {
-          result.push({ ...value, role: [key] });
-        }
-        return result;
+        return Array.from(resultMap.values());
       })
       .Encode((value) => {
         return value;
