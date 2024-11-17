@@ -1,17 +1,10 @@
-import { Static, TLiteral, TUnion, Type } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 import { CommentAssociation, CommentKind, CommentType } from "./comment-types";
 
-type IntoStringLiteralUnion<T> = { [K in keyof T]: T[K] extends string ? TLiteral<T[K]> : never };
-
-function stringLiteralUnion<T extends string[]>(values: [...T]): TUnion<IntoStringLiteralUnion<T>> {
-  const literals = values.map((value) => Type.Literal(value));
-  return Type.Union(literals) as TUnion<IntoStringLiteralUnion<T>>;
-}
-
-export const commentType = stringLiteralUnion(
+export const commentType = Type.Union(
   Object.keys(CommentKind).flatMap((kind) =>
-    Object.keys(CommentAssociation).map((association) => `${kind}_${association}`)
-  ) as CommentType[]
+    Object.keys(CommentAssociation).map((association) => Type.Literal(`${kind}_${association}` as CommentType))
+  )
 );
 
 export const wordRegex = /\b\w+\b/;
@@ -131,6 +124,7 @@ export const formattingEvaluatorConfigurationType = Type.Object(
         }
         return value;
       })
+      // @ts-expect-error role does not get inferred properly by TypeBox (never[] instead of CommentType[])
       .Encode((value) => {
         return value;
       }),
