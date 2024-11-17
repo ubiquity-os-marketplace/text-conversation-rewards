@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
+import { Octokit } from "@octokit/core";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, passthrough } from "msw";
