@@ -10,9 +10,9 @@ function Form() {
   async function handleSubmit(event: InputEvent) {
     event.preventDefault();
     setIsLoading(true);
-    const ownerRepo = `${event.target.owner.value}/${event.target.repo.value}`;
-    const issueId = event.target.issue_id.value;
-    const useOpenAi = event.target.openai.checked;
+    const ownerRepo = `${event.target?.owner.value}/${event.target?.repo.value}`;
+    const issueId = event.target?.issue_id.value;
+    const useOpenAi = event.target?.openai.checked;
     const payload = {
       ownerRepo,
       issueId,
