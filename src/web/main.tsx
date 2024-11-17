@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { useState, InputEvent } from "hono/jsx";
 import { render } from "hono/jsx/dom";
 
 function Form() {
   const [response, setResponse] = useState<null | string>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (event: InputEvent) => {
+  async function handleSubmit(event: InputEvent) {
     event.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     const ownerRepo = `${event.target.owner.value}/${event.target.repo.value}`;
     const issueId = event.target.issue_id.value;
     const useOpenAi = event.target.openai.checked;
@@ -34,9 +35,9 @@ function Form() {
       console.error("Error:", error);
       setResponse("Failed to run the plugin, check the console for more details.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  };
+  }
 
   return (
     <div class="container" style={{ marginBottom: "16px" }}>
@@ -55,7 +56,7 @@ function Form() {
             <input name="owner" autocomplete="on" type="text" placeholder="Owner" required />
             <input name="repo" autocomplete="on" type="text" placeholder="Repo" required />
             <input name="issue_id" autocomplete="on" type="number" placeholder="Issue ID" required />
-            <button type="submit" aria-busy={loading ? "true" : undefined}>
+            <button type="submit" aria-busy={isLoading ? "true" : undefined}>
               Generate
             </button>
           </fieldset>
@@ -88,4 +89,6 @@ function App() {
 }
 
 const root = document.getElementById("root");
-render(<App />, root);
+if (root) {
+  render(<App />, root);
+}
