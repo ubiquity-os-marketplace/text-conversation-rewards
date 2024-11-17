@@ -68,7 +68,7 @@ app.use(
 // Fakes OpenAi routes
 app.post("/openai/*", async (c) => {
   const text = await c.req.json();
-  const regex = /JSON response should equal exactly (\d+)/g;
+  const regex = /The number of entries in the JSON response must equal (\d+)/g;
 
   const comments: { id: string; comment: string; author: string }[] = [];
 
