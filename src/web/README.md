@@ -15,32 +15,36 @@ You can run the following scripts using `bun run <script>`:
 ## How to Get Started
 
 1. **Install dependencies**: Make sure you have [Bun](https://bun.sh/) installed, then run:
-    ```sh
-    bun install
-    ```
+
+   ```sh
+   bun install
+   ```
 
 2. **Start the server**:
-    ```sh
-    bun run server
-    ```
+
+   ```sh
+   bun run server
+   ```
 
 3. **Develop the UI**:
-    ```sh
-    bun run ui:dev
-    ```
+
+   ```sh
+   bun run ui:dev
+   ```
 
 4. **Build the UI for production**:
-    ```sh
-    bun run ui:build
-    ```
+
+   ```sh
+   bun run ui:build
+   ```
 
 5. **Preview the built UI**:
-    ```sh
-    bun run ui:preview
-    ```
+   ```sh
+   bun run ui:preview
+   ```
 
 > [!WARNING]
-> To see the changes you made on the UI when using the `server`, you need first to run `ui:build` as files are 
+> To see the changes you made on the UI when using the `server`, you need first to run `ui:build` as files are
 > statically served.
 
 ### For Development
