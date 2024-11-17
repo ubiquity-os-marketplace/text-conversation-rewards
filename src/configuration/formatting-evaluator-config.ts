@@ -76,8 +76,8 @@ export const formattingEvaluatorConfigurationType = Type.Object(
           },
           {
             role: ["ISSUE_ASSIGNEE"],
-            multiplier: 0,
-            rewards: { wordValue: 0 },
+            multiplier: 1,
+            rewards: { wordValue: 0.1 },
           },
           {
             role: ["ISSUE_COLLABORATOR"],
@@ -96,7 +96,7 @@ export const formattingEvaluatorConfigurationType = Type.Object(
           },
           {
             role: ["PULL_AUTHOR"],
-            multiplier: 2,
+            multiplier: 0,
             rewards: { wordValue: 0.2 },
           },
           {
