@@ -1,10 +1,17 @@
-import { Static, Type } from "@sinclair/typebox";
+import { Static, TLiteral, TUnion, Type } from "@sinclair/typebox";
 import { CommentAssociation, CommentKind, CommentType } from "./comment-types";
 
-export const commentType = Type.Union(
+type IntoStringLiteralUnion<T> = { [K in keyof T]: T[K] extends string ? TLiteral<T[K]> : never };
+
+function stringLiteralUnion<T extends string[]>(values: [...T]): TUnion<IntoStringLiteralUnion<T>> {
+  const literals = values.map((value) => Type.Literal(value));
+  return Type.Union(literals) as TUnion<IntoStringLiteralUnion<T>>;
+}
+
+export const commentType = stringLiteralUnion(
   Object.keys(CommentKind).flatMap((kind) =>
-    Object.keys(CommentAssociation).map((association) => Type.Literal(`${kind}_${association}` as CommentType))
-  )
+    Object.keys(CommentAssociation).map((association) => `${kind}_${association}`)
+  ) as CommentType[]
 );
 
 export const wordRegex = /\b\w+\b/;
@@ -63,68 +70,72 @@ export const formattingEvaluatorConfigurationType = Type.Object(
           rewards: rewardsType,
         }),
         {
-          default: [],
-        }
-      )
-    )
-      .Decode((value) => {
-        if (!value?.length) {
-          return [
+          default: [
             {
-              role: ["ISSUE_SPECIFICATION"] as CommentType[],
+              role: ["ISSUE_SPECIFICATION"],
               multiplier: 1,
               rewards: { wordValue: 0.1, html: htmlType.default },
             },
             {
-              role: ["ISSUE_AUTHOR"] as CommentType[],
+              role: ["ISSUE_AUTHOR"],
               multiplier: 1,
               rewards: { wordValue: 0.2, html: htmlType.default },
             },
             {
-              role: ["ISSUE_ASSIGNEE"] as CommentType[],
+              role: ["ISSUE_ASSIGNEE"],
               multiplier: 1,
               rewards: { wordValue: 0.1, html: htmlType.default },
             },
             {
-              role: ["ISSUE_COLLABORATOR"] as CommentType[],
+              role: ["ISSUE_COLLABORATOR"],
               multiplier: 1,
               rewards: { wordValue: 0.1, html: htmlType.default },
             },
             {
-              role: ["ISSUE_CONTRIBUTOR"] as CommentType[],
+              role: ["ISSUE_CONTRIBUTOR"],
               multiplier: 0.25,
               rewards: { wordValue: 0.1, html: htmlType.default },
             },
             {
-              role: ["PULL_SPECIFICATION"] as CommentType[],
+              role: ["PULL_SPECIFICATION"],
               multiplier: 0,
               rewards: { wordValue: 0, html: htmlType.default },
             },
             {
-              role: ["PULL_AUTHOR"] as CommentType[],
+              role: ["PULL_AUTHOR"],
               multiplier: 0,
               rewards: { wordValue: 0.2, html: htmlType.default },
             },
             {
-              role: ["PULL_ASSIGNEE"] as CommentType[],
+              role: ["PULL_ASSIGNEE"],
               multiplier: 1,
               rewards: { wordValue: 0.1, html: htmlType.default },
             },
             {
-              role: ["PULL_COLLABORATOR"] as CommentType[],
+              role: ["PULL_COLLABORATOR"],
               multiplier: 1,
               rewards: { wordValue: 0.1, html: htmlType.default },
             },
             {
-              role: ["PULL_CONTRIBUTOR"] as CommentType[],
+              role: ["PULL_CONTRIBUTOR"],
               multiplier: 0.25,
               rewards: { wordValue: 0.1, html: htmlType.default },
             },
-          ];
+          ],
         }
-        return value;
+      )
+    )
+      .Decode((value) => {
+        const resultMap = new Map();
+        for (const item of value) {
+          for (const role of item.role) {
+            if (!resultMap.has(role)) {
+              resultMap.set(role, { ...item, role: [role] });
+            }
+          }
+        }
+        return Array.from(resultMap.values());
       })
-      // @ts-expect-error role does not get inferred properly by TypeBox (never[] instead of CommentType[])
       .Encode((value) => {
         return value;
       }),
