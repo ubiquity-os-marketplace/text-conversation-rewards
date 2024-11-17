@@ -1,12 +1,5 @@
 # `@ubiquity-os/text-conversation-rewards`
 
-As of 28 February: test driven development to aggregate all necessary information based on a URL to an issue.
-
-- pass in closed as complete issue URL and receive all the timeline events and activities of all humans who helped close the issue as complete.
-- most importantly: this can inherit bot authentication and link pull requests to issues in private repositories.
-
-Be sure to review all `*.test.*` files for implementation details.
-
 ## Data structure
 
 ```json
@@ -354,8 +347,8 @@ Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards
 
 Here `GITHUB_OWNER_ID` can be:
 
-1. Github organization id (if ubiquity-os is used within an organization)
-2. Github user id (if ubiquity-os is simply installed in a user's repository)
+1. GitHub organization id (if ubiquity-os is used within an organization)
+2. GitHub user id (if ubiquity-os is simply installed in a user's repository)
 
 Format `PRIVATE_KEY:GITHUB_OWNER_ID` restricts in which particular organization (or user related repositories)
 this private key can be used. It can be set either in the organization wide config either in the repository wide one.

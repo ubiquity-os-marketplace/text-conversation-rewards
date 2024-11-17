@@ -1,4 +1,5 @@
 import { context } from "@actions/github";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -14,19 +15,15 @@ import {
   TokenType,
 } from "@ubiquity-os/permit-generation";
 import Decimal from "decimal.js";
-import configuration from "../configuration/config-reader";
 import {
   PermitGenerationConfiguration,
   permitGenerationConfigurationType,
 } from "../configuration/permit-generation-configuration";
 import { IssueActivity } from "../issue-activity";
-import { getOctokitInstance } from "../octokit";
 import { getRepo, parseGitHubUrl } from "../start";
-import envConfigSchema, { EnvConfigType, envValidator } from "../types/env-type";
-import program from "./command-line";
-import { Module, Result } from "./processor";
-import { RestEndpointMethodTypes } from "@octokit/rest";
-import logger from "../helpers/logger";
+import { EnvConfig } from "../types/env-type";
+import { BaseModule } from "../types/module";
+import { Result } from "../types/results";
 
 interface Payload {
   evmNetworkId: number;
@@ -36,42 +33,37 @@ interface Payload {
   issue: { node_id: string };
 }
 
-export class PermitGenerationModule implements Module {
-  readonly _configuration: PermitGenerationConfiguration | null = configuration.incentives.permitGeneration;
-  readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+export class PermitGenerationModule extends BaseModule {
+  readonly _configuration: PermitGenerationConfiguration | null = this.context.config.incentives.permitGeneration;
+  readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
-      issueUrl: program.eventPayload.issue.html_url,
-      evmPrivateEncrypted: configuration.evmPrivateEncrypted,
-      evmNetworkId: configuration.evmNetworkId,
-      erc20RewardToken: configuration.erc20RewardToken,
+      issueUrl: this.context.payload.issue.html_url,
+      evmPrivateEncrypted: this.context.config.evmPrivateEncrypted,
+      evmNetworkId: this.context.config.evmNetworkId,
+      erc20RewardToken: this.context.config.erc20RewardToken,
     };
     const issueId = Number(payload.issueUrl.match(/\d+$/)?.[0]);
     payload.issue = {
-      node_id: program.eventPayload.issue.node_id,
+      node_id: this.context.payload.issue.node_id,
     };
-    const env = Value.Default(envConfigSchema, process.env) as EnvConfigType;
-    if (!envValidator.test(env)) {
-      console.warn("[PermitGenerationModule] Invalid env detected, skipping.");
-      for (const error of envValidator.errors(env)) {
-        console.error(error);
-      }
-      return Promise.resolve(result);
-    }
+    const env = this.context.env;
     const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(
       payload.evmPrivateEncrypted,
-      program.eventPayload.repository.owner.id,
-      program.eventPayload.repository.id,
+      this.context.payload.repository.owner.id,
+      this.context.payload.repository.id,
       env
     );
     if (!isPrivateKeyAllowed) {
-      console.warn("[PermitGenerationModule] Private key is not allowed to be used in this organization/repository.");
+      this.context.logger.error(
+        "[PermitGenerationModule] Private key is not allowed to be used in this organization/repository."
+      );
       return Promise.resolve(result);
     }
     const eventName = context.eventName as SupportedEvents;
-    const octokit = getOctokitInstance();
+    const octokit = this.context.octokit as unknown as Context["octokit"];
     const permitLogger = {
       debug(message: unknown, optionalParams: unknown) {
         console.log(message, optionalParams);
@@ -91,12 +83,12 @@ export class PermitGenerationModule implements Module {
     };
     const adapters = {} as ReturnType<typeof createAdapters>;
 
-    logger.info("Will attempt to apply fees...");
+    this.context.logger.info("Will attempt to apply fees...");
     // apply fees
-    result = await this._applyFees(result, payload.erc20RewardToken, env);
+    result = await this._applyFees(result, payload.erc20RewardToken);
 
     for (const [key, value] of Object.entries(result)) {
-      logger.debug(`Updating result for user ${key}`);
+      this.context.logger.debug(`Updating result for user ${key}`);
       try {
         const config: Context["config"] = {
           evmNetworkId: payload.evmNetworkId,
@@ -134,7 +126,7 @@ export class PermitGenerationModule implements Module {
         result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
         await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
       } catch (e) {
-        logger.error(`[PermitGenerationModule] Failed to generate permits for user ${key}`, { e });
+        this.context.logger.error(`[PermitGenerationModule] Failed to generate permits for user ${key}`, { e });
       }
     }
 
@@ -162,47 +154,49 @@ export class PermitGenerationModule implements Module {
    * This method is meant to be called before the final permit generation.
    * @param result Result object
    * @param erc20RewardToken ERC20 address of the reward token
-   * @param env The program environment
    * @returns Result object
    */
-  async _applyFees(result: Result, erc20RewardToken: string, env: EnvConfigType): Promise<Result> {
+  async _applyFees(result: Result, erc20RewardToken: string): Promise<Result> {
+    const env = this.context.env;
     // validate fee related env variables
     if (!env.PERMIT_FEE_RATE || Number(env.PERMIT_FEE_RATE) === 0) {
-      logger.info("PERMIT_FEE_RATE is not set, skipping permit fee generation");
+      this.context.logger.info("PERMIT_FEE_RATE is not set, skipping permit fee generation");
       return result;
     }
     if (!env.PERMIT_TREASURY_GITHUB_USERNAME) {
-      logger.info("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
+      this.context.logger.info("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
       return result;
     }
     if (env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST) {
       const erc20TokensNoFee = env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST.split(",");
       if (erc20TokensNoFee.includes(erc20RewardToken)) {
-        logger.info(`Token address ${erc20RewardToken} is whitelisted to be fee free, skipping permit fee generation`);
+        this.context.logger.info(
+          `Token address ${erc20RewardToken} is whitelisted to be fee free, skipping permit fee generation`
+        );
         return result;
       }
     }
 
     // Get treasury GitHub user id
-    const octokit = getOctokitInstance();
-    const { data: treasuryGithubData } = await octokit.users.getByUsername({
+    const octokit = this.context.octokit;
+    const { data: treasuryGithubData } = await octokit.rest.users.getByUsername({
       username: env.PERMIT_TREASURY_GITHUB_USERNAME,
     });
     if (!treasuryGithubData) {
-      logger.info(
+      this.context.logger.info(
         `GitHub user was not found for username ${env.PERMIT_TREASURY_GITHUB_USERNAME}, skipping permit fee generation`
       );
       return result;
     }
 
-    return this._deductFeeFromReward(result, treasuryGithubData, env);
+    return this._deductFeeFromReward(result, treasuryGithubData);
   }
 
   _deductFeeFromReward(
     result: Result,
-    treasuryGithubData: RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"],
-    env: EnvConfigType
+    treasuryGithubData: RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"]
   ) {
+    const env = this.context.env;
     // Subtract fees from the final result:
     // - user.total
     // - user.task.reward
@@ -248,7 +242,7 @@ export class PermitGenerationModule implements Module {
       .single();
 
     if (!locationData) {
-      const issueItem = await getRepo(parseGitHubUrl(issue.issueUrl));
+      const issueItem = await getRepo(this.context, parseGitHubUrl(issue.issueUrl));
       const { data: newLocationData, error } = await this._supabase
         .from("locations")
         .insert({
@@ -268,7 +262,9 @@ export class PermitGenerationModule implements Module {
       locationId = locationData.id;
     }
     if (!locationId) {
-      throw new Error(`Failed to retrieve the related location from issue ${JSON.stringify(issue)}`);
+      throw new Error(
+        this.context.logger.error("Failed to retrieve the related location from issue", { issue }).logMessage.raw
+      );
     }
     return locationId;
   }
@@ -289,13 +285,13 @@ export class PermitGenerationModule implements Module {
             location_id: locationId,
           });
           if (error) {
-            console.error("Failed to insert a new permit", error);
+            this.context.logger.error("Failed to insert a new permit", error);
           }
         } else {
-          console.error(`Failed to save the permit: could not find user ${userId}`);
+          this.context.logger.error(`Failed to save the permit: could not find user ${userId}`);
         }
       } catch (e) {
-        console.error("Failed to save permits to the database", e);
+        this.context.logger.error("Failed to save permits to the database", { e });
       }
     }
   }
@@ -331,7 +327,7 @@ export class PermitGenerationModule implements Module {
     privateKeyEncrypted: string,
     githubContextOwnerId: number,
     githubContextRepositoryId: number,
-    env: EnvConfigType
+    env: EnvConfig
   ): Promise<boolean> {
     // decrypt private key
     const privateKeyDecrypted = await decrypt(privateKeyEncrypted, env.X25519_PRIVATE_KEY);
@@ -339,7 +335,7 @@ export class PermitGenerationModule implements Module {
     // parse decrypted private key
     const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
     if (!privateKeyParsed.privateKey) {
-      logger.error("Private key could not be decrypted");
+      this.context.logger.error("Private key could not be decrypted");
       return false;
     }
 
@@ -347,7 +343,9 @@ export class PermitGenerationModule implements Module {
     // Format: PRIVATE_KEY:GITHUB_OWNER_ID
     if (privateKeyParsed.allowedOrganizationId && !privateKeyParsed.allowedRepositoryId) {
       if (privateKeyParsed.allowedOrganizationId !== githubContextOwnerId) {
-        logger.info(`Current organization/user id ${githubContextOwnerId} is not allowed to use this private key`);
+        this.context.logger.info(
+          `Current organization/user id ${githubContextOwnerId} is not allowed to use this private key`
+        );
         return false;
       }
       return true;
@@ -360,7 +358,7 @@ export class PermitGenerationModule implements Module {
         privateKeyParsed.allowedOrganizationId !== githubContextOwnerId ||
         privateKeyParsed.allowedRepositoryId !== githubContextRepositoryId
       ) {
-        logger.info(
+        this.context.logger.info(
           `Current organization/user id ${githubContextOwnerId} and repository id ${githubContextRepositoryId} are not allowed to use this private key`
         );
         return false;
@@ -369,13 +367,13 @@ export class PermitGenerationModule implements Module {
     }
 
     // otherwise invalid private key format
-    logger.error("Invalid private key format");
+    this.context.logger.error("Invalid private key format");
     return false;
   }
 
   get enabled(): boolean {
     if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
-      logger.info("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
+      this.context.logger.error("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
       return false;
     }
     return true;

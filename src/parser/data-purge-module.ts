@@ -1,20 +1,18 @@
-import { Value } from "@sinclair/typebox/value";
-import configuration from "../configuration/config-reader";
-import { DataPurgeConfiguration, dataPurgeConfigurationType } from "../configuration/data-purge-config";
-import logger from "../helpers/logger";
-import { IssueActivity } from "../issue-activity";
-import { Module, Result } from "./processor";
+import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
+import { IssueActivity } from "../issue-activity";
+import { BaseModule } from "../types/module";
+import { Result } from "../types/results";
 
 /**
  * Removes the data in the comments that we do not want to be processed.
  */
-export class DataPurgeModule implements Module {
-  readonly _configuration: DataPurgeConfiguration | null = configuration.incentives.dataPurge;
+export class DataPurgeModule extends BaseModule {
+  readonly _configuration: DataPurgeConfiguration | null = this.context.config.incentives.dataPurge;
 
   get enabled(): boolean {
-    if (!Value.Check(dataPurgeConfigurationType, this._configuration)) {
-      console.warn("Invalid / missing configuration detected for DataPurgeModule, disabling.");
+    if (!this._configuration) {
+      this.context.logger.error("Invalid / missing configuration detected for DataPurgeModule, disabling.");
       return false;
     }
     return true;
@@ -24,7 +22,7 @@ export class DataPurgeModule implements Module {
     for (const comment of data.allComments) {
       // Skips comments if they are minimized
       if ("isMinimized" in comment && comment.isMinimized) {
-        logger.debug("Skipping hidden comment", { comment });
+        this.context.logger.debug("Skipping hidden comment", { comment });
         continue;
       }
       if (comment.body && comment.user?.login && result[comment.user.login]) {

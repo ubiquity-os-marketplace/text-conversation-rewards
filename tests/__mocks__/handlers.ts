@@ -31,6 +31,9 @@ import pullsReviewsGet from "./routes/pulls-reviews-get.json";
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
+  http.post("https://api.github.com/graphql", () => {
+    return HttpResponse.json();
+  }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5", () => {
     return HttpResponse.json(issue5Get);
   }),
@@ -55,7 +58,6 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/comments", () => {
     return HttpResponse.json(pull12CommentsGet);
   }),
-
   http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13", () => {
     return HttpResponse.json(issue13Get);
   }),
