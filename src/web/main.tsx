@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable sonarjs/no-misused-promises */
 import { useState, InputEvent } from "hono/jsx";
 import { render } from "hono/jsx/dom";
 
