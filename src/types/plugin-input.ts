@@ -1,6 +1,5 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { Context } from "@ubiquity-os/plugin-sdk";
-import { LOG_LEVEL } from "@ubiquity-os/ubiquity-os-logger";
 import { contentEvaluatorConfigurationType } from "../configuration/content-evaluator-config";
 import { dataCollectionConfigurationType } from "../configuration/data-collection-config";
 import { dataPurgeConfigurationType } from "../configuration/data-purge-config";
@@ -12,7 +11,6 @@ import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
   {
-    logLevel: T.Enum(LOG_LEVEL, { default: LOG_LEVEL.INFO }),
     /**
      * Network ID to run in, default to 100
      */
