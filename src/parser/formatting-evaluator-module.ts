@@ -175,7 +175,8 @@ export class FormattingEvaluatorModule extends BaseModule {
   }
 
   _parsePriorityLabel(labels: GitHubIssue["labels"] | undefined): number {
-    let taskPriorityEstimate = 0;
+    // Has to default to 1 in case there is no priority label
+    let taskPriorityEstimate = 1;
     if (!labels) return 1;
     for (const label of labels) {
       let priorityLabel = "";
