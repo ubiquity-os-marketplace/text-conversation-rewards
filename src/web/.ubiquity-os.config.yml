@@ -1,4 +1,4 @@
-# This file serves as a base to elaborate a custom configuration
+# This file serves as a base to build a custom configuration
 
 evmNetworkId: 100
 incentives:
