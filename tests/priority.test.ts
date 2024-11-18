@@ -4,7 +4,6 @@ import { GitHubIssue } from "../src/github-types";
 import { describe, expect, it, jest } from "@jest/globals";
 
 describe("FormattingEvaluatorModule", () => {
-  // Mocking the context plugin
   const context = {
     config: {
       incentives: {
