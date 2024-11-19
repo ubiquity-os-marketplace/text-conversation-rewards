@@ -214,6 +214,7 @@ export class PermitGenerationModule extends BaseModule {
       username: assignee.login,
     });
     const isAdmin = assigneePerms.data.role_name === "admin" || assigneePerms.data.role_name === "billing_manager";
+    const pullReview = data.linkedReviews[0];
 
     if (data.self.closed_by.id === assignee.id && !isAdmin) {
       const pricingEventsByNonAssignee = data.events.find(
@@ -223,7 +224,11 @@ export class PermitGenerationModule extends BaseModule {
           (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
           event.actor.id !== assignee.id
       );
-      return !!pricingEventsByNonAssignee;
+
+      const reviewsByNonAssignee = pullReview?.reviews?.filter(
+        (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
+      );
+      return !!pricingEventsByNonAssignee || !!reviewsByNonAssignee;
     } else {
       return true;
     }
