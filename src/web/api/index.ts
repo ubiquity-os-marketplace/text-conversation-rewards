@@ -20,7 +20,6 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
     const processor = new Processor(context);
     await processor.run(activity);
     const result = processor.dump();
-    console.log("====> result", result);
     return JSON.parse(result);
   },
   manifest as Manifest,
