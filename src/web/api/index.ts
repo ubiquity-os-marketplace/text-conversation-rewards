@@ -13,9 +13,9 @@ import { IssueActivityCache } from "../db/issue-activity-cache";
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   async (context) => {
-    const { payload, env } = context;
+    const { payload, config } = context;
     const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivityCache(context, issue, "USE_CACHE" in env);
+    const activity = new IssueActivityCache(context, issue, "useCache" in config);
     await activity.init();
     const processor = new Processor(context);
     await processor.run(activity);
