@@ -13,9 +13,9 @@ import { IssueActivityCache } from "../db/issue-activity-cache";
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
   async (context) => {
-    const { payload } = context;
+    const { payload, env } = context;
     const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivityCache(context, issue, true);
+    const activity = new IssueActivityCache(context, issue, "USE_CACHE" in env);
     await activity.init();
     const processor = new Processor(context);
     await processor.run(activity);
@@ -37,7 +37,12 @@ const app = {
     if (request.method === "POST" && new URL(request.url).pathname === "/") {
       try {
         const originalBody = await request.json();
-        const modifiedBody = await getPayload(originalBody.ownerRepo, originalBody.issueId, originalBody.useOpenAi);
+        const modifiedBody = await getPayload(
+          originalBody.ownerRepo,
+          originalBody.issueId,
+          originalBody.useOpenAi,
+          originalBody.useCache
+        );
         const modifiedRequest = new Request(request.url, {
           method: request.method,
           headers: request.headers,

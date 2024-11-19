@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 
-export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: boolean) {
+export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: boolean, useCache: boolean) {
   const filePath = path.resolve(__dirname, "../.ubiquity-os.config.yml");
   const fileContent = await fs.readFile(filePath, "utf8");
   const cfgFile = YAML.parse(fileContent);
@@ -19,7 +19,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
     signature: "",
     eventName: "issues.closed",
     action: "closed",
-    env: process.env,
+    env: { ...process.env, ...(useCache && { USE_CACHE: useCache }) },
     settings: {
       ...cfgFile,
       evmPrivateEncrypted: cfgFile.evmPrivateEncrypted ?? process.env.EVM_PRIVATE_ENCRYPTED,
