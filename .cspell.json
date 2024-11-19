@@ -9,7 +9,8 @@
     "tests/**",
     "dist/**",
     "eslint.config.mjs",
-    "output.html"
+    "output.html",
+    "src/web/api/payload.ts"
   ],
   "useGitignore": true,
   "language": "en",
@@ -27,7 +28,9 @@
     "knip",
     "hellip",
     "mswjs",
-    "Rpcs"
+    "Rpcs",
+    "sonarjs",
+    "pico"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

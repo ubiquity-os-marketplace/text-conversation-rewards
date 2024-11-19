@@ -109,7 +109,11 @@ export class ContentEvaluatorModule extends BaseModule {
     );
 
     if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
-      throw this.context.logger.fatal("Relevance / Comment length mismatch!", { relevancesByAi, commentsToEvaluate });
+      throw this.context.logger.fatal("Relevance / Comment length mismatch!", {
+        relevancesByAi,
+        commentsToEvaluate,
+        prCommentsToEvaluate,
+      });
     }
 
     for (const currentComment of commentsWithScore) {
@@ -231,9 +235,10 @@ export class ContentEvaluatorModule extends BaseModule {
       return relevances;
     } catch (e) {
       throw new Error(
-        this.context.logger.error(
-          `Invalid response type received from openai while evaluating: ${jsonResponse} \n\nError: ${e}`
-        ).logMessage.raw
+        this.context.logger.error(`Invalid response type received from openai while evaluating: \n\nError: ${e}`, {
+          error: e as Error,
+          jsonResponse,
+        }).logMessage.raw
       );
     }
   }

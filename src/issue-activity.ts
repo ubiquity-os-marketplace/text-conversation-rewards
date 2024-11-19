@@ -22,7 +22,7 @@ import {
 import { ContextPlugin } from "./types/plugin-input";
 
 export class IssueActivity {
-  private readonly _context: ContextPlugin;
+  protected readonly _context: ContextPlugin;
   readonly _configuration: DataCollectionConfiguration;
 
   constructor(

@@ -6,31 +6,6 @@
     "default": {},
     "type": "object",
     "properties": {
-      "logLevel": {
-        "default": "info",
-        "anyOf": [
-          {
-            "const": "fatal",
-            "type": "string"
-          },
-          {
-            "const": "error",
-            "type": "string"
-          },
-          {
-            "const": "info",
-            "type": "string"
-          },
-          {
-            "const": "verbose",
-            "type": "string"
-          },
-          {
-            "const": "debug",
-            "type": "string"
-          }
-        ]
-      },
       "evmNetworkId": {
         "default": 100,
         "type": "number"

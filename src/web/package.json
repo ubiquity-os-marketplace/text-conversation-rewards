@@ -1,0 +1,9 @@
+{
+  "name": "@ubiquity-os/text-conversation-rewards-ui",
+  "scripts": {
+    "ui:dev": "bunx --bun vite",
+    "ui:build": "bunx --bun vite build",
+    "ui:build-watch": "bunx --bun vite build --watch",
+    "ui:preview": "bunx --bun vite preview"
+  }
+}
