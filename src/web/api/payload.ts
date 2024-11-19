@@ -23,6 +23,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
     settings: {
       ...cfgFile,
       evmPrivateEncrypted: cfgFile.evmPrivateEncrypted ?? process.env.EVM_PRIVATE_ENCRYPTED,
+      ...(useCache && { useCache }),
     },
     authToken: process.env.GITHUB_TOKEN,
     eventPayload: {
