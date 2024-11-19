@@ -4,21 +4,13 @@ import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import fs from "fs";
 import { http, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
-import { Result } from "../src/types/results";
 import { db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
-import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
-import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
-import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
-import githubCommentResults from "./__mocks__/results/github-comment-results.json";
-import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
-import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
@@ -156,7 +148,6 @@ const { IssueActivity } = await import("../src/issue-activity");
 const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { GithubCommentModule } = await import("../src/parser/github-comment-module");
 const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
@@ -199,113 +190,89 @@ describe("Modules tests", () => {
           })()
         );
       });
+  });
 
-    jest.spyOn(PermitGenerationModule.prototype, "_isAdmin").mockImplementation(() => {
-      return Promise.resolve(true);
+  describe("Admin permission tests", () => {
+    beforeEach(() => {
+      jest.spyOn(PermitGenerationModule.prototype, "_isAdmin").mockImplementation(() => {
+        return Promise.resolve(true);
+      });
+    });
+
+    it("Should generate permits for collaborative issue", async () => {
+      const processor = new Processor(ctx);
+      processor["_transformers"] = [
+        new UserExtractorModule(ctx),
+        new DataPurgeModule(ctx),
+        new FormattingEvaluatorModule(ctx),
+        new ContentEvaluatorModule(ctx),
+        new PermitGenerationModule(ctx),
+      ];
+      server.use(http.post("https://*", () => passthrough()));
+      await processor.run(activity);
+      const result = JSON.parse(processor.dump());
+      expect(result).toEqual(permitGenerationResults);
+    });
+
+    it("Should generate permits for non collaborative issue", async () => {
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => {
+        return Promise.resolve(false);
+      });
+
+      const processor = new Processor(ctx);
+      processor["_transformers"] = [
+        new UserExtractorModule(ctx),
+        new DataPurgeModule(ctx),
+        new FormattingEvaluatorModule(ctx),
+        new ContentEvaluatorModule(ctx),
+        new PermitGenerationModule(ctx),
+      ];
+      server.use(http.post("https://*", () => passthrough()));
+      await processor.run(activity);
+      const result = JSON.parse(processor.dump());
+      expect(result).toEqual(permitGenerationResults);
     });
   });
 
-  it("Should extract users from comments", async () => {
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [new UserExtractorModule(ctx)];
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    expect(result).toEqual(userCommentResults);
-  });
-
-  it("Should purge data", async () => {
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [new UserExtractorModule(ctx), new DataPurgeModule(ctx)];
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    expect(result).toEqual(dataPurgeResults);
-  });
-
-  it("Should evaluate formatting", async () => {
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [
-      new UserExtractorModule(ctx),
-      new DataPurgeModule(ctx),
-      new FormattingEvaluatorModule(ctx),
-    ];
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    expect(result).toEqual(formattingEvaluatorResults);
-  });
-
-  it("Should evaluate content", async () => {
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [
-      new UserExtractorModule(ctx),
-      new DataPurgeModule(ctx),
-      new FormattingEvaluatorModule(ctx),
-      new ContentEvaluatorModule(ctx),
-    ];
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    expect(result).toEqual(contentEvaluatorResults);
-  });
-
-  it("Should throw on a failed openai evaluation", async () => {
-    jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
-      return Promise.resolve({});
+  describe("Non admin permission tests", () => {
+    beforeEach(() => {
+      jest.spyOn(PermitGenerationModule.prototype, "_isAdmin").mockImplementation(() => {
+        return Promise.resolve(false);
+      });
     });
 
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [
-      new UserExtractorModule(ctx),
-      new DataPurgeModule(ctx),
-      new FormattingEvaluatorModule(ctx),
-      new ContentEvaluatorModule(ctx),
-    ];
-    await expect(processor.run(activity)).rejects.toMatchObject({
-      logMessage: {
-        diff: "```diff\n- Relevance / Comment length mismatch!\n```",
-        level: "fatal",
-        raw: "Relevance / Comment length mismatch!",
-        type: "fatal",
-      },
+    it("Should generate permits for collaborative issue", async () => {
+      const processor = new Processor(ctx);
+      processor["_transformers"] = [
+        new UserExtractorModule(ctx),
+        new DataPurgeModule(ctx),
+        new FormattingEvaluatorModule(ctx),
+        new ContentEvaluatorModule(ctx),
+        new PermitGenerationModule(ctx),
+      ];
+      server.use(http.post("https://*", () => passthrough()));
+      await processor.run(activity);
+      const result = JSON.parse(processor.dump());
+      expect(result).toEqual(permitGenerationResults);
     });
-  });
 
-  it("Should generate permits", async () => {
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [
-      new UserExtractorModule(ctx),
-      new DataPurgeModule(ctx),
-      new FormattingEvaluatorModule(ctx),
-      new ContentEvaluatorModule(ctx),
-      new PermitGenerationModule(ctx),
-    ];
-    // This catches calls by getFastestRpc
-    server.use(http.post("https://*", () => passthrough()));
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    expect(result).toEqual(permitGenerationResults);
-  });
+    it("Should'nt generate permits for non collaborative issue", async () => {
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => {
+        return Promise.resolve(false);
+      });
 
-  it("Should generate GitHub comment", async () => {
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [
-      new UserExtractorModule(ctx),
-      new DataPurgeModule(ctx),
-      new FormattingEvaluatorModule(ctx),
-      new ContentEvaluatorModule(ctx),
-      new PermitGenerationModule(ctx),
-      new GithubCommentModule(ctx),
-    ];
-    // This catches calls by getFastestRpc
-    server.use(http.post("https://*", () => passthrough()));
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    expect(result).toEqual(githubCommentResults);
-    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
-      fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")
-    );
-  });
-  it("Should generate GitHub comment without zero total", async () => {
-    const githubCommentModule = new GithubCommentModule(ctx);
-    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
-    expect(postBody).not.toContain("whilefoo");
+      const processor = new Processor(ctx);
+      processor["_transformers"] = [
+        new UserExtractorModule(ctx),
+        new DataPurgeModule(ctx),
+        new FormattingEvaluatorModule(ctx),
+        new ContentEvaluatorModule(ctx),
+        new PermitGenerationModule(ctx),
+      ];
+      server.use(http.post("https://*", () => passthrough()));
+      await processor.run(activity);
+      const result = JSON.parse(processor.dump());
+      expect(result).not.toEqual(permitGenerationResults);
+    });
   });
 });

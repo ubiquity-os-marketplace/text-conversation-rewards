@@ -205,18 +205,20 @@ export class PermitGenerationModule extends BaseModule {
   async _canGeneratePermit(data: Readonly<IssueActivity>, repoOwner: string, repoName: string) {
     if (!data.self?.closed_by || !data.self.assignee) return false;
 
-    const octokit = this.context.octokit as unknown as Context["octokit"];
-    const assignee = data.self?.assignee;
+    const isAdmin = await this._isAdmin(data.self.assignee.login, repoOwner, repoName);
+    if (isAdmin) return true;
 
-    const assigneePerms = await octokit.rest.repos.getCollaboratorPermissionLevel({
-      owner: repoOwner,
-      repo: repoName,
-      username: assignee.login,
-    });
-    const isAdmin = assigneePerms.data.role_name === "admin" || assigneePerms.data.role_name === "billing_manager";
+    const isCollaborative = await this._isCollaborative(data);
+    return isCollaborative;
+  }
+
+  async _isCollaborative(data: Readonly<IssueActivity>) {
+    if (!data.self?.closed_by || !data.self.assignee) return false;
+
     const pullReview = data.linkedReviews[0];
+    const assignee = data.self.assignee;
 
-    if (data.self.closed_by.id === assignee.id && !isAdmin) {
+    if (data.self.closed_by.id === assignee.id) {
       const pricingEventsByNonAssignee = data.events.find(
         (event) =>
           event.event === "labeled" &&
@@ -233,6 +235,19 @@ export class PermitGenerationModule extends BaseModule {
       return true;
     }
   }
+
+  async _isAdmin(username: string, repoOwner: string, repoName: string): Promise<boolean> {
+    const octokit = this.context.octokit as unknown as Context["octokit"];
+
+    const assigneePerms = await octokit.rest.repos.getCollaboratorPermissionLevel({
+      owner: repoOwner,
+      repo: repoName,
+      username: username,
+    });
+
+    return assigneePerms.data.role_name === "admin" || assigneePerms.data.role_name === "billing_manager";
+  }
+
   _deductFeeFromReward(
     result: Result,
     treasuryGithubData: RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"]
