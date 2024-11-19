@@ -1,5 +1,27 @@
 # `@ubiquity-os/text-conversation-rewards`
 
+## How to Get Started
+
+1. **Install dependencies**: Make sure you have [Bun](https://bun.sh/) installed, then run:
+
+   ```sh
+   bun install
+   ```
+
+2. **Build the UI for production**:
+
+   ```sh
+   cd src/web && bun run ui:build
+   ```
+
+3. **Copy and paste the `.env.example` and populate the environment variables**
+
+4. **Start the server**:
+
+   ```sh
+   bun run server
+   ```
+
 ## Data structure
 
 ```json
