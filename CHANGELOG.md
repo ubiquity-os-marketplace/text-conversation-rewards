@@ -1,5 +1,50 @@
 # Changelog
 
+## [1.1.0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.0.0...v1.1.0) (2024-11-19)
+
+
+### Features
+
+* add Bun package manager and refactor createPlugin ([f66b609](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/f66b6097fccd4d341f220d072094af48f6eda126))
+* add loading state to form submission ([1ebc1a5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1ebc1a538cd2254b762db7e590b810fe4ea6c65e))
+* add navigation section to main component ([e49e52f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/e49e52f591ff42f7ca58db5f8a059c269565490a))
+* add payload creator for issue close event ([dfd04f5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/dfd04f5ea5f0d3c4a8d62a61e2d8fe65a66959bd))
+* add startup instructions and update payload config handling ([c1c727f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c1c727faf8fdf7e32b9b4596038e2e4c719693bc))
+* enhance issue submission form and update URLs ([dee2589](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/dee258982532d0514f7e74ff7bfd7d29c72162c7))
+* multiply conv reward with priority for higher reward ([a1fc779](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a1fc779ec7276914cc32670b125a70042f69f9e0))
+* remove SQLite dependency and add hono package ([8bcf6c8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8bcf6c81cac40a6de228b67294fc20a29dfb6177))
+* **web:** add initial setup for Hono-based frontend ([925c7ac](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/925c7ac330da16cf39f77f73c10fd942d1f542db))
+
+
+### Bug Fixes
+
+* add a th to display priority and fix it being not being multiplied ([69ff0e4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/69ff0e4fe000f2b4b9d9663acad278912eaa33d2))
+* add non-breaking spaces around Ubiquity Dollar link ([2fb75b6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2fb75b6764be75ca665bca8fdc02b7cda7907832))
+* add priority parsing tests ([dbf0ab3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/dbf0ab3af5379d69a964772d5c356b7e2d86edf7))
+* add priority parsing tests ([7889d58](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7889d5815c128ae439918166e7566ce35e998654))
+* add useCache option to payload processing ([134a18f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/134a18f1ab2a584c5a6db491eaba522312bf81ee))
+* **configuration:** adjust role-based multiplier and rewards ([ebb4940](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ebb4940a44abc971fec0f58b232bfe4cc649cfb2))
+* enhance error logging and update regex for comments ([2ccdc8a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2ccdc8a670a9575e4b84173ffd9a906373f1c595))
+* environment for compute ([d99e3f3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d99e3f35b3021b465f7b86cd7a4faa3330bf55b9))
+* exclude and octokit ([8c0a729](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8c0a729cbbdfa678a9eee667638a81e79eca5812))
+* fees.test.ts ([e549b35](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/e549b356a868d6983357791c3028fd2d7a6b8111))
+* handle undefined scores with explicit comparison ([11e2d8a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/11e2d8ae6b97c3a38aa26cfef5e81f79d3c306fd))
+* import error regarding parsePriorityLabel ([d080448](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d080448cd65e734b6bbb0cb85a7dfa3d82456df7))
+* improve error logging and add route parsing in server ([49e87b4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/49e87b4031d9282ad36678800e3d85e604129a1d))
+* **parser:** simplify priority label parsing ([94ec7de](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/94ec7de2caf725bc34af0b2095421bf6b98bb347))
+* **parser:** simplify priority label parsing ([17070e6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/17070e6e022552cd849c9ecd613622d4851c852b))
+* process.issue.test.ts by changing output ([9ff121f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/9ff121f92cacedad689327f190b402803ee41ebc))
+* properly mul priority level ([ca27c90](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ca27c909e3402f32e8bab5f1879c04f3c447cb0d))
+* refactor .call to ._callee_$ ([c4327dd](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c4327ddf516d0fbaaa8b9a3a2c1c6896b3045032))
+* replace ubiquity-os-kernel with plugin-sdk ([a94a75c](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a94a75cfa050933e39ba08f29840be8409c0c7b5))
+* rewards.test.ts and have precison upto 3 decimal places ([c09b16b](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c09b16b8310239d3a2eeb0c4a5b7c9c8d6caacca))
+* simplify commentType generation and default multipliers ([0b0243e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0b0243e152bac1f63cb2632a564a62e40b923129))
+* update Octokit import in test file ([6a2acc7](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/6a2acc7d5a5a8aadd6d7bc8fa2fff6c7b25b03c4))
+* update OpenAI endpoint and improve GitHub comment metadata ([7da861e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7da861eee91c50be5f39a2285440b72e2cf7056c))
+* update regex and parsing for OpenAI responses ([93b33df](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/93b33df573b4c5d417df324a08242ffdda3dbe5c))
+* update regex for OpenAI route validation ([0d5995b](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0d5995b9eecc93957d0f3c6299e2e93c4eaf8d03))
+* **web:** update Form types and enhance URL handling ([017b048](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/017b048e899e519f9289534bce51f7a419ac602d))
+
 ## 1.0.0 (2024-11-18)
 
 
