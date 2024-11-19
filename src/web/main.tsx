@@ -13,10 +13,12 @@ function Form() {
     const ownerRepo = `${event.target?.owner.value}/${event.target?.repo.value}`;
     const issueId = event.target?.issue_id.value;
     const useOpenAi = event.target?.openai.checked;
+    const useCache = event.target?.cache.checked;
     const payload = {
       ownerRepo,
       issueId,
       useOpenAi,
+      useCache,
     };
     try {
       const result = await fetch("http://localhost:3000", {
