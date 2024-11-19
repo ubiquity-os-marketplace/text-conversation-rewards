@@ -324,6 +324,5 @@
     "userExtractor": {
       "redeemTask": true
     }
-  },
-  "logLevel": "info"
+  }
 }

@@ -183,32 +183,19 @@ export class FormattingEvaluatorModule extends BaseModule {
     return { formatting, words };
   }
 
-  _parsePriorityLabel(labels: GitHubIssue["labels"] | undefined): number {
-    let taskPriorityEstimate = 0;
+  _parsePriorityLabel(labels: GitHubIssue["labels"] | undefined) {
     if (!labels) return 1;
+
     for (const label of labels) {
-      let priorityLabel = "";
-      if (typeof label === "string") {
-        priorityLabel = label;
-      } else {
-        priorityLabel = label.name ?? "";
-      }
+      const priorityLabel = typeof label === "string" ? label : (label.name ?? "");
+      const matched = priorityLabel.match(/^Priority:\s*(\d+)/i);
 
-      if (priorityLabel.startsWith("Priority:")) {
-        const matched = priorityLabel.match(/Priority: (\d+)/i);
-        if (!matched) {
-          return 0;
-        }
-
-        const urgency = matched[1];
-        taskPriorityEstimate = Number(urgency);
-      }
-
-      if (taskPriorityEstimate) {
-        break;
+      if (matched) {
+        const urgency = Number(matched[1]);
+        if (urgency) return urgency;
       }
     }
 
-    return taskPriorityEstimate;
+    return 1;
   }
 }

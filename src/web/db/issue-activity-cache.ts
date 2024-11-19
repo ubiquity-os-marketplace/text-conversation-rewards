@@ -53,7 +53,7 @@ export class IssueActivityCache extends IssueActivity {
         if (error && typeof error === "object" && "errno" in error) {
           console.error(error);
         } else {
-          this._context.logger.error(`Error fetching related issues from the database: ${error}`, {
+          throw this._context.logger.error(`Error fetching related issues from the database`, {
             error: error as Error,
           });
         }
