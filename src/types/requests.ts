@@ -35,6 +35,9 @@ export const LINKED_PULL_REQUESTS = /* GraphQL */ `
   }
 `;
 
+/**
+ * Note: you cannot pass more than 100 node ids at once, otherwise the query will fail.
+ */
 export const QUERY_COMMENT_DETAILS = /* GraphQL */ `
   query commentDetails($node_ids: [ID!]!) {
     nodes(ids: $node_ids) {
