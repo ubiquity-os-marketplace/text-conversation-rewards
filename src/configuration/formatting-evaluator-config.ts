@@ -15,6 +15,7 @@ export const commentType = stringLiteralUnion(
 );
 
 export const wordRegex = /\b\w+\b/;
+export const urlRegex = /https?:\/\/\S+/g;
 
 const htmlEntity = Type.Object({
   score: Type.Number(),

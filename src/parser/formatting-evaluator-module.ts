@@ -6,6 +6,7 @@ import { commentEnum, CommentType } from "../configuration/comment-types";
 import {
   FormattingEvaluatorConfiguration,
   formattingEvaluatorConfigurationType,
+  urlRegex,
   wordRegex,
 } from "../configuration/formatting-evaluator-config";
 import { IssueActivity } from "../issue-activity";
@@ -176,8 +177,7 @@ export class FormattingEvaluatorModule extends BaseModule {
         }
       } else {
         const bodyContent = element.textContent;
-        const urlPattern = /https?:\/\/\S+/g;
-        const matches = bodyContent?.match(urlPattern);
+        const matches = bodyContent?.match(urlRegex);
         matches?.map((url) => url.split("#")[0]).forEach((url) => urlSet.add(url));
         this._updateTagCount(formatting, tagName, score);
       }
@@ -185,7 +185,10 @@ export class FormattingEvaluatorModule extends BaseModule {
     urlSet.forEach(() => {
       this._updateTagCount(formatting, "a", this._multipliers[commentType].html["a"].score ?? 0);
     });
-    const words = this._countWordsFromRegex(htmlElement.textContent ?? "", this._multipliers[commentType]?.wordValue);
+    const words = this._countWordsFromRegex(
+      htmlElement.textContent?.replace(urlRegex, "") ?? "",
+      this._multipliers[commentType]?.wordValue
+    );
 
     return { formatting, words };
   }
