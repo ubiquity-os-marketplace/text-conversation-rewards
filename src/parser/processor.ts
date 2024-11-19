@@ -35,6 +35,7 @@ export class Processor {
   }
 
   async run(data: Readonly<IssueActivity>) {
+    let taskReward = 0;
     for (const transformer of this._transformers) {
       if (transformer.enabled) {
         this._result = await transformer.transform(data, this._result);
@@ -42,6 +43,17 @@ export class Processor {
       // Aggregate total result
       for (const item of Object.keys(this._result)) {
         this._result[item].total = this._sumRewards(this._result[item]);
+        if (this._result[item].task) {
+          taskReward = this._result[item].task.reward * this._result[item].task.multiplier;
+        }
+      }
+    }
+    if (this._configuration.limitRewards) {
+      this._context.logger.info(`Limiting rewards to the task reward: ${taskReward}.`);
+      for (const item of Object.keys(this._result)) {
+        if (!this._result[item].task) {
+          this._result[item].total = Math.min(this._result[item].total, taskReward);
+        }
       }
     }
     return this._result;
@@ -51,7 +63,7 @@ export class Processor {
     const { file } = this._configuration;
     const result = JSON.stringify(this._result, typeReplacer, 2);
     if (!file) {
-      this._context.logger.debug(result);
+      this._context.logger.verbose(result);
     } else {
       fs.writeFileSync(file, result);
     }
