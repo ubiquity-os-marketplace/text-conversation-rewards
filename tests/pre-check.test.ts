@@ -1,7 +1,5 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { http, HttpResponse } from "msw";
 import { ContextPlugin } from "../src/types/plugin-input";
@@ -9,6 +7,7 @@ import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -82,10 +81,7 @@ describe("Pre-check tests", () => {
     server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
     const { run } = await import("../src/run");
     const result = await run({
-      stateId: 1,
       eventName: "issues.closed",
-      authToken: process.env.GITHUB_TOKEN,
-      ref: "",
       payload: {
         issue: {
           html_url: issueUrl,
@@ -102,7 +98,7 @@ describe("Pre-check tests", () => {
       },
       config: cfg,
       logger: new Logs("debug"),
-      octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+      octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
     } as unknown as ContextPlugin);
     expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
     expect(patchMock).toHaveBeenCalled();

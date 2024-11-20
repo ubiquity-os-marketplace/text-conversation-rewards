@@ -1,6 +1,5 @@
 import { beforeAll, describe, expect, it, jest } from "@jest/globals";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { IssueActivity } from "../src/issue-activity";
 import { parseGitHubUrl } from "../src/start";
@@ -14,19 +13,14 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
-const customOctokit = Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN });
-
 describe("GetActivity class", () => {
   const issue = parseGitHubUrl(issueUrl);
   const activity = new IssueActivity(
     {
-      stateId: 1,
       eventName: "issues.closed",
-      authToken: process.env.GITHUB_TOKEN,
-      ref: "",
       config: cfg,
       logger: new Logs("debug"),
-      octokit: new customOctokit(),
+      octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
     } as unknown as ContextPlugin,
     issue
   );
