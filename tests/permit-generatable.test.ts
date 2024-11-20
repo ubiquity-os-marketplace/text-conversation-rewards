@@ -152,11 +152,20 @@ const { PermitGenerationModule } = await import("../src/parser/permit-generation
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+beforeAll(() => {
+  server.listen();
+});
 
-describe("Modules tests", () => {
+afterEach(() => {
+  server.resetHandlers();
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  server.close();
+});
+
+describe("Permit Generation Module Tests", () => {
   const issue = parseGitHubUrl(issueUrl);
   const activity = new IssueActivity(ctx, issue);
 
@@ -174,6 +183,7 @@ describe("Modules tests", () => {
   });
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
       .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
@@ -192,14 +202,14 @@ describe("Modules tests", () => {
       });
   });
 
-  describe("Admin permission tests", () => {
+  describe("Admin User Tests", () => {
     beforeEach(() => {
-      jest.spyOn(PermitGenerationModule.prototype, "_isAdmin").mockImplementation(() => {
-        return Promise.resolve(true);
-      });
+      jest.spyOn(PermitGenerationModule.prototype, "_isAdmin").mockImplementation(() => Promise.resolve(true));
     });
 
-    it("Should generate permits for collaborative issue", async () => {
+    it("should generate permits for collaborative issue", async () => {
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => Promise.resolve(true));
+
       const processor = new Processor(ctx);
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
@@ -208,16 +218,16 @@ describe("Modules tests", () => {
         new ContentEvaluatorModule(ctx),
         new PermitGenerationModule(ctx),
       ];
+
       server.use(http.post("https://*", () => passthrough()));
       await processor.run(activity);
+
       const result = JSON.parse(processor.dump());
       expect(result).toEqual(permitGenerationResults);
     });
 
-    it("Should generate permits for non collaborative issue", async () => {
-      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => {
-        return Promise.resolve(false);
-      });
+    it("should generate permits for non-collaborative issue", async () => {
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => Promise.resolve(false));
 
       const processor = new Processor(ctx);
       processor["_transformers"] = [
@@ -227,21 +237,23 @@ describe("Modules tests", () => {
         new ContentEvaluatorModule(ctx),
         new PermitGenerationModule(ctx),
       ];
+
       server.use(http.post("https://*", () => passthrough()));
       await processor.run(activity);
+
       const result = JSON.parse(processor.dump());
       expect(result).toEqual(permitGenerationResults);
     });
   });
 
-  describe("Non admin permission tests", () => {
+  describe("Non-Admin User Tests", () => {
     beforeEach(() => {
-      jest.spyOn(PermitGenerationModule.prototype, "_isAdmin").mockImplementation(() => {
-        return Promise.resolve(false);
-      });
+      jest.spyOn(PermitGenerationModule.prototype, "_isAdmin").mockImplementation(() => Promise.resolve(false));
     });
 
-    it("Should generate permits for collaborative issue", async () => {
+    it("should generate permits for collaborative issue", async () => {
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => Promise.resolve(true));
+
       const processor = new Processor(ctx);
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
@@ -250,16 +262,16 @@ describe("Modules tests", () => {
         new ContentEvaluatorModule(ctx),
         new PermitGenerationModule(ctx),
       ];
+
       server.use(http.post("https://*", () => passthrough()));
       await processor.run(activity);
+
       const result = JSON.parse(processor.dump());
       expect(result).toEqual(permitGenerationResults);
     });
 
-    it("Should'nt generate permits for non collaborative issue", async () => {
-      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => {
-        return Promise.resolve(false);
-      });
+    it("should not generate permits for non-collaborative issue", async () => {
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => Promise.resolve(false));
 
       const processor = new Processor(ctx);
       processor["_transformers"] = [
@@ -269,8 +281,10 @@ describe("Modules tests", () => {
         new ContentEvaluatorModule(ctx),
         new PermitGenerationModule(ctx),
       ];
+
       server.use(http.post("https://*", () => passthrough()));
       await processor.run(activity);
+
       const result = JSON.parse(processor.dump());
       expect(result).not.toEqual(permitGenerationResults);
     });

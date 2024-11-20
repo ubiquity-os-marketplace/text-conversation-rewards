@@ -105,13 +105,14 @@ export class GithubCommentModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const isIssueCollaborative = await this._isCollaborative(data);
     const body = await this.getBodyContent(result);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
     if (this._configuration?.post) {
       try {
-        if (Object.values(result).some((v) => v.permitUrl)) {
+        if (isIssueCollaborative && Object.values(result).some((v) => v.permitUrl)) {
           await this.postComment(body);
         } else {
           const errorLog = this.context.logger.error("Issue is non collaborative. Skipping permit generation.");
@@ -207,6 +208,30 @@ export class GithubCommentModule extends BaseModule {
       );
     }
     return content.join("");
+  }
+
+  async _isCollaborative(data: Readonly<IssueActivity>) {
+    if (!data.self?.closed_by || !data.self.assignee) return false;
+
+    const pullReview = data.linkedReviews[0];
+    const assignee = data.self.assignee;
+
+    if (data.self.closed_by.id === assignee.id) {
+      const pricingEventsByNonAssignee = data.events.find(
+        (event) =>
+          event.event === "labeled" &&
+          "label" in event &&
+          (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
+          event.actor.id !== assignee.id
+      );
+
+      const reviewsByNonAssignee = pullReview?.reviews?.filter(
+        (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
+      );
+      return !!pricingEventsByNonAssignee || !!reviewsByNonAssignee;
+    } else {
+      return true;
+    }
   }
 
   _createIncentiveRows(sortedTasks: SortedTasks | undefined) {
