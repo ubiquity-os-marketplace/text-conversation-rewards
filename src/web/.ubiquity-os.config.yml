@@ -1,0 +1,12 @@
+# This file serves as a base to build a custom configuration
+
+evmNetworkId: 100
+incentives:
+  contentEvaluator: {}
+  userExtractor: {}
+  dataPurge: {}
+  formattingEvaluator: {}
+  permitGeneration: {}
+  githubComment:
+    post: false
+    debug: false

@@ -1,5 +1,27 @@
 # `@ubiquity-os/text-conversation-rewards`
 
+## How to Get Started
+
+1. **Install dependencies**: Make sure you have [Bun](https://bun.sh/) installed, then run:
+
+   ```sh
+   bun install
+   ```
+
+2. **Build the UI for production**:
+
+   ```sh
+   cd src/web && bun run ui:build
+   ```
+
+3. **Copy and paste the `.env.example` and populate the environment variables**
+
+4. **Start the server**:
+
+   ```sh
+   bun run server
+   ```
+
 ## Data structure
 
 ```json
@@ -52,7 +74,6 @@ Here is a possible valid configuration to enable this plugin. See [these files](
 ```yaml
 plugin: ubiquity-os/conversation-rewards
 with:
-  logLevel: "info"
   evmNetworkId: 100
   evmPrivateEncrypted: "encrypted-key"
   erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
