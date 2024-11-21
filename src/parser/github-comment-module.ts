@@ -229,9 +229,8 @@ export class GithubCommentModule extends BaseModule {
         (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
       );
       return !!pricingEventsByNonAssignee || !!reviewsByNonAssignee;
-    } else {
-      return true;
     }
+    return true;
   }
 
   _createIncentiveRows(sortedTasks: SortedTasks | undefined) {
