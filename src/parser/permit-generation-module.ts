@@ -231,9 +231,8 @@ export class PermitGenerationModule extends BaseModule {
         (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
       );
       return !!pricingEventsByNonAssignee || !!reviewsByNonAssignee;
-    } else {
-      return true;
     }
+    return true;
   }
 
   async _isAdmin(username: string, repoOwner: string, repoName: string): Promise<boolean> {
