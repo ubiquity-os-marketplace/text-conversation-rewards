@@ -1,6 +1,6 @@
-import { GitHubIssue, GitHubIssueComment, GitHubPullRequest, GitHubPullRequestReviewComment } from "../github-types";
 import { IssueParams } from "../start";
 import { ContextPlugin } from "../types/plugin-input";
+import { IssueActivity } from "../issue-activity";
 
 export interface AssignmentPeriod {
   assignedAt: string;
@@ -54,10 +54,7 @@ export async function getAssignmentPeriods(octokit: ContextPlugin["octokit"], is
   return userAssignments;
 }
 
-export function isCommentDuringAssignment(
-  comment: GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest,
-  assignments: AssignmentPeriod[]
-) {
+export function isCommentDuringAssignment(comment: IssueActivity["allComments"][0], assignments: AssignmentPeriod[]) {
   const commentDate = new Date(comment.created_at);
   if (!assignments?.length) {
     return false;
