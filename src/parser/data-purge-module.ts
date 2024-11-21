@@ -3,6 +3,8 @@ import { GitHubPullRequestReviewComment } from "../github-types";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
+import { getAssignmentPeriods, isCommentDuringAssignment } from "../helpers/user-assigned-timespans";
+import { parseGitHubUrl } from "../start";
 
 /**
  * Removes the data in the comments that we do not want to be processed.
@@ -19,11 +21,23 @@ export class DataPurgeModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
+    const assignmentPeriods = await getAssignmentPeriods(
+      this.context.octokit,
+      parseGitHubUrl(this.context.payload.issue.html_url)
+    );
     for (const comment of data.allComments) {
       // Skips comments if they are minimized
       if ("isMinimized" in comment && comment.isMinimized) {
         this.context.logger.debug("Skipping hidden comment", { comment });
         continue;
+      }
+      if (this._configuration?.skipCommentsWhileAssigned) {
+        if (comment.user?.login && isCommentDuringAssignment(comment, assignmentPeriods[comment.user?.login])) {
+          this.context.logger.debug("Skipping comment during assignment", {
+            comment,
+          });
+          continue;
+        }
       }
       if (comment.body && comment.user?.login && result[comment.user.login]) {
         const newContent = comment.body
