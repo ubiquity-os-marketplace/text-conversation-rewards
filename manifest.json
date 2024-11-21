@@ -263,7 +263,13 @@
             "anyOf": [
               {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "skipCommentsWhileAssigned": {
+                    "default": true,
+                    "description": "Skip comments posted by a user while it is assigned to the issue",
+                    "type": "boolean"
+                  }
+                }
               },
               {
                 "type": "null"
