@@ -14,6 +14,7 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result } from "../types/results";
 import { postComment } from "@ubiquity-os/plugin-sdk";
+import { Context } from "@ubiquity-os/permit-generation";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -106,16 +107,25 @@ export class GithubCommentModule extends BaseModule {
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const isIssueCollaborative = await this._isCollaborative(data);
+    const assignee = data.self?.assignee;
+    const isAdmin = assignee
+      ? await this._isAdmin(
+          assignee.login,
+          this.context.payload.repository.owner.login,
+          this.context.payload.repository.name
+        )
+      : false;
+
     const body = await this.getBodyContent(result);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
     if (this._configuration?.post) {
       try {
-        if (isIssueCollaborative && Object.values(result).some((v) => v.permitUrl)) {
+        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isAdmin) {
           await this.postComment(body);
         } else {
-          const errorLog = this.context.logger.error("Issue is non collaborative. Skipping permit generation.");
+          const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
           await postComment(this.context, errorLog);
         }
       } catch (e) {
@@ -231,6 +241,16 @@ export class GithubCommentModule extends BaseModule {
       return !!pricingEventsByNonAssignee || !!reviewsByNonAssignee;
     }
     return true;
+  }
+
+  async _isAdmin(username: string, repoOwner: string, repoName: string): Promise<boolean> {
+    const octokit = this.context.octokit as unknown as Context["octokit"];
+    const assigneePerms = await octokit.rest.repos.getCollaboratorPermissionLevel({
+      owner: repoOwner,
+      repo: repoName,
+      username: username,
+    });
+    return assigneePerms.data.role_name === "admin" || assigneePerms.data.role_name === "billing_manager";
   }
 
   _createIncentiveRows(sortedTasks: SortedTasks | undefined) {
