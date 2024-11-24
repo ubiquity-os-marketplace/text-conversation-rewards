@@ -10,7 +10,6 @@
   "type": "module",
   "scripts": {
     "test": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --setupFiles dotenv/config --coverage",
-    "start": "tsx src/index.ts",
     "format": "run-s format:lint format:prettier format:cspell",
     "format:lint": "eslint --fix .",
     "format:prettier": "prettier --write .",
@@ -81,7 +80,6 @@
     "sqlite3": "^5.1.7",
     "ts-node": "10.9.2",
     "ts-jest": "^29.2.5",
-    "tsx": "4.7.1",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.13.0"
   },
