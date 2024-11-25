@@ -1,8 +1,6 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, passthrough } from "msw";
@@ -20,6 +18,7 @@ import githubCommentAltResults from "./__mocks__/results/github-comment-zero-res
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -46,10 +45,7 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
 }));
 
 const ctx = {
-  stateId: 1,
   eventName: "issues.closed",
-  authToken: process.env.GITHUB_TOKEN,
-  ref: "",
   payload: {
     issue: {
       html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/5",
@@ -66,7 +62,7 @@ const ctx = {
   },
   config: cfg,
   logger: new Logs("debug"),
-  octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
