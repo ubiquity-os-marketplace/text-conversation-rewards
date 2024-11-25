@@ -40,11 +40,13 @@
                     "properties": {
                       "model": {
                         "default": "gpt-4o-2024-08-06",
+                        "description": "OpenAI model, e.g. gpt-4o",
                         "type": "string"
                       },
                       "endpoint": {
                         "default": "https://api.openai.com/v1",
                         "pattern": "^(https?:\\/\\/[^\\s$.?#].\\S*)$",
+                        "description": "OpenAI endpoint for requests",
                         "type": "string"
                       }
                     }
@@ -61,6 +63,7 @@
                       "type": "object",
                       "properties": {
                         "role": {
+                          "description": "Roles that this multiplier applies to",
                           "type": "array",
                           "items": {
                             "anyOf": [
@@ -228,6 +231,7 @@
                           }
                         },
                         "relevance": {
+                          "description": "Relevance multiplier for this role",
                           "type": "number"
                         }
                       },
@@ -249,6 +253,7 @@
                 "properties": {
                   "redeemTask": {
                     "default": true,
+                    "description": "Is the task redeemable, e.g. can the user collect the bounty?",
                     "type": "boolean"
                   }
                 }
@@ -278,6 +283,7 @@
                 "type": "object",
                 "properties": {
                   "multipliers": {
+                    "description": "Multipliers applied to different parts of the comment according the role of the author",
                     "default": [
                       {
                         "role": ["ISSUE_SPECIFICATION"],
@@ -1350,6 +1356,7 @@
                           "type": "object",
                           "properties": {
                             "html": {
+                              "description": "Attributed score per HTML entity",
                               "default": {
                                 "br": {
                                   "score": 0,
@@ -1438,10 +1445,12 @@
                                   "type": "object",
                                   "properties": {
                                     "score": {
+                                      "description": "Score per word in the entity",
                                       "type": "number"
                                     },
                                     "countWords": {
                                       "default": true,
+                                      "description": "Whether to count words in the entity",
                                       "type": "boolean"
                                     }
                                   },
@@ -1451,6 +1460,7 @@
                             },
                             "wordValue": {
                               "default": 0.1,
+                              "description": "Value multiplier for each word",
                               "type": "number"
                             }
                           }
@@ -1461,6 +1471,7 @@
                   },
                   "wordCountExponent": {
                     "default": 0.85,
+                    "description": "Exponent applied to the word count total",
                     "type": "number"
                   }
                 }
@@ -1491,10 +1502,12 @@
                 "properties": {
                   "post": {
                     "default": true,
+                    "description": "Enables posting to the related GitHub Issue",
                     "type": "boolean"
                   },
                   "debug": {
                     "default": false,
+                    "description": "Enables debug by creating a local html file of the rendered comment",
                     "type": "boolean"
                   }
                 }
@@ -1513,11 +1526,13 @@
           "maxAttempts": {
             "default": 10,
             "minimum": 1,
+            "description": "The maximum amount of retries on failure",
             "type": "number"
           },
           "delayMs": {
             "default": 1000,
             "minimum": 100,
+            "description": "The delay between each retry, in milliseconds",
             "type": "number"
           }
         }
