@@ -15,6 +15,7 @@ import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result } from "../types/results";
 import { postComment } from "@ubiquity-os/plugin-sdk";
 import { Context } from "@ubiquity-os/permit-generation";
+import { GitHubPullRequestReviewState } from "../github-types";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -106,7 +107,7 @@ export class GithubCommentModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const isIssueCollaborative = await this._isCollaborative(data);
+    const isIssueCollaborative = this._isCollaborative(data);
     const assignee = data.self?.assignee;
     const isAdmin = assignee
       ? await this._isAdmin(
@@ -220,10 +221,8 @@ export class GithubCommentModule extends BaseModule {
     return content.join("");
   }
 
-  async _isCollaborative(data: Readonly<IssueActivity>) {
+  _isCollaborative(data: Readonly<IssueActivity>) {
     if (!data.self?.closed_by || !data.self.assignee) return false;
-
-    const pullReview = data.linkedReviews[0];
     const assignee = data.self.assignee;
 
     if (data.self.closed_by.id === assignee.id) {
@@ -234,13 +233,33 @@ export class GithubCommentModule extends BaseModule {
           (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
           event.actor.id !== assignee.id
       );
-
-      const reviewsByNonAssignee = pullReview?.reviews?.filter(
-        (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
-      );
-      return !!pricingEventsByNonAssignee || !!reviewsByNonAssignee;
+      return !!pricingEventsByNonAssignee || !!this._nonAssigneeApprovedReviews(data);
     }
     return true;
+  }
+
+  _nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
+    if (!data.self?.assignee) return false;
+
+    const pullRequest = data.linkedReviews[0].self;
+    const pullReview = data.linkedReviews[0];
+    const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
+    const assignee = data.self.assignee;
+
+    if (pullReview.reviews && pullRequest) {
+      for (const review of pullReview.reviews) {
+        const isReviewRequestedForUser =
+          "requested_reviewers" in pullRequest &&
+          pullRequest.requested_reviewers?.some((o) => o.id === review.user?.id);
+        if (!isReviewRequestedForUser && review.user?.id) {
+          reviewsByNonAssignee.push(review);
+        }
+      }
+    }
+    const approvedReviewsByNonAssignee = reviewsByNonAssignee.filter(
+      (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
+    );
+    return approvedReviewsByNonAssignee;
   }
 
   async _isAdmin(username: string, repoOwner: string, repoName: string): Promise<boolean> {
