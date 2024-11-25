@@ -17,14 +17,15 @@ export const commentType = stringLiteralUnion(
 export const wordRegex = /\b\w+\b/;
 
 const htmlEntity = Type.Object({
-  score: Type.Number(),
-  countWords: Type.Boolean({ default: true }),
+  score: Type.Number({ description: "Score per word in the entity" }),
+  countWords: Type.Boolean({ default: true, description: "Whether to count words in the entity" }),
 });
 
 /**
  * Attributed score per HTML entity
  */
 const htmlType = Type.Record(Type.String(), htmlEntity, {
+  description: "Attributed score per HTML entity",
   default: {
     br: { score: 0, countWords: true },
     code: { score: 5, countWords: false },
@@ -52,7 +53,7 @@ const htmlType = Type.Record(Type.String(), htmlEntity, {
 const rewardsType = Type.Object(
   {
     html: htmlType,
-    wordValue: Type.Number({ default: 0.1 }),
+    wordValue: Type.Number({ default: 0.1, description: "Value multiplier for each word" }),
   },
   { default: {} }
 );
@@ -70,6 +71,7 @@ export const formattingEvaluatorConfigurationType = Type.Object(
           rewards: rewardsType,
         }),
         {
+          description: "Multipliers applied to different parts of the comment according the role of the author",
           default: [
             {
               role: ["ISSUE_SPECIFICATION"],
@@ -139,7 +141,7 @@ export const formattingEvaluatorConfigurationType = Type.Object(
       .Encode((value) => {
         return value;
       }),
-    wordCountExponent: Type.Number({ default: 0.85 }),
+    wordCountExponent: Type.Number({ default: 0.85, description: "Exponent applied to the word count total" }),
   },
   { default: {} }
 );
