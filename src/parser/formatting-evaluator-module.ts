@@ -6,6 +6,7 @@ import { commentEnum, CommentType } from "../configuration/comment-types";
 import {
   FormattingEvaluatorConfiguration,
   formattingEvaluatorConfigurationType,
+  urlRegex,
   wordRegex,
 } from "../configuration/formatting-evaluator-config";
 import { IssueActivity } from "../issue-activity";
@@ -151,6 +152,7 @@ export class FormattingEvaluatorModule extends BaseModule {
   _classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
     const formatting: Record<string, { score: number; elementCount: number }> = {};
     const elements = htmlElement.getElementsByTagName("*");
+    const urlSet = new Set<string>();
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
@@ -168,9 +170,26 @@ export class FormattingEvaluatorModule extends BaseModule {
         element.remove();
         continue;
       }
-      this._updateTagCount(formatting, tagName, score);
+      if (tagName === "a") {
+        const url = element.getAttribute("href");
+        if (url) {
+          urlSet.add(url.split(/[#?]/)[0]);
+        }
+      } else {
+        const bodyContent = element.textContent;
+        const matches = bodyContent?.match(urlRegex);
+        matches?.map((url) => url.split(/[#?]/)[0]).forEach((url) => urlSet.add(url));
+        this._updateTagCount(formatting, tagName, score);
+      }
     }
-    const words = this._countWordsFromRegex(htmlElement.textContent ?? "", this._multipliers[commentType]?.wordValue);
+    urlSet.forEach(() => {
+      this._updateTagCount(formatting, "a", this._multipliers[commentType].html["a"].score ?? 0);
+    });
+    const words = this._countWordsFromRegex(
+      htmlElement.textContent?.replace(urlRegex, "") ?? "",
+      this._multipliers[commentType]?.wordValue
+    );
+
     return { formatting, words };
   }
 

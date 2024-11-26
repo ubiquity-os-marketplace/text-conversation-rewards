@@ -23,13 +23,13 @@
             "result": 2
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 4.64,
           "words": {
             "result": 2.64,
             "wordCount": 47,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2030164289"
@@ -48,13 +48,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 2.11,
           "words": {
             "result": 1.11,
             "wordCount": 17,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2033488255"
@@ -85,13 +85,13 @@
             "result": 12
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 24.21,
           "words": {
             "result": 12.21,
             "wordCount": 285,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036355445"
@@ -102,6 +102,10 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "code": {
                 "elementCount": 4,
                 "score": 1
@@ -111,16 +115,16 @@
                 "score": 1
               }
             },
-            "result": 8
+            "result": 9
           },
           "multiplier": 1,
-          "reward": 15.79,
+          "priority": 4,
+          "reward": 16.43,
           "words": {
-            "result": 7.79,
-            "wordCount": 168,
+            "result": 7.43,
+            "wordCount": 159,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036370459"
@@ -147,13 +151,13 @@
             "result": 7
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 13.22,
           "words": {
             "result": 6.22,
             "wordCount": 129,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036393020"
@@ -165,7 +169,7 @@
           "formatting": {
             "content": {
               "a": {
-                "elementCount": 2,
+                "elementCount": 1,
                 "score": 1
               },
               "code": {
@@ -185,16 +189,16 @@
                 "score": 0
               }
             },
-            "result": 12
+            "result": 11
           },
           "multiplier": 1,
-          "reward": 21.57,
+          "priority": 4,
+          "reward": 20.57,
           "words": {
             "result": 9.57,
             "wordCount": 214,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036433646"
@@ -225,13 +229,13 @@
             "result": 8
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 12.93,
           "words": {
             "result": 4.93,
             "wordCount": 98,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036516869"
@@ -258,13 +262,13 @@
             "result": 5
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 9.88,
           "words": {
             "result": 4.88,
             "wordCount": 97,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2053332029"
@@ -283,13 +287,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 2.75,
           "words": {
             "result": 1.75,
             "wordCount": 29,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2055783331"
@@ -308,13 +312,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.39,
           "words": {
             "result": 0.39,
             "wordCount": 5,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#pullrequestreview-2007841578"
@@ -334,13 +338,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.52,
           "words": {
             "result": 0.52,
             "wordCount": 7,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569964797"
@@ -360,13 +364,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 3.73,
           "words": {
             "result": 2.73,
             "wordCount": 49,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569970517"
@@ -386,13 +390,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.46,
           "words": {
             "result": 0.46,
             "wordCount": 6,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569971792"
@@ -416,13 +420,13 @@
             "result": 3
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 4.7,
           "words": {
             "result": 1.7,
             "wordCount": 28,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570133378"
@@ -446,13 +450,13 @@
             "result": 2
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 2.94,
           "words": {
             "result": 0.94,
             "wordCount": 14,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570159594"
@@ -480,13 +484,13 @@
             "result": 2
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 3.49,
           "words": {
             "result": 1.49,
             "wordCount": 24,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570588757"
@@ -506,13 +510,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.39,
           "words": {
             "result": 0.39,
             "wordCount": 5,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570589892"
@@ -532,13 +536,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.59,
           "words": {
             "result": 0.59,
             "wordCount": 8,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570591425"
@@ -566,13 +570,13 @@
             "result": 4
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 7.48,
           "words": {
             "result": 3.48,
             "wordCount": 65,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570596007"
@@ -592,13 +596,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 2.44,
           "words": {
             "result": 1.44,
             "wordCount": 23,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573720820"
@@ -618,13 +622,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.39,
           "words": {
             "result": 0.39,
             "wordCount": 5,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573722731"
@@ -648,13 +652,13 @@
             "result": 3
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 4.22,
           "words": {
             "result": 1.22,
             "wordCount": 19,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723262"
@@ -674,13 +678,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 2.54,
           "words": {
             "result": 1.54,
             "wordCount": 25,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723774"
@@ -700,13 +704,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.52,
           "words": {
             "result": 0.52,
             "wordCount": 7,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724498"
@@ -726,13 +730,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.18,
           "words": {
             "result": 0.18,
             "wordCount": 2,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724853"
@@ -752,13 +756,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.59,
           "words": {
             "result": 0.59,
             "wordCount": 8,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086028"
@@ -778,13 +782,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 1.18,
           "words": {
             "result": 0.18,
             "wordCount": 2,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086293"
@@ -808,13 +812,13 @@
             "result": 3
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 4.8,
           "words": {
             "result": 1.8,
             "wordCount": 30,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575555444"
@@ -834,13 +838,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 3.35,
           "words": {
             "result": 2.35,
             "wordCount": 41,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575556553"
@@ -860,13 +864,13 @@
             "result": 3
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 8.05,
           "words": {
             "result": 5.05,
             "wordCount": 101,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576666170"
@@ -886,13 +890,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 2.7,
           "words": {
             "result": 1.7,
             "wordCount": 28,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577225638"
@@ -911,19 +915,19 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 2.06,
           "words": {
             "result": 1.06,
             "wordCount": 16,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_COLLABORATOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "total": 173.81,
+    "total": 173.45,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -934,21 +938,25 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 2,
+                "score": 1
+              },
               "p": {
                 "elementCount": 1,
                 "score": 1
               }
             },
-            "result": 1
+            "result": 3
           },
           "multiplier": 1,
-          "reward": 5.11,
+          "priority": 4,
+          "reward": 5.22,
           "words": {
-            "result": 4.11,
-            "wordCount": 35,
+            "result": 2.22,
+            "wordCount": 17,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2033404518"
@@ -959,6 +967,10 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "li": {
                 "elementCount": 3,
                 "score": 1
@@ -972,16 +984,16 @@
                 "score": 1
               }
             },
-            "result": 9
+            "result": 10
           },
           "multiplier": 1,
-          "reward": 19.95,
+          "priority": 4,
+          "reward": 20.36,
           "words": {
-            "result": 10.95,
-            "wordCount": 111,
+            "result": 10.36,
+            "wordCount": 104,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036174312"
@@ -992,6 +1004,10 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "code": {
                 "elementCount": 3,
                 "score": 1
@@ -1001,16 +1017,16 @@
                 "score": 1
               }
             },
-            "result": 6
+            "result": 7
           },
           "multiplier": 1,
-          "reward": 17.29,
+          "priority": 4,
+          "reward": 17.53,
           "words": {
-            "result": 11.29,
-            "wordCount": 115,
+            "result": 10.53,
+            "wordCount": 106,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036367126"
@@ -1033,13 +1049,13 @@
             "result": 5
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 17.85,
           "words": {
             "result": 12.85,
             "wordCount": 134,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036385985"
@@ -1058,13 +1074,13 @@
             "result": 5
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 19.87,
           "words": {
             "result": 14.87,
             "wordCount": 159,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036411811"
@@ -1083,13 +1099,13 @@
             "result": 1
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 7.03,
           "words": {
             "result": 6.03,
             "wordCount": 55,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036458775"
@@ -1112,13 +1128,13 @@
             "result": 2
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 10.73,
           "words": {
             "result": 8.73,
             "wordCount": 85,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036535332"
@@ -1141,13 +1157,13 @@
             "result": 3
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 9.31,
           "words": {
             "result": 6.31,
             "wordCount": 58,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2051094255"
@@ -1178,13 +1194,13 @@
             "result": 16
           },
           "multiplier": 1,
+          "priority": 4,
           "reward": 21.94,
           "words": {
             "result": 5.94,
             "wordCount": 54,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2054424028"
@@ -1215,13 +1231,13 @@
             "result": 11
           },
           "multiplier": 1,
-          "reward": 15.93,
+          "priority": 4,
+          "reward": 15.45,
           "words": {
-            "result": 4.93,
-            "wordCount": 98,
+            "result": 4.45,
+            "wordCount": 87,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_SPECIFICATION",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5"
@@ -1240,13 +1256,13 @@
             "result": 3
           },
           "multiplier": 0,
+          "priority": 4,
           "reward": 0,
           "words": {
             "result": 0,
             "wordCount": 19,
             "wordValue": 0
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_SPECIFICATION",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12"
@@ -1270,13 +1286,13 @@
             "result": 6
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 24.98,
           "words": {
             "result": 6.49,
             "wordCount": 60,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570010044"
@@ -1300,13 +1316,13 @@
             "result": 2
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 8.22,
           "words": {
             "result": 2.11,
             "wordCount": 16,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570011467"
@@ -1318,21 +1334,25 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "p": {
                 "elementCount": 1,
                 "score": 1
               }
             },
-            "result": 1
+            "result": 2
           },
           "multiplier": 2,
-          "reward": 6.88,
+          "priority": 4,
+          "reward": 8,
           "words": {
-            "result": 2.44,
-            "wordCount": 19,
+            "result": 2,
+            "wordCount": 15,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570014142"
@@ -1356,13 +1376,13 @@
             "result": 3
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 15.2,
           "words": {
             "result": 4.6,
             "wordCount": 40,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570187141"
@@ -1374,6 +1394,10 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "code": {
                 "elementCount": 2,
                 "score": 1
@@ -1383,16 +1407,16 @@
                 "score": 1
               }
             },
-            "result": 4
+            "result": 5
           },
           "multiplier": 2,
-          "reward": 13.96,
+          "priority": 4,
+          "reward": 12.84,
           "words": {
-            "result": 2.98,
-            "wordCount": 24,
+            "result": 1.42,
+            "wordCount": 10,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570188450"
@@ -1404,21 +1428,25 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "p": {
                 "elementCount": 3,
                 "score": 1
               }
             },
-            "result": 3
+            "result": 4
           },
           "multiplier": 2,
-          "reward": 16.74,
+          "priority": 4,
+          "reward": 16.02,
           "words": {
-            "result": 5.37,
-            "wordCount": 48,
+            "result": 4.01,
+            "wordCount": 34,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573413974"
@@ -1438,13 +1466,13 @@
             "result": 1
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 8.18,
           "words": {
             "result": 3.09,
             "wordCount": 25,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573416633"
@@ -1472,13 +1500,13 @@
             "result": 3
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 15.4,
           "words": {
             "result": 4.7,
             "wordCount": 41,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573420718"
@@ -1490,59 +1518,7 @@
         "score": {
           "formatting": {
             "content": {
-              "p": {
-                "elementCount": 2,
-                "score": 1
-              }
-            },
-            "result": 2
-          },
-          "multiplier": 2,
-          "reward": 12.62,
-          "words": {
-            "result": 4.31,
-            "wordCount": 37,
-            "wordValue": 0.2
-          },
-          "priority": 4
-        },
-        "type": "PULL_AUTHOR",
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731420"
-      },
-      {
-        "content": "See https://github.com/ubiquity-os/conversation-rewards/pull/14 for the soon up to date mocks",
-        "diffHunk": "",
-        "id": 1573731649,
-        "score": {
-          "formatting": {
-            "content": {
-              "p": {
-                "elementCount": 1,
-                "score": 1
-              }
-            },
-            "result": 1
-          },
-          "multiplier": 2,
-          "reward": 6.44,
-          "words": {
-            "result": 2.22,
-            "wordCount": 17,
-            "wordValue": 0.2
-          },
-          "priority": 4
-        },
-        "type": "PULL_AUTHOR",
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731649"
-      },
-      {
-        "content": "Good point, also symbol should not be DAI but ETH isn't it?\r\n`pay.ubq.fi` seems to be using https://rpc.mevblocker.io for its RPC which seems to have low latency, a good privacy and score according to Chainlist as well.",
-        "diffHunk": "@@ -0,0 +1,22 @@\n+// available tokens for payouts\n+export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {\n+  \"1\": {\n+    rpc: \"https://rpc.gnosischain.com\",\n+    token: \"0x6B175474E89094C44Da98b954EedeAC495271d0F\",\n+    symbol: \"DAI\",\n+  },",
-        "id": 1573733603,
-        "score": {
-          "formatting": {
-            "content": {
-              "code": {
+              "a": {
                 "elementCount": 1,
                 "score": 1
               },
@@ -1554,13 +1530,77 @@
             "result": 3
           },
           "multiplier": 2,
-          "reward": 15.78,
+          "priority": 4,
+          "reward": 12.8,
           "words": {
-            "result": 4.89,
-            "wordCount": 43,
+            "result": 3.4,
+            "wordCount": 28,
             "wordValue": 0.2
+          }
+        },
+        "type": "PULL_AUTHOR",
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731420"
+      },
+      {
+        "content": "See https://github.com/ubiquity-os/conversation-rewards/pull/14 for the soon up to date mocks",
+        "diffHunk": "",
+        "id": 1573731649,
+        "score": {
+          "formatting": {
+            "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
+              "p": {
+                "elementCount": 1,
+                "score": 1
+              }
+            },
+            "result": 2
           },
-          "priority": 4
+          "multiplier": 2,
+          "priority": 4,
+          "reward": 6.34,
+          "words": {
+            "result": 1.17,
+            "wordCount": 8,
+            "wordValue": 0.2
+          }
+        },
+        "type": "PULL_AUTHOR",
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731649"
+      },
+      {
+        "content": "Good point, also symbol should not be DAI but ETH isn't it?\r\n`pay.ubq.fi` seems to be using https://rpc.mevblocker.io for its RPC which seems to have low latency, a good privacy and score according to Chainlist as well.",
+        "diffHunk": "@@ -0,0 +1,22 @@\n+// available tokens for payouts\n+export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {\n+  \"1\": {\n+    rpc: \"https://rpc.gnosischain.com\",\n+    token: \"0x6B175474E89094C44Da98b954EedeAC495271d0F\",\n+    symbol: \"DAI\",\n+  },",
+        "id": 1573733603,
+        "score": {
+          "formatting": {
+            "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
+              "code": {
+                "elementCount": 1,
+                "score": 1
+              },
+              "p": {
+                "elementCount": 2,
+                "score": 1
+              }
+            },
+            "result": 4
+          },
+          "multiplier": 2,
+          "priority": 4,
+          "reward": 17,
+          "words": {
+            "result": 4.5,
+            "wordCount": 39,
+            "wordValue": 0.2
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573733603"
@@ -1580,13 +1620,13 @@
             "result": 1
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 5.3,
           "words": {
             "result": 1.65,
             "wordCount": 12,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573737049"
@@ -1606,13 +1646,13 @@
             "result": 1
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 9.82,
           "words": {
             "result": 3.91,
             "wordCount": 33,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574114225"
@@ -1636,13 +1676,13 @@
             "result": 2
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 18.44,
           "words": {
             "result": 7.22,
             "wordCount": 68,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574622869"
@@ -1666,13 +1706,13 @@
             "result": 2
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 10.18,
           "words": {
             "result": 3.09,
             "wordCount": 25,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574702577"
@@ -1692,13 +1732,13 @@
             "result": 1
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 7.96,
           "words": {
             "result": 2.98,
             "wordCount": 24,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574724902"
@@ -1710,21 +1750,25 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "p": {
                 "elementCount": 2,
                 "score": 1
               }
             },
-            "result": 2
+            "result": 3
           },
           "multiplier": 2,
-          "reward": 8.88,
+          "priority": 4,
+          "reward": 8.84,
           "words": {
-            "result": 2.44,
-            "wordCount": 19,
+            "result": 1.42,
+            "wordCount": 10,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574767984"
@@ -1736,6 +1780,10 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "li": {
                 "elementCount": 2,
                 "score": 1
@@ -1749,16 +1797,16 @@
                 "score": 1
               }
             },
-            "result": 8
+            "result": 9
           },
           "multiplier": 2,
-          "reward": 25.6,
+          "priority": 4,
+          "reward": 25.4,
           "words": {
-            "result": 4.8,
-            "wordCount": 42,
+            "result": 3.7,
+            "wordCount": 31,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575659438"
@@ -1782,13 +1830,13 @@
             "result": 2
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 11.2,
           "words": {
             "result": 3.6,
             "wordCount": 30,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575675704"
@@ -1812,13 +1860,13 @@
             "result": 15
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 43.9,
           "words": {
             "result": 6.95,
             "wordCount": 65,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576567583"
@@ -1838,13 +1886,13 @@
             "result": 1
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 12.74,
           "words": {
             "result": 5.37,
             "wordCount": 48,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577477616"
@@ -1856,6 +1904,10 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "code": {
                 "elementCount": 5,
                 "score": 1
@@ -1865,16 +1917,16 @@
                 "score": 1
               }
             },
-            "result": 10
+            "result": 11
           },
           "multiplier": 2,
-          "reward": 32.62,
+          "priority": 4,
+          "reward": 32.56,
           "words": {
-            "result": 6.31,
-            "wordCount": 58,
+            "result": 5.28,
+            "wordCount": 47,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578162024"
@@ -1885,21 +1937,25 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "p": {
                 "elementCount": 2,
                 "score": 1
               }
             },
-            "result": 2
+            "result": 3
           },
           "multiplier": 2,
-          "reward": 8.22,
+          "priority": 4,
+          "reward": 8.1,
           "words": {
-            "result": 2.11,
-            "wordCount": 16,
+            "result": 1.05,
+            "wordCount": 7,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2056635516"
@@ -1918,13 +1974,13 @@
             "result": 1
           },
           "multiplier": 2,
+          "priority": 4,
           "reward": 8.58,
           "words": {
             "result": 3.29,
             "wordCount": 27,
             "wordValue": 0.2
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_AUTHOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063348339"
@@ -1934,7 +1990,7 @@
       "multiplier": 1,
       "reward": 400
     },
-    "total": 892.85,
+    "total": 893.29,
     "userId": 9807008
   },
   "whilefoo": {
@@ -1961,13 +2017,13 @@
             "result": 9
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 4.25,
           "words": {
             "result": 7.99,
             "wordCount": 173,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "ISSUE_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2035427134"
@@ -1995,13 +2051,13 @@
             "result": 2
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.74,
           "words": {
             "result": 0.94,
             "wordCount": 14,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574427305"
@@ -2021,13 +2077,13 @@
             "result": 1
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.64,
           "words": {
             "result": 1.54,
             "wordCount": 25,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574441918"
@@ -2047,13 +2103,13 @@
             "result": 1
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.43,
           "words": {
             "result": 0.71,
             "wordCount": 10,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574458540"
@@ -2073,13 +2129,13 @@
             "result": 1
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.47,
           "words": {
             "result": 0.88,
             "wordCount": 13,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574460099"
@@ -2099,13 +2155,13 @@
             "result": 1
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.62,
           "words": {
             "result": 1.49,
             "wordCount": 24,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574487172"
@@ -2125,13 +2181,13 @@
             "result": 1
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.57,
           "words": {
             "result": 1.28,
             "wordCount": 20,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574492061"
@@ -2151,13 +2207,13 @@
             "result": 1
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.41,
           "words": {
             "result": 0.65,
             "wordCount": 9,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575851470"
@@ -2169,21 +2225,25 @@
         "score": {
           "formatting": {
             "content": {
+              "a": {
+                "elementCount": 1,
+                "score": 1
+              },
               "p": {
                 "elementCount": 3,
                 "score": 1
               }
             },
-            "result": 3
+            "result": 4
           },
           "multiplier": 0.25,
-          "reward": 1.73,
+          "priority": 4,
+          "reward": 1.85,
           "words": {
-            "result": 3.92,
-            "wordCount": 75,
+            "result": 3.38,
+            "wordCount": 63,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576482609"
@@ -2203,13 +2263,13 @@
             "result": 1
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.53,
           "words": {
             "result": 1.11,
             "wordCount": 17,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578040543"
@@ -2233,13 +2293,13 @@
             "result": 4
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 1.53,
           "words": {
             "result": 2.1,
             "wordCount": 36,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578050965"
@@ -2259,19 +2319,19 @@
             "result": 1
           },
           "multiplier": 0.25,
+          "priority": 4,
           "reward": 0.33,
           "words": {
             "result": 0.32,
             "wordCount": 4,
             "wordValue": 0.1
-          },
-          "priority": 4
+          }
         },
         "type": "PULL_CONTRIBUTOR",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "total": 12.25,
+    "total": 12.37,
     "userId": 139262667
   }
 }
