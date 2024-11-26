@@ -300,4 +300,67 @@ describe("Modules tests", () => {
     const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
     expect(postBody).not.toContain("whilefoo");
   });
+
+  describe("Reward limits", () => {
+    it("Should return infinity if disabled", () => {
+      const processor = new Processor({
+        ...ctx,
+        config: {
+          ...ctx.config,
+          incentives: {
+            ...ctx.config.incentives,
+            limitRewards: false,
+          },
+        },
+      });
+      const result = processor._getRewardsLimit();
+      expect(result).toBe(Infinity);
+    });
+  });
+
+  it("Should return the max corresponding to the label of the issue if enabled", async () => {
+    const processor = new Processor({
+      ...ctx,
+      config: {
+        ...ctx.config,
+        incentives: {
+          ...ctx.config.incentives,
+          limitRewards: true,
+        },
+      },
+    });
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+    ];
+    processor["_result"] = {
+      user1: {
+        total: 999,
+        task: {
+          multiplier: 0.5,
+          reward: 18.5,
+        },
+        userId: 0,
+      },
+      user2: {
+        total: 11111111,
+        userId: 1,
+      },
+    };
+    const result = processor._getRewardsLimit();
+    expect(result).toBe(9.25);
+    const total = await processor.run(activity);
+    expect(total).toMatchObject({
+      user1: { total: 9.25, task: { multiplier: 0.5, reward: 18.5 }, userId: 0 },
+      user2: { total: 0, userId: 1 },
+      "0x4007": {
+        total: 9.25,
+      },
+      whilefoo: {
+        total: 9.25,
+      },
+    });
+  });
 });
