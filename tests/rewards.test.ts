@@ -2,7 +2,7 @@
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import { Octokit } from "@octokit/rest";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, passthrough } from "msw";
@@ -148,10 +148,7 @@ jest
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);
   const ctx = {
-    stateId: 1,
     eventName: "issues.closed",
-    authToken: process.env.GITHUB_TOKEN,
-    ref: "",
     payload: {
       issue: {
         html_url: issueUrl,

@@ -1,7 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { EnvConfig } from "../../src/types/env-type";
@@ -16,10 +15,7 @@ const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 
 const ctx = {
-  stateId: 1,
   eventName: "issues.closed",
-  authToken: process.env.GITHUB_TOKEN,
-  ref: "",
   payload: {
     issue: {
       html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
@@ -35,7 +31,7 @@ const ctx = {
   },
   config: cfg,
   logger: new Logs("debug"),
-  octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,

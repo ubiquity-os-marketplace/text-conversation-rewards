@@ -173,12 +173,12 @@ export class FormattingEvaluatorModule extends BaseModule {
       if (tagName === "a") {
         const url = element.getAttribute("href");
         if (url) {
-          urlSet.add(url.split("#")[0]);
+          urlSet.add(url.split(/[#?]/)[0]);
         }
       } else {
         const bodyContent = element.textContent;
         const matches = bodyContent?.match(urlRegex);
-        matches?.map((url) => url.split("#")[0]).forEach((url) => urlSet.add(url));
+        matches?.map((url) => url.split(/[#?]/)[0]).forEach((url) => urlSet.add(url));
         this._updateTagCount(formatting, tagName, score);
       }
     }
