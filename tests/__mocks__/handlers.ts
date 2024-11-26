@@ -131,19 +131,19 @@ export const handlers = [
     }
     return HttpResponse.json(user);
   }),
-  http.get("https://api.github.com/repos/:owner/:repo/collaborators/:username/permission", ({ params }) => {
+  http.get("https://api.github.com/orgs/:org/memberships/:username", ({ params }) => {
     const { username } = params;
 
     if (username === "0x4007") {
       return HttpResponse.json({
         data: {
-          role_name: "admin"
+          role: "admin"
         }
       });
     }
     return HttpResponse.json({
       data: {
-        role_name: "triage"
+        role: "member"
       }
     });
   }),
