@@ -14,7 +14,6 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result } from "../types/results";
 import { postComment } from "@ubiquity-os/plugin-sdk";
-import { Context } from "@ubiquity-os/permit-generation";
 import { GitHubPullRequestReviewState } from "../github-types";
 
 interface SortedTasks {
@@ -109,13 +108,7 @@ export class GithubCommentModule extends BaseModule {
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const isIssueCollaborative = this._isCollaborative(data);
     const assignee = data.self?.assignee;
-    const isAdmin = assignee
-      ? await this._isAdmin(
-          assignee.login,
-          this.context.payload.repository.owner.login,
-          this.context.payload.repository.name
-        )
-      : false;
+    const isAdmin = assignee ? await this._isAdmin(assignee.login) : false;
 
     const body = await this.getBodyContent(result);
     if (this._configuration?.debug) {
@@ -262,14 +255,18 @@ export class GithubCommentModule extends BaseModule {
     return approvedReviewsByNonAssignee;
   }
 
-  async _isAdmin(username: string, repoOwner: string, repoName: string): Promise<boolean> {
-    const octokit = this.context.octokit as unknown as Context["octokit"];
-    const assigneePerms = await octokit.rest.repos.getCollaboratorPermissionLevel({
-      owner: repoOwner,
-      repo: repoName,
-      username: username,
-    });
-    return assigneePerms.data.role_name === "admin" || assigneePerms.data.role_name === "billing_manager";
+  async _isAdmin(username: string): Promise<boolean> {
+    const octokit = this.context.octokit;
+    try {
+      const assigneePerms = await octokit.rest.orgs.getMembershipForUser({
+        org: this.context.payload.repository.owner.login,
+        username: username,
+      });
+      return assigneePerms.data.role === "admin" || assigneePerms.data.role === "billing_manager";
+    } catch (e) {
+      this.context.logger.debug(`${username} is not a member of ${this.context.payload.repository.owner.login}`, { e });
+      return false;
+    }
   }
 
   _createIncentiveRows(sortedTasks: SortedTasks | undefined) {

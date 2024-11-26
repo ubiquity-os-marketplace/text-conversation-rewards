@@ -39,11 +39,7 @@ export class PermitGenerationModule extends BaseModule {
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const canGeneratePermits = await this._canGeneratePermit(
-      data,
-      this.context.payload.repository.owner.login,
-      this.context.payload.repository.name
-    );
+    const canGeneratePermits = await this._canGeneratePermit(data);
 
     if (!canGeneratePermits) {
       this.context.logger.error("[PermitGenerationModule] Non collaborative issue detected, skipping.");
@@ -203,10 +199,10 @@ export class PermitGenerationModule extends BaseModule {
     return this._deductFeeFromReward(result, treasuryGithubData);
   }
 
-  async _canGeneratePermit(data: Readonly<IssueActivity>, repoOwner: string, repoName: string) {
+  async _canGeneratePermit(data: Readonly<IssueActivity>) {
     if (!data.self?.closed_by || !data.self.assignee) return false;
 
-    const isAdmin = await this._isAdmin(data.self.assignee.login, repoOwner, repoName);
+    const isAdmin = await this._isAdmin(data.self.assignee.login);
     if (isAdmin) return true;
 
     return this._isCollaborative(data);
@@ -253,16 +249,18 @@ export class PermitGenerationModule extends BaseModule {
     return approvedReviewsByNonAssignee;
   }
 
-  async _isAdmin(username: string, repoOwner: string, repoName: string): Promise<boolean> {
+  async _isAdmin(username: string): Promise<boolean> {
     const octokit = this.context.octokit;
-
-    const assigneePerms = await octokit.rest.repos.getCollaboratorPermissionLevel({
-      owner: repoOwner,
-      repo: repoName,
-      username: username,
-    });
-
-    return assigneePerms.data.role_name === "admin" || assigneePerms.data.role_name === "billing_manager";
+    try {
+      const assigneePerms = await octokit.rest.orgs.getMembershipForUser({
+        org: this.context.payload.repository.owner.login,
+        username: username,
+      });
+      return assigneePerms.data.role === "admin" || assigneePerms.data.role === "billing_manager";
+    } catch (e) {
+      this.context.logger.debug(`${username} is not a member of ${this.context.payload.repository.owner.login}`, { e });
+      return false;
+    }
   }
 
   _deductFeeFromReward(
