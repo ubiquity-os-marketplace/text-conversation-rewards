@@ -208,7 +208,7 @@ describe("Permit Generation Module Tests", () => {
     });
 
     it("should generate permits for collaborative issue", async () => {
-      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => Promise.resolve(true));
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => true);
 
       const processor = new Processor(ctx);
       processor["_transformers"] = [
@@ -227,7 +227,7 @@ describe("Permit Generation Module Tests", () => {
     });
 
     it("should generate permits for non-collaborative issue", async () => {
-      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => Promise.resolve(false));
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => false);
 
       const processor = new Processor(ctx);
       processor["_transformers"] = [
@@ -252,7 +252,7 @@ describe("Permit Generation Module Tests", () => {
     });
 
     it("should generate permits for collaborative issue", async () => {
-      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => Promise.resolve(true));
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => true);
 
       const processor = new Processor(ctx);
       processor["_transformers"] = [
@@ -271,7 +271,7 @@ describe("Permit Generation Module Tests", () => {
     });
 
     it("should not generate permits for non-collaborative issue", async () => {
-      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => Promise.resolve(false));
+      jest.spyOn(PermitGenerationModule.prototype, "_isCollaborative").mockImplementation(() => false);
 
       const processor = new Processor(ctx);
       processor["_transformers"] = [
