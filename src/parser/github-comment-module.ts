@@ -232,27 +232,28 @@ export class GithubCommentModule extends BaseModule {
   }
 
   _nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
-    if (!data.self?.assignee) return false;
+    if (data.linkedReviews[0] && data.self?.assignee) {
+      const pullRequest = data.linkedReviews[0].self;
+      const pullReview = data.linkedReviews[0];
+      const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
+      const assignee = data.self.assignee;
 
-    const pullRequest = data.linkedReviews[0].self;
-    const pullReview = data.linkedReviews[0];
-    const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
-    const assignee = data.self.assignee;
-
-    if (pullReview.reviews && pullRequest) {
-      for (const review of pullReview.reviews) {
-        const isReviewRequestedForUser =
-          "requested_reviewers" in pullRequest &&
-          pullRequest.requested_reviewers?.some((o) => o.id === review.user?.id);
-        if (!isReviewRequestedForUser && review.user?.id) {
-          reviewsByNonAssignee.push(review);
+      if (pullReview.reviews && pullRequest) {
+        for (const review of pullReview.reviews) {
+          const isReviewRequestedForUser =
+            "requested_reviewers" in pullRequest &&
+            pullRequest.requested_reviewers?.some((o) => o.id === review.user?.id);
+          if (!isReviewRequestedForUser && review.user?.id) {
+            reviewsByNonAssignee.push(review);
+          }
         }
       }
+      const approvedReviewsByNonAssignee = reviewsByNonAssignee.filter(
+        (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
+      );
+      return approvedReviewsByNonAssignee;
     }
-    const approvedReviewsByNonAssignee = reviewsByNonAssignee.filter(
-      (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
-    );
-    return approvedReviewsByNonAssignee;
+    return false;
   }
 
   async _isAdmin(username: string): Promise<boolean> {
