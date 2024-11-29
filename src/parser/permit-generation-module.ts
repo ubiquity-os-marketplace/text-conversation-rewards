@@ -200,25 +200,25 @@ export class PermitGenerationModule extends BaseModule {
   }
 
   async _canGeneratePermit(data: Readonly<IssueActivity>) {
-    if (!data.self?.closed_by || !data.self.assignee) return false;
+    if (!data.self?.closed_by || !data.self.user) return false;
 
-    const isAdmin = await this._isAdmin(data.self.assignee.login);
+    const isAdmin = await this._isAdmin(data.self.user.login);
     if (isAdmin) return true;
 
     return this._isCollaborative(data);
   }
 
   _isCollaborative(data: Readonly<IssueActivity>) {
-    if (!data.self?.closed_by || !data.self.assignee) return false;
-    const assignee = data.self.assignee;
+    if (!data.self?.closed_by || !data.self.user) return false;
+    const issueCreator = data.self.user;
 
-    if (data.self.closed_by.id === assignee.id) {
+    if (data.self.closed_by.id === issueCreator.id) {
       const pricingEventsByNonAssignee = data.events.find(
         (event) =>
           event.event === "labeled" &&
           "label" in event &&
           (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-          event.actor.id !== assignee.id
+          event.actor.id !== issueCreator.id
       );
       return !!pricingEventsByNonAssignee || !!this._nonAssigneeApprovedReviews(data);
     }
@@ -253,11 +253,11 @@ export class PermitGenerationModule extends BaseModule {
   async _isAdmin(username: string): Promise<boolean> {
     const octokit = this.context.octokit;
     try {
-      const assigneePerms = await octokit.rest.orgs.getMembershipForUser({
+      const userPerms = await octokit.rest.orgs.getMembershipForUser({
         org: this.context.payload.repository.owner.login,
         username: username,
       });
-      return assigneePerms.data.role === "admin" || assigneePerms.data.role === "billing_manager";
+      return userPerms.data.role === "admin" || userPerms.data.role === "billing_manager";
     } catch (e) {
       this.context.logger.debug(`${username} is not a member of ${this.context.payload.repository.owner.login}`, { e });
       return false;
