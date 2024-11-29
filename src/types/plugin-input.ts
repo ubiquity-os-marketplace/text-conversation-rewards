@@ -35,7 +35,7 @@ export const pluginSettingsSchema = T.Object(
         requirePriceLabel: T.Boolean({ default: true }),
         limitRewards: T.Boolean({
           default: true,
-          description: "Should the rewards of non-assignees be limited to the issue reward?",
+          description: "Should the rewards of non-assignees be limited to the task reward?",
         }),
         contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()], { default: null }),
         userExtractor: T.Union([userExtractorConfigurationType, T.Null()], { default: null }),
