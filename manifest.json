@@ -30,7 +30,7 @@
           },
           "limitRewards": {
             "default": true,
-            "description": "Should the rewards of non-assignees be limited to the issue reward?",
+            "description": "Should the rewards of non-assignees be limited to the task reward?",
             "type": "boolean"
           },
           "contentEvaluator": {
