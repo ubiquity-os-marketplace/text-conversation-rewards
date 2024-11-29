@@ -33,6 +33,10 @@ export const pluginSettingsSchema = T.Object(
          * If set to false, the plugin runs even if the price label is missing, and will evaluate comments.
          */
         requirePriceLabel: T.Boolean({ default: true }),
+        limitRewards: T.Boolean({
+          default: true,
+          description: "Should the rewards of non-assignees be limited to the task reward?",
+        }),
         contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()], { default: null }),
         userExtractor: T.Union([userExtractorConfigurationType, T.Null()], { default: null }),
         dataPurge: T.Union([dataPurgeConfigurationType, T.Null()], { default: null }),
@@ -50,4 +54,4 @@ export const pluginSettingsSchema = T.Object(
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
 export type SupportedEvents = "issues.closed";
-export type ContextPlugin = Context<PluginSettings, EnvConfig, SupportedEvents>;
+export type ContextPlugin = Context<PluginSettings, EnvConfig, null, SupportedEvents>;

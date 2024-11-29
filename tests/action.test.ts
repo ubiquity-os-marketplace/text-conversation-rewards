@@ -4,8 +4,7 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { Octokit } from "@octokit/rest";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 
 beforeAll(() => server.listen());
 beforeEach(() => {
@@ -57,10 +56,7 @@ describe("Action tests", () => {
     const { run } = await import("../src/run");
     await expect(
       run({
-        stateId: 1,
         eventName: "issues.closed",
-        authToken: process.env.GITHUB_TOKEN,
-        ref: "",
         payload: {
           issue: {
             html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
@@ -76,7 +72,7 @@ describe("Action tests", () => {
         },
         config: cfg,
         logger: new Logs("debug"),
-        octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+        octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
       } as unknown as ContextPlugin)
     ).resolves.toEqual("Issue was not closed as completed. Skipping.");
   });
@@ -93,10 +89,7 @@ describe("Action tests", () => {
     const { run } = await import("../src/run");
     await expect(
       run({
-        stateId: 1,
         eventName: "issues.closed",
-        authToken: process.env.GITHUB_TOKEN,
-        ref: "",
         payload: {
           issue: {
             html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
@@ -112,7 +105,8 @@ describe("Action tests", () => {
         },
         config: cfg,
         logger: new Logs("debug"),
-        octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+        octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+        command: null,
       } as unknown as ContextPlugin)
     ).rejects.toEqual({
       logMessage: {
