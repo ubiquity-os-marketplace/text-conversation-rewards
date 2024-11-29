@@ -271,7 +271,7 @@
                 "properties": {
                   "skipCommentsWhileAssigned": {
                     "default": true,
-                    "description": "Skip comments posted by a user while it is assigned to the issue",
+                    "description": "Skip comments posted by a user while they are assigned to the issue",
                     "type": "boolean"
                   }
                 }
