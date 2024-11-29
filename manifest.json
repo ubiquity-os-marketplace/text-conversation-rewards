@@ -28,6 +28,11 @@
             "default": true,
             "type": "boolean"
           },
+          "limitRewards": {
+            "default": true,
+            "description": "Should the rewards of non-assignees be limited to the task reward?",
+            "type": "boolean"
+          },
           "contentEvaluator": {
             "default": null,
             "anyOf": [

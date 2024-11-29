@@ -34,6 +34,20 @@ export class Processor {
     return this;
   }
 
+  _getRewardsLimit() {
+    let taskReward = Infinity;
+    if (!this._configuration.limitRewards) {
+      return taskReward;
+    }
+    for (const item of Object.keys(this._result)) {
+      if (this._result[item].task) {
+        taskReward = this._result[item].task.reward * this._result[item].task.multiplier;
+        return taskReward;
+      }
+    }
+    return taskReward;
+  }
+
   async run(data: Readonly<IssueActivity>) {
     for (const transformer of this._transformers) {
       if (transformer.enabled) {
@@ -41,7 +55,7 @@ export class Processor {
       }
       // Aggregate total result
       for (const item of Object.keys(this._result)) {
-        this._result[item].total = this._sumRewards(this._result[item]);
+        this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit());
       }
     }
     return this._result;
@@ -51,21 +65,23 @@ export class Processor {
     const { file } = this._configuration;
     const result = JSON.stringify(this._result, typeReplacer, 2);
     if (!file) {
-      this._context.logger.debug(result);
+      this._context.logger.verbose(result);
     } else {
       fs.writeFileSync(file, result);
     }
     return result;
   }
 
-  _sumRewards(obj: Record<string, unknown>) {
+  _sumRewards(obj: Record<string, unknown>, taskRewardLimit = Infinity) {
     let totalReward = new Decimal(0);
 
     for (const [key, value] of Object.entries(obj)) {
       if (key === "reward" && typeof value === "number") {
-        totalReward = totalReward.add(value);
+        totalReward = totalReward.add(Math.min(value, taskRewardLimit));
       } else if (typeof value === "object") {
-        totalReward = totalReward.add(this._sumRewards(value as Record<string, unknown>));
+        totalReward = totalReward.add(
+          Math.min(this._sumRewards(value as Record<string, unknown>, taskRewardLimit), taskRewardLimit)
+        );
       }
     }
 

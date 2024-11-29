@@ -34,7 +34,11 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
 
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
-    if (request.method === "POST" && new URL(request.url).pathname === "/") {
+    if (
+      request.method === "POST" &&
+      new URL(request.url).pathname === "/" &&
+      request.headers.get("origin") === "http://localhost:4000"
+    ) {
       try {
         const originalBody = await request.json();
         const modifiedBody = await getPayload(
@@ -108,7 +112,7 @@ app.get("/openai/*", () => {
   return Response.json("OpenAI GET");
 });
 
-const port = 3000;
+const port = 4000;
 
 export default {
   fetch: app.fetch,
