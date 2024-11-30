@@ -1,7 +1,5 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { GitHubIssueComment } from "../src/github-types";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
@@ -15,6 +13,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import hiddenCommentPurged from "./__mocks__/results/hidden-comment-purged.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
@@ -46,10 +45,7 @@ jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
 }));
 
 const ctx = {
-  stateId: 1,
   eventName: "issues.closed",
-  authToken: process.env.GITHUB_TOKEN,
-  ref: "",
   payload: {
     issue: {
       html_url: issueUrl,
@@ -66,7 +62,7 @@ const ctx = {
   },
   config: cfg,
   logger: new Logs("debug"),
-  octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
     OPENAI_API_KEY: "1234",
     SUPABASE_URL: "http://localhost:8080",

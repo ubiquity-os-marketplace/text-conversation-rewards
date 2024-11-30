@@ -109,7 +109,7 @@ export class ContentEvaluatorModule extends BaseModule {
     );
 
     if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
-      throw this.context.logger.fatal("Relevance / Comment length mismatch!", {
+      throw this.context.logger.error("Relevance / Comment length mismatch!", {
         relevancesByAi,
         commentsToEvaluate,
         prCommentsToEvaluate,

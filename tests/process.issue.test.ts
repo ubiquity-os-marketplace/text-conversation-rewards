@@ -1,8 +1,6 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, passthrough } from "msw";
@@ -20,6 +18,7 @@ import githubCommentAltResults from "./__mocks__/results/github-comment-zero-res
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -46,10 +45,7 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
 }));
 
 const ctx = {
-  stateId: 1,
   eventName: "issues.closed",
-  authToken: process.env.GITHUB_TOKEN,
-  ref: "",
   payload: {
     issue: {
       html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/5",
@@ -66,7 +62,7 @@ const ctx = {
   },
   config: cfg,
   logger: new Logs("debug"),
-  octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
@@ -256,10 +252,10 @@ describe("Modules tests", () => {
     ];
     await expect(processor.run(activity)).rejects.toMatchObject({
       logMessage: {
-        diff: "```diff\n- Relevance / Comment length mismatch!\n```",
-        level: "fatal",
+        diff: "```diff\n! Relevance / Comment length mismatch!\n```",
+        level: "error",
         raw: "Relevance / Comment length mismatch!",
-        type: "fatal",
+        type: "error",
       },
     });
   });
@@ -303,5 +299,68 @@ describe("Modules tests", () => {
     const githubCommentModule = new GithubCommentModule(ctx);
     const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
     expect(postBody).not.toContain("whilefoo");
+  });
+
+  describe("Reward limits", () => {
+    it("Should return infinity if disabled", () => {
+      const processor = new Processor({
+        ...ctx,
+        config: {
+          ...ctx.config,
+          incentives: {
+            ...ctx.config.incentives,
+            limitRewards: false,
+          },
+        },
+      });
+      const result = processor._getRewardsLimit();
+      expect(result).toBe(Infinity);
+    });
+  });
+
+  it("Should return the max corresponding to the label of the issue if enabled", async () => {
+    const processor = new Processor({
+      ...ctx,
+      config: {
+        ...ctx.config,
+        incentives: {
+          ...ctx.config.incentives,
+          limitRewards: true,
+        },
+      },
+    });
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+    ];
+    processor["_result"] = {
+      user1: {
+        total: 999,
+        task: {
+          multiplier: 0.5,
+          reward: 18.5,
+        },
+        userId: 0,
+      },
+      user2: {
+        total: 11111111,
+        userId: 1,
+      },
+    };
+    const result = processor._getRewardsLimit();
+    expect(result).toBe(9.25);
+    const total = await processor.run(activity);
+    expect(total).toMatchObject({
+      user1: { total: 9.25, task: { multiplier: 0.5, reward: 18.5 }, userId: 0 },
+      user2: { total: 0, userId: 1 },
+      "0x4007": {
+        total: 9.25,
+      },
+      whilefoo: {
+        total: 9.25,
+      },
+    });
   });
 });

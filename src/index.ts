@@ -4,7 +4,7 @@ import { run } from "./run";
 import envConfigSchema, { EnvConfig } from "./types/env-type";
 import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "./types/plugin-input";
 
-export default createActionsPlugin<PluginSettings, EnvConfig, SupportedEvents>(
+export default createActionsPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   (context) => {
     return run(context);
   },
