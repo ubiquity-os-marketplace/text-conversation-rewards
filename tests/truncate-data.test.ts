@@ -102,10 +102,7 @@ describe("Payload truncate tests", () => {
     });
     const module = await import("../src/run");
     const result = await module.run({
-      stateId: 1,
       eventName: "issues.closed",
-      authToken: process.env.GITHUB_TOKEN,
-      ref: "",
       payload: {
         issue: {
           html_url: issueUrl,

@@ -3,7 +3,6 @@ import { afterAll, afterEach, beforeAll, expect, it, jest } from "@jest/globals"
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { Octokit } from "@octokit/rest";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -39,16 +38,13 @@ jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-const { paginateGraphQL } = await import("@octokit/plugin-paginate-graphql");
+const octokit = (await import("@ubiquity-os/plugin-sdk/octokit")).customOctokit;
 
 describe("Price tests", () => {
   it("Should skip when no price label is set", async () => {
     const { run } = await import("../src/run");
     const result = await run({
-      stateId: 1,
       eventName: "issues.closed",
-      authToken: process.env.GITHUB_TOKEN,
-      ref: "",
       payload: {
         issue: {
           html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
@@ -64,7 +60,7 @@ describe("Price tests", () => {
       },
       config: cfg,
       logger: new Logs("debug"),
-      octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+      octokit: new octokit({ auth: process.env.GITHUB_TOKEN }),
     } as unknown as ContextPlugin);
     expect(result).toEqual("No price label has been set. Skipping permit generation.");
   });

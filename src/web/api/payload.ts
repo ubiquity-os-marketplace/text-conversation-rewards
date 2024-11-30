@@ -10,7 +10,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
 
   if (!useOpenAi) {
     cfgFile.incentives.contentEvaluator.openAi = {
-      endpoint: "http://localhost:3000/openai",
+      endpoint: "http://localhost:4000/openai",
     };
   }
 
@@ -21,6 +21,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
     eventName: "issues.closed",
     action: "closed",
     env: process.env,
+    command: null,
     settings: {
       ...cfgFile,
       evmPrivateEncrypted: cfgFile.evmPrivateEncrypted ?? process.env.EVM_PRIVATE_ENCRYPTED,

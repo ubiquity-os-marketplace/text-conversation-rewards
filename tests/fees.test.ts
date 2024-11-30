@@ -29,10 +29,7 @@ describe("GithubCommentModule Fee Tests", () => {
   beforeEach(async () => {
     const { GithubCommentModule } = await import("../src/parser/github-comment-module");
     githubCommentModule = new GithubCommentModule({
-      stateId: 1,
       eventName: "issues.closed",
-      authToken: process.env.GITHUB_TOKEN,
-      ref: "",
       payload: {
         issue: {
           html_url: issueUrl,
