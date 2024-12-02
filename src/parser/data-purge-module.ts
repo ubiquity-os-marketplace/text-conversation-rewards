@@ -1,6 +1,8 @@
 import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
+import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespan";
 import { IssueActivity } from "../issue-activity";
+import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
 
@@ -9,6 +11,7 @@ import { Result } from "../types/results";
  */
 export class DataPurgeModule extends BaseModule {
   readonly _configuration: DataPurgeConfiguration | null = this.context.config.incentives.dataPurge;
+  _assignmentPeriods: UserAssignments = {};
 
   get enabled(): boolean {
     if (!this._configuration) {
@@ -18,11 +21,36 @@ export class DataPurgeModule extends BaseModule {
     return true;
   }
 
+  async _shouldSkipComment(comment: IssueActivity["allComments"][0]) {
+    if ("isMinimized" in comment && comment.isMinimized) {
+      this.context.logger.debug("Skipping hidden comment", { comment });
+      return true;
+    }
+    if (
+      this._configuration?.skipCommentsWhileAssigned &&
+      this._configuration.skipCommentsWhileAssigned !== "none" &&
+      comment.user?.login &&
+      isCommentDuringAssignment(
+        comment,
+        this._assignmentPeriods[comment.user?.login],
+        this._configuration.skipCommentsWhileAssigned === "exact"
+      )
+    ) {
+      this.context.logger.debug("Skipping comment during assignment", {
+        comment,
+      });
+      return true;
+    }
+    return false;
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result) {
+    this._assignmentPeriods = await getAssignmentPeriods(
+      this.context.octokit,
+      parseGitHubUrl(this.context.payload.issue.html_url)
+    );
     for (const comment of data.allComments) {
-      // Skips comments if they are minimized
-      if ("isMinimized" in comment && comment.isMinimized) {
-        this.context.logger.debug("Skipping hidden comment", { comment });
+      if (await this._shouldSkipComment(comment)) {
         continue;
       }
       if (comment.body && comment.user?.login && result[comment.user.login]) {
