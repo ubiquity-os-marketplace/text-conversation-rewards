@@ -270,21 +270,21 @@
                 "type": "object",
                 "properties": {
                   "skipCommentsWhileAssigned": {
-                    "default": 0,
+                    "default": "all",
                     "description": "Do not offer credit to comments posted by a user between the time they were first assigned and last unassigned from the task.",
-                    "examples": [0, 1, 2],
+                    "examples": ["all", "exact", "none"],
                     "anyOf": [
                       {
-                        "const": 0,
-                        "type": "number"
+                        "const": "all",
+                        "type": "string"
                       },
                       {
-                        "const": 1,
-                        "type": "number"
+                        "const": "exact",
+                        "type": "string"
                       },
                       {
-                        "const": 2,
-                        "type": "number"
+                        "const": "none",
+                        "type": "string"
                       }
                     ]
                   }
