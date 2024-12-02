@@ -55,7 +55,11 @@ export class Processor {
       }
       // Aggregate total result
       for (const item of Object.keys(this._result)) {
-        this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit());
+        this._result[item].total = this._sumRewards(
+          this._result[item],
+          // We do not want to cap assigned users
+          data.self?.assignees?.some((o) => o.login === item) ? Infinity : this._getRewardsLimit()
+        );
       }
     }
     return this._result;
