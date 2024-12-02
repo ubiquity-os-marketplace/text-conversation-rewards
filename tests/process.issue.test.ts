@@ -19,6 +19,7 @@ import permitGenerationResults from "./__mocks__/results/permit-generation-resul
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { CommentAssociation } from "../src/configuration/comment-types";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -360,6 +361,64 @@ describe("Modules tests", () => {
       },
       whilefoo: {
         total: 9.25,
+      },
+    });
+  });
+
+  it("Should not limit the assigned user", async () => {
+    const processor = new Processor({
+      ...ctx,
+      config: {
+        ...ctx.config,
+        incentives: {
+          ...ctx.config.incentives,
+          limitRewards: true,
+        },
+      },
+    });
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+    ];
+    processor["_result"] = {
+      gentlementlegen: {
+        total: 999,
+        task: {
+          multiplier: 0.5,
+          reward: 18.5,
+        },
+        comments: [
+          {
+            id: 1,
+            content: "",
+            url: "",
+            type: CommentAssociation.ASSIGNEE,
+            score: {
+              reward: 50000,
+              multiplier: 3,
+            },
+          },
+        ],
+        userId: 9807008,
+      },
+      user2: {
+        total: 11111111,
+        userId: 1,
+      },
+    };
+    const result = processor._getRewardsLimit();
+    expect(result).toBe(9.25);
+    const total = await processor.run(activity);
+    expect(total).toMatchObject({
+      gentlementlegen: { total: 202102.088, task: { multiplier: 1, reward: 400 }, userId: 9807008 },
+      user2: { total: 0, userId: 1 },
+      "0x4007": {
+        total: 400,
+      },
+      whilefoo: {
+        total: 43.562,
       },
     });
   });
