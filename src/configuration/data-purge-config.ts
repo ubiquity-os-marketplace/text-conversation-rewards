@@ -4,7 +4,7 @@ export const dataPurgeConfigurationType = Type.Object({
   skipCommentsWhileAssigned: Type.Union([Type.Literal("all"), Type.Literal("exact"), Type.Literal("none")], {
     default: "all",
     description:
-      "Do not offer credit to comments posted by a user between the time they were first assigned and last unassigned from the task.",
+      "Determines the comments posted by a user to include in the final rewards. 'all': excludes comments between first and last assignment. 'exact': excludes comments during the exact assignment periods. 'none': includes every comment.",
     examples: ["all", "exact", "none"],
   }),
 });
