@@ -100,7 +100,7 @@ with:
     userExtractor:
       redeemTask: true
     dataPurge:
-       skipCommentsWhileAssigned: "ALL"
+       skipCommentsWhileAssigned: "all"
     formattingEvaluator:
       wordCountExponent: 0.85
       multipliers:

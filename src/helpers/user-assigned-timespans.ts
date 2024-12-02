@@ -54,10 +54,20 @@ export async function getAssignmentPeriods(octokit: ContextPlugin["octokit"], is
   return userAssignments;
 }
 
-export function isCommentDuringAssignment(comment: IssueActivity["allComments"][0], assignments: AssignmentPeriod[]) {
+export function isCommentDuringAssignment(
+  comment: IssueActivity["allComments"][0],
+  assignments: AssignmentPeriod[],
+  isExact: boolean
+) {
   const commentDate = new Date(comment.created_at);
   if (!assignments?.length) {
     return false;
+  }
+  if (!isExact) {
+    const assignedAt = new Date(assignments[0].assignedAt);
+    const lastAssignment = assignments[assignments.length - 1].unassignedAt;
+    const unassignedAt = lastAssignment ? new Date(lastAssignment) : new Date();
+    return commentDate >= assignedAt && commentDate <= unassignedAt;
   }
   return assignments.some((period) => {
     const assignedAt = new Date(period.assignedAt);

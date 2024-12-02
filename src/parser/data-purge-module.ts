@@ -1,10 +1,10 @@
-import { AssignCommentPrecision, DataPurgeConfiguration } from "../configuration/data-purge-config";
+import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
+import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespans";
 import { IssueActivity } from "../issue-activity";
+import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
-import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespans";
-import { parseGitHubUrl } from "../start";
 
 /**
  * Removes the data in the comments that we do not want to be processed.
@@ -27,9 +27,14 @@ export class DataPurgeModule extends BaseModule {
       return true;
     }
     if (
-      this._configuration?.skipCommentsWhileAssigned !== AssignCommentPrecision.NONE &&
+      this._configuration?.skipCommentsWhileAssigned &&
+      this._configuration.skipCommentsWhileAssigned !== "none" &&
       comment.user?.login &&
-      isCommentDuringAssignment(comment, this._assignmentPeriods[comment.user?.login])
+      isCommentDuringAssignment(
+        comment,
+        this._assignmentPeriods[comment.user?.login],
+        this._configuration.skipCommentsWhileAssigned === "exact"
+      )
     ) {
       this.context.logger.debug("Skipping comment during assignment", {
         comment,
