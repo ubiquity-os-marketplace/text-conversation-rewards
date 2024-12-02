@@ -99,7 +99,8 @@ with:
           relevance: 1
     userExtractor:
       redeemTask: true
-    dataPurge: {}
+    dataPurge:
+       skipCommentsWhileAssigned: "ALL"
     formattingEvaluator:
       wordCountExponent: 0.85
       multipliers:

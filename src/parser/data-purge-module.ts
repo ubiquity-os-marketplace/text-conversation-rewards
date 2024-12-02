@@ -1,4 +1,4 @@
-import { DataPurgeConfiguration } from "../configuration/data-purge-config";
+import { AssignCommentPrecision, DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
@@ -27,7 +27,7 @@ export class DataPurgeModule extends BaseModule {
       return true;
     }
     if (
-      this._configuration?.skipCommentsWhileAssigned &&
+      this._configuration?.skipCommentsWhileAssigned !== AssignCommentPrecision.NONE &&
       comment.user?.login &&
       isCommentDuringAssignment(comment, this._assignmentPeriods[comment.user?.login])
     ) {
