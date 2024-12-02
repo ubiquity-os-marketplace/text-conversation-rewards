@@ -271,7 +271,7 @@
                 "properties": {
                   "skipCommentsWhileAssigned": {
                     "default": "all",
-                    "description": "Determines the comments posted by a user to include in the final rewards. 'all': excludes comments between first and last assignment. 'exact': excludes comments during the exact assignment periods. 'none': includes every comment.",
+                    "description": "Configures how user comments are included in the rewards calculation when they are assigned to a GitHub issue:\n\n- 'all': Excludes all comments made between the first assignment start and the last assignment end, discouraging gaming by unassigning and commenting for rewards.\n- 'exact': Excludes only comments made during precise assignment periods, targeting times when the user is actively assigned.\n- 'none': Includes all comments, regardless of assignment status or timing.",
                     "examples": ["all", "exact", "none"],
                     "anyOf": [
                       {
