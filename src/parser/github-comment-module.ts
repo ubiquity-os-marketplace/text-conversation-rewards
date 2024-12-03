@@ -278,6 +278,9 @@ export class GithubCommentModule extends BaseModule {
     );
 
     return `
+> [!CAUTION]
+> some caution text
+
     <details>
       <summary>
         <b>
@@ -295,6 +298,12 @@ export class GithubCommentModule extends BaseModule {
       </summary>
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       ${result.total < (result.comments?.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) ?? 0) ? `<h6>ℹ️ Your rewards have been limited to the base reward of this task.</h6>` : ""}
+
+<p>
+      > [!CAUTION]
+      > some caution text
+</p>
+
       <h6>Contributions Overview</h6>
       <table>
         <thead>
