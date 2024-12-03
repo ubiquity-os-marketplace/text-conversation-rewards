@@ -199,10 +199,6 @@ describe("Modules tests", () => {
           })()
         );
       });
-
-    jest.spyOn(PermitGenerationModule.prototype, "_isAdmin").mockImplementation(() => {
-      return Promise.resolve(true);
-    });
   });
 
   it("Should extract users from comments", async () => {
