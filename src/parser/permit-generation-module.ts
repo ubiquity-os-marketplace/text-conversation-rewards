@@ -24,7 +24,7 @@ import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
-import { GitHubPullRequestReviewState } from "../github-types";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
 
 interface Payload {
   evmNetworkId: number;
@@ -202,66 +202,9 @@ export class PermitGenerationModule extends BaseModule {
   async _canGeneratePermit(data: Readonly<IssueActivity>) {
     if (!data.self?.closed_by || !data.self.user) return false;
 
-    const isAdmin = await this._isAdmin(data.self.user.login);
-    if (isAdmin) return true;
+    if (await isAdmin(data.self.user.login, this.context)) return true;
 
-    return this._isCollaborative(data);
-  }
-
-  _isCollaborative(data: Readonly<IssueActivity>) {
-    if (!data.self?.closed_by || !data.self.user) return false;
-    const issueCreator = data.self.user;
-
-    if (data.self.closed_by.id === issueCreator.id) {
-      const pricingEventsByNonAssignee = data.events.find(
-        (event) =>
-          event.event === "labeled" &&
-          "label" in event &&
-          (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-          event.actor.id !== issueCreator.id
-      );
-      return !!pricingEventsByNonAssignee || !!this._nonAssigneeApprovedReviews(data);
-    }
-    return true;
-  }
-
-  _nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
-    if (data.linkedReviews[0] && data.self?.assignee) {
-      const pullRequest = data.linkedReviews[0].self;
-      const pullReview = data.linkedReviews[0];
-      const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
-      const assignee = data.self.assignee;
-
-      if (pullReview.reviews && pullRequest) {
-        for (const review of pullReview.reviews) {
-          const isReviewRequestedForUser =
-            "requested_reviewers" in pullRequest &&
-            pullRequest.requested_reviewers?.some((o) => o.id === review.user?.id);
-          if (!isReviewRequestedForUser && review.user?.id) {
-            reviewsByNonAssignee.push(review);
-          }
-        }
-      }
-      const approvedReviewsByNonAssignee = reviewsByNonAssignee.filter(
-        (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
-      );
-      return approvedReviewsByNonAssignee;
-    }
-    return false;
-  }
-
-  async _isAdmin(username: string): Promise<boolean> {
-    const octokit = this.context.octokit;
-    try {
-      const userPerms = await octokit.rest.orgs.getMembershipForUser({
-        org: this.context.payload.repository.owner.login,
-        username: username,
-      });
-      return userPerms.data.role === "admin" || userPerms.data.role === "billing_manager";
-    } catch (e) {
-      this.context.logger.debug(`${username} is not a member of ${this.context.payload.repository.owner.login}`, { e });
-      return false;
-    }
+    return isCollaborative(data);
   }
 
   _deductFeeFromReward(

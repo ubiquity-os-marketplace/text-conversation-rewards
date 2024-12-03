@@ -14,7 +14,7 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result } from "../types/results";
 import { postComment } from "@ubiquity-os/plugin-sdk";
-import { GitHubPullRequestReviewState } from "../github-types";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -106,15 +106,15 @@ export class GithubCommentModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const isIssueCollaborative = this._isCollaborative(data);
-    const isAdmin = data.self?.user ? await this._isAdmin(data.self.user.login) : false;
+    const isIssueCollaborative = isCollaborative(data);
+    const isUserAdmin = data.self?.user ? await isAdmin(data.self.user.login, this.context) : false;
     const body = await this.getBodyContent(result);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
     if (this._configuration?.post) {
       try {
-        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isAdmin) {
+        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
           await this.postComment(body);
         } else {
           const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
@@ -210,62 +210,6 @@ export class GithubCommentModule extends BaseModule {
       );
     }
     return content.join("");
-  }
-
-  _isCollaborative(data: Readonly<IssueActivity>) {
-    if (!data.self?.closed_by || !data.self.user) return false;
-    const issueCreator = data.self.user;
-
-    if (data.self.closed_by.id === issueCreator.id) {
-      const pricingEventsByNonAssignee = data.events.find(
-        (event) =>
-          event.event === "labeled" &&
-          "label" in event &&
-          (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-          event.actor.id !== issueCreator.id
-      );
-      return !!pricingEventsByNonAssignee || !!this._nonAssigneeApprovedReviews(data);
-    }
-    return true;
-  }
-
-  _nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
-    if (data.linkedReviews[0] && data.self?.assignee) {
-      const pullRequest = data.linkedReviews[0].self;
-      const pullReview = data.linkedReviews[0];
-      const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
-      const assignee = data.self.assignee;
-
-      if (pullReview.reviews && pullRequest) {
-        for (const review of pullReview.reviews) {
-          const isReviewRequestedForUser =
-            "requested_reviewers" in pullRequest &&
-            pullRequest.requested_reviewers?.some((o) => o.id === review.user?.id);
-          if (!isReviewRequestedForUser && review.user?.id) {
-            reviewsByNonAssignee.push(review);
-          }
-        }
-      }
-      const approvedReviewsByNonAssignee = reviewsByNonAssignee.filter(
-        (v) => v.user?.id !== assignee.id && v.state === "APPROVED"
-      );
-      return approvedReviewsByNonAssignee;
-    }
-    return false;
-  }
-
-  async _isAdmin(username: string): Promise<boolean> {
-    const octokit = this.context.octokit;
-    try {
-      const userPerms = await octokit.rest.orgs.getMembershipForUser({
-        org: this.context.payload.repository.owner.login,
-        username: username,
-      });
-      return userPerms.data.role === "admin" || userPerms.data.role === "billing_manager";
-    } catch (e) {
-      this.context.logger.debug(`${username} is not a member of ${this.context.payload.repository.owner.login}`, { e });
-      return false;
-    }
   }
 
   _createIncentiveRows(sortedTasks: SortedTasks | undefined) {
