@@ -18,7 +18,7 @@ export const wordRegex = /\b\w+\b/;
 export const urlRegex = /https?:\/\/\S+/g;
 
 const htmlEntity = Type.Object({
-  score: Type.Number({ description: "Score per word in the entity" }),
+  score: Type.Number({ description: "Score per word in the entity", examples: ["0.1"] }),
   countWords: Type.Boolean({ default: true, description: "Whether to count words in the entity" }),
 });
 
@@ -67,8 +67,12 @@ export const formattingEvaluatorConfigurationType = Type.Object(
     multipliers: Type.Transform(
       Type.Array(
         Type.Object({
-          role: Type.Array(commentType, { minItems: 1 }),
-          multiplier: Type.Number(),
+          role: Type.Array(commentType, {
+            minItems: 1,
+            description: "The list of roles this multiplier applies to",
+            examples: ['["PULL_ASSIGNEE", "PULL_AUTHOR", "PULL_COLLABORATOR"]'],
+          }),
+          multiplier: Type.Number({ examples: ["1"], description: "Multiplier for the given list of roles" }),
           rewards: rewardsType,
         }),
         {
@@ -142,7 +146,11 @@ export const formattingEvaluatorConfigurationType = Type.Object(
       .Encode((value) => {
         return value;
       }),
-    wordCountExponent: Type.Number({ default: 0.85, description: "Exponent applied to the word count total" }),
+    wordCountExponent: Type.Number({
+      default: 0.85,
+      description: "Exponent applied to the word count total",
+      examples: ["0.85"],
+    }),
   },
   { default: {} }
 );
