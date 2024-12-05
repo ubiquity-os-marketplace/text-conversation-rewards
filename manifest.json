@@ -8,9 +8,13 @@
     "properties": {
       "evmNetworkId": {
         "default": 100,
+        "description": "Network ID to run in, default to 100",
+        "examples": ["100"],
         "type": "number"
       },
       "evmPrivateEncrypted": {
+        "description": "The encrypted key to use for permit generation",
+        "examples": ["0x000..."],
         "type": "string"
       },
       "erc20RewardToken": {
@@ -22,10 +26,13 @@
         "type": "object",
         "properties": {
           "file": {
+            "description": "Specify a file to write the results in",
+            "examples": ["./result.json"],
             "type": "string"
           },
           "requirePriceLabel": {
             "default": true,
+            "description": "If set to false, the plugin runs even if the price label is missing, and will evaluate comments.",
             "type": "boolean"
           },
           "limitRewards": {
@@ -45,11 +52,15 @@
                     "properties": {
                       "model": {
                         "default": "gpt-4o-2024-08-06",
+                        "description": "OpenAI model, e.g. gpt-4o",
+                        "examples": ["gpt-4o"],
                         "type": "string"
                       },
                       "endpoint": {
                         "default": "https://api.openai.com/v1",
                         "pattern": "^(https?:\\/\\/[^\\s$.?#].\\S*)$",
+                        "description": "OpenAI endpoint for requests",
+                        "examples": ["https://api.openai.com/v1"],
                         "type": "string"
                       }
                     }
@@ -61,11 +72,14 @@
                         "relevance": 1
                       }
                     ],
+                    "description": "Multipliers applied to different types of comments",
                     "type": "array",
                     "items": {
                       "type": "object",
                       "properties": {
                         "role": {
+                          "description": "Roles that this multiplier applies to",
+                          "examples": ["[\"PULL_ASSIGNEE\", \"PULL_AUTHOR\", \"PULL_COLLABORATOR\"]"],
                           "type": "array",
                           "items": {
                             "anyOf": [
@@ -233,6 +247,8 @@
                           }
                         },
                         "relevance": {
+                          "description": "Relevance multiplier for this role",
+                          "examples": ["2"],
                           "type": "number"
                         }
                       },
@@ -254,6 +270,7 @@
                 "properties": {
                   "redeemTask": {
                     "default": true,
+                    "description": "Is the task redeemable, e.g. can the user collect the bounty?",
                     "type": "boolean"
                   }
                 }
@@ -303,6 +320,7 @@
                 "type": "object",
                 "properties": {
                   "multipliers": {
+                    "description": "Multipliers applied to different parts of the comment according the role of the author",
                     "default": [
                       {
                         "role": ["ISSUE_SPECIFICATION"],
@@ -1201,6 +1219,8 @@
                       "properties": {
                         "role": {
                           "minItems": 1,
+                          "description": "The list of roles this multiplier applies to",
+                          "examples": ["[\"PULL_ASSIGNEE\", \"PULL_AUTHOR\", \"PULL_COLLABORATOR\"]"],
                           "type": "array",
                           "items": {
                             "anyOf": [
@@ -1368,6 +1388,8 @@
                           }
                         },
                         "multiplier": {
+                          "examples": ["1"],
+                          "description": "Multiplier for the given list of roles",
                           "type": "number"
                         },
                         "rewards": {
@@ -1375,6 +1397,7 @@
                           "type": "object",
                           "properties": {
                             "html": {
+                              "description": "Attributed score per HTML entity",
                               "default": {
                                 "br": {
                                   "score": 0,
@@ -1463,10 +1486,13 @@
                                   "type": "object",
                                   "properties": {
                                     "score": {
+                                      "description": "Score per word in the entity",
+                                      "examples": ["0.1"],
                                       "type": "number"
                                     },
                                     "countWords": {
                                       "default": true,
+                                      "description": "Whether to count words in the entity",
                                       "type": "boolean"
                                     }
                                   },
@@ -1476,6 +1502,7 @@
                             },
                             "wordValue": {
                               "default": 0.1,
+                              "description": "Value multiplier for each word",
                               "type": "number"
                             }
                           }
@@ -1486,6 +1513,8 @@
                   },
                   "wordCountExponent": {
                     "default": 0.85,
+                    "description": "Exponent applied to the word count total",
+                    "examples": ["0.85"],
                     "type": "number"
                   }
                 }
@@ -1516,10 +1545,12 @@
                 "properties": {
                   "post": {
                     "default": true,
+                    "description": "Enables posting to the related GitHub Issue",
                     "type": "boolean"
                   },
                   "debug": {
                     "default": false,
+                    "description": "Enables debug by creating a local html file of the rendered comment",
                     "type": "boolean"
                   }
                 }
@@ -1538,11 +1569,15 @@
           "maxAttempts": {
             "default": 10,
             "minimum": 1,
+            "description": "The maximum amount of retries on failure",
+            "examples": ["10"],
             "type": "number"
           },
           "delayMs": {
             "default": 1000,
             "minimum": 100,
+            "description": "The delay between each retry, in milliseconds",
+            "examples": ["1000"],
             "type": "number"
           }
         }

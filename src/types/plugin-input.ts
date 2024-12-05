@@ -14,11 +14,14 @@ export const pluginSettingsSchema = T.Object(
     /**
      * Network ID to run in, default to 100
      */
-    evmNetworkId: T.Number({ default: 100 }),
+    evmNetworkId: T.Number({ default: 100, description: "Network ID to run in, default to 100", examples: ["100"] }),
     /**
      * The encrypted key to use for permit generation
      */
-    evmPrivateEncrypted: T.String(),
+    evmPrivateEncrypted: T.String({
+      description: "The encrypted key to use for permit generation",
+      examples: ["0x000..."],
+    }),
     /**
      * Reward token for ERC20 permits, default WXDAI for gnosis chain
      */
@@ -28,11 +31,17 @@ export const pluginSettingsSchema = T.Object(
         /**
          * Optionally specify a file to write the results in
          */
-        file: T.Optional(T.String()),
+        file: T.Optional(
+          T.String({ description: "Specify a file to write the results in", examples: ["./result.json"] })
+        ),
         /**
          * If set to false, the plugin runs even if the price label is missing, and will evaluate comments.
          */
-        requirePriceLabel: T.Boolean({ default: true }),
+        requirePriceLabel: T.Boolean({
+          default: true,
+          description:
+            "If set to false, the plugin runs even if the price label is missing, and will evaluate comments.",
+        }),
         limitRewards: T.Boolean({
           default: true,
           description: "Should the rewards of non-assignees be limited to the task reward?",
