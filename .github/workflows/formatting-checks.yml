@@ -13,14 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20.10.0"
+      - uses: oven-sh/setup-bun@v2
 
       - name: Run formatting checks
         run: |
-          yarn install
-          yarn eslint --fix-dry-run --ignore-pattern dist/
-          yarn format:cspell
-          yarn prettier --check .
+          bun install
+          bun eslint --fix-dry-run --ignore-pattern dist/
+          bun format:cspell
+          bun prettier --check .

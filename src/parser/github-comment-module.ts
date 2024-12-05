@@ -44,6 +44,12 @@ export class GithubCommentModule extends BaseModule {
   async getBodyContent(result: Result, stripContent = false): Promise<string> {
     const keysToRemove: string[] = [];
     const bodyArray: (string | undefined)[] = [];
+    const taskReward = Object.values(result).reduce((acc, curr) => {
+      if (curr.task) {
+        return curr.task.reward * curr.task.multiplier;
+      }
+      return acc;
+    }, 0);
 
     if (stripContent) {
       this.context.logger.info("Stripping content due to excessive length.");
@@ -52,7 +58,7 @@ export class GithubCommentModule extends BaseModule {
       for (const [key, value] of Object.entries(result)) {
         // Remove result with 0 total from being displayed
         if (result[key].total <= 0) continue;
-        result[key].evaluationCommentHtml = await this._generateHtml(key, value, true);
+        result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
         bodyArray.push(result[key].evaluationCommentHtml);
       }
       bodyArray.push(
@@ -69,7 +75,7 @@ export class GithubCommentModule extends BaseModule {
         keysToRemove.push(key);
         continue;
       }
-      result[key].evaluationCommentHtml = await this._generateHtml(key, value);
+      result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
     // Remove evaluationCommentHtml because it is superfluous
@@ -255,7 +261,7 @@ export class GithubCommentModule extends BaseModule {
     return content.join("");
   }
 
-  async _generateHtml(username: string, result: Result[0], stripComments = false) {
+  async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
         if (curr.type & CommentKind.ISSUE) {
@@ -277,6 +283,9 @@ export class GithubCommentModule extends BaseModule {
       this.context.config.erc20RewardToken
     );
 
+    const rewardsSum = result.comments?.reduce<number>((acc, curr) => acc + (curr.score?.reward ?? 0), 0) ?? 0;
+    const isCapped = result.total < rewardsSum;
+
     return `
     <details>
       <summary>
@@ -294,6 +303,7 @@ export class GithubCommentModule extends BaseModule {
         </b>
       </summary>
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
+      ${isCapped ? `<h6>⚠️ Your rewards have been limited to the task price of ${taskReward} ${tokenSymbol}.</h6>` : ""}
       <h6>Contributions Overview</h6>
       <table>
         <thead>
@@ -302,7 +312,6 @@ export class GithubCommentModule extends BaseModule {
             <th>Contribution</th>
             <th>Count</th>
             <th>Reward</th>
-
           </tr>
         </thead>
         <tbody>
