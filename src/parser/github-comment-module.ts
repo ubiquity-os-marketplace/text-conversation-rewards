@@ -13,6 +13,8 @@ import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result } from "../types/results";
+import { postComment } from "@ubiquity-os/plugin-sdk";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -110,13 +112,20 @@ export class GithubCommentModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const isIssueCollaborative = isCollaborative(data);
+    const isUserAdmin = data.self?.user ? await isAdmin(data.self.user.login, this.context) : false;
     const body = await this.getBodyContent(result);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
     if (this._configuration?.post) {
       try {
-        await this.postComment(body);
+        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
+          await this.postComment(body);
+        } else {
+          const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
+          await postComment(this.context, errorLog);
+        }
       } catch (e) {
         this.context.logger.error(`Could not post GitHub comment: ${e}`);
       }

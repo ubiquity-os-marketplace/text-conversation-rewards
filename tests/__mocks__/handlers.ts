@@ -131,6 +131,22 @@ export const handlers = [
     }
     return HttpResponse.json(user);
   }),
+  http.get("https://api.github.com/orgs/:org/memberships/:username", ({ params }) => {
+    const { username } = params;
+
+    if (username === "0x4007") {
+      return HttpResponse.json({
+        data: {
+          role: "admin"
+        }
+      });
+    }
+    return HttpResponse.json({
+      data: {
+        role: "member"
+      }
+    });
+  }),
   http.post("https://api.github.com/app/installations/48381972/access_tokens", () => {
     return HttpResponse.json({});
   }),
