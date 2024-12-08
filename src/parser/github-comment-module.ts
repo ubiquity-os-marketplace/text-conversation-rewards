@@ -292,8 +292,10 @@ export class GithubCommentModule extends BaseModule {
       this.context.config.erc20RewardToken
     );
 
-    const rewardsSum = result.comments?.reduce<number>((acc, curr) => acc + (curr.score?.reward ?? 0), 0) ?? 0;
-    const isCapped = result.total < rewardsSum;
+    const rewardsSum =
+      result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
+      new Decimal(0);
+    const isCapped = rewardsSum.gt(taskReward);
 
     return `
     <details>
