@@ -8,6 +8,23 @@ import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
 
+async function isUserAllowedToGeneratePermits(context: ContextPlugin) {
+  const { octokit, payload } = context;
+  const username = payload.sender.login;
+  console.log("+++++ check", username);
+  try {
+    const { data } = await octokit.rest.orgs.getMembershipForUser({
+      org: payload.repository.owner.login,
+      username,
+    });
+    console.log(data);
+    return true;
+  } catch (e) {
+    context.logger.debug(`${username} is not a member of ${context.payload.repository.owner.login}`, { e });
+    return false;
+  }
+}
+
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config } = context;
 
@@ -21,6 +38,12 @@ export async function run(context: ContextPlugin) {
 
   if (!(await preCheck(context))) {
     const result = logger.error("All linked pull requests must be closed to generate rewards.");
+    await postComment(context, result);
+    return result.logMessage.raw;
+  }
+
+  if (!(await isUserAllowedToGeneratePermits(context))) {
+    const result = logger.error("You are not allowed to generate permits.");
     await postComment(context, result);
     return result.logMessage.raw;
   }
