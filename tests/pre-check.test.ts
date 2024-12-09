@@ -103,4 +103,39 @@ describe("Pre-check tests", () => {
     expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
     expect(patchMock).toHaveBeenCalled();
   });
+
+  it("Should not generate a permit if non-collaborator user is merging / closing the issue", async () => {
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: jest.fn(() => []),
+    }));
+    const patchMock = jest.fn(() => HttpResponse.json({}));
+    server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
+    const { run } = await import("../src/run");
+
+    const result = await run({
+      eventName: "issues.closed",
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717,
+          },
+        },
+        sender: {
+          login: "non-collaborator",
+        },
+      },
+      config: cfg,
+      logger: new Logs("debug"),
+      octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+    } as unknown as ContextPlugin);
+
+    expect(result).toEqual("You are not allowed to generate permits.");
+  });
 });

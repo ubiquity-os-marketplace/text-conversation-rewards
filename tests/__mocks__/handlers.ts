@@ -140,6 +140,8 @@ export const handlers = [
           role: "admin"
         }
       });
+    } else if (username === "non-collaborator") {
+      return HttpResponse.json({}, { status: 404 });
     }
     return HttpResponse.json({
       data: {
