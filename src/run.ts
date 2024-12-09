@@ -11,13 +11,11 @@ import { Result } from "./types/results";
 async function isUserAllowedToGeneratePermits(context: ContextPlugin) {
   const { octokit, payload } = context;
   const username = payload.sender.login;
-  console.log("+++++ check", username);
   try {
-    const { data } = await octokit.rest.orgs.getMembershipForUser({
+    await octokit.rest.orgs.getMembershipForUser({
       org: payload.repository.owner.login,
       username,
     });
-    console.log(data);
     return true;
   } catch (e) {
     context.logger.debug(`${username} is not a member of ${context.payload.repository.owner.login}`, { e });
