@@ -22,45 +22,6 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
-    {
-      id: "PR_kwDOKzVPS85zXUoj",
-      title: "fix: add state to sorting manager for bottom and top",
-      number: 70,
-      url: "https://github.com/ubiquity/work.ubq.fi/pull/70",
-      state: "OPEN",
-      author: {
-        login: "0x4007",
-        id: 4975670,
-      },
-      repository: {
-        owner: {
-          login: "ubiquity",
-        },
-        name: "work.ubq.fi",
-      },
-    },
-    {
-      id: "PR_kwDOKzVPS85zXUok",
-      title: "fix: add state to sorting manager for bottom and top 2",
-      number: 71,
-      url: "https://github.com/ubiquity/work.ubq.fi/pull/71",
-      state: "MERGED",
-      author: {
-        login: "0x4007",
-        id: 4975670,
-      },
-      repository: {
-        owner: {
-          login: "ubiquity",
-        },
-        name: "work.ubq.fi",
-      },
-    },
-  ]),
-}));
-
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -74,9 +35,49 @@ describe("Pre-check tests", () => {
         db[tableName].create(row);
       }
     }
+    jest.resetModules();
+    jest.resetAllMocks();
   });
 
   it("Should reopen the issue and not generate rewards if linked pull-requests are still open", async () => {
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: jest.fn(() => [
+        {
+          id: "PR_kwDOKzVPS85zXUoj",
+          title: "fix: add state to sorting manager for bottom and top",
+          number: 70,
+          url: "https://github.com/ubiquity/work.ubq.fi/pull/70",
+          state: "OPEN",
+          author: {
+            login: "0x4007",
+            id: 4975670,
+          },
+          repository: {
+            owner: {
+              login: "ubiquity",
+            },
+            name: "work.ubq.fi",
+          },
+        },
+        {
+          id: "PR_kwDOKzVPS85zXUok",
+          title: "fix: add state to sorting manager for bottom and top 2",
+          number: 71,
+          url: "https://github.com/ubiquity/work.ubq.fi/pull/71",
+          state: "MERGED",
+          author: {
+            login: "0x4007",
+            id: 4975670,
+          },
+          repository: {
+            owner: {
+              login: "ubiquity",
+            },
+            name: "work.ubq.fi",
+          },
+        },
+      ]),
+    }));
     const patchMock = jest.fn(() => HttpResponse.json({}));
     server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
     const { run } = await import("../src/run");
