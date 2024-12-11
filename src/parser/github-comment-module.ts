@@ -295,7 +295,8 @@ export class GithubCommentModule extends BaseModule {
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
       new Decimal(0);
-    const isCapped = rewardsSum.gt(taskReward);
+    // The task reward can be 0 if either there is no pricing tag or if there is no assignee
+    const isCapped = taskReward > 0 && rewardsSum.gt(taskReward);
 
     return `
     <details>
