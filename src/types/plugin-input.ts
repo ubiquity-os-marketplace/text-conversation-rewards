@@ -47,7 +47,7 @@ export const pluginSettingsSchema = T.Object(
           description: "Should the rewards of non-assignees be limited to the task reward?",
         }),
         collaboratorOnlyPaymentInvocation: T.Boolean({
-          default: false,
+          default: true,
           description: "If true, will allow contributors to generate permits.",
         }),
         contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()], { default: null }),

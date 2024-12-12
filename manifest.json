@@ -41,7 +41,7 @@
             "type": "boolean"
           },
           "collaboratorOnlyPaymentInvocation": {
-            "default": false,
+            "default": true,
             "description": "If true, will allow contributors to generate permits.",
             "type": "boolean"
           },
