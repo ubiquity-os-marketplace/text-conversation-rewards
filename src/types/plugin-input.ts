@@ -46,7 +46,7 @@ export const pluginSettingsSchema = T.Object(
           default: true,
           description: "Should the rewards of non-assignees be limited to the task reward?",
         }),
-        allowContributorGeneration: T.Boolean({
+        collaboratorOnlyPaymentInvocation: T.Boolean({
           default: false,
           description: "If true, will allow contributors to generate permits.",
         }),

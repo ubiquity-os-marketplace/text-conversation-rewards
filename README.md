@@ -83,7 +83,7 @@ with:
   incentives:
     requirePriceLabel: true
     limitRewards: true
-    allowContributorGeneration: false
+    collaboratorOnlyPaymentInvocation: false
     contentEvaluator:
       openAi:
         model: "gpt-4o"
