@@ -1,20 +1,21 @@
 import { Value } from "@sinclair/typebox/value";
+import { postComment } from "@ubiquity-os/plugin-sdk";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { JSDOM } from "jsdom";
 import { stringify } from "yaml";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
+import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
 import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result } from "../types/results";
-import { postComment } from "@ubiquity-os/plugin-sdk";
-import { isAdmin, isCollaborative } from "../helpers/checkers";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -43,15 +44,10 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
-  async getBodyContent(result: Result, stripContent = false): Promise<string> {
+  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const keysToRemove: string[] = [];
     const bodyArray: (string | undefined)[] = [];
-    const taskReward = Object.values(result).reduce((acc, curr) => {
-      if (curr.task) {
-        return curr.task.reward * curr.task.multiplier;
-      }
-      return acc;
-    }, 0);
+    const taskReward = getTaskReward(data.self, result);
 
     if (stripContent) {
       this.context.logger.info("Stripping content due to excessive length.");
@@ -105,7 +101,7 @@ export class GithubCommentModule extends BaseModule {
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
         return newBody;
       } else {
-        return this.getBodyContent(result, true);
+        return this.getBodyContent(data, result, true);
       }
     }
     return body;
@@ -114,7 +110,7 @@ export class GithubCommentModule extends BaseModule {
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const isIssueCollaborative = isCollaborative(data);
     const isUserAdmin = data.self?.user ? await isAdmin(data.self.user.login, this.context) : false;
-    const body = await this.getBodyContent(result);
+    const body = await this.getBodyContent(data, result);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
