@@ -298,7 +298,11 @@ describe("Modules tests", () => {
   });
   it("Should generate GitHub comment without zero total", async () => {
     const githubCommentModule = new GithubCommentModule(ctx);
-    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
+    const postBody = await githubCommentModule.getBodyContent(
+      // @ts-expect-error only needed to fulfill the function signature
+      {},
+      githubCommentAltResults as unknown as Result
+    );
     expect(postBody).not.toContain("whilefoo");
   });
 

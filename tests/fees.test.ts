@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { IssueActivity } from "../src/issue-activity";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
@@ -66,7 +67,7 @@ describe("GithubCommentModule Fee Tests", () => {
 
     jest.spyOn(githubCommentModule, "_generateHtml");
 
-    const bodyContent = await githubCommentModule.getBodyContent(result);
+    const bodyContent = await githubCommentModule.getBodyContent({} as unknown as IssueActivity, result);
 
     expect(bodyContent).toEqual(
       '<details><summary><b><h3>&nbsp;<a href="https://pay.ubq.fi" target="_blank" rel="noopener">[ 100 WXDAI ]</a>&nbsp;</h3><h6>@ubiquity-os</h6></b></summary><h6>⚠️ 20% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Issue</td><td>Task</td><td>1.5</td><td>50</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody></tbody></table></details>\n' +

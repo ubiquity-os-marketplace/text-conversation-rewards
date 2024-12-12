@@ -11,6 +11,7 @@ afterAll(() => server.close());
 jest.unstable_mockModule("../src/helpers/label-price-extractor", () => {
   return {
     getSortedPrices: jest.fn(() => []),
+    getTaskReward: jest.fn(() => 0),
   };
 });
 
