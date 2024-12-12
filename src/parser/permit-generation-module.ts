@@ -24,6 +24,7 @@ import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
 
 interface Payload {
   evmNetworkId: number;
@@ -38,6 +39,12 @@ export class PermitGenerationModule extends BaseModule {
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const canGeneratePermits = await this._canGeneratePermit(data);
+
+    if (!canGeneratePermits) {
+      this.context.logger.error("[PermitGenerationModule] Non collaborative issue detected, skipping.");
+      return Promise.resolve(result);
+    }
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
@@ -190,6 +197,14 @@ export class PermitGenerationModule extends BaseModule {
     }
 
     return this._deductFeeFromReward(result, treasuryGithubData);
+  }
+
+  async _canGeneratePermit(data: Readonly<IssueActivity>) {
+    if (!data.self?.closed_by || !data.self.user) return false;
+
+    if (await isAdmin(data.self.user.login, this.context)) return true;
+
+    return isCollaborative(data);
   }
 
   _deductFeeFromReward(

@@ -30,7 +30,8 @@
     "mswjs",
     "Rpcs",
     "sonarjs",
-    "pico"
+    "pico",
+    "timespan"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
