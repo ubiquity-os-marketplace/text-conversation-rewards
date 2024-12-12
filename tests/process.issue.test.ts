@@ -357,7 +357,9 @@ describe("Modules tests", () => {
     };
     const result = processor._getRewardsLimit({ labels: [{ name: "Price: 9.25 USD" }] } as unknown as GitHubIssue);
     expect(result).toBe(9.25);
+    let oldLabels = null;
     if (activity.self?.labels) {
+      oldLabels = activity.self.labels;
       activity.self.labels = [{ name: "Price: 9.25 USD" }];
     }
     const total = await processor.run(activity);
@@ -371,6 +373,9 @@ describe("Modules tests", () => {
         total: 9.25,
       },
     });
+    if (oldLabels && activity.self) {
+      activity.self.labels = oldLabels;
+    }
   });
 
   it("Should not limit the assigned user", async () => {
