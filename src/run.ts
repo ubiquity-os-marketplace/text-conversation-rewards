@@ -40,7 +40,7 @@ export async function run(context: ContextPlugin) {
     return result.logMessage.raw;
   }
 
-  if (!(await isUserAllowedToGeneratePermits(context))) {
+  if (!config.incentives.allowContributorGeneration && !(await isUserAllowedToGeneratePermits(context))) {
     const result = logger.error("You are not allowed to generate permits.");
     await postComment(context, result);
     return result.logMessage.raw;
