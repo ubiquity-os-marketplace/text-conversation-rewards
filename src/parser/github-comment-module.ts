@@ -47,7 +47,7 @@ export class GithubCommentModule extends BaseModule {
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const keysToRemove: string[] = [];
     const bodyArray: (string | undefined)[] = [];
-    const taskReward = getTaskReward(data.self, result);
+    const taskReward = getTaskReward(data.self);
 
     if (stripContent) {
       this.context.logger.info("Stripping content due to excessive length.");
