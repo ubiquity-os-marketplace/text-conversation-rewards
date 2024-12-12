@@ -116,8 +116,17 @@ describe("Payload truncate tests", () => {
             id: 76412717,
           },
         },
+        sender: {
+          login: "0x4007",
+          id: 4975670,
+        },
       },
       octokit: {
+        rest: {
+          orgs: {
+            getMembershipForUser: jest.fn(() => ({ status: 200 })),
+          },
+        },
         graphql: {
           paginate: jest.fn(() => ({
             repository: {

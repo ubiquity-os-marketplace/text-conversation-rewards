@@ -40,6 +40,11 @@
             "description": "Should the rewards of non-assignees be limited to the task reward?",
             "type": "boolean"
           },
+          "collaboratorOnlyPaymentInvocation": {
+            "default": false,
+            "description": "If true, will allow contributors to generate permits.",
+            "type": "boolean"
+          },
           "contentEvaluator": {
             "default": null,
             "anyOf": [

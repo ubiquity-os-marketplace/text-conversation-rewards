@@ -11,7 +11,7 @@ import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../typ
 import { getPayload } from "./payload";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 
-const baseApp = createPlugin<PluginSettings, EnvConfig, SupportedEvents>(
+const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
     const { payload, config } = context;
     const issue = parseGitHubUrl(payload.issue.html_url);

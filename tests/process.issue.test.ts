@@ -20,6 +20,7 @@ import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { CommentAssociation } from "../src/configuration/comment-types";
+import { GitHubIssue } from "../src/github-types";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -298,7 +299,11 @@ describe("Modules tests", () => {
   });
   it("Should generate GitHub comment without zero total", async () => {
     const githubCommentModule = new GithubCommentModule(ctx);
-    const postBody = await githubCommentModule.getBodyContent(githubCommentAltResults as unknown as Result);
+    const postBody = await githubCommentModule.getBodyContent(
+      // @ts-expect-error only needed to fulfill the function signature
+      {},
+      githubCommentAltResults as unknown as Result
+    );
     expect(postBody).not.toContain("whilefoo");
   });
 
@@ -314,7 +319,7 @@ describe("Modules tests", () => {
           },
         },
       });
-      const result = processor._getRewardsLimit();
+      const result = processor._getRewardsLimit({} as unknown as GitHubIssue);
       expect(result).toBe(Infinity);
     });
   });
@@ -350,8 +355,13 @@ describe("Modules tests", () => {
         userId: 1,
       },
     };
-    const result = processor._getRewardsLimit();
+    const result = processor._getRewardsLimit({ labels: [{ name: "Price: 9.25 USD" }] } as unknown as GitHubIssue);
     expect(result).toBe(9.25);
+    let oldLabels = null;
+    if (activity.self?.labels) {
+      oldLabels = activity.self.labels;
+      activity.self.labels = [{ name: "Price: 9.25 USD" }];
+    }
     const total = await processor.run(activity);
     expect(total).toMatchObject({
       user1: { total: 9.25, task: { multiplier: 0.5, reward: 18.5 }, userId: 0 },
@@ -363,6 +373,9 @@ describe("Modules tests", () => {
         total: 9.25,
       },
     });
+    if (oldLabels && activity.self) {
+      activity.self.labels = oldLabels;
+    }
   });
 
   it("Should not limit the assigned user", async () => {
@@ -408,7 +421,7 @@ describe("Modules tests", () => {
         userId: 1,
       },
     };
-    const result = processor._getRewardsLimit();
+    const result = processor._getRewardsLimit({ labels: [{ name: "Price: 9.25 USD" }] } as unknown as GitHubIssue);
     expect(result).toBe(9.25);
     const total = await processor.run(activity);
     expect(total).toMatchObject({
