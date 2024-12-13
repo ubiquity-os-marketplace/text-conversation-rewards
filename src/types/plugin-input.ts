@@ -48,7 +48,7 @@ export const pluginSettingsSchema = T.Object(
         }),
         collaboratorOnlyPaymentInvocation: T.Boolean({
           default: true,
-          description: "If true, will allow contributors to generate permits.",
+          description: "If false, will allow contributors to generate permits.",
         }),
         contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()], { default: null }),
         userExtractor: T.Union([userExtractorConfigurationType, T.Null()], { default: null }),
