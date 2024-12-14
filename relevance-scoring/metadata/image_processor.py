@@ -48,6 +48,7 @@ if __name__ == "__main__":
     
     # Sample image URL
     image_url = "https://th.bing.com/th?id=ORMS.99706f16f78dd7e84c31c95eef897656&pid=Wdp&w=268&h=140&qlt=90&c=1&rs=1&dpr=1.5&p=0"
+    
     # Generate and print metadata
     metadata = generate_image_description(image_url, caption_generator)
     print(metadata)
