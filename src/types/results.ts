@@ -11,6 +11,10 @@ export interface Result {
     feeRate?: number;
     permitUrl?: string;
     userId: number;
+    reviewReward?: {
+      reviewDiffReward: number;
+      reviewBaseReward: number;
+    };
     evaluationCommentHtml?: string;
   };
 }
