@@ -12,8 +12,8 @@ export interface Result {
     permitUrl?: string;
     userId: number;
     reviewReward?: {
-      reviewDiffReward: number;
-      reviewBaseReward: number;
+      reviews?: ReviewScore[];
+      reviewBaseReward?: { reward: number };
     };
     evaluationCommentHtml?: string;
   };
@@ -23,6 +23,15 @@ export interface WordResult {
   wordCount: number;
   wordValue: number;
   result: number;
+}
+
+export interface ReviewScore {
+  reviewId: number;
+  effect: {
+    addition: number;
+    deletion: number;
+  };
+  reward: number;
 }
 
 export interface GithubCommentScore {

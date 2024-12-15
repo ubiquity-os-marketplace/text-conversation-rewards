@@ -7,6 +7,9 @@ incentives:
   dataPurge: {}
   formattingEvaluator: {}
   permitGeneration: {}
+  reviewIncentivizer:
+    baseRate: 100
+    conclusiveReviewCredit: 25
   githubComment:
     post: false
     debug: false

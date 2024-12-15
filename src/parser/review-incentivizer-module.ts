@@ -5,7 +5,7 @@ import {
 } from "../configuration/review-incentivizer-config";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { Result } from "../types/results";
+import { Result, ReviewScore } from "../types/results";
 import { ContextPlugin } from "../types/plugin-input";
 import { collectLinkedMergedPulls } from "../data-collection/collect-linked-pulls";
 import { getPullRequestReviews } from "../start";
@@ -53,50 +53,20 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
-      const reviewReward: {
-        reviewDiffReward?: number;
-        reviewBaseReward?: number;
-      } = currentElement.reviewReward || {};
+      currentElement.reviewReward = {};
 
-      const reviewsByUser = linkedPullReviews.filter((v) => v.user?.login === key && v.state !== "APPROVED").reverse();
+      const reviewsByUser = linkedPullReviews.filter((v) => v.user?.login === key);
 
-      reviewReward.reviewBaseReward = linkedPullReviews.some((v) => v.state === "APPROVED") ? this._baseRate : 0;
-      reviewReward.reviewDiffReward = await this.calculateReviewsDiffReward(
-        owner,
-        repo,
-        linkedPullNumber,
-        reviewsByUser
-      );
+      currentElement.reviewReward.reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED")
+        ? { reward: this._conclusiveReviewCredit }
+        : { reward: 0 };
+
+      const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
+
+      currentElement.reviewReward.reviews = reviewDiffs;
     }
 
     return result;
-  }
-
-  private async _getPreviousCommit(
-    owner: string,
-    repo: string,
-    pullNumber: number,
-    commitSha: string
-  ): Promise<string | null> {
-    try {
-      const response = await this.context.octokit.rest.pulls.listCommits({
-        owner,
-        repo,
-        pull_number: pullNumber,
-      });
-
-      const commits = response.data;
-      const currentCommitIndex = commits.findIndex((commit) => commit.sha === commitSha);
-
-      if (currentCommitIndex > 0) {
-        return commits[currentCommitIndex - 1].sha;
-      }
-
-      return null;
-    } catch (e) {
-      this.context.logger.error(`Failed to get previous commit for ${commitSha}:`, { e });
-      return null;
-    }
   }
 
   async getTripleDotDiffAsObject(owner: string, repo: string, baseSha: string, headSha: string): Promise<CommitDiff> {
@@ -120,27 +90,33 @@ export class ReviewIncentivizerModule extends BaseModule {
     return diff;
   }
 
-  async calculateReviewsDiffReward(
-    owner: string,
-    repo: string,
-    linkedPullNumber: number,
-    reviewsByUser: GitHubPullRequestReviewState[]
-  ) {
-    const reviewDiffs: CommitDiff[] = [];
-    let reviewDiffReward = 0;
+  async fetchReviewDiffRewards(owner: string, repo: string, reviewsByUser: GitHubPullRequestReviewState[]) {
+    const reviews: ReviewScore[] = [];
 
     for (let i = 0; i < reviewsByUser.length; i++) {
       const currentReview = reviewsByUser[i];
       const nextReview = reviewsByUser[i + 1];
 
-      if (currentReview.commit_id && nextReview?.commit_id) {
+      if (currentReview.commit_id && nextReview?.commit_id && currentReview.state !== "APPROVED") {
         const baseSha = currentReview.commit_id;
-        const headSha = await this._getPreviousCommit(owner, repo, linkedPullNumber, nextReview.commit_id);
+        const headSha = nextReview.commit_id;
 
         if (headSha) {
           try {
             const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
-            reviewDiffs.push(diff);
+            const reviewEffect = { addition: 0, deletion: 0 };
+            Object.keys(diff).forEach((fileName) => {
+              if (fileName !== "yarn.lock") {
+                const changes = diff[fileName];
+                reviewEffect.addition += changes.addition;
+                reviewEffect.deletion += changes.deletion;
+              }
+            });
+            reviews.push({
+              reviewId: currentReview.id,
+              effect: reviewEffect,
+              reward: reviewEffect.addition + reviewEffect.deletion,
+            });
           } catch (e) {
             this.context.logger.error(`Failed to get diff between commits ${baseSha} and ${headSha}:`, { e });
           }
@@ -148,15 +124,15 @@ export class ReviewIncentivizerModule extends BaseModule {
       }
     }
 
-    for (const reviewDiff of reviewDiffs) {
-      Object.keys(reviewDiff).forEach((fileName) => {
-        // ignoring generated files
+    return reviews;
+  }
 
-        const changes = reviewDiff[fileName];
-        reviewDiffReward += changes.addition + changes.deletion;
-      });
+  async calculateReviewsDiffReward(reviews: ReviewScore[]) {
+    let reviewReward = 0;
+    for (const review of reviews) {
+      reviewReward += review.effect.addition + review.effect.deletion;
     }
-    return reviewDiffReward;
+    return reviewReward / this._baseRate;
   }
 
   get enabled(): boolean {

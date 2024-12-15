@@ -15,7 +15,7 @@ import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
 import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { GithubCommentScore, Result } from "../types/results";
+import { GithubCommentScore, Result, ReviewScore } from "../types/results";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -164,15 +164,6 @@ export class GithubCommentModule extends BaseModule {
 
   _createContributionRows(result: Result[0], sortedTasks: SortedTasks | undefined) {
     const content: string[] = [];
-
-    if (result.task?.reward) {
-      content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
-    }
-
-    if (!sortedTasks) {
-      return content.join("");
-    }
-
     function buildContributionRow(
       view: string,
       contribution: string,
@@ -186,6 +177,36 @@ export class GithubCommentModule extends BaseModule {
             <td>${count}</td>
             <td>${reward || "-"}</td>
           </tr>`;
+    }
+
+    if (result.task?.reward) {
+      content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
+    }
+
+    if (result.reviewReward && this.context.config.incentives.reviewIncentivizer?.baseRate) {
+      if (result.reviewReward.reviewBaseReward?.reward) {
+        content.push(buildContributionRow("Review", "Base Review", 1, result.reviewReward.reviewBaseReward.reward));
+      }
+
+      const reviewCount = result.reviewReward.reviews?.length ?? 0;
+
+      const totalReviewReward =
+        result.reviewReward.reviews?.reduce((sum, review) => sum.add(review.reward), new Decimal(0)) ?? new Decimal(0);
+
+      if (reviewCount > 0) {
+        content.push(
+          buildContributionRow(
+            "Review",
+            "Code Review",
+            reviewCount,
+            totalReviewReward.toNumber() / this.context.config.incentives.reviewIncentivizer?.baseRate
+          )
+        );
+      }
+    }
+
+    if (!sortedTasks) {
+      return content.join("");
     }
 
     if (sortedTasks.issues.specification) {
@@ -266,6 +287,37 @@ export class GithubCommentModule extends BaseModule {
     return content.join("");
   }
 
+  _createReviewRows(result: Result[0]) {
+    if (!result.reviewReward?.reviews?.length || !this.context.config.incentives.reviewIncentivizer?.baseRate) {
+      return "";
+    }
+    const baseRate = this.context.config.incentives.reviewIncentivizer?.baseRate;
+    function buildReviewRow(review: ReviewScore) {
+      return `
+          <tr>
+            <td>${review.reviewId}</td>
+            <td>+${review.effect.addition} -${review.effect.deletion}</td>
+            <td>${(review.effect.addition + review.effect.deletion) / baseRate}</td>
+          </tr>`;
+    }
+
+    const rows = result.reviewReward.reviews.map(buildReviewRow).join("");
+
+    return `
+      <h6>Review Details</h6>
+      <table>
+        <thead>
+          <tr>
+            <th>Review ID</th>
+            <th>Changes</th>
+            <th>Reward</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>`;
+  }
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
@@ -291,7 +343,6 @@ export class GithubCommentModule extends BaseModule {
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
       new Decimal(0);
-    // The task reward can be 0 if either there is no pricing tag or if there is no assignee
     const isCapped = taskReward > 0 && rewardsSum.gt(taskReward);
 
     return `
@@ -326,6 +377,7 @@ export class GithubCommentModule extends BaseModule {
           ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
+      ${!stripComments ? this._createReviewRows(result) : ""}
       ${
         !stripComments
           ? `<h6>Conversation Incentives</h6>
@@ -347,8 +399,8 @@ export class GithubCommentModule extends BaseModule {
       }
     </details>
     `
-      .replace(/(\r?\n|\r)\s*/g, "") // Remove newlines and leading spaces/tabs after them
-      .replace(/\s*(<\/?[^>]+>)\s*/g, "$1") // Trim spaces around HTML tags
+      .replace(/(\r?\n|\r)\s*/g, "")
+      .replace(/\s*(<\/?[^>]+>)\s*/g, "$1")
       .trim();
   }
 }

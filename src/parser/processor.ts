@@ -13,6 +13,7 @@ import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { GitHubIssue } from "../github-types";
+import { ReviewIncentivizerModule } from "./review-incentivizer-module";
 
 export class Processor {
   private _transformers: Module[] = [];
@@ -25,6 +26,7 @@ export class Processor {
       .add(new DataPurgeModule(context))
       .add(new FormattingEvaluatorModule(context))
       .add(new ContentEvaluatorModule(context))
+      .add(new ReviewIncentivizerModule(context))
       .add(new PermitGenerationModule(context))
       .add(new GithubCommentModule(context));
     this._context = context;
@@ -70,10 +72,9 @@ export class Processor {
 
   _sumRewards(obj: Record<string, unknown>, taskRewardLimit = Infinity) {
     let totalReward = new Decimal(0);
-
     for (const [key, value] of Object.entries(obj)) {
       if (key === "reward" && typeof value === "number") {
-        totalReward = totalReward.add(Math.min(value, taskRewardLimit));
+        totalReward = totalReward.add(value);
       } else if (typeof value === "object") {
         totalReward = totalReward.add(
           Math.min(this._sumRewards(value as Record<string, unknown>, taskRewardLimit), taskRewardLimit)
@@ -81,6 +82,6 @@ export class Processor {
       }
     }
 
-    return totalReward.toNumber();
+    return Math.min(totalReward.toNumber(), taskRewardLimit);
   }
 }
