@@ -295,7 +295,6 @@ export class GithubCommentModule extends BaseModule {
     function buildReviewRow(review: ReviewScore) {
       return `
           <tr>
-            <td>${review.reviewId}</td>
             <td>+${review.effect.addition} -${review.effect.deletion}</td>
             <td>${(review.effect.addition + review.effect.deletion) / baseRate}</td>
           </tr>`;
