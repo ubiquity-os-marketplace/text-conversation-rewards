@@ -137,7 +137,7 @@ export class ReviewIncentivizerModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(reviewIncentivizerConfigurationType, this._configuration)) {
-      this.context.logger.error("Invalid / missing configuration detected for ReviweIncentivizerModule, disabling.");
+      this.context.logger.error("Invalid / missing configuration detected for ReviewIncentivizerModule, disabling.");
       return false;
     }
     return true;
