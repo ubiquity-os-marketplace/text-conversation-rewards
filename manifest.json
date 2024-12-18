@@ -317,6 +317,27 @@
               }
             ]
           },
+          "reviewIncentivizer": {
+            "default": null,
+            "anyOf": [
+              {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "baseRate": {
+                    "type": "number"
+                  },
+                  "conclusiveReviewCredit": {
+                    "type": "number"
+                  }
+                },
+                "required": ["baseRate", "conclusiveReviewCredit"]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "formattingEvaluator": {
             "default": null,
             "anyOf": [
