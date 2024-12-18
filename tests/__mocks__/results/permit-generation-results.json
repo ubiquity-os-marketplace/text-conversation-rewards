@@ -25,7 +25,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 16.448,
+          "reward": 14.848,
           "words": {
             "result": 2.64,
             "wordCount": 47,
@@ -51,7 +51,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 7.552,
+          "reward": 6.752,
           "words": {
             "result": 1.11,
             "wordCount": 17,
@@ -89,7 +89,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 87.072,
+          "reward": 77.472,
           "words": {
             "result": 12.21,
             "wordCount": 285,
@@ -123,7 +123,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 59.776,
+          "reward": 52.576,
           "words": {
             "result": 7.43,
             "wordCount": 159,
@@ -157,7 +157,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 47.904,
+          "reward": 42.304,
           "words": {
             "result": 6.22,
             "wordCount": 129,
@@ -199,7 +199,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 74.624,
+          "reward": 65.824,
           "words": {
             "result": 9.57,
             "wordCount": 214,
@@ -237,7 +237,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 47.776,
+          "reward": 41.376,
           "words": {
             "result": 4.93,
             "wordCount": 98,
@@ -271,7 +271,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 35.616,
+          "reward": 31.616,
           "words": {
             "result": 4.88,
             "wordCount": 97,
@@ -297,7 +297,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 9.6,
+          "reward": 8.8,
           "words": {
             "result": 1.75,
             "wordCount": 29,
@@ -323,7 +323,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.092,
+          "reward": 3.892,
           "words": {
             "result": 0.39,
             "wordCount": 5,
@@ -350,7 +350,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.456,
+          "reward": 4.256,
           "words": {
             "result": 0.52,
             "wordCount": 7,
@@ -377,7 +377,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 11.644,
+          "reward": 10.444,
           "words": {
             "result": 2.73,
             "wordCount": 49,
@@ -404,7 +404,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.288,
+          "reward": 4.088,
           "words": {
             "result": 0.46,
             "wordCount": 6,
@@ -435,7 +435,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 16.76,
+          "reward": 13.16,
           "words": {
             "result": 1.7,
             "wordCount": 28,
@@ -466,7 +466,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 10.632,
+          "reward": 8.232,
           "words": {
             "result": 0.94,
             "wordCount": 14,
@@ -501,7 +501,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 12.172,
+          "reward": 9.772,
           "words": {
             "result": 1.49,
             "wordCount": 24,
@@ -528,7 +528,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.092,
+          "reward": 3.892,
           "words": {
             "result": 0.39,
             "wordCount": 5,
@@ -555,7 +555,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.652,
+          "reward": 4.452,
           "words": {
             "result": 0.59,
             "wordCount": 8,
@@ -590,7 +590,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 25.744,
+          "reward": 20.944,
           "words": {
             "result": 3.48,
             "wordCount": 65,
@@ -617,7 +617,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 8.032,
+          "reward": 6.832,
           "words": {
             "result": 1.44,
             "wordCount": 23,
@@ -644,7 +644,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.092,
+          "reward": 3.892,
           "words": {
             "result": 0.39,
             "wordCount": 5,
@@ -675,7 +675,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 15.416,
+          "reward": 11.816,
           "words": {
             "result": 1.22,
             "wordCount": 19,
@@ -702,7 +702,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 8.312,
+          "reward": 7.112,
           "words": {
             "result": 1.54,
             "wordCount": 25,
@@ -729,7 +729,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.456,
+          "reward": 4.256,
           "words": {
             "result": 0.52,
             "wordCount": 7,
@@ -756,7 +756,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 4.504,
+          "reward": 3.304,
           "words": {
             "result": 0.18,
             "wordCount": 2,
@@ -783,7 +783,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.652,
+          "reward": 4.452,
           "words": {
             "result": 0.59,
             "wordCount": 8,
@@ -810,7 +810,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 4.504,
+          "reward": 3.304,
           "words": {
             "result": 0.18,
             "wordCount": 2,
@@ -841,7 +841,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 17.04,
+          "reward": 13.44,
           "words": {
             "result": 1.8,
             "wordCount": 30,
@@ -868,7 +868,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 10.58,
+          "reward": 9.38,
           "words": {
             "result": 2.35,
             "wordCount": 41,
@@ -895,7 +895,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 26.14,
+          "reward": 22.54,
           "words": {
             "result": 5.05,
             "wordCount": 101,
@@ -922,7 +922,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 8.76,
+          "reward": 7.56,
           "words": {
             "result": 1.7,
             "wordCount": 28,
@@ -948,7 +948,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 6.968,
+          "reward": 5.768,
           "words": {
             "result": 1.06,
             "wordCount": 16,
@@ -959,8 +959,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI2MTYzNTYwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIzMzkyOTQxNzYyNzkzOTc1NTkzMTc4MTExNTY1OTgzNzk3NDc1ODk0MDM3NDk1NDA0MTMxMjg2MzgyNzgwNDExNjg3NzA4MzUyODg4IiwiZGVhZGxpbmUiOiIxMTU3OTIwODkyMzczMTYxOTU0MjM1NzA5ODUwMDg2ODc5MDc4NTMyNjk5ODQ2NjU2NDA1NjQwMzk0NTc1ODQwMDc5MTMxMjk2Mzk5MzUifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiNjE2MzU2MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg1MzMyODgxNjMzMjk4OWQzY2RiYTY4MjllOWRhMDcwOWU3MDU2OWMzNmRlZWFhNDc1NTY2ODQzZTBlZjY0ODc2MTgwMWQwYmMyY2I0MGI1YjdkNTc3NDc5NzY5MjRlNzgzNDgxODE2NTJlMmUzNjFlNTRiMTVmYTBhYTcwYjAwNTFiIiwibmV0d29ya0lkIjoxMDB9XQ==",
-    "total": 616.356,
+    "total": 528.356,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -985,7 +984,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 19.104,
+          "reward": 16.704,
           "words": {
             "result": 2.22,
             "wordCount": 17,
@@ -1023,7 +1022,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 73.152,
+          "reward": 65.152,
           "words": {
             "result": 10.36,
             "wordCount": 104,
@@ -1057,7 +1056,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 61.696,
+          "reward": 56.096,
           "words": {
             "result": 10.53,
             "wordCount": 106,
@@ -1087,7 +1086,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 61.12,
+          "reward": 57.12,
           "words": {
             "result": 12.85,
             "wordCount": 134,
@@ -1113,7 +1112,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 67.584,
+          "reward": 63.584,
           "words": {
             "result": 14.87,
             "wordCount": 159,
@@ -1139,7 +1138,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 23.296,
+          "reward": 22.496,
           "words": {
             "result": 6.03,
             "wordCount": 55,
@@ -1169,7 +1168,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 35.936,
+          "reward": 34.336,
           "words": {
             "result": 8.73,
             "wordCount": 85,
@@ -1199,7 +1198,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 32.192,
+          "reward": 29.792,
           "words": {
             "result": 6.31,
             "wordCount": 58,
@@ -1237,7 +1236,7 @@
           "multiplier": 1,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 83.008,
+          "reward": 70.208,
           "words": {
             "result": 5.94,
             "wordCount": 54,
@@ -1332,7 +1331,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 84.344,
+          "reward": 69.944,
           "words": {
             "result": 6.49,
             "wordCount": 60,
@@ -1363,7 +1362,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 27.816,
+          "reward": 23.016,
           "words": {
             "result": 2.11,
             "wordCount": 16,
@@ -1394,7 +1393,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 27.2,
+          "reward": 22.4,
           "words": {
             "result": 2,
             "wordCount": 15,
@@ -1425,7 +1424,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 49.76,
+          "reward": 42.56,
           "words": {
             "result": 4.6,
             "wordCount": 40,
@@ -1460,7 +1459,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 47.952,
+          "reward": 35.952,
           "words": {
             "result": 1.42,
             "wordCount": 10,
@@ -1491,7 +1490,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 54.456,
+          "reward": 44.856,
           "words": {
             "result": 4.01,
             "wordCount": 34,
@@ -1518,7 +1517,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 25.304,
+          "reward": 22.904,
           "words": {
             "result": 3.09,
             "wordCount": 25,
@@ -1553,7 +1552,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 50.32,
+          "reward": 43.12,
           "words": {
             "result": 4.7,
             "wordCount": 41,
@@ -1584,7 +1583,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 43.04,
+          "reward": 35.84,
           "words": {
             "result": 3.4,
             "wordCount": 28,
@@ -1615,7 +1614,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 22.552,
+          "reward": 17.752,
           "words": {
             "result": 1.17,
             "wordCount": 8,
@@ -1650,7 +1649,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 57.2,
+          "reward": 47.6,
           "words": {
             "result": 4.5,
             "wordCount": 39,
@@ -1677,7 +1676,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 17.24,
+          "reward": 14.84,
           "words": {
             "result": 1.65,
             "wordCount": 12,
@@ -1704,7 +1703,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 29.896,
+          "reward": 27.496,
           "words": {
             "result": 3.91,
             "wordCount": 33,
@@ -1735,7 +1734,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 56.432,
+          "reward": 51.632,
           "words": {
             "result": 7.22,
             "wordCount": 68,
@@ -1766,7 +1765,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 33.304,
+          "reward": 28.504,
           "words": {
             "result": 3.09,
             "wordCount": 25,
@@ -1793,7 +1792,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 24.688,
+          "reward": 22.288,
           "words": {
             "result": 2.98,
             "wordCount": 24,
@@ -1824,7 +1823,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 31.952,
+          "reward": 24.752,
           "words": {
             "result": 1.42,
             "wordCount": 10,
@@ -1863,7 +1862,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 92.72,
+          "reward": 71.12,
           "words": {
             "result": 3.7,
             "wordCount": 31,
@@ -1894,7 +1893,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 36.16,
+          "reward": 31.36,
           "words": {
             "result": 3.6,
             "wordCount": 30,
@@ -1925,7 +1924,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 158.92,
+          "reward": 122.92,
           "words": {
             "result": 6.95,
             "wordCount": 65,
@@ -1952,7 +1951,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 38.072,
+          "reward": 35.672,
           "words": {
             "result": 5.37,
             "wordCount": 48,
@@ -1987,7 +1986,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 117.568,
+          "reward": 91.168,
           "words": {
             "result": 5.28,
             "wordCount": 47,
@@ -2017,7 +2016,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 29.88,
+          "reward": 22.68,
           "words": {
             "result": 1.05,
             "wordCount": 7,
@@ -2043,7 +2042,7 @@
           "multiplier": 2,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 26.424,
+          "reward": 24.024,
           "words": {
             "result": 3.29,
             "wordCount": 27,
@@ -2054,12 +2053,11 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063348339"
       }
     ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIyMTAyMDg4MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiODMwNzY0Mzc0NDY0OTk1ODkzMDQ2MTExMjg5NjM5MTY3MTAxMDY4ODYxMDI0MzYwMjM4ODE1MjAwNTgzNDY4MDA1Nzg3NTQ0MDE3NTUiLCJkZWFkbGluZSI6IjExNTc5MjA4OTIzNzMxNjE5NTQyMzU3MDk4NTAwODY4NzkwNzg1MzI2OTk4NDY2NTY0MDU2NDAzOTQ1NzU4NDAwNzkxMzEyOTYzOTkzNSJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIyMTAyMDg4MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHgyNmFiMGE2N2I4MWFlMzZiMjQ3NjFkMDYwNjA2MGJlY2NhZGNjNTFhYTJmNTJlYzI4ZmY4OTUwMjI2M2FkNDNlMmEyNzQyYzIzNDkxZDkzMjU0YjM0NzhmMGQ0MGE1YjU3ZjkxZDFiNWRjYmJhMDUwZjI1MjU0NWZkZjRlM2RlNTFiIiwibmV0d29ya0lkIjoxMDB9XQ==",
     "task": {
       "multiplier": 1,
       "reward": 400
     },
-    "total": 2102.088,
+    "total": 1851.688,
     "userId": 9807008
   },
   "whilefoo": {
@@ -2088,7 +2086,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.8,
-          "reward": 15.402,
+          "reward": 13.6,
           "words": {
             "result": 7.99,
             "wordCount": 173,
@@ -2123,7 +2121,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 2.678,
+          "reward": 2.072,
           "words": {
             "result": 0.94,
             "wordCount": 14,
@@ -2150,7 +2148,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 2.098,
+          "reward": 1.792,
           "words": {
             "result": 1.54,
             "wordCount": 25,
@@ -2177,7 +2175,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 1.507,
+          "reward": 1.204,
           "words": {
             "result": 0.71,
             "wordCount": 10,
@@ -2204,7 +2202,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 1.616,
+          "reward": 1.316,
           "words": {
             "result": 0.88,
             "wordCount": 13,
@@ -2231,7 +2229,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 2.033,
+          "reward": 1.736,
           "words": {
             "result": 1.49,
             "wordCount": 24,
@@ -2258,7 +2256,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 1.896,
+          "reward": 1.596,
           "words": {
             "result": 1.28,
             "wordCount": 20,
@@ -2285,7 +2283,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 1.445,
+          "reward": 1.148,
           "words": {
             "result": 0.65,
             "wordCount": 9,
@@ -2316,7 +2314,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 6.386,
+          "reward": 5.18,
           "words": {
             "result": 3.38,
             "wordCount": 63,
@@ -2343,7 +2341,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 1.787,
+          "reward": 1.484,
           "words": {
             "result": 1.11,
             "wordCount": 17,
@@ -2374,7 +2372,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 5.49,
+          "reward": 4.284,
           "words": {
             "result": 2.1,
             "wordCount": 36,
@@ -2401,7 +2399,7 @@
           "multiplier": 0.25,
           "priority": 4,
           "relevance": 0.7,
-          "reward": 1.224,
+          "reward": 0.924,
           "words": {
             "result": 0.32,
             "wordCount": 4,
@@ -2412,7 +2410,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "total": 43.562,
+    "total": 36.336,
     "userId": 139262667
   }
 }
