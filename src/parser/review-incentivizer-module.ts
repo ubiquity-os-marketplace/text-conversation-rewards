@@ -46,6 +46,9 @@ export class ReviewIncentivizerModule extends BaseModule {
         issue_number: data.self?.number,
       })
     ).slice(-1)[0].number;
+
+    this.context.logger.info(`Pull request ${linkedPullNumber} is linked to this issue`);
+
     const linkedPullReviews = await getPullRequestReviews(this.context, {
       owner: owner,
       repo: repo,
@@ -117,7 +120,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             reviews.push({
               reviewId: currentReview.id,
               effect: reviewEffect,
-              reward: reviewEffect.addition + reviewEffect.deletion,
+              reward: ((reviewEffect.addition + reviewEffect.deletion) * priority) / this._baseRate,
               priority: priority,
             });
           } catch (e) {
@@ -128,14 +131,6 @@ export class ReviewIncentivizerModule extends BaseModule {
     }
 
     return reviews;
-  }
-
-  async calculateReviewsDiffReward(reviews: ReviewScore[]) {
-    let reviewReward = 0;
-    for (const review of reviews) {
-      reviewReward += review.effect.addition + review.effect.deletion;
-    }
-    return reviewReward / this._baseRate;
   }
 
   get enabled(): boolean {

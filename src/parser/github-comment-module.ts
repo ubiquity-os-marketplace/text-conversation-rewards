@@ -183,7 +183,7 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
     }
 
-    if (result.reviewReward && this.context.config.incentives.reviewIncentivizer?.baseRate) {
+    if (result.reviewReward) {
       if (result.reviewReward.reviewBaseReward?.reward) {
         content.push(buildContributionRow("Review", "Base Review", 1, result.reviewReward.reviewBaseReward.reward));
       }
@@ -194,14 +194,7 @@ export class GithubCommentModule extends BaseModule {
         result.reviewReward.reviews?.reduce((sum, review) => sum.add(review.reward), new Decimal(0)) ?? new Decimal(0);
 
       if (reviewCount > 0) {
-        content.push(
-          buildContributionRow(
-            "Review",
-            "Code Review",
-            reviewCount,
-            totalReviewReward.toNumber() / this.context.config.incentives.reviewIncentivizer?.baseRate
-          )
-        );
+        content.push(buildContributionRow("Review", "Code Review", reviewCount, totalReviewReward.toNumber()));
       }
     }
 
@@ -288,16 +281,15 @@ export class GithubCommentModule extends BaseModule {
   }
 
   _createReviewRows(result: Result[0]) {
-    if (!result.reviewReward?.reviews?.length || !this.context.config.incentives.reviewIncentivizer?.baseRate) {
+    if (!result.reviewReward?.reviews?.length) {
       return "";
     }
-    const baseRate = this.context.config.incentives.reviewIncentivizer?.baseRate;
     function buildReviewRow(review: ReviewScore) {
       return `
           <tr>
             <td>+${review.effect.addition} -${review.effect.deletion}</td>
             <td>${review.priority ?? "-"}</td>
-            <td>${(review.effect.addition + review.effect.deletion) / baseRate}</td>
+            <td>${review.reward}</td>
           </tr>`;
     }
 
