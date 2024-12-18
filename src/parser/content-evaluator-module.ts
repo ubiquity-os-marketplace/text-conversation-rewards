@@ -104,7 +104,7 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     for (const currentComment of commentsWithScore) {
-      let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
+      let currentRelevance = 0.83; // For comments not in fixed relevance types and missed by OpenAI evaluation
       if (this._fixedRelevances[currentComment.type]) {
         currentRelevance = this._fixedRelevances[currentComment.type];
       } else if (!isNaN(relevancesByAi[currentComment.id])) {
@@ -113,12 +113,13 @@ export class ContentEvaluatorModule extends BaseModule {
 
       // eslint-disable-next-line sonarjs/prefer-nullish-coalescing
       const currentReward = new Decimal(currentComment.score?.reward || 0);
+      const priority = currentComment.score?.priority ?? 1;
 
       currentComment.score = {
         ...(currentComment.score || { multiplier: 0 }),
         relevance: new Decimal(currentRelevance).toNumber(),
-        priority: currentComment.score?.priority ?? 1,
-        reward: currentReward.mul(currentRelevance).toNumber(),
+        priority: priority,
+        reward: currentReward.mul(currentRelevance).mul(priority).toDecimalPlaces(3).toNumber(),
       };
     }
 
