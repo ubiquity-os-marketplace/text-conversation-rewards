@@ -391,8 +391,8 @@ export class GithubCommentModule extends BaseModule {
       }
     </details>
     `
-      .replace(/(\r?\n|\r)\s*/g, "")
-      .replace(/\s*(<\/?[^>]+>)\s*/g, "$1")
+      .replace(/(\r?\n|\r)\s*/g, "") // Remove newlines and leading spaces/tabs after them
+      .replace(/\s*(<\/?[^>]+>)\s*/g, "$1") // Trim spaces around HTML tags
       .trim();
   }
 }
