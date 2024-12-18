@@ -26,6 +26,7 @@ export interface WordResult {
 }
 
 export interface ReviewScore {
+  priority: number;
   reviewId: number;
   effect: {
     addition: number;

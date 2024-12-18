@@ -10,6 +10,7 @@ import { ContextPlugin } from "../types/plugin-input";
 import { collectLinkedMergedPulls } from "../data-collection/collect-linked-pulls";
 import { getPullRequestReviews } from "../start";
 import { GitHubPullRequestReviewState } from "../github-types";
+import { parsePriorityLabel } from "../helpers/github";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -92,6 +93,7 @@ export class ReviewIncentivizerModule extends BaseModule {
 
   async fetchReviewDiffRewards(owner: string, repo: string, reviewsByUser: GitHubPullRequestReviewState[]) {
     const reviews: ReviewScore[] = [];
+    const priority = parsePriorityLabel(this.context.payload.issue.labels);
 
     for (let i = 0; i < reviewsByUser.length; i++) {
       const currentReview = reviewsByUser[i];
@@ -116,6 +118,7 @@ export class ReviewIncentivizerModule extends BaseModule {
               reviewId: currentReview.id,
               effect: reviewEffect,
               reward: reviewEffect.addition + reviewEffect.deletion,
+              priority: priority,
             });
           } catch (e) {
             this.context.logger.error(`Failed to get diff between commits ${baseSha} and ${headSha}:`, { e });

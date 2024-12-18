@@ -296,6 +296,7 @@ export class GithubCommentModule extends BaseModule {
       return `
           <tr>
             <td>+${review.effect.addition} -${review.effect.deletion}</td>
+            <td>${review.priority ?? "-"}</td>
             <td>${(review.effect.addition + review.effect.deletion) / baseRate}</td>
           </tr>`;
     }
@@ -307,8 +308,8 @@ export class GithubCommentModule extends BaseModule {
       <table>
         <thead>
           <tr>
-            <th>Review ID</th>
             <th>Changes</th>
+            <th>Priority</th>            
             <th>Reward</th>
           </tr>
         </thead>
