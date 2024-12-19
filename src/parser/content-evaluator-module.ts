@@ -193,6 +193,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
       const promptForComments = this._generatePromptForComments(specification, comments, allComments);
+      // check token count
       commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
     }
 
@@ -201,6 +202,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
       const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
+      // check token count
       prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
     }
 
