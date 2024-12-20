@@ -27,7 +27,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
     logLevel: (process.env.LOG_LEVEL as LogLevel) ?? "info",
     settingsSchema: pluginSettingsSchema,
     envSchema: envConfigSchema,
-    postCommentOnError: false,
+    postCommentOnError: true,
     bypassSignatureVerification: true,
   }
 );
