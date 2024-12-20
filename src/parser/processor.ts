@@ -53,7 +53,9 @@ export class Processor {
       }
       // Aggregate total result
       for (const item of Object.keys(this._result)) {
-        this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self));
+        if (item === data.self?.assignee?.login) {
+          this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self) * 3);
+        } else this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self));
       }
     }
     return this._result;
