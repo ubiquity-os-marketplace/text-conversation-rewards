@@ -1,5 +1,5 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
-import { Context } from "@ubiquity-os/plugin-sdk";
+import { Context } from "@ubq-mentlegen/plugin-sdk";
 import { contentEvaluatorConfigurationType } from "../configuration/content-evaluator-config";
 import { dataCollectionConfigurationType } from "../configuration/data-collection-config";
 import { dataPurgeConfigurationType } from "../configuration/data-purge-config";

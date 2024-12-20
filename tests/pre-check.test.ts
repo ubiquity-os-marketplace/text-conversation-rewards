@@ -7,7 +7,7 @@ import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { customOctokit as Octokit } from "@ubq-mentlegen/plugin-sdk/octokit";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 

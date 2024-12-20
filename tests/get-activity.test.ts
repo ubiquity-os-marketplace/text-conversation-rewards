@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, jest } from "@jest/globals";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { customOctokit as Octokit } from "@ubq-mentlegen/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { IssueActivity } from "../src/issue-activity";
 import { parseGitHubUrl } from "../src/start";

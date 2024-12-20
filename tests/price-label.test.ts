@@ -39,7 +39,7 @@ jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
   },
 }));
 
-const octokit = (await import("@ubiquity-os/plugin-sdk/octokit")).customOctokit;
+const octokit = (await import("@ubq-mentlegen/plugin-sdk/octokit")).customOctokit;
 
 describe("Price tests", () => {
   it("Should skip when no price label is set", async () => {

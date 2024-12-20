@@ -1,5 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
-import { postComment } from "@ubiquity-os/plugin-sdk";
+import { postComment } from "@ubq-mentlegen/plugin-sdk";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { JSDOM } from "jsdom";

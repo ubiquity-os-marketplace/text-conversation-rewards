@@ -1,4 +1,4 @@
-import { postComment } from "@ubiquity-os/plugin-sdk";
+import { postComment } from "@ubq-mentlegen/plugin-sdk";
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { getSortedPrices } from "./helpers/label-price-extractor";
