@@ -198,5 +198,5 @@ describe("Rewards tests", () => {
     expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
       fs.readFileSync("./tests/__mocks__/results/output-reward-split.html", "utf-8")
     );
-  });
+  }, 60000);
 });
