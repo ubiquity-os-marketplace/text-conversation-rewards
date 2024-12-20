@@ -367,6 +367,7 @@ describe("Modules tests", () => {
       new DataPurgeModule(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
     ];
     processor["_result"] = {
       user1: {
@@ -397,7 +398,7 @@ describe("Modules tests", () => {
         total: 9.25,
       },
       whilefoo: {
-        total: 9.084,
+        total: 9.25,
       },
     });
     if (oldLabels && activity.self) {
