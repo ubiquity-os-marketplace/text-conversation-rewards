@@ -111,8 +111,7 @@ export class ContentEvaluatorModule extends BaseModule {
         currentRelevance = relevancesByAi[currentComment.id];
       }
 
-      // eslint-disable-next-line sonarjs/prefer-nullish-coalescing
-      const currentReward = new Decimal(currentComment.score?.reward || 0);
+      const currentReward = new Decimal(currentComment.score?.reward ?? 0);
       const priority = currentComment.score?.priority ?? 1;
 
       currentComment.score = {
