@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.2.0...v1.2.1) (2024-12-20)
+
+
+### Bug Fixes
+
+* check collaborator admin grants before checking on org level ([079442e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/079442ee13893014819d7fab383afdb216e2fc83))
+* ignore limit for assigned users ([377e8f2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/377e8f2c3981083aa6b0f59f85bc10108b309825))
+* remove unnecessary mock in favour of mocked api endpoint ([a5d16a2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a5d16a2beaca73d2b9978ee7f0cd59fbb7d5407f))
+* set relevance to multiply the whole result (revert 8c4fe1b5) ([d5838e6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d5838e603cd886aeeca4ab049783d85841b85be6))
+* the capping message is not displayed if there is no task reward ([28d3b88](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/28d3b8841b6a91baa874b1cf0f1d95a307e296d7))
+
 ## [1.2.0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.1.0...v1.2.0) (2024-11-30)
 
 
