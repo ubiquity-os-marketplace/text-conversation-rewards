@@ -102,6 +102,9 @@ describe("Action tests", () => {
               login: "ubiquity-os",
             },
           },
+          sender: {
+            login: "0x4007",
+          },
         },
         config: cfg,
         logger: new Logs("debug"),

@@ -11,6 +11,8 @@ import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { GithubCommentModule } from "./github-comment-module";
 import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
+import { getTaskReward } from "../helpers/label-price-extractor";
+import { GitHubIssue } from "../github-types";
 
 export class Processor {
   private _transformers: Module[] = [];
@@ -34,18 +36,12 @@ export class Processor {
     return this;
   }
 
-  _getRewardsLimit() {
-    let taskReward = Infinity;
+  _getRewardsLimit(issue: GitHubIssue | null) {
     if (!this._configuration.limitRewards) {
-      return taskReward;
+      return Infinity;
     }
-    for (const item of Object.keys(this._result)) {
-      if (this._result[item].task) {
-        taskReward = this._result[item].task.reward * this._result[item].task.multiplier;
-        return taskReward;
-      }
-    }
-    return taskReward;
+    const priceTagReward = getTaskReward(issue);
+    return priceTagReward || Infinity;
   }
 
   async run(data: Readonly<IssueActivity>) {
@@ -55,7 +51,7 @@ export class Processor {
       }
       // Aggregate total result
       for (const item of Object.keys(this._result)) {
-        this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit());
+        this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self));
       }
     }
     return this._result;

@@ -22,45 +22,6 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
-    {
-      id: "PR_kwDOKzVPS85zXUoj",
-      title: "fix: add state to sorting manager for bottom and top",
-      number: 70,
-      url: "https://github.com/ubiquity/work.ubq.fi/pull/70",
-      state: "OPEN",
-      author: {
-        login: "0x4007",
-        id: 4975670,
-      },
-      repository: {
-        owner: {
-          login: "ubiquity",
-        },
-        name: "work.ubq.fi",
-      },
-    },
-    {
-      id: "PR_kwDOKzVPS85zXUok",
-      title: "fix: add state to sorting manager for bottom and top 2",
-      number: 71,
-      url: "https://github.com/ubiquity/work.ubq.fi/pull/71",
-      state: "MERGED",
-      author: {
-        login: "0x4007",
-        id: 4975670,
-      },
-      repository: {
-        owner: {
-          login: "ubiquity",
-        },
-        name: "work.ubq.fi",
-      },
-    },
-  ]),
-}));
-
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -74,9 +35,49 @@ describe("Pre-check tests", () => {
         db[tableName].create(row);
       }
     }
+    jest.resetModules();
+    jest.resetAllMocks();
   });
 
   it("Should reopen the issue and not generate rewards if linked pull-requests are still open", async () => {
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: jest.fn(() => [
+        {
+          id: "PR_kwDOKzVPS85zXUoj",
+          title: "fix: add state to sorting manager for bottom and top",
+          number: 70,
+          url: "https://github.com/ubiquity/work.ubq.fi/pull/70",
+          state: "OPEN",
+          author: {
+            login: "0x4007",
+            id: 4975670,
+          },
+          repository: {
+            owner: {
+              login: "ubiquity",
+            },
+            name: "work.ubq.fi",
+          },
+        },
+        {
+          id: "PR_kwDOKzVPS85zXUok",
+          title: "fix: add state to sorting manager for bottom and top 2",
+          number: 71,
+          url: "https://github.com/ubiquity/work.ubq.fi/pull/71",
+          state: "MERGED",
+          author: {
+            login: "0x4007",
+            id: 4975670,
+          },
+          repository: {
+            owner: {
+              login: "ubiquity",
+            },
+            name: "work.ubq.fi",
+          },
+        },
+      ]),
+    }));
     const patchMock = jest.fn(() => HttpResponse.json({}));
     server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
     const { run } = await import("../src/run");
@@ -102,5 +103,40 @@ describe("Pre-check tests", () => {
     } as unknown as ContextPlugin);
     expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
     expect(patchMock).toHaveBeenCalled();
+  });
+
+  it("Should not generate a permit if non-collaborator user is merging / closing the issue", async () => {
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: jest.fn(() => []),
+    }));
+    const patchMock = jest.fn(() => HttpResponse.json({}));
+    server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
+    const { run } = await import("../src/run");
+
+    const result = await run({
+      eventName: "issues.closed",
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717,
+          },
+        },
+        sender: {
+          login: "non-collaborator",
+        },
+      },
+      config: cfg,
+      logger: new Logs("debug"),
+      octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+    } as unknown as ContextPlugin);
+
+    expect(result).toEqual("You are not allowed to generate permits.");
   });
 });

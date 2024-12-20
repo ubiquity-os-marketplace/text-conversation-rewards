@@ -82,6 +82,8 @@ with:
     delayMs: 10000
   incentives:
     requirePriceLabel: true
+    limitRewards: true
+    collaboratorOnlyPaymentInvocation: true
     contentEvaluator:
       openAi:
         model: "gpt-4o"
