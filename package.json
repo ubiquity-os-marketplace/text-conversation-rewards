@@ -41,6 +41,7 @@
     "js-tiktoken": "1.0.15",
     "jsdom": "24.0.0",
     "markdown-it": "14.1.0",
+    "natural": "^8.0.1",
     "openai": "4.56.0",
     "yaml": "^2.6.1"
   },

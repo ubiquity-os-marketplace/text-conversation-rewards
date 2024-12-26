@@ -15,6 +15,9 @@ import {
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
+import { TfIdf } from "../helpers/tf-idf";
+
+const TOKEN_MODEL_LIMIT = 124000;
 
 /**
  * Evaluates and rates comments.
@@ -61,7 +64,7 @@ export class ContentEvaluatorModule extends BaseModule {
     const allCommentsUnClean = data.allComments || [];
     const allComments: { id: number; comment: string; author: string }[] = [];
     for (const commentObj of allCommentsUnClean) {
-      if (commentObj.user) {
+      if (commentObj.user && commentObj.user.type !== "Bot") {
         allComments.push({ id: commentObj.id, comment: commentObj.body ?? "", author: commentObj.user.login });
       }
     }
@@ -178,7 +181,16 @@ export class ContentEvaluatorModule extends BaseModule {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForComments = this._generatePromptForComments(specification, comments, allComments);
+      let promptForComments = this._generatePromptForComments(specification, comments, allComments);
+      if (this._calculateMaxTokens(promptForComments, Infinity) > TOKEN_MODEL_LIMIT) {
+        const tfidf = new TfIdf();
+        const mostImportantComments = tfidf.getTopComments(specification, allComments);
+        promptForComments = this._generatePromptForComments(
+          specification,
+          comments,
+          mostImportantComments.map((o) => o.comment)
+        );
+      }
       commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
     }
 
@@ -186,7 +198,16 @@ export class ContentEvaluatorModule extends BaseModule {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
+      let promptForPrComments = this._generatePromptForPrComments(specification, prComments);
+      if (this._calculateMaxTokens(promptForPrComments, Infinity) > TOKEN_MODEL_LIMIT) {
+        const tfidf = new TfIdf();
+        const mostImportantComments = tfidf.getTopComments(specification, allComments);
+        promptForPrComments = this._generatePromptForComments(
+          specification,
+          comments,
+          mostImportantComments.map((o) => o.comment)
+        );
+      }
       prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
     }
 
