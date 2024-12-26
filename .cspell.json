@@ -31,7 +31,8 @@
     "Rpcs",
     "sonarjs",
     "pico",
-    "timespan"
+    "timespan",
+    "tfidf"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
