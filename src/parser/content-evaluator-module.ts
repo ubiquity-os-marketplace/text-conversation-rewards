@@ -61,11 +61,13 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
     const promises: Promise<GithubCommentScore[]>[] = [];
-    const allCommentsUnClean = data.allComments || [];
     const allComments: { id: number; comment: string; author: string }[] = [];
-    for (const commentObj of allCommentsUnClean) {
-      if (commentObj.user && commentObj.user.type !== "Bot") {
-        allComments.push({ id: commentObj.id, comment: commentObj.body ?? "", author: commentObj.user.login });
+
+    for (const [user, data] of Object.entries(result)) {
+      if (data.comments?.length) {
+        allComments.push(
+          ...data.comments.map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
+        );
       }
     }
 
@@ -191,6 +193,7 @@ export class ContentEvaluatorModule extends BaseModule {
           mostImportantComments.map((o) => o.comment)
         );
       }
+      console.log(promptForComments);
       commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
     }
 
