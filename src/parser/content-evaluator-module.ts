@@ -17,8 +17,6 @@ import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import { TfIdf } from "../helpers/tf-idf";
 
-const TOKEN_MODEL_LIMIT = 124000;
-
 /**
  * Evaluates and rates comments.
  */
@@ -178,13 +176,14 @@ export class ContentEvaluatorModule extends BaseModule {
   ): Promise<Relevances> {
     let commentRelevances: Relevances = {};
     let prCommentRelevances: Relevances = {};
+    const tokenLimit = this._configuration?.openAi.tokenCountLimit ?? 124000;
 
     if (comments.length) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
       let promptForComments = this._generatePromptForComments(specification, comments, allComments);
-      if (this._calculateMaxTokens(promptForComments, Infinity) > TOKEN_MODEL_LIMIT) {
+      if (this._calculateMaxTokens(promptForComments, Infinity) > tokenLimit) {
         const tfidf = new TfIdf();
         const mostImportantComments = tfidf.getTopComments(specification, allComments);
         promptForComments = this._generatePromptForComments(
@@ -193,7 +192,6 @@ export class ContentEvaluatorModule extends BaseModule {
           mostImportantComments.map((o) => o.comment)
         );
       }
-      console.log(promptForComments);
       commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
     }
 
@@ -202,7 +200,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
       let promptForPrComments = this._generatePromptForPrComments(specification, prComments);
-      if (this._calculateMaxTokens(promptForPrComments, Infinity) > TOKEN_MODEL_LIMIT) {
+      if (this._calculateMaxTokens(promptForPrComments, Infinity) > tokenLimit) {
         const tfidf = new TfIdf();
         const mostImportantComments = tfidf.getTopComments(specification, allComments);
         promptForPrComments = this._generatePromptForComments(
