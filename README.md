@@ -103,6 +103,9 @@ with:
       redeemTask: true
     dataPurge:
       skipCommentsWhileAssigned: all
+    reviewIncentivizer:
+      baseRate: 100
+      conclusiveReviewCredit: 25
     formattingEvaluator:
       wordCountExponent: 0.85
       multipliers:

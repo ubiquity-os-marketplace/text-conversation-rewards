@@ -8,7 +8,6 @@ import { githubCommentConfigurationType } from "../configuration/github-comment-
 import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { reviewIncentivizerConfigurationType } from "../configuration/review-incentivizer-config";
-
 import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
