@@ -11,6 +11,8 @@ import { collectLinkedMergedPulls } from "../data-collection/collect-linked-pull
 import { getPullRequestReviews } from "../start";
 import { GitHubPullRequestReviewState } from "../github-types";
 import { parsePriorityLabel } from "../helpers/github";
+import { getExcludedFiles } from "../helpers/excluded-files";
+import { minimatch } from "minimatch";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -45,7 +47,7 @@ export class ReviewIncentivizerModule extends BaseModule {
         repo: repo,
         issue_number: data.self?.number,
       })
-    ).slice(-1)[0].number;
+    ).slice(-1)[0]?.number;
 
     this.context.logger.info(`Pull request ${linkedPullNumber} is linked to this issue`);
 
@@ -55,19 +57,21 @@ export class ReviewIncentivizerModule extends BaseModule {
       pull_number: linkedPullNumber,
     });
 
-    for (const key of Object.keys(result)) {
-      const currentElement = result[key];
-      currentElement.reviewReward = {};
+    for (const username of Object.keys(result)) {
+      const reward = result[username];
+      reward.reviewReward = {};
 
-      const reviewsByUser = linkedPullReviews.filter((v) => v.user?.login === key);
+      const reviewsByUser = linkedPullReviews.filter((v) => v.user?.login === username);
 
-      currentElement.reviewReward.reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED")
+      reward.reviewReward.reviewBaseReward = reviewsByUser.some(
+        (v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED"
+      )
         ? { reward: this._conclusiveReviewCredit }
         : { reward: 0 };
 
       const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
 
-      currentElement.reviewReward.reviews = reviewDiffs;
+      reward.reviewReward.reviews = reviewDiffs;
     }
 
     return result;
@@ -93,30 +97,42 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     return diff;
   }
+  async getReviewableDiff(owner: string, repo: string, baseSha: string, headSha: string) {
+    const excludedFilePatterns = await getExcludedFiles();
+    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
+    const reviewEffect = { addition: 0, deletion: 0 };
+    for (const [fileName, changes] of Object.entries(diff)) {
+      if (!excludedFilePatterns.some((pattern) => minimatch(fileName, pattern))) {
+        reviewEffect.addition += changes.addition;
+        reviewEffect.deletion += changes.deletion;
+      }
+    }
+    return reviewEffect;
+  }
 
   async fetchReviewDiffRewards(owner: string, repo: string, reviewsByUser: GitHubPullRequestReviewState[]) {
+    if (reviewsByUser.length == 0) {
+      return;
+    }
     const reviews: ReviewScore[] = [];
     const priority = parsePriorityLabel(this.context.payload.issue.labels);
+    const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
+    const pullCommits = (
+      await this.context.octokit.rest.pulls.listCommits({ owner: owner, repo: repo, pull_number: pullNumber })
+    ).data;
+    const firstCommitSha = pullCommits[0].sha;
 
     for (let i = 0; i < reviewsByUser.length; i++) {
       const currentReview = reviewsByUser[i];
-      const nextReview = reviewsByUser[i + 1];
+      const previousReview = reviewsByUser[i - 1];
 
-      if (currentReview.commit_id && nextReview?.commit_id && currentReview.state !== "APPROVED") {
-        const baseSha = currentReview.commit_id;
-        const headSha = nextReview.commit_id;
+      if (currentReview.commit_id) {
+        const baseSha = previousReview?.commit_id ? previousReview.commit_id : firstCommitSha;
+        const headSha = currentReview.commit_id;
 
         if (headSha) {
           try {
-            const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
-            const reviewEffect = { addition: 0, deletion: 0 };
-            Object.keys(diff).forEach((fileName) => {
-              if (fileName !== "yarn.lock") {
-                const changes = diff[fileName];
-                reviewEffect.addition += changes.addition;
-                reviewEffect.deletion += changes.deletion;
-              }
-            });
+            const reviewEffect = await this.getReviewableDiff(owner, repo, baseSha, headSha);
             reviews.push({
               reviewId: currentReview.id,
               effect: reviewEffect,
