@@ -102,7 +102,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
-      if (!excludedFilePatterns.some((pattern) => minimatch(fileName, pattern))) {
+      if (!excludedFilePatterns.every((pattern) => minimatch(fileName, pattern))) {
         reviewEffect.addition += changes.addition;
         reviewEffect.deletion += changes.deletion;
       }
