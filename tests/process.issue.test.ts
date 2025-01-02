@@ -324,6 +324,7 @@ describe("Modules tests", () => {
       fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")
     );
   });
+
   it("Should generate GitHub comment without zero total", async () => {
     const githubCommentModule = new GithubCommentModule(ctx);
     const postBody = await githubCommentModule.getBodyContent(
