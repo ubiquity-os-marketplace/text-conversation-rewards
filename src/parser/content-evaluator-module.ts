@@ -176,7 +176,12 @@ export class ContentEvaluatorModule extends BaseModule {
   ): Promise<Relevances> {
     let commentRelevances: Relevances = {};
     let prCommentRelevances: Relevances = {};
-    const tokenLimit = this._configuration?.openAi.tokenCountLimit ?? 124000;
+
+    if (!this._configuration?.openAi.tokenCountLimit) {
+      throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
+    }
+
+    const tokenLimit = this._configuration?.openAi.tokenCountLimit;
 
     if (comments.length) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
