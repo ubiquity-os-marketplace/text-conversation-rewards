@@ -15,7 +15,6 @@ import {
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
-import { TfIdf } from "../helpers/tf-idf";
 
 /**
  * Evaluates and rates comments.
@@ -168,6 +167,42 @@ export class ContentEvaluatorModule extends BaseModule {
     return { commentsToEvaluate, prCommentsToEvaluate };
   }
 
+  async _splitPromptForCommentEvaluation(
+    specification: string,
+    comments: CommentToEvaluate[],
+    allComments: AllComments,
+    maxTokens: number,
+    promptGeneratorFunction: (issue: string, comments: CommentToEvaluate[], allComments: AllComments) => string
+  ) {
+    const commentRelevances: Relevances = {};
+    const chunks = 2;
+
+    function splitArrayToChunks(array: AllComments, chunks: number) {
+      const arrayCopy = [...array];
+      const result = [];
+      for (let i = chunks; i > 0; i--) {
+        result.push(arrayCopy.splice(0, Math.ceil(arrayCopy.length / i)));
+      }
+      return result;
+    }
+
+    for (const commentSplit of splitArrayToChunks(allComments, chunks)) {
+      const promptForComments = promptGeneratorFunction(specification, comments, commentSplit);
+      for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxTokens))) {
+        if (commentRelevances[key]) {
+          commentRelevances[key] = new Decimal(commentRelevances[key]).add(value).toNumber();
+        } else {
+          commentRelevances[key] = value;
+        }
+      }
+    }
+    for (const key of Object.keys(commentRelevances)) {
+      commentRelevances[key] = new Decimal(commentRelevances[key]).div(chunks).toNumber();
+    }
+
+    return commentRelevances;
+  }
+
   async _evaluateComments(
     specification: string,
     comments: CommentToEvaluate[],
@@ -187,34 +222,36 @@ export class ContentEvaluatorModule extends BaseModule {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
-      let promptForComments = this._generatePromptForComments(specification, comments, allComments);
+      const promptForComments = this._generatePromptForComments(specification, comments, allComments);
       if (this._calculateMaxTokens(promptForComments, Infinity) > tokenLimit) {
-        const tfidf = new TfIdf();
-        const mostImportantComments = tfidf.getTopComments(specification, allComments);
-        promptForComments = this._generatePromptForComments(
+        commentRelevances = await this._splitPromptForCommentEvaluation(
           specification,
           comments,
-          mostImportantComments.map((o) => o.comment)
+          allComments,
+          maxTokens,
+          this._generatePromptForComments
         );
+      } else {
+        commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
       }
-      commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
     }
 
     if (prComments.length) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
-      let promptForPrComments = this._generatePromptForPrComments(specification, prComments);
+      const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
       if (this._calculateMaxTokens(promptForPrComments, Infinity) > tokenLimit) {
-        const tfidf = new TfIdf();
-        const mostImportantComments = tfidf.getTopComments(specification, allComments);
-        promptForPrComments = this._generatePromptForComments(
+        prCommentRelevances = await this._splitPromptForCommentEvaluation(
           specification,
           comments,
-          mostImportantComments.map((o) => o.comment)
+          allComments,
+          maxTokens,
+          this._generatePromptForPrComments
         );
+      } else {
+        prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
       }
-      prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
     }
 
     return { ...commentRelevances, ...prCommentRelevances };
