@@ -97,12 +97,20 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     return diff;
   }
-  async getReviewableDiff(owner: string, repo: string, baseSha: string, headSha: string) {
-    const excludedFilePatterns = await getExcludedFiles();
+  async getReviewableDiff(
+    owner: string,
+    repo: string,
+    baseSha: string,
+    headSha: string,
+    excludedFilePatterns?: string[]
+  ) {
     const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
-      if (!excludedFilePatterns.every((pattern) => minimatch(fileName, pattern))) {
+      if (
+        !excludedFilePatterns ||
+        (excludedFilePatterns && !excludedFilePatterns.every((pattern) => minimatch(fileName, pattern)))
+      ) {
         reviewEffect.addition += changes.addition;
         reviewEffect.deletion += changes.deletion;
       }
@@ -117,11 +125,19 @@ export class ReviewIncentivizerModule extends BaseModule {
     const reviews: ReviewScore[] = [];
     const priority = parsePriorityLabel(this.context.payload.issue.labels);
     const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
-    const pullCommits = (
-      await this.context.octokit.rest.pulls.listCommits({ owner: owner, repo: repo, pull_number: pullNumber })
-    ).data;
-    const firstCommitSha = pullCommits[0].sha;
 
+    const pullCommits = (
+      await this.context.octokit.rest.pulls.listCommits({
+        owner: owner,
+        repo: repo,
+        pull_number: pullNumber,
+      })
+    ).data;
+
+    // Get the first commit of the PR
+    const firstCommitSha = pullCommits[0].parents[0].sha;
+
+    const excludedFilePatterns = await getExcludedFiles();
     for (let i = 0; i < reviewsByUser.length; i++) {
       const currentReview = reviewsByUser[i];
       const previousReview = reviewsByUser[i - 1];
@@ -132,7 +148,7 @@ export class ReviewIncentivizerModule extends BaseModule {
 
         if (headSha) {
           try {
-            const reviewEffect = await this.getReviewableDiff(owner, repo, baseSha, headSha);
+            const reviewEffect = await this.getReviewableDiff(owner, repo, baseSha, headSha, excludedFilePatterns);
             reviews.push({
               reviewId: currentReview.id,
               effect: reviewEffect,
