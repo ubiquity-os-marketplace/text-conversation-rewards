@@ -134,7 +134,7 @@ export class ReviewIncentivizerModule extends BaseModule {
       })
     ).data;
 
-    // Get the first commit of the PR
+    // Get the commit before the PR
     const firstCommitSha = pullCommits[0].parents[0].sha;
 
     const excludedFilePatterns = await getExcludedFiles();
