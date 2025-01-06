@@ -4,7 +4,7 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { customOctokit as Octokit } from "@ubq-mentlegen/plugin-sdk/octokit";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 
 beforeAll(() => server.listen());
 beforeEach(() => {

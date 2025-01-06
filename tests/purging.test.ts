@@ -13,7 +13,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import hiddenCommentPurged from "./__mocks__/results/hidden-comment-purged.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { customOctokit as Octokit } from "@ubq-mentlegen/plugin-sdk/octokit";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 

@@ -1,5 +1,5 @@
-import { createPlugin } from "@ubq-mentlegen/plugin-sdk";
-import { Manifest } from "@ubq-mentlegen/plugin-sdk/manifest";
+import { createPlugin } from "@ubiquity-os/plugin-sdk";
+import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { ExecutionContext } from "hono";
 import { serveStatic } from "hono/bun";

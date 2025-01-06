@@ -18,7 +18,7 @@ import githubCommentAltResults from "./__mocks__/results/github-comment-zero-res
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { customOctokit as Octokit } from "@ubq-mentlegen/plugin-sdk/octokit";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 

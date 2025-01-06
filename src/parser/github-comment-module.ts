@@ -1,5 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
-import { postComment } from "@ubq-mentlegen/plugin-sdk";
+import { postComment } from "@ubiquity-os/plugin-sdk";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { JSDOM } from "jsdom";
@@ -116,7 +116,7 @@ export class GithubCommentModule extends BaseModule {
     if (this._configuration?.post) {
       try {
         if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
-          await postComment(this.context, this.context.logger.info(body), true);
+          await postComment(this.context, this.context.logger.info(body), { raw: true, updateComment: true });
         } else {
           const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
           await postComment(this.context, errorLog);
