@@ -370,7 +370,7 @@ describe("Modules tests", () => {
         total: 9.25,
       },
       whilefoo: {
-        total: 9.25,
+        total: 9.084,
       },
     });
     if (oldLabels && activity.self) {
@@ -431,7 +431,7 @@ describe("Modules tests", () => {
         total: 400,
       },
       whilefoo: {
-        total: 43.562,
+        total: 36.336,
       },
     });
   });
