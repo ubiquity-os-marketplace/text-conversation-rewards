@@ -12,6 +12,7 @@ import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 jest.unstable_mockModule("@actions/github", () => ({
+  default: {},
   context: {
     runId: "1",
     payload: {

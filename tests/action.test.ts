@@ -9,6 +9,7 @@ import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 beforeAll(() => server.listen());
 beforeEach(() => {
   jest.unstable_mockModule("@actions/github", () => ({
+    default: {},
     context: {
       runId: "1",
       payload: {
