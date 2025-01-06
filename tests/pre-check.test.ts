@@ -11,16 +11,22 @@ import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.unstable_mockModule("@actions/github", () => ({
-  context: {
+jest.unstable_mockModule("@actions/github", () => {
+  const context = {
     runId: "1",
     payload: {
       repository: {
         html_url: "https://github.com/ubiquity-os/conversation-rewards",
       },
     },
-  },
-}));
+  };
+  return {
+    default: {
+      context,
+    },
+    context,
+  };
+});
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
