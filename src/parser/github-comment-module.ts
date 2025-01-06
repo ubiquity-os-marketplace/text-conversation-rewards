@@ -28,10 +28,6 @@ interface SortedTasks {
 export class GithubCommentModule extends BaseModule {
   private readonly _configuration: GithubCommentConfiguration | null = this.context.config.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
-  /**
-   * COMMENT_ID can be set in the environment to reference the id of the last comment created during this workflow.
-   * See also compute.yml to understand how it is set.
-   */
 
   /**
    * Ensures that a string containing special characters get HTML encoded.
