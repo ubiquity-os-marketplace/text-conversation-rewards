@@ -34,7 +34,7 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!data.self) {
+    if (!data.self || data.self.assignee) {
       return result;
     }
 
@@ -47,7 +47,7 @@ export class ReviewIncentivizerModule extends BaseModule {
         repo: repo,
         issue_number: data.self?.number,
       })
-    ).slice(-1)[0]?.number;
+    ).filter((pull) => data.self?.assignee && pull.author.login === data.self.assignee.login)[0].number;
 
     this.context.logger.info(`Pull request ${linkedPullNumber} is linked to this issue`);
 
@@ -102,15 +102,12 @@ export class ReviewIncentivizerModule extends BaseModule {
     repo: string,
     baseSha: string,
     headSha: string,
-    excludedFilePatterns?: string[]
+    excludedFilePatterns?: string[] | null
   ) {
     const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
-      if (
-        !excludedFilePatterns ||
-        (excludedFilePatterns && !excludedFilePatterns.every((pattern) => minimatch(fileName, pattern)))
-      ) {
+      if (!excludedFilePatterns?.length || !excludedFilePatterns.some((pattern) => minimatch(fileName, pattern))) {
         reviewEffect.addition += changes.addition;
         reviewEffect.deletion += changes.deletion;
       }
@@ -135,9 +132,9 @@ export class ReviewIncentivizerModule extends BaseModule {
     ).data;
 
     // Get the first commit of the PR
-    const firstCommitSha = pullCommits[0].parents[0].sha;
+    const firstCommitSha = pullCommits[0]?.parents[0]?.sha;
 
-    const excludedFilePatterns = await getExcludedFiles();
+    const excludedFilePatterns = await getExcludedFiles(this.context);
     for (let i = 0; i < reviewsByUser.length; i++) {
       const currentReview = reviewsByUser[i];
       const previousReview = reviewsByUser[i - 1];

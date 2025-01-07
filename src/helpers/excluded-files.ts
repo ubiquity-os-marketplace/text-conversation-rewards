@@ -1,4 +1,4 @@
-import { readFile } from "fs/promises";
+import { ContextPlugin } from "../types/plugin-input";
 
 interface GitAttributes {
   pattern: string;
@@ -33,10 +33,36 @@ async function parseGitAttributes(content: string): Promise<GitAttributes[]> {
     .filter((item): item is GitAttributes => item !== null);
 }
 
-export async function getExcludedFiles() {
-  const gitAttributesContent = await readFile(".gitattributes", "utf-8");
+export async function getExcludedFiles(context: ContextPlugin) {
+  const gitAttributesContent = await getFileContent(context, ".gitattributes");
+  if (!gitAttributesContent) {
+    return null;
+  }
   const gitAttributesLinguistGenerated = (await parseGitAttributes(gitAttributesContent))
     .filter((v) => v.attributes["linguist-generated"])
     .map((v) => v.pattern);
+
   return gitAttributesLinguistGenerated;
+}
+
+async function getFileContent(context: ContextPlugin, path: string): Promise<string | null> {
+  try {
+    const response = await context.octokit.rest.repos.getContent({
+      owner: context.payload.repository.owner.login,
+      repo: context.payload.repository.name,
+      path,
+    });
+
+    // GitHub API returns content as base64
+    if ("content" in response.data && !Array.isArray(response.data)) {
+      return Buffer.from(response.data.content, "base64").toString("utf-8");
+    }
+    return null;
+  } catch (err) {
+    if (err instanceof Error && "status" in err && err.status === 404) {
+      console.error("File not found");
+      return null;
+    }
+    throw context.logger.error(`Error fetching files to be excluded ${err}`);
+  }
 }
