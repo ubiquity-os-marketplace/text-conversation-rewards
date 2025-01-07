@@ -35,7 +35,7 @@ interface Payload {
   issue: { node_id: string };
 }
 
-export class PermitGenerationModule extends BaseModule {
+export class PaymentModule extends BaseModule {
   readonly _configuration: PermitGenerationConfiguration | null = this.context.config.incentives.permitGeneration;
   readonly _autoTransferMode: boolean = this.context.config.automaticTransferMode;
   readonly _fundingWalletAddress: string = this.context.config.fundingWalletAddress;
@@ -44,10 +44,10 @@ export class PermitGenerationModule extends BaseModule {
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const canGeneratePermits = await this._canGeneratePermit(data);
+    const canMakePayment = await this._canMakePayment(data);
 
-    if (!canGeneratePermits) {
-      this.context.logger.error("[PermitGenerationModule] Non collaborative issue detected, skipping.");
+    if (!canMakePayment) {
+      this.context.logger.error("[PaymentModule] Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
 
@@ -58,12 +58,13 @@ export class PermitGenerationModule extends BaseModule {
       this._fundingWalletAddress
     );
 
+    let shouldTransferDirectly = false;
     if (this._autoTransferMode && sumPayouts < fundingWalletBalance) {
       this.context.logger.debug(
-        "[PermitGenerationModule] AutoTransformMode is enabled, " +
-          "and sufficient funds are available in the funding wallet, skipping."
+        "[PaymentModule] AutoTransformMode is enabled, " +
+        "and sufficient funds are available in the funding wallet, skipping."
       );
-      return Promise.resolve(result);
+      shouldTransferDirectly = true;
     }
 
     const payload: Context["payload"] & Payload = {
@@ -86,7 +87,7 @@ export class PermitGenerationModule extends BaseModule {
     );
     if (!isPrivateKeyAllowed) {
       this.context.logger.error(
-        "[PermitGenerationModule] Private key is not allowed to be used in this organization/repository."
+        "[PaymentModule] Private key is not allowed to be used in this organization/repository."
       );
       return Promise.resolve(result);
     }
@@ -117,21 +118,23 @@ export class PermitGenerationModule extends BaseModule {
 
     for (const [key, value] of Object.entries(result)) {
       this.context.logger.debug(`Updating result for user ${key}`);
-      try {
-        const config: Context["config"] = {
-          evmNetworkId: payload.evmNetworkId,
-          evmPrivateEncrypted: payload.evmPrivateEncrypted,
-          permitRequests: [
-            {
-              amount: value.total,
-              username: key,
-              contributionType: "",
-              type: TokenType.ERC20,
-              tokenAddress: payload.erc20RewardToken,
-            },
-          ],
-        };
-        const permits = await generatePayoutPermit(
+      const config: Context["config"] = {
+        evmNetworkId: payload.evmNetworkId,
+        evmPrivateEncrypted: payload.evmPrivateEncrypted,
+        permitRequests: [
+          {
+            amount: value.total,
+            username: key,
+            contributionType: "",
+            type: TokenType.ERC20,
+            tokenAddress: payload.erc20RewardToken,
+          },
+        ],
+      };
+
+      if (shouldTransferDirectly) {
+
+        const txid = await transferErc20(
           {
             env,
             eventName,
@@ -151,17 +154,56 @@ export class PermitGenerationModule extends BaseModule {
           },
           config.permitRequests
         );
-        result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-        await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
-      } catch (e) {
-        this.context.logger.error(`[PermitGenerationModule] Failed to generate permits for user ${key}`, { e });
+        result[key].permitUrl = `https://gnosisscan.io/tx/${txid}`;
+        //TODO: We need to save this record in the database
+      } else {
+        try {
+          const permits = await generatePayoutPermit(
+            {
+              env,
+              eventName,
+              logger: permitLogger,
+              payload,
+              adapters: createAdapters(this._supabase, {
+                env,
+                eventName,
+                octokit,
+                config,
+                logger: permitLogger,
+                payload,
+                adapters,
+              }),
+              octokit,
+              config,
+            },
+            config.permitRequests
+          );
+          result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+          await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
+          // remove treasury item from final result in order not to display permit fee in GitHub comments
+          if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
+        } catch (e) {
+          this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${key}`, { e });
+        }
       }
     }
-
-    // remove treasury item from final result in order not to display permit fee in GitHub comments
-    if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
-
     return result;
+  }
+
+  async _sumPayouts(result: Result) {
+    let sumPayouts = 0;
+    for (const value of Object.values(result)) {
+      sumPayouts += value.total;
+    }
+    return sumPayouts;
+  }
+
+  async _canMakePayment(data: Readonly<IssueActivity>) {
+    if (!data.self?.closed_by || !data.self.user) return false;
+
+    if (await isAdmin(data.self.user.login, this.context)) return true;
+
+    return isCollaborative(data);
   }
 
   /**
@@ -220,21 +262,7 @@ export class PermitGenerationModule extends BaseModule {
     return this._deductFeeFromReward(result, treasuryGithubData);
   }
 
-  async _canGeneratePermit(data: Readonly<IssueActivity>) {
-    if (!data.self?.closed_by || !data.self.user) return false;
 
-    if (await isAdmin(data.self.user.login, this.context)) return true;
-
-    return isCollaborative(data);
-  }
-
-  async _sumPayouts(result: Result) {
-    let sumPayouts = 0;
-    for (const value of Object.values(result)) {
-      sumPayouts += value.total;
-    }
-    return sumPayouts;
-  }
 
   _deductFeeFromReward(
     result: Result,
@@ -417,7 +445,7 @@ export class PermitGenerationModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
-      this.context.logger.error("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
+      this.context.logger.error("Invalid / missing configuration detected for PaymentModule, disabling.");
       return false;
     }
     return true;
