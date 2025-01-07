@@ -25,6 +25,7 @@ import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
+import { getFundingWalletBalance } from "../helpers/web3";
 
 interface Payload {
   evmNetworkId: number;
@@ -36,6 +37,10 @@ interface Payload {
 
 export class PermitGenerationModule extends BaseModule {
   readonly _configuration: PermitGenerationConfiguration | null = this.context.config.incentives.permitGeneration;
+  readonly _autoTransferMode: boolean = this.context.config.automaticTransferMode;
+  readonly _fundingWalletAddress: string = this.context.config.fundingWalletAddress;
+  readonly _evmNetworkId: number = this.context.config.evmNetworkId;
+  readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -45,6 +50,22 @@ export class PermitGenerationModule extends BaseModule {
       this.context.logger.error("[PermitGenerationModule] Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
+
+    const sumPayouts = await this._sumPayouts(result);
+    const fundingWalletBalance = await getFundingWalletBalance(
+      this._evmNetworkId,
+      this._erc20RewardToken,
+      this._fundingWalletAddress
+    );
+
+    if (this._autoTransferMode && sumPayouts < fundingWalletBalance) {
+      this.context.logger.debug(
+        "[PermitGenerationModule] AutoTransformMode is enabled, " +
+          "and sufficient funds are available in the funding wallet, skipping."
+      );
+      return Promise.resolve(result);
+    }
+
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
@@ -205,6 +226,14 @@ export class PermitGenerationModule extends BaseModule {
     if (await isAdmin(data.self.user.login, this.context)) return true;
 
     return isCollaborative(data);
+  }
+
+  async _sumPayouts(result: Result) {
+    let sumPayouts = 0;
+    for (const value of Object.values(result)) {
+      sumPayouts += value.total;
+    }
+    return sumPayouts;
   }
 
   _deductFeeFromReward(
