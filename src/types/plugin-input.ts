@@ -24,13 +24,6 @@ export const pluginSettingsSchema = T.Object(
       examples: ["0x000..."],
     }),
     /**
-     * Funding wallet address (corresponding to evmPrivateEncrypted)
-     */
-    fundingWalletAddress: T.String({
-      description: "The funding wallet address",
-      examples: ["0x000..."],
-    }),
-    /**
      * Reward token for ERC20 permits, default WXDAI for gnosis chain
      */
     erc20RewardToken: T.String({ default: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d" }),
