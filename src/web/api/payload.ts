@@ -15,7 +15,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
   }
 
   return {
-    ref: "development",
+    ref: "http://localhost",
     stateId: "1234",
     signature: "",
     eventName: "issues.closed",
