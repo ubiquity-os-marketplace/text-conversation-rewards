@@ -32,7 +32,6 @@
     "sonarjs",
     "pico",
     "timespan",
-    "HUGGINGFACE",
     "mistralai"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],

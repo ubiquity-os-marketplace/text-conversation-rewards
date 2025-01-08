@@ -5,6 +5,7 @@ import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
+import OpenAI from 'openai';
 
 /**
  * Removes the data in the comments that we do not want to be processed.
@@ -12,6 +13,11 @@ import { Result } from "../types/results";
 export class DataPurgeModule extends BaseModule {
   readonly _configuration: DataPurgeConfiguration | null = this.context.config.incentives.dataPurge;
   _assignmentPeriods: UserAssignments = {};
+
+  readonly _openAi = new OpenAI({
+    apiKey: this.context.env.OPENAI_API_KEY,
+    ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
+  });
 
   get enabled(): boolean {
     if (!this._configuration) {
@@ -44,27 +50,28 @@ export class DataPurgeModule extends BaseModule {
     return false;
   }
 
+
+
   async _generateImageDescription(imageUrl: string): Promise<string | null> {
     try {
-      // Fetch image data from URL
       const imageResponse = await fetch(imageUrl);
       const imageData = await imageResponse.arrayBuffer();
-
-      // Send to HuggingFace API
-      const response = await fetch(
-        "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large",
-        {
-          headers: {
-            Authorization: `Bearer ${this.context.env.HUGGINGFACE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: Buffer.from(imageData),
-        }
-      );
-
-      const result = await response.json();
-      return result[0]?.generated_text || null;
+      const base64Image = Buffer.from(imageData).toString('base64');
+      const response = await this._openAi.chat.completions.create({
+        model: "chatgpt-4o-latest",
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Describe this image concisely in one paragraph." },
+              { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
+            ]
+          }
+        ],
+        max_tokens: 300
+      });
+  
+      return response.choices[0]?.message?.content || null;
     } catch (error) {
       this.context.logger.error(`Failed to generate image description: ${error}`);
       return null;
@@ -73,35 +80,18 @@ export class DataPurgeModule extends BaseModule {
 
   async _generateChatResponse(userMessage: string): Promise<string | null> {
     try {
-      // Define the Hugging Face API endpoint
-      const url = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3/v1/chat/completions";
-
-      // Construct the payload
-      const payload = {
-        model: "mistralai/Mistral-7B-Instruct-v0.3",
+      const response = await this._openAi.chat.completions.create({
+        model: "gpt-4o-2024-08-06",
         messages: [
           {
             role: "user",
-            content: userMessage,
-          },
+            content: userMessage
+          }
         ],
-        max_tokens: 500,
-        stream: false,
-      };
-
-      // Send request to Hugging Face API
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${this.context.env.HUGGINGFACE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(payload),
+        max_tokens: 500
       });
 
-      // Parse the response
-      const result = await response.json();
-      return result.choices?.[0]?.message?.content || null;
+      return response.choices[0]?.message?.content || null;
     } catch (error) {
       this.context.logger.error(`Failed to generate chat response: ${error}`);
       return null;
@@ -110,31 +100,35 @@ export class DataPurgeModule extends BaseModule {
 
   async _generateLinkDescription(linkUrl: string): Promise<string | null> {
     try {
-      // Fetch the content of the link
       const linkResponse = await fetch(linkUrl);
-      const contentType = linkResponse.headers.get("content-type");
+      const contentType = linkResponse.headers.get('content-type');
 
-      // Only process text/html or text/plain content
-      if (!contentType || (!contentType.includes("text/html") && !contentType.includes("text/plain"))) {
+      if (!contentType || (!contentType.includes('text/html') && !contentType.includes('text/plain'))) {
         this.context.logger.info(`Skipping non-HTML content: ${contentType}, ${linkUrl}`);
         return null;
       }
 
       const linkData = await linkResponse.text();
       const cleanText = linkData
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "") // Remove scripts
-        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "") // Remove styles
-        .replace(/<[^>]+>/g, " ") // Remove HTML tags
-        .replace(/\s+/g, " ") // Normalize whitespace
-        .replace(/{\s*"props".*$/s, "") // Remove JSON data
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/{\s*"props".*$/s, '')
         .trim();
 
-      const generatedTextDescription = await this._generateChatResponse(
-        "Summarize the following webpage code into a concise and easy-to-understand text explanation of one paragraph with no bullet points. Focus on describing the purpose, structure, and functionality of the code, including key elements such as layout, styles, scripts, and any interactive features. Avoid technical jargon unless necessary" +
-          cleanText
-      );
+      const response = await this._openAi.chat.completions.create({
+        model: "gpt-4o-2024-08-06",
+        messages: [
+          {
+            role: "user",
+            content: `Summarize the following webpage code into a concise and easy-to-understand text explanation of one paragraph with no bullet points. Focus on describing the purpose, structure, and functionality of the code, including key elements such as layout, styles, scripts, and any interactive features. Avoid technical jargon unless necessary: ${cleanText}`
+          }
+        ],
+        max_tokens: 500
+      });
 
-      return generatedTextDescription;
+      return response.choices[0]?.message?.content || null;
     } catch (error) {
       this.context.logger.error(`Failed to generate link description: ${error}`);
       return null;

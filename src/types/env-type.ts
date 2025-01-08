@@ -14,7 +14,6 @@ const envConfigSchema = Type.Object({
   PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: Type.String(),
   KERNEL_PUBLIC_KEY: Type.Optional(Type.String()),
   LOG_LEVEL: Type.Enum(LOG_LEVEL, { default: LOG_LEVEL.INFO }),
-  HUGGINGFACE_API_KEY: Type.String(),
 });
 
 export type EnvConfig = Static<typeof envConfigSchema>;
