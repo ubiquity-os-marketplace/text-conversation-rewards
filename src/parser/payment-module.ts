@@ -25,7 +25,7 @@ import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
-import { getFundingWalletBalance } from "../helpers/web3";
+import { getFundingWalletBalance, transferFromFundingWallet } from "../helpers/web3";
 
 interface Payload {
   evmNetworkId: number;
@@ -38,31 +38,27 @@ interface Payload {
 export class PaymentModule extends BaseModule {
   readonly _configuration: PermitGenerationConfiguration | null = this.context.config.incentives.permitGeneration;
   readonly _autoTransferMode: boolean = this.context.config.automaticTransferMode;
-  readonly _fundingWalletAddress: string = this.context.config.fundingWalletAddress;
+  readonly _evmPrivateEncrypted: string = this.context.config.evmPrivateEncrypted;
   readonly _evmNetworkId: number = this.context.config.evmNetworkId;
   readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const canMakePayment = await this._canMakePayment(data);
-
+    const privateKey = await this._getPrivateKey(this._evmPrivateEncrypted);
     if (!canMakePayment) {
       this.context.logger.error("[PaymentModule] Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
 
     const sumPayouts = await this._sumPayouts(result);
-    const fundingWalletBalance = await getFundingWalletBalance(
-      this._evmNetworkId,
-      this._erc20RewardToken,
-      this._fundingWalletAddress
-    );
+    const fundingWalletBalance = await getFundingWalletBalance(this._evmNetworkId, this._erc20RewardToken, privateKey);
 
     let shouldTransferDirectly = false;
     if (this._autoTransferMode && sumPayouts < fundingWalletBalance) {
       this.context.logger.debug(
         "[PaymentModule] AutoTransformMode is enabled, " +
-        "and sufficient funds are available in the funding wallet, skipping."
+          "and sufficient funds are available in the funding wallet, skipping."
       );
       shouldTransferDirectly = true;
     }
@@ -133,8 +129,7 @@ export class PaymentModule extends BaseModule {
       };
 
       if (shouldTransferDirectly) {
-
-        const txid = await transferErc20(
+        const tx = await transferFromFundingWallet(
           {
             env,
             eventName,
@@ -152,10 +147,14 @@ export class PaymentModule extends BaseModule {
             octokit,
             config,
           },
-          config.permitRequests
+
+          this._evmNetworkId,
+          this._erc20RewardToken,
+          privateKey,
+          key,
+          value.total.toString()
         );
-        result[key].permitUrl = `https://gnosisscan.io/tx/${txid}`;
-        //TODO: We need to save this record in the database
+        result[key].explorerUrl = `https://gnosisscan.io/tx/${tx.hash}`;
       } else {
         try {
           const permits = await generatePayoutPermit(
@@ -204,6 +203,20 @@ export class PaymentModule extends BaseModule {
     if (await isAdmin(data.self.user.login, this.context)) return true;
 
     return isCollaborative(data);
+  }
+
+  async _getPrivateKey(evmPrivateEncrypted: string) {
+    try {
+      const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
+      const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
+      const privateKey = privateKeyParsed.privateKey;
+      if (!privateKey) throw new Error("Private key is not defined");
+      return privateKey;
+    } catch (error) {
+      const errorMessage = `Failed to decrypt a private key: ${error}`;
+      this.context.logger.error(errorMessage);
+      throw new Error(errorMessage);
+    }
   }
 
   /**
@@ -261,8 +274,6 @@ export class PaymentModule extends BaseModule {
 
     return this._deductFeeFromReward(result, treasuryGithubData);
   }
-
-
 
   _deductFeeFromReward(
     result: Result,
