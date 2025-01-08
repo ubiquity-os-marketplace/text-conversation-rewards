@@ -1096,211 +1096,214 @@
         }
       }
     ],
-    "reviewReward": {
-      "reviewBaseReward": {
-        "reward": 0
-      },
-      "reviews": [
-        {
-          "reviewId": 2007888517,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+    "reviewRewards": [
+      {
+        "reviews": [
+          {
+            "reviewId": 2007888517,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2007889613,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2007889613,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2007892341,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2007892341,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2008110387,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2008110387,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2008112006,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2008112006,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013179924,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013179924,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013180169,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013180169,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013180522,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013180522,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013386612,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013386612,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013386753,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013386753,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013387960,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013387960,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013389883,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013389883,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013743347,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013743347,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2014542130,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2014542130,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2014668126,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2014668126,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2014705833,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2014705833,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2014778123,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2014778123,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2016265929,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2016265929,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2016291507,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2016291507,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2017767160,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2017767160,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2019198962,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2019198962,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2020326790,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
-          },
-          "reward": 1,
-          "priority": 1
+          {
+            "reviewId": 2020326790,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
+          }
+        ],
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12",
+        "reviewBaseReward": {
+          "reward": 0
         }
-      ]
-    },
+      }
+    ],
     "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxODczNjg4MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiODMwNzY0Mzc0NDY0OTk1ODkzMDQ2MTExMjg5NjM5MTY3MTAxMDY4ODYxMDI0MzYwMjM4ODE1MjAwNTgzNDY4MDA1Nzg3NTQ0MDE3NTUiLCJkZWFkbGluZSI6IjExNTc5MjA4OTIzNzMxNjE5NTQyMzU3MDk4NTAwODY4NzkwNzg1MzI2OTk4NDY2NTY0MDU2NDAzOTQ1NzU4NDAwNzkxMzEyOTYzOTkzNSJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIxODczNjg4MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg3YjcwY2Q0ZTMwNmNkOGZjMjdmM2Q2ODUxZDliZmYyNjg4MjUxMWE1YTdmNDQ2NDc1OTZkMzA5ODBmMTUxYmZhNmRhYjVkYjc3YTJkZjcyNzI0ZjZjNTg5ZTY3MzQ5NjE4OTRjODYzMDdjMGU0ODk4ZWI3MjY3MWIwYzAwNWM2NDFiIiwibmV0d29ya0lkIjoxMDB9XQ=="
   },
   "0x4007": {
@@ -2265,157 +2268,160 @@
         }
       }
     ],
-    "reviewReward": {
-      "reviewBaseReward": {
-        "reward": 0
-      },
-      "reviews": [
-        {
-          "reviewId": 2007841578,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+    "reviewRewards": [
+      {
+        "reviews": [
+          {
+            "reviewId": 2007841578,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2008041757,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2008041757,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2008075969,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2008075969,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2008690769,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2008690769,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013380519,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013380519,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013381647,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013381647,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013381967,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013381967,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013382304,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013382304,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013382757,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013382757,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013382941,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013382941,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013708154,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013708154,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2013708476,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2013708476,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2016111656,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2016111656,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2016113083,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2016113083,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2017922720,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2017922720,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2018784615,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
-          },
-          "reward": 1,
-          "priority": 1
+          {
+            "reviewId": 2018784615,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
+          }
+        ],
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12",
+        "reviewBaseReward": {
+          "reward": 0
         }
-      ]
-    },
+      }
+    ],
     "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI1NDQzNTYwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIzMzkyOTQxNzYyNzkzOTc1NTkzMTc4MTExNTY1OTgzNzk3NDc1ODk0MDM3NDk1NDA0MTMxMjg2MzgyNzgwNDExNjg3NzA4MzUyODg4IiwiZGVhZGxpbmUiOiIxMTU3OTIwODkyMzczMTYxOTU0MjM1NzA5ODUwMDg2ODc5MDc4NTMyNjk5ODQ2NjU2NDA1NjQwMzk0NTc1ODQwMDc5MTMxMjk2Mzk5MzUifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiNTQ0MzU2MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg5YmE3MDdmZjk5MjY3OTJiNTAwNWNmOGYyOGJkNzE5NjJjZTI0NmE1ZTU5YjEyNjQ0ZmJjYWNiZGIzYTJhYjg1NDA0ZWQ0NGMyMTFkMGQyYWY3NWRlMzJmMTcxYWQ3YTZhOTcxOTBmMGJiMzkyNWRlNTFiYTE3NzU1ZmY5ZDVmYTFjIiwibmV0d29ya0lkIjoxMDB9XQ=="
   },
   "whilefoo": {
@@ -2770,75 +2776,78 @@
         }
       }
     ],
-    "reviewReward": {
-      "reviewBaseReward": {
-        "reward": 25
-      },
-      "reviews": [
-        {
-          "reviewId": 2014236289,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+    "reviewRewards": [
+      {
+        "reviews": [
+          {
+            "reviewId": 2014236289,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2016582024,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2016582024,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2017635547,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2017635547,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2020125850,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2020125850,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2020144465,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2020144465,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2022648888,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
+          {
+            "reviewId": 2022648888,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
           },
-          "reward": 1,
-          "priority": 1
-        },
-        {
-          "reviewId": 2022656285,
-          "effect": {
-            "addition": 50,
-            "deletion": 50
-          },
-          "reward": 1,
-          "priority": 1
+          {
+            "reviewId": 2022656285,
+            "effect": {
+              "addition": 50,
+              "deletion": 50
+            },
+            "reward": 1,
+            "priority": 1
+          }
+        ],
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12",
+        "reviewBaseReward": {
+          "reward": 25
         }
-      ]
-    }
+      }
+    ]
   }
 }
