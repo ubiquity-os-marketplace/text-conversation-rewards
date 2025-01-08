@@ -6,7 +6,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
   const filePath = path.resolve(__dirname, "../.ubiquity-os.config.yml");
   const fileContent = await fs.readFile(filePath, "utf8");
   const cfgFile = YAML.parse(fileContent);
-  const owner = ownerRepo.split("/")[0];
+  const [owner, repo] = ownerRepo.split("/");
 
   if (!useOpenAi) {
     cfgFile.incentives.contentEvaluator.openAi = {
@@ -104,7 +104,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
       repository: {
         id: 1296269,
         node_id: `MDEwOlJlcG9zaXRvcnkxMjk2MjY5`,
-        name: owner,
+        name: repo,
         full_name: ownerRepo,
         owner: {
           login: owner,
