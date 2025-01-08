@@ -34,44 +34,50 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!data.self || data.self.assignee) {
+    if (!data.self?.assignees) {
       return result;
     }
 
     const owner = this.context.payload.repository.owner.login;
     const repo = this.context.payload.repository.name;
+    const assignees = data.self?.assignees?.map((assignee) => assignee.login);
 
-    const linkedPullNumber = (
+    const linkedPulls = (
       await collectLinkedMergedPulls(this.context, {
         owner: owner,
         repo: repo,
         issue_number: data.self?.number,
       })
-    ).filter((pull) => data.self?.assignee && pull.author.login === data.self.assignee.login)[0].number;
+    ).filter((pull) => assignees?.includes(pull.author.login));
 
-    this.context.logger.info(`Pull request ${linkedPullNumber} is linked to this issue`);
+    if (linkedPulls.length > 1) {
+      this.context.logger.info(`Pull requests ${linkedPulls.map((pull) => pull.number)} are linked to this issue`);
+    } else if (linkedPulls.length == 1) {
+      this.context.logger.info(`Pull request ${linkedPulls[0].number} is linked to this issue`);
+    } else {
+      throw this.context.logger.error(`No pull request linked to this issue, Aborting`);
+    }
 
-    const linkedPullReviews = await getPullRequestReviews(this.context, {
-      owner: owner,
-      repo: repo,
-      pull_number: linkedPullNumber,
-    });
+    for (const linkedPull of linkedPulls) {
+      const linkedPullReviews = await getPullRequestReviews(this.context, {
+        owner: owner,
+        repo: repo,
+        pull_number: linkedPull.number,
+      });
 
-    for (const username of Object.keys(result)) {
-      const reward = result[username];
-      reward.reviewReward = {};
+      for (const username of Object.keys(result)) {
+        const reward = result[username];
+        reward.reviewRewards = [];
 
-      const reviewsByUser = linkedPullReviews.filter((v) => v.user?.login === username);
+        const reviewsByUser = linkedPullReviews.filter((v) => v.user?.login === username);
 
-      reward.reviewReward.reviewBaseReward = reviewsByUser.some(
-        (v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED"
-      )
-        ? { reward: this._conclusiveReviewCredit }
-        : { reward: 0 };
+        const reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED")
+          ? { reward: this._conclusiveReviewCredit }
+          : { reward: 0 };
 
-      const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
-
-      reward.reviewReward.reviews = reviewDiffs;
+        const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
+        reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPull.url, reviewBaseReward });
+      }
     }
 
     return result;
@@ -133,7 +139,9 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     // Get the first commit of the PR
     const firstCommitSha = pullCommits[0]?.parents[0]?.sha;
-
+    if (!firstCommitSha) {
+      throw this.context.logger.error("Could not fetch base commit for this pull request");
+    }
     const excludedFilePatterns = await getExcludedFiles(this.context);
     for (let i = 0; i < reviewsByUser.length; i++) {
       const currentReview = reviewsByUser[i];

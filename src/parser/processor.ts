@@ -53,9 +53,7 @@ export class Processor {
       }
       // Aggregate total result
       for (const item of Object.keys(this._result)) {
-        if (item === data.self?.assignee?.login) {
-          this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self) * 3);
-        } else if (data.self?.assignees?.map((v) => v.login).includes(item)) {
+        if (data.self?.assignees?.map((v) => v.login).includes(item)) {
           this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self) * 3);
         } else {
           this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self));

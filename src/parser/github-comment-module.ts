@@ -183,15 +183,26 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
     }
 
-    if (result.reviewReward) {
-      if (result.reviewReward.reviewBaseReward?.reward) {
-        content.push(buildContributionRow("Review", "Base Review", 1, result.reviewReward.reviewBaseReward.reward));
-      }
+    if (result.reviewRewards) {
+      result.reviewRewards.forEach(
+        (reviewReward) =>
+          reviewReward.reviewBaseReward?.reward &&
+          content.push(buildContributionRow("Review", "Base Review", 1, reviewReward.reviewBaseReward?.reward))
+      );
 
-      const reviewCount = result.reviewReward.reviews?.length ?? 0;
+      const reviewCount = result.reviewRewards.reduce(
+        (total, reviewReward) => total + (reviewReward.reviews?.length ?? 0),
+        0
+      );
 
-      const totalReviewReward =
-        result.reviewReward.reviews?.reduce((sum, review) => sum.add(review.reward), new Decimal(0)) ?? new Decimal(0);
+      const totalReviewReward = result.reviewRewards.reduce(
+        (sum, reviewReward) =>
+          sum.add(
+            reviewReward.reviews?.reduce((subSum, review) => subSum.add(review.reward), new Decimal(0)) ??
+              new Decimal(0)
+          ),
+        new Decimal(0)
+      );
 
       if (reviewCount > 0) {
         content.push(buildContributionRow("Review", "Code Review", reviewCount, totalReviewReward.toNumber()));
@@ -281,7 +292,7 @@ export class GithubCommentModule extends BaseModule {
   }
 
   _createReviewRows(result: Result[0]) {
-    if (!result.reviewReward?.reviews?.length) {
+    if (!result.reviewRewards?.some((reviewReward) => reviewReward.reviews?.length)) {
       return "";
     }
     function buildReviewRow(review: ReviewScore) {
@@ -293,7 +304,9 @@ export class GithubCommentModule extends BaseModule {
           </tr>`;
     }
 
-    const rows = result.reviewReward.reviews.map(buildReviewRow).join("");
+    const rows = result.reviewRewards
+      .flatMap((reviewReward) => reviewReward.reviews?.map(buildReviewRow) ?? [])
+      .join("");
 
     return `
       <h6>Review Details</h6>

@@ -60,7 +60,9 @@ async function getFileContent(context: ContextPlugin, path: string): Promise<str
     return null;
   } catch (err) {
     if (err instanceof Error && "status" in err && err.status === 404) {
-      console.error("File not found");
+      context.logger.error(
+        `.gitattributes was not found for ${context.payload.repository.owner.login}/${context.payload.repository.name}`
+      );
       return null;
     }
     throw context.logger.error(`Error fetching files to be excluded ${err}`);
