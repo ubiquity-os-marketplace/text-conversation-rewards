@@ -10,6 +10,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
 
   if (!useOpenAi) {
     cfgFile.incentives.contentEvaluator.openAi = {
+      ...cfgFile.incentives.contentEvaluator.openAi,
       endpoint: "http://localhost:4000/openai",
     };
   }
