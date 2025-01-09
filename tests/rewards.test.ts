@@ -13,6 +13,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { parseUnits } from "ethers/lib/utils";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -89,6 +90,10 @@ jest.unstable_mockModule("../src/helpers/web3", () => ({
   getErc20TokenSymbol() {
     return "WXDAI";
   },
+  getFundingWalletBalance() {
+    return parseUnits("100", 18);
+  },
+  transferFromFundingWallet() {},
 }));
 
 jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
@@ -126,7 +131,7 @@ const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
 const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
@@ -202,7 +207,7 @@ describe("Rewards tests", () => {
       new DataPurgeModule(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
-      new PermitGenerationModule(ctx),
+      new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
     server.use(http.post("https://*", () => passthrough()));

@@ -2,13 +2,21 @@ import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/r
 import { Context } from "@ubiquity-os/permit-generation";
 import { ethers, utils } from "ethers";
 
+// Required ERC20 ABI functions
+export const ERC20_ABI = [
+  "function symbol() view returns (string)",
+  "function decimals() public view returns (uint8)",
+  "function balanceOf(address) view returns (uint256)",
+  "function transfer(address,uint256) public returns (bool)",
+];
+
 /**
  * Returns the funding wallet
  * @param privateKey of the funding wallet
  * @param provider ethers.Provider
  * @returns the funding wallet
  */
-async function getFundingWallet(privateKey: string, provider: ethers.providers.Provider) {
+export async function getFundingWallet(privateKey: string, provider: ethers.providers.Provider) {
   try {
     return new ethers.Wallet(privateKey, provider);
   } catch (error) {
@@ -24,14 +32,7 @@ async function getFundingWallet(privateKey: string, provider: ethers.providers.P
  * @returns ERC20 token contract
  */
 
-async function getErc20TokenContract(networkId: number, tokenAddress: string) {
-  const abi = [
-    "function symbol() view returns (string)",
-    "function decimals() public view returns (uint8)",
-    "function balanceOf(address) view returns (uint256)",
-    "function transfer(address,uint256) public returns (bool)",
-  ];
-
+export async function getErc20TokenContract(networkId: number, tokenAddress: string) {
   // get fastest RPC
   const config: HandlerConstructorConfig = {
     networkName: null,
@@ -52,7 +53,7 @@ async function getErc20TokenContract(networkId: number, tokenAddress: string) {
   const handler = new RPCHandler(config);
   const provider = await handler.getFastestRpcProvider();
 
-  return new ethers.Contract(tokenAddress, abi, provider);
+  return new ethers.Contract(tokenAddress, ERC20_ABI, provider);
 }
 /**
  * Returns ERC20 token symbol
@@ -70,7 +71,7 @@ export async function getErc20TokenSymbol(networkId: number, tokenAddress: strin
  * @param tokenAddress ERC20 token address
  * @returns ERC20 token decimals
  */
-async function getErc20TokenDecimals(networkId: number, tokenAddress: string) {
+export async function getErc20TokenDecimals(networkId: number, tokenAddress: string) {
   return await (await getErc20TokenContract(networkId, tokenAddress)).decimals();
 }
 

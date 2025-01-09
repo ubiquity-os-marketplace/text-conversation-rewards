@@ -12,6 +12,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { parseUnits } from "ethers/lib/utils";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -19,6 +20,10 @@ jest.unstable_mockModule("../src/helpers/web3", () => ({
   getErc20TokenSymbol() {
     return "WXDAI";
   },
+  getFundingWalletBalance() {
+    return parseUnits("100", 18);
+  },
+  transferFromFundingWallet() { },
 }));
 
 jest.unstable_mockModule("@actions/github", () => ({
@@ -166,7 +171,7 @@ const { IssueActivity } = await import("../src/issue-activity");
 const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { PaymentModule } = await import("../src/parser/payment-module");
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
@@ -184,7 +189,7 @@ afterAll(() => {
   server.close();
 });
 
-describe("Permit Generation Module Tests", () => {
+describe("Payment Module Tests", () => {
   const issue = parseGitHubUrl(issueUrl);
   const activity = new IssueActivity(ctx, issue);
 
@@ -247,7 +252,7 @@ describe("Permit Generation Module Tests", () => {
         new FormattingEvaluatorModule(ctx),
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
-        new PermitGenerationModule(ctx),
+        new PaymentModule(ctx),
       ];
 
       server.use(http.post("https://*", () => passthrough()));
@@ -267,7 +272,7 @@ describe("Permit Generation Module Tests", () => {
         new FormattingEvaluatorModule(ctx),
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
-        new PermitGenerationModule(ctx),
+        new PaymentModule(ctx),
       ];
 
       server.use(http.post("https://*", () => passthrough()));
@@ -293,7 +298,7 @@ describe("Permit Generation Module Tests", () => {
         new FormattingEvaluatorModule(ctx),
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
-        new PermitGenerationModule(ctx),
+        new PaymentModule(ctx),
       ];
 
       server.use(http.post("https://*", () => passthrough()));
@@ -313,7 +318,7 @@ describe("Permit Generation Module Tests", () => {
         new FormattingEvaluatorModule(ctx),
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
-        new PermitGenerationModule(ctx),
+        new PaymentModule(ctx),
       ];
 
       server.use(http.post("https://*", () => passthrough()));

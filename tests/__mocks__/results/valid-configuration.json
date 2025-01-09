@@ -5,6 +5,7 @@
   },
   "erc20RewardToken": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
   "evmNetworkId": 100,
+  "autoTransferMode": false,
   "evmPrivateEncrypted": "qGslGsT9bfY0C3uc_utvFhBN_Zwggf0sONEFOfF67E_gWDXqnV3qC-LnGj2ufIHJwdHxFLz3VVzup2MrGtFtHhZ2WZZvq_8NQi48LFbr5b6OIxL-vOXooAyQYfb2mjLmcsYaxXc5eu1mUfO9rfENSAw9dFeWfi9VKQ",
   "incentives": {
     "collaboratorOnlyPaymentInvocation": true,
