@@ -14,6 +14,7 @@ import { IssueActivityCache } from "../db/issue-activity-cache";
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
     const { payload, config } = context;
+    context.payload.repository.name = ".ubiquity-os";
     const issue = parseGitHubUrl(payload.issue.html_url);
     const activity = new IssueActivityCache(context, issue, "useCache" in config);
     await activity.init();

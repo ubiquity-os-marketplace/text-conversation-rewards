@@ -8,7 +8,6 @@ import { BaseModule } from "../types/module";
 import { Result, ReviewScore } from "../types/results";
 import { ContextPlugin } from "../types/plugin-input";
 import { collectLinkedMergedPulls } from "../data-collection/collect-linked-pulls";
-import { getPullRequestReviews } from "../start";
 import { GitHubPullRequestReviewState } from "../github-types";
 import { parsePriorityLabel } from "../helpers/github";
 import { getExcludedFiles } from "../helpers/excluded-files";
@@ -59,24 +58,22 @@ export class ReviewIncentivizerModule extends BaseModule {
     }
 
     for (const linkedPull of linkedPulls) {
-      const linkedPullReviews = await getPullRequestReviews(this.context, {
-        owner: owner,
-        repo: repo,
-        pull_number: linkedPull.number,
-      });
+      const linkedPullReviews = data.linkedReviews.filter((review) => review.self?.html_url === linkedPull.url)[0];
 
       for (const username of Object.keys(result)) {
         const reward = result[username];
         reward.reviewRewards = [];
 
-        const reviewsByUser = linkedPullReviews.filter((v) => v.user?.login === username);
+        if (linkedPullReviews.reviews) {
+          const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
 
-        const reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED")
-          ? { reward: this._conclusiveReviewCredit }
-          : { reward: 0 };
+          const reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED")
+            ? { reward: this._conclusiveReviewCredit }
+            : { reward: 0 };
 
-        const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
-        reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPull.url, reviewBaseReward });
+          const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
+          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPull.url, reviewBaseReward });
+        }
       }
     }
 

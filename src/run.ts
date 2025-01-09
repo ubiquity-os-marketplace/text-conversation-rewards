@@ -25,7 +25,7 @@ async function isUserAllowedToGeneratePermits(context: ContextPlugin) {
 
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config } = context;
-
+  context.payload.repository.name = ".ubiquity-os";
   if (eventName !== "issues.closed") {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }

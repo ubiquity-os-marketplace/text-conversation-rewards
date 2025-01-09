@@ -30,5 +30,7 @@ export async function collectLinkedMergedPulls(context: ContextPlugin, issue: Is
     issue_number,
   });
 
-  return result.repository.issue.closedByPullRequestsReferences.edges.map((edge) => edge.node);
+  return result.repository.issue.closedByPullRequestsReferences.edges
+    .map((edge) => edge.node)
+    .filter((pull) => pull.state === "MERGED");
 }
