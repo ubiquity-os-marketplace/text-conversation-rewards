@@ -26,6 +26,7 @@ import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { getFundingWalletBalance, transferFromFundingWallet } from "../helpers/web3";
+import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
 
 interface Payload {
   evmNetworkId: number;
@@ -44,6 +45,7 @@ export class PaymentModule extends BaseModule {
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
     const privateKey = await this._getPrivateKey(this._evmPrivateEncrypted);
     if (!canMakePayment) {
@@ -154,7 +156,7 @@ export class PaymentModule extends BaseModule {
           key,
           value.total.toString()
         );
-        result[key].explorerUrl = `https://gnosisscan.io/tx/${tx.hash}`;
+        result[key].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
       } else {
         try {
           const permits = await generatePayoutPermit(
@@ -195,6 +197,14 @@ export class PaymentModule extends BaseModule {
       sumPayouts += value.total;
     }
     return sumPayouts;
+  }
+
+  async _getNetworkExplorer(networkId: number) {
+    const networkExplorer = getNetworkExplorer(String(networkId) as NetworkId);
+    if (!networkExplorer) {
+      return "https://blockscan.com";
+    }
+    return networkExplorer[0].url;
   }
 
   async _canMakePayment(data: Readonly<IssueActivity>) {
