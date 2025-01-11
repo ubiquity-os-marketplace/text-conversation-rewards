@@ -13,6 +13,7 @@ jest.unstable_mockModule("../src/helpers/web3", () => ({
 }));
 
 jest.unstable_mockModule("@actions/github", () => ({
+  default: {},
   context: {
     runId: "1",
     payload: {

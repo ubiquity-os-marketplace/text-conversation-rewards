@@ -28,11 +28,6 @@ interface SortedTasks {
 export class GithubCommentModule extends BaseModule {
   private readonly _configuration: GithubCommentConfiguration | null = this.context.config.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
-  /**
-   * COMMENT_ID can be set in the environment to reference the id of the last comment created during this workflow.
-   * See also compute.yml to understand how it is set.
-   */
-  private _lastCommentId: number | null = process.env.COMMENT_ID ? Number(process.env.COMMENT_ID) : null;
 
   /**
    * Ensures that a string containing special characters get HTML encoded.
@@ -117,7 +112,7 @@ export class GithubCommentModule extends BaseModule {
     if (this._configuration?.post) {
       try {
         if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
-          await this.postComment(body);
+          await postComment(this.context, this.context.logger.info(body), { raw: true, updateComment: true });
         } else {
           const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
           await postComment(this.context, errorLog);
@@ -135,31 +130,6 @@ export class GithubCommentModule extends BaseModule {
       return false;
     }
     return true;
-  }
-
-  async postComment(body: string, updateLastComment = true) {
-    const { payload, logger } = this.context;
-    if (!this._configuration?.post) {
-      logger.debug("Won't post a comment since posting is disabled.", { body });
-      return;
-    }
-    if (updateLastComment && this._lastCommentId !== null) {
-      await this.context.octokit.rest.issues.updateComment({
-        body,
-        repo: payload.repository.name,
-        owner: payload.repository.owner.login,
-        issue_number: payload.issue.number,
-        comment_id: this._lastCommentId,
-      });
-    } else {
-      const comment = await this.context.octokit.rest.issues.createComment({
-        body,
-        repo: payload.repository.name,
-        owner: payload.repository.owner.login,
-        issue_number: payload.issue.number,
-      });
-      this._lastCommentId = comment.data.id;
-    }
   }
 
   _createContributionRows(result: Result[0], sortedTasks: SortedTasks | undefined) {
