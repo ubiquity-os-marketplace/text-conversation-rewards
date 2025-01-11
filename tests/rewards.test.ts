@@ -90,10 +90,11 @@ jest.unstable_mockModule("../src/helpers/web3", () => ({
   getErc20TokenSymbol() {
     return "WXDAI";
   },
-  getFundingWalletBalance() {
+  getErc20Balance() {
     return parseUnits("100", 18);
   },
-  transferFromFundingWallet() {},
+  createTransferSignedTx() {},
+  sendSignedTx() {},
 }));
 
 jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({

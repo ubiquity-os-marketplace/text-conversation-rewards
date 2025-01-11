@@ -25,7 +25,7 @@ import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
-import { getFundingWalletBalance, transferFromFundingWallet } from "../helpers/web3";
+import { getErc20Balance, createTransferSignedTx, sendSignedTx } from "../helpers/web3";
 import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
 
 interface Payload {
@@ -47,17 +47,17 @@ export class PaymentModule extends BaseModule {
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
-    const privateKey = await this._getPrivateKey(this._evmPrivateEncrypted);
+    const privateKey = await this._decryptPrivateKey(this._evmPrivateEncrypted);
     if (!canMakePayment) {
       this.context.logger.error("[PaymentModule] Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
 
-    const sumPayouts = await this._sumPayouts(result);
-    const fundingWalletBalance = await getFundingWalletBalance(this._evmNetworkId, this._erc20RewardToken, privateKey);
+    const totalPayable = await this._getTotalPayable(result);
+    const fundingWalletBalance = await getErc20Balance(this._evmNetworkId, this._erc20RewardToken, privateKey);
 
     let shouldTransferDirectly = false;
-    if (this._autoTransferMode && sumPayouts < fundingWalletBalance) {
+    if (this._autoTransferMode && totalPayable < fundingWalletBalance) {
       this.context.logger.debug(
         "[PaymentModule] AutoTransformMode is enabled, " +
           "and sufficient funds are available in the funding wallet, skipping."
@@ -131,31 +131,15 @@ export class PaymentModule extends BaseModule {
       };
 
       if (shouldTransferDirectly) {
-        const tx = await transferFromFundingWallet(
-          {
-            env,
-            eventName,
-            logger: permitLogger,
-            payload,
-            adapters: createAdapters(this._supabase, {
-              env,
-              eventName,
-              octokit,
-              config,
-              logger: permitLogger,
-              payload,
-              adapters,
-            }),
-            octokit,
-            config,
-          },
-
+        const beneficiaryWalletAddress = await this._getBeneficiaryWalletAddress(key);
+        const signedTxData = await createTransferSignedTx(
           this._evmNetworkId,
           this._erc20RewardToken,
           privateKey,
-          key,
+          beneficiaryWalletAddress,
           value.total.toString()
         );
+        const tx = await sendSignedTx(this._evmNetworkId, signedTxData);
         result[key].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
       } else {
         try {
@@ -191,7 +175,7 @@ export class PaymentModule extends BaseModule {
     return result;
   }
 
-  async _sumPayouts(result: Result) {
+  async _getTotalPayable(result: Result) {
     let sumPayouts = 0;
     for (const value of Object.values(result)) {
       sumPayouts += value.total;
@@ -215,7 +199,7 @@ export class PaymentModule extends BaseModule {
     return isCollaborative(data);
   }
 
-  async _getPrivateKey(evmPrivateEncrypted: string) {
+  async _decryptPrivateKey(evmPrivateEncrypted: string) {
     try {
       const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
       const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
@@ -227,6 +211,20 @@ export class PaymentModule extends BaseModule {
       this.context.logger.error(errorMessage);
       throw new Error(errorMessage);
     }
+  }
+
+  async _getBeneficiaryWalletAddress(username: string) {
+    // Obtain the beneficiary wallet address from the github user name
+    const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
+    if (!userData) {
+      throw new Error(`GitHub user was not found for id ${username}`);
+    }
+    const userId = userData.id;
+    const { data: walletData } = await this._supabase.from("wallets").select("address").eq("id", userId).single();
+    if (!walletData?.address) {
+      throw new Error("Beneficiary wallet not found");
+    }
+    return walletData.address;
   }
 
   /**

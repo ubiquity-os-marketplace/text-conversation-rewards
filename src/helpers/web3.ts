@@ -1,6 +1,5 @@
 import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/rpc-handler";
-import { Context } from "@ubiquity-os/permit-generation";
-import { ethers, utils } from "ethers";
+import { ethers } from "ethers";
 
 // Required ERC20 ABI functions
 export const ERC20_ABI = [
@@ -11,12 +10,12 @@ export const ERC20_ABI = [
 ];
 
 /**
- * Returns the funding wallet
- * @param privateKey of the funding wallet
+ * Returns the evm wallet associated with the privateKey
+ * @param privateKey of the evm wallet
  * @param provider ethers.Provider
- * @returns the funding wallet
+ * @returns the evm wallet
  */
-export async function getFundingWallet(privateKey: string, provider: ethers.providers.Provider) {
+export async function getEvmWallet(privateKey: string, provider: ethers.providers.Provider) {
   try {
     return new ethers.Wallet(privateKey, provider);
   } catch (error) {
@@ -76,53 +75,77 @@ export async function getErc20TokenDecimals(networkId: number, tokenAddress: str
 }
 
 /**
- * Returns ERC20 token balance of the funding wallet
+ * Returns ERC20 token balance of the input address
  * @param networkId Network id
  * @param tokenAddress ERC20 token address
- * @param fundingWalledAddress funding wallet address
- * @returns ERC20 token balance of the funding wallet
+ * @param address input address
+ * @returns ERC20 token balance of the input address
  */
-export async function getFundingWalletBalance(networkId: number, tokenAddress: string, privateKey: string) {
+export async function getErc20Balance(networkId: number, tokenAddress: string, address: string) {
   const contract = await getErc20TokenContract(networkId, tokenAddress);
-  const fundingWallet = await getFundingWallet(privateKey, contract.provider);
-  return await contract.balanceOf(await fundingWallet.getAddress());
+  return await contract.balanceOf(address);
 }
 
 /**
  * Returns Transaction for the ERC20 token transfer
  * @param networkId Network id
  * @param tokenAddress ERC20 token address
- * @param _evmPrivateEncrypted encrypted private key of the funding wallet address
+ * @param privateKey private key of the evm wallet
  * @param username github user name of the beneficiary
+ * @param address Address to send ERC20 token
  * @param amount Amount of ERC20 token to be transferred
  * @returns Transaction for the ERC20 token transfer
  */
-export async function transferFromFundingWallet(
-  context: Context,
+export async function createTransferSignedTx(
   networkId: number,
   tokenAddress: string,
   privateKey: string,
-  username: string,
+  address: string,
   amount: string
 ) {
-  // Obtain the beneficiary wallet address from the github user name
-  const { data: userData } = await context.octokit.rest.users.getByUsername({ username });
-  if (!userData) {
-    throw new Error(`GitHub user was not found for id ${username}`);
-  }
-  const userId = userData.id;
-  const { wallet } = context.adapters.supabase;
-  const beneficiaryWalletAddress = await wallet.getWalletByUserId(userId);
-  if (!beneficiaryWalletAddress) {
-    throw new Error("Beneficiary wallet not found");
-  }
-
   const tokenDecimals = await getErc20TokenDecimals(networkId, tokenAddress);
-  const _contract = await getErc20TokenContract(networkId, tokenAddress);
-  // Construct the funding wallet from the privateKey
-  const fundingWallet = await getFundingWallet(privateKey, _contract.provider);
+  const _amount = ethers.utils.parseUnits(amount, tokenDecimals);
 
-  // send the transaction
-  const contract = new ethers.Contract(tokenAddress, _contract.abi, fundingWallet);
-  return await contract.transfer(beneficiaryWalletAddress, utils.parseUnits(amount, tokenDecimals));
+  const contract = await getErc20TokenContract(networkId, tokenAddress);
+  // Construct the evm wallet from the privateKey
+  const evmWallet = await getEvmWallet(privateKey, contract.provider);
+
+  // Create the signed transaction
+  try {
+    // Encode the ERC-20 transfer function call
+    const data = contract.interface.encodeFunctionData("transfer", [address, _amount]);
+
+    // The transaction details
+    const tx = {
+      to: tokenAddress, // The ERC-20 contract address
+      data: data, // Encoded transfer function call
+      gasLimit: await contract.estimateGas.transfer(address, _amount),
+      gasPrice: await contract.provider.getGasPrice(), // Current gas price from the provider
+      nonce: await evmWallet.getTransactionCount(), // Account nonce
+    };
+
+    const signedTx = await evmWallet.signTransaction(tx);
+    return signedTx;
+  } catch (error) {
+    const errorMessage = `Error creating signed transaction: ${error}`;
+    throw new Error(errorMessage);
+  }
+}
+
+/**
+ * Send the signed transaction
+ * @param networkId Network id
+ * @param privateKey private key of the evm wallet
+ * @returns Transaction data
+ */
+export async function sendSignedTx(networkId: number, signedTx: string) {
+  const contract = await getErc20TokenContract(networkId, "");
+
+  // Construct the evm wallet from the privateKey
+  try {
+    return await contract.provider.sendTransaction(signedTx);
+  } catch (error) {
+    const errorMessage = `Error sending signed transaction: ${error}`;
+    throw new Error(errorMessage);
+  }
 }

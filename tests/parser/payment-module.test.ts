@@ -103,6 +103,26 @@ const resultOriginal: Result = {
   },
 };
 
+jest.unstable_mockModule("@supabase/supabase-js", () => {
+  return {
+    createClient: jest.fn(() => ({
+      from: jest.fn(() => ({
+        select: jest.fn(() => ({
+          // eslint-disable-next-line sonarjs/no-nested-functions
+          eq: jest.fn(() => ({
+            single: jest.fn(() => ({
+              data: {
+                id: 1,
+                address: "0x1",
+              },
+            })),
+          })),
+        })),
+      })),
+    })),
+  };
+});
+
 const { PaymentModule } = await import("../../src/parser/payment-module");
 
 beforeAll(() => server.listen());
@@ -188,6 +208,41 @@ describe("payment-module.ts", () => {
     });
   });
 
+  describe("Auto transfer mode tests", () => {
+    beforeEach(() => {
+      ctx.env.PERMIT_FEE_RATE = "";
+      drop(db);
+      for (const table of Object.keys(dbSeed)) {
+        const tableName = table as keyof typeof dbSeed;
+        for (const row of dbSeed[tableName]) {
+          db[tableName].create(row);
+        }
+      }
+    });
+
+    afterEach(() => {
+      // restore the spy created with spyOn
+      jest.restoreAllMocks();
+    });
+
+    it("Should return a network explorer url", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const url = await paymentModule._getNetworkExplorer(100);
+      expect(url).toMatch(/http.*/);
+    });
+
+    it("Should return the correct total payable amount", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const amount = await paymentModule._getTotalPayable(resultOriginal);
+      expect(amount).toEqual(111.11);
+    });
+
+    it("Should return the correct beneficiary wallet address", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const address = await paymentModule._getBeneficiaryWalletAddress("molecula451");
+      expect(address).toEqual("0x1");
+    });
+  });
   describe("_isPrivateKeyAllowed()", () => {
     beforeEach(() => {
       // set dummy X25519_PRIVATE_KEY
@@ -215,6 +270,19 @@ describe("payment-module.ts", () => {
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(new RegExp(`.*Private key could not be decrypted`));
       spyConsoleLog.mockReset();
+    });
+
+    it("Should decrypt private key correctly", async () => {
+      const paymentModule = new PaymentModule(ctx);
+
+      // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
+      // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1"
+      const privateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+      const privateKeyEncrypted =
+        "fdsmuUN_jTF-VAWMe55ozcg6AuLOKiyJm8unRg1QwnY9u_fsKmczRtekx6aq59ndQ0RDJ803SkeTOlUW87cd93rDTiq57ErxkRwq4j4SKYTitChIWAZw0-LCJAd2IvRmN9qVzA7oXEdkUihXkErGGtqK";
+      const decrypted = await paymentModule._decryptPrivateKey(privateKeyEncrypted);
+
+      expect(decrypted).toEqual(privateKey);
     });
 
     it("Should return false if private key is used in unallowed organization", async () => {
