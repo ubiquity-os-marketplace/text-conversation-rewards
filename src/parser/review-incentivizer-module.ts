@@ -57,13 +57,12 @@ export class ReviewIncentivizerModule extends BaseModule {
       throw this.context.logger.error(`No pull request linked to this issue, Aborting`);
     }
 
-    for (const linkedPull of linkedPulls) {
-      const linkedPullReviews = data.linkedReviews.filter((review) => review.self?.html_url === linkedPull.url)[0];
+    for (const username of Object.keys(result)) {
+      const reward = result[username];
+      reward.reviewRewards = [];
 
-      for (const username of Object.keys(result)) {
-        const reward = result[username];
-        reward.reviewRewards = [];
-
+      for (const linkedPull of linkedPulls) {
+        const linkedPullReviews = data.linkedReviews.filter((review) => review.self?.html_url === linkedPull.url)[0];
         if (linkedPullReviews.reviews) {
           const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
 
