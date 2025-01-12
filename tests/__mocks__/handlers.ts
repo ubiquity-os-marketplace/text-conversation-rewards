@@ -212,4 +212,9 @@ export const handlers = [
   http.post("https://api.github.com/repos/:owner/:repo/issues/:id/comments", () => {
     return HttpResponse.json({});
   }),
+  http.get("https://api.github.com/repos/:owner/:repo/collaborators/:user/permission", () => {
+    return HttpResponse.json({
+        role_name: "admin",
+    });
+  }),
 ];

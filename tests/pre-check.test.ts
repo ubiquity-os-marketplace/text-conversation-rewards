@@ -117,7 +117,18 @@ describe("Pre-check tests", () => {
       collectLinkedMergedPulls: jest.fn(() => []),
     }));
     const patchMock = jest.fn(() => HttpResponse.json({}));
-    server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
+    server.use(
+      http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }),
+      http.get(
+        "https://api.github.com/repos/:owner/:repo/collaborators/:user/permission",
+        () => {
+          return HttpResponse.json({
+            role_name: "read",
+          });
+        },
+        { once: true }
+      )
+    );
     const { run } = await import("../src/run");
 
     const result = await run({
