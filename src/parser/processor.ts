@@ -52,11 +52,11 @@ export class Processor {
         this._result = await transformer.transform(data, this._result);
       }
       // Aggregate total result
-      for (const item of Object.keys(this._result)) {
-        if (data.self?.assignees?.map((v) => v.login).includes(item)) {
-          this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self) * 3);
+      for (const username of Object.keys(this._result)) {
+        if (data.self?.assignees?.map((v) => v.login).includes(username)) {
+          this._result[username].total = this._sumRewards(this._result[username], this._getRewardsLimit(data.self) * 3);
         } else {
-          this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self));
+          this._result[username].total = this._sumRewards(this._result[username], this._getRewardsLimit(data.self));
         }
       }
     }

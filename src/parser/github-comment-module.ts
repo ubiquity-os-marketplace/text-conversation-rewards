@@ -262,7 +262,7 @@ export class GithubCommentModule extends BaseModule {
   }
 
   _createReviewRows(result: Result[0]) {
-    if (!result.reviewRewards?.some((reviewReward) => reviewReward.reviews?.length)) {
+    if (result.reviewRewards?.every((reviewReward) => reviewReward.reviews?.length === 0) || !result.reviewRewards) {
       return "";
     }
     function buildReviewRow(review: ReviewScore) {

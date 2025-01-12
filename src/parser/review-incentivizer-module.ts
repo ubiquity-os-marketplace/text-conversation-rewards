@@ -7,7 +7,6 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { Result, ReviewScore } from "../types/results";
 import { ContextPlugin } from "../types/plugin-input";
-import { collectLinkedMergedPulls } from "../data-collection/collect-linked-pulls";
 import { GitHubPullRequestReviewState } from "../github-types";
 import { parsePriorityLabel } from "../helpers/github";
 import { getExcludedFiles } from "../helpers/excluded-files";
@@ -39,20 +38,13 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     const owner = this.context.payload.repository.owner.login;
     const repo = this.context.payload.repository.name;
-    const assignees = data.self?.assignees?.map((assignee) => assignee.login);
 
-    const linkedPulls = (
-      await collectLinkedMergedPulls(this.context, {
-        owner: owner,
-        repo: repo,
-        issue_number: data.self?.number,
-      })
-    ).filter((pull) => assignees?.includes(pull.author.login));
-
-    if (linkedPulls.length > 1) {
-      this.context.logger.info(`Pull requests ${linkedPulls.map((pull) => pull.number)} are linked to this issue`);
-    } else if (linkedPulls.length == 1) {
-      this.context.logger.info(`Pull request ${linkedPulls[0].number} is linked to this issue`);
+    if (data.linkedReviews.length > 1) {
+      this.context.logger.info(
+        `Pull requests ${data.linkedReviews.map((review) => review.self?.number)} are linked to this issue`
+      );
+    } else if (data.linkedReviews.length == 1) {
+      this.context.logger.info(`Pull request ${data.linkedReviews[0].self?.number} is linked to this issue`);
     } else {
       throw this.context.logger.error(`No pull request linked to this issue, Aborting`);
     }
@@ -61,9 +53,8 @@ export class ReviewIncentivizerModule extends BaseModule {
       const reward = result[username];
       reward.reviewRewards = [];
 
-      for (const linkedPull of linkedPulls) {
-        const linkedPullReviews = data.linkedReviews.filter((review) => review.self?.html_url === linkedPull.url)[0];
-        if (linkedPullReviews.reviews) {
+      for (const linkedPullReviews of data.linkedReviews) {
+        if (linkedPullReviews.reviews && linkedPullReviews.self) {
           const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
 
           const reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED")
@@ -71,7 +62,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             : { reward: 0 };
 
           const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
-          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPull.url, reviewBaseReward });
+          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.url, reviewBaseReward });
         }
       }
     }
