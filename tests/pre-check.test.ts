@@ -8,6 +8,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { isUserAllowedToGeneratePermits } from "../src/helpers/permissions";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -144,5 +145,50 @@ describe("Pre-check tests", () => {
     } as unknown as ContextPlugin);
 
     expect(result).toEqual("You are not allowed to generate permits.");
+  });
+
+  it("Should deny a user to generate permits if non-admin and allow admins", async () => {
+    const getMembershipForUser = jest.fn(() => ({}));
+    const getCollaboratorPermissionLevel = jest.fn(() => ({
+      data: {
+        role_name: "read",
+      },
+    }));
+    const ctx = {
+      payload: {
+        sender: {
+          login: "ubiquity-os",
+        },
+        repository: {
+          owner: {
+            login: "ubiquity-os-marketplace",
+          },
+        },
+      },
+      logger: new Logs("debug"),
+      octokit: {
+        rest: {
+          orgs: {
+            getMembershipForUser,
+          },
+          repos: {
+            getCollaboratorPermissionLevel,
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+
+    expect(await isUserAllowedToGeneratePermits(ctx)).toEqual(true);
+    getMembershipForUser.mockImplementationOnce(() => {
+      throw new Error();
+    });
+    expect(await isUserAllowedToGeneratePermits(ctx)).toEqual(false);
+    getMembershipForUser.mockImplementationOnce(() => {
+      throw new Error();
+    });
+    getCollaboratorPermissionLevel.mockImplementationOnce(() => {
+      return { data: { role_name: "write" } };
+    });
+    expect(await isUserAllowedToGeneratePermits(ctx)).toEqual(true);
   });
 });
