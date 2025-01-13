@@ -5,7 +5,7 @@ import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 /**
  * Removes the data in the comments that we do not want to be processed.
@@ -50,13 +50,11 @@ export class DataPurgeModule extends BaseModule {
     return false;
   }
 
-
-
   async _generateImageDescription(imageUrl: string): Promise<string | null> {
     try {
       const imageResponse = await fetch(imageUrl);
       const imageData = await imageResponse.arrayBuffer();
-      const base64Image = Buffer.from(imageData).toString('base64');
+      const base64Image = Buffer.from(imageData).toString("base64");
       const response = await this._openAi.chat.completions.create({
         model: "chatgpt-4o-latest",
         messages: [
@@ -64,13 +62,13 @@ export class DataPurgeModule extends BaseModule {
             role: "user",
             content: [
               { type: "text", text: "Describe this image concisely in one paragraph." },
-              { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
-            ]
-          }
+              { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } },
+            ],
+          },
         ],
-        max_tokens: 200
+        max_tokens: 200,
       });
-  
+
       return response.choices[0]?.message?.content ?? null;
     } catch (error) {
       this.context.logger.error(`Failed to generate image description: ${error}`);
@@ -81,20 +79,20 @@ export class DataPurgeModule extends BaseModule {
   async _generateLinkDescription(linkUrl: string): Promise<string | null> {
     try {
       const linkResponse = await fetch(linkUrl);
-      const contentType = linkResponse.headers.get('content-type');
+      const contentType = linkResponse.headers.get("content-type");
 
-      if (!contentType || (!contentType.includes('text/html') && !contentType.includes('text/plain'))) {
+      if (!contentType || (!contentType.includes("text/html") && !contentType.includes("text/plain"))) {
         this.context.logger.info(`Skipping non-HTML content: ${contentType}, ${linkUrl}`);
         return null;
       }
 
       const linkData = await linkResponse.text();
       const cleanText = linkData
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .replace(/{\s*"props".*$/s, '')
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .replace(/{\s*"props".*$/s, "")
         .trim();
 
       const response = await this._openAi.chat.completions.create({
@@ -102,10 +100,10 @@ export class DataPurgeModule extends BaseModule {
         messages: [
           {
             role: "user",
-            content: `Summarize the following webpage code into a concise and easy-to-understand text explanation of one paragraph with no bullet points. Focus on describing the purpose, structure, and functionality of the code, including key elements such as layout, styles, scripts, and any interactive features. Avoid technical jargon unless necessary: ${cleanText}`
-          }
+            content: `Summarize the following webpage code into a concise and easy-to-understand text explanation of one paragraph with no bullet points. Focus on describing the purpose, structure, and functionality of the code, including key elements such as layout, styles, scripts, and any interactive features. Avoid technical jargon unless necessary: ${cleanText}`,
+          },
         ],
-        max_tokens: 200
+        max_tokens: 200,
       });
 
       return response.choices[0]?.message?.content ?? null;

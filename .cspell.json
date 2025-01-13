@@ -32,7 +32,7 @@
     "sonarjs",
     "pico",
     "timespan",
-    "mistralai"
+    "openrouter"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

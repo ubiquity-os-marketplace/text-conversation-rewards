@@ -23,7 +23,6 @@ const openAiType = Type.Object(
   { default: {} }
 );
 
-
 export const dataPurgeConfigurationType = Type.Object({
   skipCommentsWhileAssigned: Type.Union([Type.Literal("all"), Type.Literal("exact"), Type.Literal("none")], {
     default: "all",
