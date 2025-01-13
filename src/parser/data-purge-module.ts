@@ -15,7 +15,7 @@ export class DataPurgeModule extends BaseModule {
   _assignmentPeriods: UserAssignments = {};
 
   readonly _openAi = new OpenAI({
-    baseURL: this._configuration?.openAi.endpoint || "https://openrouter.ai/api/v1",
+    baseURL: this._configuration?.openAi.endpoint ?? "https://openrouter.ai/api/v1",
     apiKey: this.context.env.OPENROUTER_API_KEY,
   });
 
@@ -71,7 +71,7 @@ export class DataPurgeModule extends BaseModule {
         max_tokens: 200
       });
   
-      return response.choices[0]?.message?.content || null;
+      return response.choices[0]?.message?.content ?? null;
     } catch (error) {
       this.context.logger.error(`Failed to generate image description: ${error}`);
       return null;
@@ -108,7 +108,7 @@ export class DataPurgeModule extends BaseModule {
         max_tokens: 200
       });
 
-      return response.choices[0]?.message?.content || null;
+      return response.choices[0]?.message?.content ?? null;
     } catch (error) {
       this.context.logger.error(`Failed to generate link description: ${error}`);
       return null;
