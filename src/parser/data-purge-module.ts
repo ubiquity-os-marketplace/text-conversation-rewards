@@ -15,8 +15,8 @@ export class DataPurgeModule extends BaseModule {
   _assignmentPeriods: UserAssignments = {};
 
   readonly _openAi = new OpenAI({
-    apiKey: this.context.env.OPENAI_API_KEY,
-    ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
+    baseURL: this._configuration?.openAi.endpoint || "https://openrouter.ai/api/v1",
+    apiKey: this.context.env.OPENROUTER_API_KEY,
   });
 
   get enabled(): boolean {
@@ -68,32 +68,12 @@ export class DataPurgeModule extends BaseModule {
             ]
           }
         ],
-        max_tokens: 300
+        max_tokens: 200
       });
   
       return response.choices[0]?.message?.content || null;
     } catch (error) {
       this.context.logger.error(`Failed to generate image description: ${error}`);
-      return null;
-    }
-  }
-
-  async _generateChatResponse(userMessage: string): Promise<string | null> {
-    try {
-      const response = await this._openAi.chat.completions.create({
-        model: "gpt-4o-2024-08-06",
-        messages: [
-          {
-            role: "user",
-            content: userMessage
-          }
-        ],
-        max_tokens: 500
-      });
-
-      return response.choices[0]?.message?.content || null;
-    } catch (error) {
-      this.context.logger.error(`Failed to generate chat response: ${error}`);
       return null;
     }
   }
@@ -118,14 +98,14 @@ export class DataPurgeModule extends BaseModule {
         .trim();
 
       const response = await this._openAi.chat.completions.create({
-        model: "gpt-4o-2024-08-06",
+        model: "gpt-4-turbo",
         messages: [
           {
             role: "user",
             content: `Summarize the following webpage code into a concise and easy-to-understand text explanation of one paragraph with no bullet points. Focus on describing the purpose, structure, and functionality of the code, including key elements such as layout, styles, scripts, and any interactive features. Avoid technical jargon unless necessary: ${cleanText}`
           }
         ],
-        max_tokens: 500
+        max_tokens: 200
       });
 
       return response.choices[0]?.message?.content || null;
