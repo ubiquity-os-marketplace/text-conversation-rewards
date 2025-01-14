@@ -7,21 +7,7 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
-
-async function isUserAllowedToGeneratePermits(context: ContextPlugin) {
-  const { octokit, payload } = context;
-  const username = payload.sender.login;
-  try {
-    await octokit.rest.orgs.getMembershipForUser({
-      org: payload.repository.owner.login,
-      username,
-    });
-    return true;
-  } catch (e) {
-    context.logger.debug(`${username} is not a member of ${context.payload.repository.owner.login}`, { e });
-    return false;
-  }
-}
+import { isUserAllowedToGeneratePermits } from "./helpers/permissions";
 
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config } = context;
