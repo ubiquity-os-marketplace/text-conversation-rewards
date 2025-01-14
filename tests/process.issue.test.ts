@@ -28,15 +28,28 @@ import { parseUnits } from "ethers/lib/utils";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
-jest.unstable_mockModule("../src/helpers/web3", () => ({
-  getErc20TokenSymbol() {
+class MockErc20Wrapper {
+  getSymbol = () => {
     return "WXDAI";
-  },
-  getErc20Balance() {
+  };
+  getBalance = () => {
     return parseUnits("100", 18);
+  };
+  getDecimals = () => {
+    return 18;
+  };
+  sendTransferTransaction = () => {
+    return { hash: "0xTransactionHash" };
+  };
+}
+jest.unstable_mockModule("../src/helpers/web3", () => ({
+  Erc20Wrapper: MockErc20Wrapper,
+  getErc20TokenContract() {
+    return { provider: "dummy" };
   },
-  createTransferSignedTx() { },
-  sendSignedTx() { },
+  getEvmWallet() {
+    return { address: "0xAddress" };
+  },
 }));
 
 jest.unstable_mockModule("@actions/github", () => ({

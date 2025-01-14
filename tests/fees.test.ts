@@ -3,12 +3,31 @@ import { IssueActivity } from "../src/issue-activity";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { parseUnits } from "ethers/lib/utils";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.unstable_mockModule("../src/helpers/web3", () => ({
-  getErc20TokenSymbol() {
+class MockErc20Wrapper {
+  getSymbol = () => {
     return "WXDAI";
+  };
+  getBalance = () => {
+    return parseUnits("100", 18);
+  };
+  getDecimals = () => {
+    return 18;
+  };
+  sendTransferTransaction = () => {
+    return { hash: "0xTransactionHash" };
+  };
+}
+jest.unstable_mockModule("../src/helpers/web3", () => ({
+  Erc20Wrapper: MockErc20Wrapper,
+  getErc20TokenContract() {
+    return { provider: "dummy" };
+  },
+  getEvmWallet() {
+    return { address: "0xAddress" };
   },
 }));
 

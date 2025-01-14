@@ -1,109 +1,60 @@
-import { BigNumber } from "ethers";
-import { jest } from "@jest/globals";
-import {
-  getErc20TokenSymbol,
-  getErc20TokenDecimals,
-  getErc20Balance,
-  getEvmWallet,
-  getErc20TokenContract,
-  createTransferSignedTx,
-  ERC20_ABI,
-} from "../../src/helpers/web3";
+import { Erc20Wrapper, getEvmWallet, getErc20TokenContract, ERC20_ABI } from "../../src/helpers/web3";
 import { Interface, parseUnits } from "ethers/lib/utils";
+import { BigNumber, ethers } from "ethers";
+import { describe, expect, it, jest } from "@jest/globals";
 
-/*
-// jest.unstable_mockModule("@ubiquity-dao/rpc-handler", () => {
-//   return {
-//     RPCHandler: {
-//       getFastestRpcProvider: jest.fn()
-//     },
-//   };
-// });
+const mockContract = {
+  balanceOf: jest.fn().mockReturnValue(BigNumber.from("1000")),
+  symbol: jest.fn().mockReturnValue("WXDAI"),
+  decimals: jest.fn().mockReturnValue(18),
+  transfer: jest.fn().mockReturnValue("0xTransactionData"),
+};
 
-// jest.mock("ethers", () => {
-//   const originalModule = jest.requireActual("ethers");
+const mockWallet = {
+  sendTransaction: jest.fn().mockReturnValue({ hash: "0xTransactionHash" }),
+};
 
-//   return {
-//     __esModule: true,
-//     ...originalModule,
-//     Contract: jest.fn(() => ({
-//       balanceOf: BigNumber.from("100"),
-//       symbol: "WXDAI",
-//       decimals: 18
-//     })),
-//   };
-// });
-*/
+const erc20Wrapper = new Erc20Wrapper(mockContract as unknown as ethers.Contract);
 
 describe("web3.ts", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  it("Should return correct ERC20 token contract", async () => {
+    const networkId = 100; // gnosis
+    const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
+    const contract = await getErc20TokenContract(networkId, tokenAddress);
+    expect(contract.address).toEqual(tokenAddress);
+    expect(contract.interface).toEqual(new Interface(ERC20_ABI));
+  }, 120000);
 
-  describe("getERC20TokenSymbol()", () => {
-    it("Should return ERC20 token symbol", async () => {
-      const networkId = 100; // gnosis
-      const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
-      const tokenSymbol = await getErc20TokenSymbol(networkId, tokenAddress);
-      expect(tokenSymbol).toEqual("WXDAI");
-    }, 120000);
-  });
-  describe("getErc20TokenDecimals()", () => {
-    it("Should return ERC20 token decimals", async () => {
-      const networkId = 100; // gnosis
-      const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
-      const tokenDecimals = await getErc20TokenDecimals(networkId, tokenAddress);
-      expect(tokenDecimals).toEqual(18);
-    }, 120000);
-  });
-  describe("getErc20Balance()", () => {
-    it("Should return ERC20 token balance of the input wallet", async () => {
-      const networkId = 100; // gnosis
-      const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
-      const tokenBalance: BigNumber = await getErc20Balance(
-        networkId,
-        tokenAddress,
-        "0x94d7a85efef179560f9b821cadd20056600fdb9d"
-      );
-      expect(tokenBalance).toEqual(BigNumber.from("100"));
-    }, 120000);
-  });
-  describe("getEvmWallet()", () => {
-    it("Should return ERC20 token decimals", async () => {
-      const networkId = 100; // gnosis
-      const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
-      const contract = await getErc20TokenContract(networkId, tokenAddress);
-      const evmWallet = await getEvmWallet(
-        "100958e64966448354216e91d4d4b9418c3fa0cb0a21b935535ced1df8145a0e",
-        contract.provider
-      );
-      const evmWalletAddress = await evmWallet.getAddress();
-      expect(evmWalletAddress.toLowerCase()).toEqual("0x94d7a85efef179560f9b821cadd20056600fdb9d");
-    }, 120000);
-  });
+  it("Should return correct ERC20 token data", async () => {
+    const tokenSymbol = await erc20Wrapper.getSymbol();
+    const tokenDecimals = await erc20Wrapper.getDecimals();
+    const tokenBalance = await erc20Wrapper.getBalance("0xRecipient");
+    expect(tokenSymbol).toEqual("WXDAI");
+    expect(tokenDecimals).toEqual(18);
+    expect(mockContract.balanceOf).toHaveBeenCalledWith("0xRecipient");
+    expect(tokenBalance).toEqual(BigNumber.from("1000"));
+  }, 120000);
 
-  describe("getErc20TokenContract()", () => {
-    it("Should return ERC20 token contract", async () => {
-      const networkId = 100; // gnosis
-      const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
-      const contract = await getErc20TokenContract(networkId, tokenAddress);
-      expect(contract.address).toEqual(tokenAddress);
-      expect(contract.interface).toEqual(new Interface(ERC20_ABI));
-    }, 120000);
-  });
+  it("Should return ERC20 token decimals", async () => {
+    const networkId = 100; // gnosis
+    const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
+    const contract = await getErc20TokenContract(networkId, tokenAddress);
+    const evmWallet = await getEvmWallet(
+      "100958e64966448354216e91d4d4b9418c3fa0cb0a21b935535ced1df8145a0e",
+      contract.provider
+    );
+    const evmWalletAddress = await evmWallet.getAddress();
+    expect(evmWalletAddress.toLowerCase()).toEqual("0x94d7a85efef179560f9b821cadd20056600fdb9d");
+  }, 120000);
 
-  describe("createTransferSignedTx()", () => {
-    it("Should return a valid tx", async () => {
-      const networkId = 100; // gnosis
-      const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
-      const tx = await createTransferSignedTx(
-        networkId,
-        tokenAddress,
-        "100958e64966448354216e91d4d4b9418c3fa0cb0a21b935535ced1df8145a0e",
-        "0x94d7a85efef179560f9b821cadd20056600fdb9d",
-        parseUnits("100", 18).toString()
-      );
-      expect(tx).toEqual("sdvfds");
-    }, 120000);
-  });
+  it("Should return a valid tx", async () => {
+    const tx = await erc20Wrapper.sendTransferTransaction(
+      mockWallet as unknown as ethers.Wallet,
+      "0xRecipient",
+      "1000"
+    );
+    expect(mockContract.transfer).toHaveBeenCalledWith("0xRecipient", parseUnits("1000", 18));
+    expect(mockWallet.sendTransaction).toHaveBeenCalledWith("0xTransactionData");
+    expect(tx.hash).toEqual("0xTransactionHash");
+  }, 120000);
 });

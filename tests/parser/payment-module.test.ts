@@ -3,13 +3,13 @@ import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { CommentKind } from "../../src/configuration/comment-types";
-import { EnvConfig } from "../../src/types/env-type";
 import { ContextPlugin } from "../../src/types/plugin-input";
 import { Result } from "../../src/types/results";
 import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
+import { parseUnits } from "ethers/lib/utils";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -58,6 +58,30 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
     createClient: jest.fn(),
   };
 });
+
+class MockErc20Wrapper {
+  getSymbol = () => {
+    return "WXDAI";
+  };
+  getBalance = () => {
+    return parseUnits("100", 18);
+  };
+  getDecimals = () => {
+    return 18;
+  };
+  sendTransferTransaction = () => {
+    return { hash: "0xTransactionHash" };
+  };
+}
+jest.unstable_mockModule("../../src/helpers/web3", () => ({
+  Erc20Wrapper: MockErc20Wrapper,
+  getErc20TokenContract() {
+    return { provider: "dummy" };
+  },
+  getEvmWallet() {
+    return { address: "0xAddress" };
+  },
+}));
 
 // original rewards object before fees are applied
 const resultOriginal: Result = {
@@ -259,11 +283,11 @@ describe("payment-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
 
+      const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
       const isAllowed = await paymentModule._isPrivateKeyAllowed(
-        privateKeyEncrypted,
+        privateKeyParsed,
         githubContextOrganizationId,
-        githubContextRepositoryId,
-        process.env as unknown as EnvConfig
+        githubContextRepositoryId
       );
 
       expect(isAllowed).toEqual(false);
@@ -280,9 +304,9 @@ describe("payment-module.ts", () => {
       const privateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
       const privateKeyEncrypted =
         "fdsmuUN_jTF-VAWMe55ozcg6AuLOKiyJm8unRg1QwnY9u_fsKmczRtekx6aq59ndQ0RDJ803SkeTOlUW87cd93rDTiq57ErxkRwq4j4SKYTitChIWAZw0-LCJAd2IvRmN9qVzA7oXEdkUihXkErGGtqK";
-      const decrypted = await paymentModule._decryptPrivateKey(privateKeyEncrypted);
+      const decrypted = await paymentModule._parsePrivateKey(privateKeyEncrypted);
 
-      expect(decrypted).toEqual(privateKey);
+      expect(decrypted.privateKey).toEqual(privateKey);
     });
 
     it("Should return false if private key is used in unallowed organization", async () => {
@@ -296,11 +320,11 @@ describe("payment-module.ts", () => {
       const githubContextOrganizationId = 99;
       const githubContextRepositoryId = 2;
 
+      const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
       const isAllowed = await paymentModule._isPrivateKeyAllowed(
-        privateKeyEncrypted,
+        privateKeyParsed,
         githubContextOrganizationId,
-        githubContextRepositoryId,
-        process.env as unknown as EnvConfig
+        githubContextRepositoryId
       );
 
       expect(isAllowed).toEqual(false);
@@ -319,11 +343,11 @@ describe("payment-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
 
+      const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
       const isAllowed = await paymentModule._isPrivateKeyAllowed(
-        privateKeyEncrypted,
+        privateKeyParsed,
         githubContextOrganizationId,
-        githubContextRepositoryId,
-        process.env as unknown as EnvConfig
+        githubContextRepositoryId
       );
 
       expect(isAllowed).toEqual(true);
@@ -340,11 +364,11 @@ describe("payment-module.ts", () => {
       const githubContextOrganizationId = 99;
       const githubContextRepositoryId = 2;
 
+      const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
       const isAllowed = await paymentModule._isPrivateKeyAllowed(
-        privateKeyEncrypted,
+        privateKeyParsed,
         githubContextOrganizationId,
-        githubContextRepositoryId,
-        process.env as unknown as EnvConfig
+        githubContextRepositoryId
       );
 
       expect(isAllowed).toEqual(false);
@@ -366,11 +390,11 @@ describe("payment-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 99;
 
+      const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
       const isAllowed = await paymentModule._isPrivateKeyAllowed(
-        privateKeyEncrypted,
+        privateKeyParsed,
         githubContextOrganizationId,
-        githubContextRepositoryId,
-        process.env as unknown as EnvConfig
+        githubContextRepositoryId
       );
 
       expect(isAllowed).toEqual(false);
@@ -391,11 +415,11 @@ describe("payment-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
 
+      const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
       const isAllowed = await paymentModule._isPrivateKeyAllowed(
-        privateKeyEncrypted,
+        privateKeyParsed,
         githubContextOrganizationId,
-        githubContextRepositoryId,
-        process.env as unknown as EnvConfig
+        githubContextRepositoryId
       );
 
       expect(isAllowed).toEqual(true);
@@ -412,11 +436,11 @@ describe("payment-module.ts", () => {
       const githubContextOrganizationId = 1;
       const githubContextRepositoryId = 2;
 
+      const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
       const isAllowed = await paymentModule._isPrivateKeyAllowed(
-        privateKeyEncrypted,
+        privateKeyParsed,
         githubContextOrganizationId,
-        githubContextRepositoryId,
-        process.env as unknown as EnvConfig
+        githubContextRepositoryId
       );
 
       expect(isAllowed).toEqual(false);
