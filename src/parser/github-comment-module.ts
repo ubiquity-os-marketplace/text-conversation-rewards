@@ -12,7 +12,7 @@ import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
-import { getErc20TokenSymbol } from "../helpers/web3";
+import { getErc20TokenContract, Erc20Wrapper } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
@@ -322,11 +322,11 @@ export class GithubCommentModule extends BaseModule {
       },
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
-
-    const tokenSymbol = await getErc20TokenSymbol(
+    const tokenContract = await getErc20TokenContract(
       this.context.config.evmNetworkId,
       this.context.config.erc20RewardToken
     );
+    const tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
 
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??

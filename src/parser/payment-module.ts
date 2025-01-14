@@ -21,12 +21,13 @@ import {
 } from "../configuration/permit-generation-configuration";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
-import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
-import { getErc20Balance, createTransferSignedTx, sendSignedTx } from "../helpers/web3";
 import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
+import { Erc20Wrapper, getErc20TokenContract, getEvmWallet } from "../helpers/web3";
+import { BigNumber, ethers } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
 
 interface Payload {
   evmNetworkId: number;
@@ -34,6 +35,10 @@ interface Payload {
   evmPrivateEncrypted: string;
   erc20RewardToken: string;
   issue: { node_id: string };
+}
+
+interface Payable {
+  [username: string]: string;
 }
 
 export class PaymentModule extends BaseModule {
@@ -44,25 +49,13 @@ export class PaymentModule extends BaseModule {
   readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
-    const privateKey = await this._decryptPrivateKey(this._evmPrivateEncrypted);
     if (!canMakePayment) {
       this.context.logger.error("[PaymentModule] Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
-    }
-
-    const totalPayable = await this._getTotalPayable(result);
-    const fundingWalletBalance = await getErc20Balance(this._evmNetworkId, this._erc20RewardToken, privateKey);
-
-    let shouldTransferDirectly = false;
-    if (this._autoTransferMode && totalPayable < fundingWalletBalance) {
-      this.context.logger.debug(
-        "[PaymentModule] AutoTransformMode is enabled, " +
-          "and sufficient funds are available in the funding wallet, skipping."
-      );
-      shouldTransferDirectly = true;
     }
 
     const payload: Context["payload"] & Payload = {
@@ -77,11 +70,20 @@ export class PaymentModule extends BaseModule {
       node_id: this.context.payload.issue.node_id,
     };
     const env = this.context.env;
+
+    // Decrypt the private key object
+    let privateKeyParsed;
+    try {
+      privateKeyParsed = await this._parsePrivateKey(this._evmPrivateEncrypted);
+    } catch (e) {
+      this.context.logger.error("[PaymentModule] Private key could not be parsed.", { e });
+      return Promise.resolve(result);
+    }
+
     const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(
-      payload.evmPrivateEncrypted,
+      privateKeyParsed,
       this.context.payload.repository.owner.id,
-      this.context.payload.repository.id,
-      env
+      this.context.payload.repository.id
     );
     if (!isPrivateKeyAllowed) {
       this.context.logger.error(
@@ -89,6 +91,7 @@ export class PaymentModule extends BaseModule {
       );
       return Promise.resolve(result);
     }
+
     const eventName = context.eventName as SupportedEvents;
     const octokit = this.context.octokit as unknown as Context["octokit"];
     const permitLogger = {
@@ -114,15 +117,27 @@ export class PaymentModule extends BaseModule {
     // apply fees
     result = await this._applyFees(result, payload.erc20RewardToken);
 
-    for (const [key, value] of Object.entries(result)) {
-      this.context.logger.debug(`Updating result for user ${key}`);
+    // Check if funding wallet has enough reward token and gas to transfer rewards directly
+    const [canTransferDirectly, erc20Wrapper, fundingWallet, payables] = await this._canTransferDirectly(
+      privateKeyParsed.privateKey,
+      result
+    );
+
+    if (this._autoTransferMode && canTransferDirectly) {
+      this.context.logger.debug(
+        "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
+      );
+    }
+
+    for (const [username, reward] of Object.entries(result)) {
+      this.context.logger.debug(`Updating result for user ${username}`);
       const config: Context["config"] = {
         evmNetworkId: payload.evmNetworkId,
         evmPrivateEncrypted: payload.evmPrivateEncrypted,
         permitRequests: [
           {
-            amount: value.total,
-            username: key,
+            amount: reward.total,
+            username: username,
             contributionType: "",
             type: TokenType.ERC20,
             tokenAddress: payload.erc20RewardToken,
@@ -130,17 +145,14 @@ export class PaymentModule extends BaseModule {
         ],
       };
 
-      if (shouldTransferDirectly) {
-        const beneficiaryWalletAddress = await this._getBeneficiaryWalletAddress(key);
-        const signedTxData = await createTransferSignedTx(
-          this._evmNetworkId,
-          this._erc20RewardToken,
-          privateKey,
+      if (this._autoTransferMode && canTransferDirectly) {
+        const beneficiaryWalletAddress = payables[username];
+        const tx = await erc20Wrapper?.sendTransferTransaction(
+          fundingWallet,
           beneficiaryWalletAddress,
-          value.total.toString()
+          reward.total.toString()
         );
-        const tx = await sendSignedTx(this._evmNetworkId, signedTxData);
-        result[key].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
+        result[username].explorerUrl = `${networkExplorer}/tx/${tx?.hash}`;
       } else {
         try {
           const permits = await generatePayoutPermit(
@@ -163,29 +175,21 @@ export class PaymentModule extends BaseModule {
             },
             config.permitRequests
           );
-          result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-          await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
+          result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+          await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
           // remove treasury item from final result in order not to display permit fee in GitHub comments
           if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
         } catch (e) {
-          this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${key}`, { e });
+          this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${username}`, { e });
         }
       }
     }
     return result;
   }
 
-  async _getTotalPayable(result: Result) {
-    let sumPayouts = 0;
-    for (const value of Object.values(result)) {
-      sumPayouts += value.total;
-    }
-    return sumPayouts;
-  }
-
   async _getNetworkExplorer(networkId: number) {
     const networkExplorer = getNetworkExplorer(String(networkId) as NetworkId);
-    if (!networkExplorer) {
+    if (!networkExplorer || networkExplorer.length === 0) {
       return "https://blockscan.com";
     }
     return networkExplorer[0].url;
@@ -199,32 +203,88 @@ export class PaymentModule extends BaseModule {
     return isCollaborative(data);
   }
 
-  async _decryptPrivateKey(evmPrivateEncrypted: string) {
+  async _parsePrivateKey(evmPrivateEncrypted: string) {
     try {
       const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
       const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
-      const privateKey = privateKeyParsed.privateKey;
-      if (!privateKey) throw new Error("Private key is not defined");
-      return privateKey;
+      if (!privateKeyParsed.privateKey) {
+        throw new Error("Private key is null or empty");
+      }
+      return {
+        privateKey: privateKeyParsed.privateKey,
+        allowedOrganizationId: privateKeyParsed.allowedOrganizationId,
+        allowedRepositoryId: privateKeyParsed.allowedRepositoryId,
+      };
     } catch (error) {
-      const errorMessage = `Failed to decrypt a private key: ${error}`;
-      this.context.logger.error(errorMessage);
-      throw new Error(errorMessage);
+      throw new Error(this.context.logger.error(`Failed to decrypt a private key: ${error}`).logMessage.raw);
     }
   }
 
-  async _getBeneficiaryWalletAddress(username: string) {
-    // Obtain the beneficiary wallet address from the github user name
-    const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
-    if (!userData) {
-      throw new Error(`GitHub user was not found for id ${username}`);
+  /*
+   * This method checks that the funding wallet has enough reward tokens for a direct transfer and sufficient funds to cover gas fees.
+   * @param private key of the funding wallet
+   * @param result Result object
+   * @returns [canTransferDirectly, erc20Wrapper, fundingWallet, payables]
+   */
+  async _canTransferDirectly(
+    privateKey: string,
+    result: Result
+  ): Promise<[boolean, Erc20Wrapper, ethers.Wallet, Payable] | [false, null, null, null]> {
+    try {
+      const tokenContract = await getErc20TokenContract(this._evmNetworkId, this._erc20RewardToken);
+      const fundingWallet = await getEvmWallet(privateKey, tokenContract.provider);
+      const erc20Wrapper = new Erc20Wrapper(tokenContract);
+      const decimals = await erc20Wrapper.getDecimals();
+      // Fetch and normalize the funding wallet's reward token balance
+      const fundingWalletRewardTokenBalance: BigNumber = await erc20Wrapper.getBalance(fundingWallet.address);
+
+      // Fetch the funding wallet's native token balance
+      const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
+
+      const payables = await this._getPayables(result);
+      const totalFee = BigNumber.from("0");
+      const totalReward = BigNumber.from("0");
+      for (const [address, reward] of Object.entries(payables)) {
+        const rewardAmount = parseUnits(reward, decimals);
+        const fee = await tokenContract.estimateGas.transfer(address, rewardAmount);
+        totalFee.add(fee);
+        totalReward.add(rewardAmount);
+      }
+
+      this.context.logger.info(`[PaymentModule] Funding Wallet Balances`, {
+        rewardTokenBalance: fundingWalletRewardTokenBalance.toString(),
+        nativeTokenBalance: fundingWalletNativeTokenBalance.toString(),
+      });
+
+      return [
+        fundingWalletNativeTokenBalance.gt(totalFee) && fundingWalletRewardTokenBalance.gt(totalReward),
+        erc20Wrapper,
+        fundingWallet,
+        payables,
+      ];
+    } catch (e) {
+      this.context.logger.error("[PaymentModule] Failed to fetch the funding wallet data", { e });
+
+      return [false, null, null, null];
     }
-    const userId = userData.id;
-    const { data: walletData } = await this._supabase.from("wallets").select("address").eq("id", userId).single();
-    if (!walletData?.address) {
-      throw new Error("Beneficiary wallet not found");
+  }
+
+  async _getPayables(result: Result): Promise<Payable> {
+    const addresses: Payable = {};
+    for (const username of Object.keys(result)) {
+      // Obtain the beneficiary wallet address from the github user name
+      const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
+      if (!userData) {
+        throw new Error(this.context.logger.error(`GitHub user was not found for id ${username}`).logMessage.raw);
+      }
+      const userId = userData.id;
+      const { data: walletData } = await this._supabase.from("wallets").select("address").eq("id", userId).single();
+      if (!walletData?.address) {
+        throw new Error(this.context.logger.error("Beneficiary wallet not found").logMessage.raw);
+      }
+      addresses[username] = walletData.address;
     }
-    return walletData.address;
+    return addresses;
   }
 
   /**
@@ -415,21 +475,18 @@ export class PaymentModule extends BaseModule {
    * @returns Whether private key is allowed to be used in current owner/repository context
    */
   async _isPrivateKeyAllowed(
-    privateKeyEncrypted: string,
+    privateKeyParsed: {
+      privateKey: string | null;
+      allowedOrganizationId: number | null;
+      allowedRepositoryId: number | null;
+    },
     githubContextOwnerId: number,
-    githubContextRepositoryId: number,
-    env: EnvConfig
+    githubContextRepositoryId: number
   ): Promise<boolean> {
-    // decrypt private key
-    const privateKeyDecrypted = await decrypt(privateKeyEncrypted, env.X25519_PRIVATE_KEY);
-
-    // parse decrypted private key
-    const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
     if (!privateKeyParsed.privateKey) {
       this.context.logger.error("Private key could not be decrypted");
       return false;
     }
-
     // private key + owner id
     // Format: PRIVATE_KEY:GITHUB_OWNER_ID
     if (privateKeyParsed.allowedOrganizationId && !privateKeyParsed.allowedRepositoryId) {
