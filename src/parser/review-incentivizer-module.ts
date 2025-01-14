@@ -62,7 +62,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             : { reward: 0 };
 
           const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
-          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.url, reviewBaseReward });
+          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url, reviewBaseReward });
         }
       }
     }
