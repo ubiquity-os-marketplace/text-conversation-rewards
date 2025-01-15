@@ -15,6 +15,8 @@ import {
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
+import { postComment } from "@ubiquity-os/plugin-sdk";
+import { retry } from "../helpers/retry";
 
 /**
  * Evaluates and rates comments.
@@ -194,21 +196,39 @@ export class ContentEvaluatorModule extends BaseModule {
   }
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
-    const response: OpenAI.Chat.ChatCompletion = await this._openAi.chat.completions.create({
-      model: this._configuration?.openAi.model ?? "gpt-4o-2024-08-06",
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content: prompt,
+    const response = await retry(
+      () =>
+        this._openAi.chat.completions.create({
+          model: this._configuration?.openAi.model ?? "gpt-4o-2024-08-06",
+          response_format: { type: "json_object" },
+          messages: [
+            {
+              role: "system",
+              content: prompt,
+            },
+          ],
+          max_tokens: maxTokens,
+          top_p: 1,
+          temperature: 1,
+          frequency_penalty: 0,
+          presence_penalty: 0,
+        }),
+      {
+        maxRetries: this._configuration?.openAi.maxRetries ?? 3,
+        onError: async () => {
+          await postComment(this.context, this.context.logger.info("Results are being retried"), {
+            updateComment: true,
+          });
         },
-      ],
-      max_tokens: maxTokens,
-      top_p: 1,
-      temperature: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-    });
+        isErrorRetryable: (error) => {
+          if (error instanceof OpenAI.APIError && error.status) {
+            return [429, 500, 503].includes(error.status);
+          } else {
+            return false;
+          }
+        },
+      }
+    );
 
     const rawResponse = String(response.choices[0].message.content);
     this.context.logger.info(`OpenAI raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);

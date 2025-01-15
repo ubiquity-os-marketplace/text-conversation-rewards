@@ -67,6 +67,12 @@
                         "description": "OpenAI endpoint for requests",
                         "examples": ["https://api.openai.com/v1"],
                         "type": "string"
+                      },
+                      "maxRetries": {
+                        "default": 3,
+                        "description": "Maximum number of retries to make",
+                        "examples": ["3"],
+                        "type": "number"
                       }
                     }
                   },

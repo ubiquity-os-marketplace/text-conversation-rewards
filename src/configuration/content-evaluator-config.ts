@@ -20,6 +20,11 @@ const openAiType = Type.Object(
       description: "OpenAI endpoint for requests",
       examples: ["https://api.openai.com/v1"],
     }),
+    maxRetries: Type.Number({
+      default: 3,
+      description: "Maximum number of retries to make",
+      examples: ["3"],
+    }),
   },
   { default: {} }
 );
