@@ -3,7 +3,7 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
-import { http, passthrough } from "msw";
+import { http, HttpResponse, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
@@ -21,6 +21,8 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
+import { retry } from "../src/helpers/retry";
+import OpenAI from "openai";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -435,5 +437,96 @@ describe("Modules tests", () => {
         total: 36.336,
       },
     });
+  });
+});
+
+describe("Retry", () => {
+  const openAi = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, maxRetries: 0 });
+
+  async function testFunction() {
+    return openAi.chat.completions.create({
+      model: "gpt-4o-2024-08-06",
+      messages: [
+        {
+          role: "system",
+          content: "",
+        },
+      ],
+    });
+  }
+
+  it("should return correct value", async () => {
+    server.use(
+      http.post("https://api.openai.com/v1/*", () => {
+        return HttpResponse.json({ choices: [{ text: "Hello" }] });
+      })
+    );
+
+    const res = await retry(testFunction, { maxRetries: 3 });
+    expect(res).toMatchObject({ choices: [{ text: "Hello" }] });
+  });
+
+  it("should retry on any error", async () => {
+    let called = 0;
+    server.use(
+      http.post("https://api.openai.com/v1/*", () => {
+        called += 1;
+        if (called === 1) {
+          return HttpResponse.text("", { status: 500 });
+        } else if (called === 2) {
+          return HttpResponse.text("", { status: 429 });
+        } else {
+          return HttpResponse.json({ choices: [{ text: "Hello" }] });
+        }
+      })
+    );
+
+    const res = await retry(testFunction, { maxRetries: 3 });
+    expect(res).toMatchObject({ choices: [{ text: "Hello" }] });
+  });
+
+  it("should throw error if maxRetries is reached", async () => {
+    server.use(
+      http.post("https://api.openai.com/v1/*", () => {
+        return HttpResponse.text("", { status: 500 });
+      })
+    );
+
+    await expect(
+      retry(testFunction, {
+        maxRetries: 3,
+        isErrorRetryable: (err) => {
+          return err instanceof OpenAI.APIError && err.status === 500;
+        },
+      })
+    ).rejects.toMatchObject({ status: 500 });
+  });
+
+  it("should retry on 500 but fail on 429", async () => {
+    let called = 0;
+    server.use(
+      http.post("https://api.openai.com/v1/*", () => {
+        called += 1;
+        if (called === 1) {
+          return HttpResponse.text("", { status: 500 });
+        } else if (called === 2) {
+          return HttpResponse.text("", { status: 429 });
+        } else {
+          return HttpResponse.json({ choices: [{ text: "Hello" }] });
+        }
+      })
+    );
+    const onErrorHandler = jest.fn<() => void>();
+
+    await expect(
+      retry(testFunction, {
+        maxRetries: 3,
+        isErrorRetryable: (err) => {
+          return err instanceof OpenAI.APIError && err.status === 500;
+        },
+        onError: onErrorHandler,
+      })
+    ).rejects.toMatchObject({ status: 429 });
+    expect(onErrorHandler).toHaveBeenCalledTimes(2);
   });
 });
