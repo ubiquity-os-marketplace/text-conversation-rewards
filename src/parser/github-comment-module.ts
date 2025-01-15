@@ -265,33 +265,38 @@ export class GithubCommentModule extends BaseModule {
     if (result.reviewRewards?.every((reviewReward) => reviewReward.reviews?.length === 0) || !result.reviewRewards) {
       return "";
     }
+
     function buildReviewRow(review: ReviewScore) {
       return `
-          <tr>
-            <td>+${review.effect.addition} -${review.effect.deletion}</td>
-            <td>${review.priority ?? "-"}</td>
-            <td>${review.reward}</td>
-          </tr>`;
+        <tr>
+          <td>+${review.effect.addition} -${review.effect.deletion}</td>
+          <td>${review.priority ?? "-"}</td>
+          <td>${review.reward}</td>
+        </tr>`;
     }
 
-    const rows = result.reviewRewards
-      .flatMap((reviewReward) => reviewReward.reviews?.map(buildReviewRow) ?? [])
+    const reviewTables = result.reviewRewards
+      .filter((reviewReward) => reviewReward.reviews && reviewReward.reviews.length > 0)
+      .map((reviewReward) => {
+        const rows = reviewReward.reviews?.map(buildReviewRow).join("") ?? "";
+        return `
+          <h6>Review Details for&nbsp;<a href="${reviewReward.url}" target="_blank" rel="noopener">Pull Request</a></h6>
+          <table>
+            <thead>
+              <tr>
+                <th>Changes</th>
+                <th>Priority</th>
+                <th>Reward</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>`;
+      })
       .join("");
 
-    return `
-      <h6>Review Details</h6>
-      <table>
-        <thead>
-          <tr>
-            <th>Changes</th>
-            <th>Priority</th>            
-            <th>Reward</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows}
-        </tbody>
-      </table>`;
+    return reviewTables;
   }
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
