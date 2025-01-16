@@ -38,7 +38,7 @@ interface Payload {
 }
 
 interface Payable {
-  [username: string]: string;
+  [username: string]: { address: string; reward: number };
 }
 
 export class PaymentModule extends BaseModule {
@@ -49,7 +49,6 @@ export class PaymentModule extends BaseModule {
   readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
@@ -72,14 +71,7 @@ export class PaymentModule extends BaseModule {
     const env = this.context.env;
 
     // Decrypt the private key object
-    let privateKeyParsed;
-    try {
-      privateKeyParsed = await this._parsePrivateKey(this._evmPrivateEncrypted);
-    } catch (e) {
-      this.context.logger.error("[PaymentModule] Private key could not be parsed.", { e });
-      return Promise.resolve(result);
-    }
-
+    const privateKeyParsed = await this._parsePrivateKey(this._evmPrivateEncrypted);
     const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(
       privateKeyParsed,
       this.context.payload.repository.owner.id,
@@ -117,15 +109,26 @@ export class PaymentModule extends BaseModule {
     // apply fees
     result = await this._applyFees(result, payload.erc20RewardToken);
 
-    // Check if funding wallet has enough reward token and gas to transfer rewards directly
-    const [canTransferDirectly, erc20Wrapper, fundingWallet, payables] = await this._canTransferDirectly(
-      privateKeyParsed.privateKey,
-      result
-    );
-
-    if (this._autoTransferMode && canTransferDirectly) {
-      this.context.logger.debug(
-        "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
+    if (this._autoTransferMode) {
+      // Check if funding wallet has enough reward token and gas to transfer rewards directly
+      const [canTransferDirectly, erc20Wrapper, fundingWallet, payables] = await this._canTransferDirectly(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        privateKeyParsed.privateKey!,
+        result
+      );
+      if (canTransferDirectly) {
+        this.context.logger.info(
+          "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
+        );
+        for (const [username, reward] of Object.entries(result)) {
+          const beneficiaryWalletAddress = payables[username].address;
+          const tx = await erc20Wrapper.sendTransferTransaction(fundingWallet, beneficiaryWalletAddress, reward.total);
+          result[username].explorerUrl = `${networkExplorer}/tx/${tx?.hash}`;
+        }
+        return result;
+      }
+      this.context.logger.info(
+        "[PaymentModule] AutoTransformMode is enabled, but the funding wallet lacks sufficient funds. Skipping."
       );
     }
 
@@ -144,44 +147,33 @@ export class PaymentModule extends BaseModule {
           },
         ],
       };
-
-      if (this._autoTransferMode && canTransferDirectly) {
-        const beneficiaryWalletAddress = payables[username];
-        const tx = await erc20Wrapper?.sendTransferTransaction(
-          fundingWallet,
-          beneficiaryWalletAddress,
-          reward.total.toString()
-        );
-        result[username].explorerUrl = `${networkExplorer}/tx/${tx?.hash}`;
-      } else {
-        try {
-          const permits = await generatePayoutPermit(
-            {
+      try {
+        const permits = await generatePayoutPermit(
+          {
+            env,
+            eventName,
+            logger: permitLogger,
+            payload,
+            adapters: createAdapters(this._supabase, {
               env,
               eventName,
-              logger: permitLogger,
-              payload,
-              adapters: createAdapters(this._supabase, {
-                env,
-                eventName,
-                octokit,
-                config,
-                logger: permitLogger,
-                payload,
-                adapters,
-              }),
               octokit,
               config,
-            },
-            config.permitRequests
-          );
-          result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-          await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
-          // remove treasury item from final result in order not to display permit fee in GitHub comments
-          if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
-        } catch (e) {
-          this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${username}`, { e });
-        }
+              logger: permitLogger,
+              payload,
+              adapters,
+            }),
+            octokit,
+            config,
+          },
+          config.permitRequests
+        );
+        result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+        await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
+        // remove treasury item from final result in order not to display permit fee in GitHub comments
+        if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
+      } catch (e) {
+        this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${username}`, { e });
       }
     }
     return result;
@@ -203,23 +195,6 @@ export class PaymentModule extends BaseModule {
     return isCollaborative(data);
   }
 
-  async _parsePrivateKey(evmPrivateEncrypted: string) {
-    try {
-      const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
-      const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
-      if (!privateKeyParsed.privateKey) {
-        throw new Error("Private key is null or empty");
-      }
-      return {
-        privateKey: privateKeyParsed.privateKey,
-        allowedOrganizationId: privateKeyParsed.allowedOrganizationId,
-        allowedRepositoryId: privateKeyParsed.allowedRepositoryId,
-      };
-    } catch (error) {
-      throw new Error(this.context.logger.error(`Failed to decrypt a private key: ${error}`).logMessage.raw);
-    }
-  }
-
   /*
    * This method checks that the funding wallet has enough reward tokens for a direct transfer and sufficient funds to cover gas fees.
    * @param private key of the funding wallet
@@ -229,7 +204,7 @@ export class PaymentModule extends BaseModule {
   async _canTransferDirectly(
     privateKey: string,
     result: Result
-  ): Promise<[boolean, Erc20Wrapper, ethers.Wallet, Payable] | [false, null, null, null]> {
+  ): Promise<[true, Erc20Wrapper, ethers.Wallet, Payable] | [false, null, null, null]> {
     try {
       const tokenContract = await getErc20TokenContract(this._evmNetworkId, this._erc20RewardToken);
       const fundingWallet = await getEvmWallet(privateKey, tokenContract.provider);
@@ -242,47 +217,63 @@ export class PaymentModule extends BaseModule {
       const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
 
       const payables = await this._getPayables(result);
-      const totalFee = BigNumber.from("0");
-      const totalReward = BigNumber.from("0");
-      for (const [address, reward] of Object.entries(payables)) {
-        const rewardAmount = parseUnits(reward, decimals);
-        const fee = await tokenContract.estimateGas.transfer(address, rewardAmount);
-        totalFee.add(fee);
-        totalReward.add(rewardAmount);
+      if (payables == null) {
+        return [false, null, null, null];
+      }
+      let totalFee = BigNumber.from("0");
+      let totalReward = BigNumber.from("0");
+      for (const data of Object.values(payables)) {
+        const fee = await erc20Wrapper.estimateTransferGas(fundingWallet.address, data.address, data.reward);
+        totalFee = totalFee.add(fee);
+        totalReward = totalReward.add(parseUnits(data.reward.toString(), decimals));
       }
 
-      this.context.logger.info(`[PaymentModule] Funding Wallet Balances`, {
-        rewardTokenBalance: fundingWalletRewardTokenBalance.toString(),
-        nativeTokenBalance: fundingWalletNativeTokenBalance.toString(),
-      });
-
-      return [
-        fundingWalletNativeTokenBalance.gt(totalFee) && fundingWalletRewardTokenBalance.gt(totalReward),
-        erc20Wrapper,
-        fundingWallet,
-        payables,
-      ];
+      const hasEnoughRewardToken = fundingWalletNativeTokenBalance.gt(totalFee);
+      const hasEnoughGas = fundingWalletRewardTokenBalance.gt(totalReward);
+      const gasAndRewardInfo = {
+        gas: {
+          has: fundingWalletNativeTokenBalance.toString(),
+          required: totalFee.toString(),
+        },
+        rewardToken: {
+          has: fundingWalletRewardTokenBalance.toString(),
+          required: totalReward.toString(),
+        },
+      };
+      if (!hasEnoughGas || !hasEnoughRewardToken) {
+        this.context.logger.error(
+          `[PaymentModule] The funding wallet lacks sufficient gas and/or reward tokens to perform direct transfers`,
+          gasAndRewardInfo
+        );
+        return [false, null, null, null];
+      }
+      this.context.logger.info(
+        `[PaymentModule] The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
+        gasAndRewardInfo
+      );
+      return [true, erc20Wrapper, fundingWallet, payables];
     } catch (e) {
-      this.context.logger.error("[PaymentModule] Failed to fetch the funding wallet data", { e });
-
+      this.context.logger.error(`[PaymentModule] Failed to fetch the funding wallet data: ${e}`, { e });
       return [false, null, null, null];
     }
   }
 
-  async _getPayables(result: Result): Promise<Payable> {
+  async _getPayables(result: Result): Promise<Payable | null> {
     const addresses: Payable = {};
-    for (const username of Object.keys(result)) {
+    for (const [username, reward] of Object.entries(result)) {
       // Obtain the beneficiary wallet address from the github user name
       const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
       if (!userData) {
-        throw new Error(this.context.logger.error(`GitHub user was not found for id ${username}`).logMessage.raw);
+        this.context.logger.error(`GitHub user was not found for id ${username}`);
+        return null;
       }
       const userId = userData.id;
       const { data: walletData } = await this._supabase.from("wallets").select("address").eq("id", userId).single();
       if (!walletData?.address) {
-        throw new Error(this.context.logger.error("Beneficiary wallet not found").logMessage.raw);
+        this.context.logger.error("Beneficiary wallet not found");
+        return null;
       }
-      addresses[username] = walletData.address;
+      addresses[username] = { address: walletData.address, reward: reward.total };
     }
     return addresses;
   }
@@ -445,6 +436,16 @@ export class PaymentModule extends BaseModule {
         this.context.logger.error("Failed to save permits to the database", { e });
       }
     }
+  }
+
+  async _parsePrivateKey(evmPrivateEncrypted: string) {
+    const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
+    const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
+    return {
+      privateKey: privateKeyParsed.privateKey,
+      allowedOrganizationId: privateKeyParsed.allowedOrganizationId,
+      allowedRepositoryId: privateKeyParsed.allowedRepositoryId,
+    };
   }
 
   /**

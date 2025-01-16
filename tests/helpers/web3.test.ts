@@ -8,6 +8,9 @@ const mockContract = {
   symbol: jest.fn().mockReturnValue("WXDAI"),
   decimals: jest.fn().mockReturnValue(18),
   transfer: jest.fn().mockReturnValue("0xTransactionData"),
+  estimateGas: {
+    transfer: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
+  },
 };
 
 const mockWallet = {
@@ -48,13 +51,14 @@ describe("web3.ts", () => {
   }, 120000);
 
   it("Should return a valid tx", async () => {
-    const tx = await erc20Wrapper.sendTransferTransaction(
-      mockWallet as unknown as ethers.Wallet,
-      "0xRecipient",
-      "1000"
-    );
+    const tx = await erc20Wrapper.sendTransferTransaction(mockWallet as unknown as ethers.Wallet, "0xRecipient", 1000);
     expect(mockContract.transfer).toHaveBeenCalledWith("0xRecipient", parseUnits("1000", 18));
     expect(mockWallet.sendTransaction).toHaveBeenCalledWith("0xTransactionData");
     expect(tx.hash).toEqual("0xTransactionHash");
+  }, 120000);
+
+  it("Should estimates transfer fee correctly", async () => {
+    const estimate = await erc20Wrapper.estimateTransferGas("0xfrom", "oxto", 100);
+    expect(estimate).toEqual(parseUnits("0.004", 18));
   }, 120000);
 });

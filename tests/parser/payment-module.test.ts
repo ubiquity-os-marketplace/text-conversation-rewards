@@ -10,6 +10,7 @@ import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -59,33 +60,28 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-class MockErc20Wrapper {
-  getSymbol = () => {
-    return "WXDAI";
+const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("200", 18) as BigNumber);
+jest.unstable_mockModule("../../src/helpers/web3", () => {
+  class MockErc20Wrapper {
+    getBalance = mockRewardTokenBalance;
+    getSymbol = jest.fn().mockReturnValue("WXDAI");
+    getDecimals = jest.fn().mockReturnValue(18);
+    sendTransferTransaction = jest.fn().mockReturnValue("0xTransactionHash");
+    estimateTransferGas = jest.fn().mockReturnValue(parseUnits("0.004", 18));
+  }
+  return {
+    Erc20Wrapper: MockErc20Wrapper,
+    getErc20TokenContract: jest.fn().mockReturnValue({ provider: "dummy" }),
+    getEvmWallet: jest.fn(() => ({
+      address: "0xAddress",
+      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
+    })),
   };
-  getBalance = () => {
-    return parseUnits("100", 18);
-  };
-  getDecimals = () => {
-    return 18;
-  };
-  sendTransferTransaction = () => {
-    return { hash: "0xTransactionHash" };
-  };
-}
-jest.unstable_mockModule("../../src/helpers/web3", () => ({
-  Erc20Wrapper: MockErc20Wrapper,
-  getErc20TokenContract() {
-    return { provider: "dummy" };
-  },
-  getEvmWallet() {
-    return { address: "0xAddress" };
-  },
-}));
+});
 
 // original rewards object before fees are applied
 const resultOriginal: Result = {
-  user1: {
+  molecula451: {
     total: 100,
     task: {
       reward: 90,
@@ -105,7 +101,7 @@ const resultOriginal: Result = {
       },
     ],
   },
-  user2: {
+  "0x4007": {
     total: 11.11,
     task: {
       reward: 9.99,
@@ -133,11 +129,11 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
       from: jest.fn(() => ({
         select: jest.fn(() => ({
           // eslint-disable-next-line sonarjs/no-nested-functions
-          eq: jest.fn(() => ({
+          eq: jest.fn((id, value) => ({
             single: jest.fn(() => ({
               data: {
-                id: 1,
-                address: "0x1",
+                id: value === "molecula451" ? 1 : 2,
+                address: "0xAddress",
               },
             })),
           })),
@@ -220,19 +216,19 @@ describe("payment-module.ts", () => {
       const resultAfterFees = await paymentModule._applyFees(resultOriginal, WXDAI_ADDRESS);
 
       // check that 10% fee is subtracted from rewards
-      expect(resultAfterFees["user1"].total).toEqual(90);
-      expect(resultAfterFees["user1"].task?.reward).toEqual(81);
-      expect(resultAfterFees["user1"].comments?.[0].score?.reward).toEqual(9);
-      expect(resultAfterFees["user2"].total).toEqual(10);
-      expect(resultAfterFees["user2"].task?.reward).toEqual(8.99);
-      expect(resultAfterFees["user2"].comments?.[0].score?.reward).toEqual(1.01);
+      expect(resultAfterFees["molecula451"].total).toEqual(90);
+      expect(resultAfterFees["molecula451"].task?.reward).toEqual(81);
+      expect(resultAfterFees["molecula451"].comments?.[0].score?.reward).toEqual(9);
+      expect(resultAfterFees["0x4007"].total).toEqual(10);
+      expect(resultAfterFees["0x4007"].task?.reward).toEqual(8.99);
+      expect(resultAfterFees["0x4007"].comments?.[0].score?.reward).toEqual(1.01);
 
       // check that treasury item is added
       expect(resultAfterFees["ubiquity-os-treasury"].total).toEqual(11.11);
     });
   });
 
-  describe("Auto transfer mode tests", () => {
+  describe("_getNetworkExplorer()", () => {
     beforeEach(() => {
       ctx.env.PERMIT_FEE_RATE = "";
       drop(db);
@@ -245,7 +241,6 @@ describe("payment-module.ts", () => {
     });
 
     afterEach(() => {
-      // restore the spy created with spyOn
       jest.restoreAllMocks();
     });
 
@@ -254,19 +249,187 @@ describe("payment-module.ts", () => {
       const url = await paymentModule._getNetworkExplorer(100);
       expect(url).toMatch(/http.*/);
     });
+  });
+
+  describe("_getPayables()", () => {
+    beforeEach(() => {
+      ctx.env.PERMIT_FEE_RATE = "";
+      drop(db);
+      for (const table of Object.keys(dbSeed)) {
+        const tableName = table as keyof typeof dbSeed;
+        for (const row of dbSeed[tableName]) {
+          db[tableName].create(row);
+        }
+      }
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
 
     it("Should return the correct total payable amount", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const amount = await paymentModule._getTotalPayable(resultOriginal);
-      expect(amount).toEqual(111.11);
-    });
-
-    it("Should return the correct beneficiary wallet address", async () => {
-      const paymentModule = new PaymentModule(ctx);
-      const address = await paymentModule._getBeneficiaryWalletAddress("molecula451");
-      expect(address).toEqual("0x1");
+      const payable = await paymentModule._getPayables(resultOriginal);
+      expect(payable == null).toEqual(false);
+      let totalPayable = 0;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      for (const data of Object.values(payable!)) {
+        totalPayable += data.reward;
+      }
+      expect(totalPayable).toEqual(111.11);
     });
   });
+
+  describe("_canTransferDirectly()", () => {
+    beforeEach(() => {
+      ctx.env.PERMIT_FEE_RATE = "";
+      drop(db);
+      for (const table of Object.keys(dbSeed)) {
+        const tableName = table as keyof typeof dbSeed;
+        for (const row of dbSeed[tableName]) {
+          db[tableName].create(row);
+        }
+      }
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("Should return true when the funding wallet has enough reward tokens and gas", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const spyConsoleLog = jest.spyOn(ctx.logger, "info");
+
+      ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+      const [canTransferDirectly, erc20Wrapper, fundingWallet, payables] = await paymentModule._canTransferDirectly(
+        "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+        resultOriginal
+      );
+      expect(canTransferDirectly).toEqual(true);
+      expect(erc20Wrapper).not.toBeNull();
+      expect(fundingWallet).not.toBeNull();
+      expect(payables).not.toBeNull();
+
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(
+        /.*The funding wallet has sufficient gas and reward tokens to perform direct transfers/
+      );
+      const logCallMetadata = spyConsoleLog.mock.calls.map((call) => call[1])[0] as {
+        [key: string]: { [key: string]: string };
+      };
+      expect(logCallMetadata).not.toBeUndefined();
+
+      expect(logCallMetadata.gas.has).toEqual(parseUnits("1", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.012", 18).toString());
+      expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("200", 18).toString());
+      expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
+
+      spyConsoleLog.mockReset();
+    });
+
+    it("Should return false if the funding wallet has enough reward tokens but insufficient gas", async () => {
+      const { getEvmWallet } = await import("../../src/helpers/web3");
+
+      const mockedGetEvmWallet = getEvmWallet as jest.Mock;
+      mockedGetEvmWallet.mockImplementationOnce(() => ({
+        address: "0xOverriddenAddress",
+        getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
+      }));
+      const paymentModule = new PaymentModule(ctx);
+      const spyConsoleLog = jest.spyOn(ctx.logger, "error");
+
+      ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+      const [canTransferDirectly, , ,] = await paymentModule._canTransferDirectly(
+        "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+        resultOriginal
+      );
+      expect(canTransferDirectly).toEqual(false);
+
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(
+        /.*The funding wallet lacks sufficient gas and\/or reward tokens to perform direct transfers/
+      );
+      const logCallMetadata = spyConsoleLog.mock.calls.map((call) => call[1])[0] as {
+        [key: string]: { [key: string]: string };
+      };
+      expect(logCallMetadata).not.toBeUndefined();
+
+      expect(logCallMetadata.gas.has).toEqual(parseUnits("0.004", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.012", 18).toString());
+      expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("200", 18).toString());
+      expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
+
+      spyConsoleLog.mockReset();
+    });
+
+    it("Should return false if the funding wallet has insufficient gas and reward tokens", async () => {
+      const { getEvmWallet } = await import("../../src/helpers/web3");
+
+      const mockedGetEvmWallet = getEvmWallet as jest.Mock;
+      mockedGetEvmWallet.mockImplementationOnce(() => ({
+        address: "0xOverriddenAddress",
+        getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
+      }));
+      mockRewardTokenBalance.mockReturnValueOnce(parseUnits("50", 18));
+
+      const paymentModule = new PaymentModule(ctx);
+      const spyConsoleLog = jest.spyOn(ctx.logger, "error");
+
+      ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+      const [canTransferDirectly, , ,] = await paymentModule._canTransferDirectly(
+        "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+        resultOriginal
+      );
+      expect(canTransferDirectly).toEqual(false);
+
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(
+        /.*The funding wallet lacks sufficient gas and\/or reward tokens to perform direct transfers/
+      );
+      const logCallMetadata = spyConsoleLog.mock.calls.map((call) => call[1])[0] as {
+        [key: string]: { [key: string]: string };
+      };
+      expect(logCallMetadata).not.toBeUndefined();
+
+      expect(logCallMetadata.gas.has).toEqual(parseUnits("0.004", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.012", 18).toString());
+      expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("50", 18).toString());
+      expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
+
+      spyConsoleLog.mockReset();
+    });
+
+    it("Should return false if the funding wallet has enough gas but insufficient reward token", async () => {
+      mockRewardTokenBalance.mockReturnValueOnce(parseUnits("50", 18));
+
+      const paymentModule = new PaymentModule(ctx);
+      const spyConsoleLog = jest.spyOn(ctx.logger, "error");
+
+      ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+      const [canTransferDirectly, , ,] = await paymentModule._canTransferDirectly(
+        "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+        resultOriginal
+      );
+      expect(canTransferDirectly).toEqual(false);
+
+      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
+      expect(logCallArgs[0]).toMatch(
+        /.*The funding wallet lacks sufficient gas and\/or reward tokens to perform direct transfers/
+      );
+      const logCallMetadata = spyConsoleLog.mock.calls.map((call) => call[1])[0] as {
+        [key: string]: { [key: string]: string };
+      };
+      expect(logCallMetadata).not.toBeUndefined();
+
+      expect(logCallMetadata.gas.has).toEqual(parseUnits("1", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.012", 18).toString());
+      expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("50", 18).toString());
+      expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
+
+      spyConsoleLog.mockReset();
+    });
+  });
+
   describe("_isPrivateKeyAllowed()", () => {
     beforeEach(() => {
       // set dummy X25519_PRIVATE_KEY

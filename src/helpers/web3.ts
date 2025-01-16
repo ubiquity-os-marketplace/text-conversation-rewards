@@ -1,5 +1,5 @@
 import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/rpc-handler";
-import { ethers, utils, Contract, Wallet } from "ethers";
+import { ethers, utils, Contract, Wallet, BigNumber } from "ethers";
 
 // Required ERC20 ABI functions
 export const ERC20_ABI = [
@@ -79,20 +79,32 @@ export class Erc20Wrapper {
    * @param address input address
    * @returns ERC20 token balance of the input address
    */
-  async getBalance(address: string) {
+  async getBalance(address: string): Promise<BigNumber> {
     return await this._contract.balanceOf(address);
+  }
+
+  /**
+   * Returns Fee estimation of erc20 transfer request
+   * @param address input address
+   * @param normalizedAmount Human readable amount of ERC20 token to be transferred
+   * @returns Fee estimation of erc20 transfer request
+   */
+  async estimateTransferGas(from: string, to: string, normalizedAmount: number) {
+    const tokenDecimals = await this.getDecimals();
+    const _amount = utils.parseUnits(normalizedAmount.toString(), tokenDecimals);
+    return await this._contract.estimateGas.transfer(to, _amount, { from });
   }
 
   /**
    * Returns Transaction data of the ERC20 token transfer
    * @param evmWallet Wallet to transfer ERC20 token from
    * @param address Address to send ERC20 token
-   * @param amount Amount of ERC20 token to be transferred
+   * @param normalizedAmount Human readable amount of ERC20 token to be transferred
    * @returns Transaction data of the ERC20 token transfer
    */
-  async sendTransferTransaction(evmWallet: Wallet, address: string, amount: string) {
+  async sendTransferTransaction(evmWallet: Wallet, address: string, normalizedAmount: number) {
     const tokenDecimals = await this.getDecimals();
-    const _amount = utils.parseUnits(amount, tokenDecimals);
+    const _amount = utils.parseUnits(normalizedAmount.toString(), tokenDecimals);
 
     // Create the signed transaction
     try {

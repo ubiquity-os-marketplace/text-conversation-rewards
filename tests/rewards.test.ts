@@ -14,6 +14,7 @@ import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -86,29 +87,24 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-class MockErc20Wrapper {
-  getSymbol = () => {
-    return "WXDAI";
+const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("200", 18) as BigNumber);
+jest.unstable_mockModule("../src/helpers/web3", () => {
+  class MockErc20Wrapper {
+    getBalance = mockRewardTokenBalance;
+    getSymbol = jest.fn().mockReturnValue("WXDAI");
+    getDecimals = jest.fn().mockReturnValue(18);
+    sendTransferTransaction = jest.fn().mockReturnValue("0xTransactionHash");
+    estimateTransferGas = jest.fn().mockReturnValue(parseUnits("0.004", 18));
+  }
+  return {
+    Erc20Wrapper: MockErc20Wrapper,
+    getErc20TokenContract: jest.fn().mockReturnValue({ provider: "dummy" }),
+    getEvmWallet: jest.fn(() => ({
+      address: "0xAddress",
+      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
+    })),
   };
-  getBalance = () => {
-    return parseUnits("100", 18);
-  };
-  getDecimals = () => {
-    return 18;
-  };
-  sendTransferTransaction = () => {
-    return { hash: "0xTransactionHash" };
-  };
-}
-jest.unstable_mockModule("../src/helpers/web3", () => ({
-  Erc20Wrapper: MockErc20Wrapper,
-  getErc20TokenContract() {
-    return { provider: "dummy" };
-  },
-  getEvmWallet() {
-    return { address: "0xAddress" };
-  },
-}));
+});
 
 jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
