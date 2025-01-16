@@ -179,7 +179,7 @@ export class PaymentModule extends BaseModule {
     return result;
   }
 
-  async _getNetworkExplorer(networkId: number) {
+  async _getNetworkExplorer(networkId: number): Promise<string> {
     const networkExplorer = getNetworkExplorer(String(networkId) as NetworkId);
     if (!networkExplorer || networkExplorer.length === 0) {
       return "https://blockscan.com";

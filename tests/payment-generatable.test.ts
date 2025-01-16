@@ -17,7 +17,7 @@ import { BigNumber } from "ethers";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
-const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("200", 18) as BigNumber);
+const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("20000", 18) as BigNumber);
 jest.unstable_mockModule("../src/helpers/web3", () => {
   class MockErc20Wrapper {
     getBalance = mockRewardTokenBalance;
@@ -199,7 +199,19 @@ afterAll(() => {
   server.close();
 });
 
-describe("Payment Module Tests", () => {
+// Run test twice for both auto transfer and permit genearation modes
+const testData = [[true], [false]];
+
+interface UserData {
+  permitUrl?: string;
+  [key: string]: unknown;
+}
+
+interface JsonData {
+  [key: string]: UserData;
+}
+let paymentResult: JsonData;
+describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
   const issue = parseGitHubUrl(issueUrl);
   const activity = new IssueActivity(ctx, issue);
 
@@ -217,6 +229,21 @@ describe("Payment Module Tests", () => {
   });
 
   beforeEach(async () => {
+    ctx.config.automaticTransferMode = autoTransferMode;
+    Object.assign(paymentResult, permitGenerationResults);
+    if (autoTransferMode) {
+      for (const [username, userData] of Object.entries(permitGenerationResults)) {
+        if ("permitUrl" in userData) {
+          delete paymentResult[username]["permitUrl"];
+          paymentResult[username].explorerUrl = `https://rpc/tx/0xTransactionHash`;
+        }
+      }
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
+        return Promise.resolve("https://rpc");
+      };
+    }
+
     jest.clearAllMocks();
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
