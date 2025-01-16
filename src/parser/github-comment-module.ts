@@ -154,11 +154,20 @@ export class GithubCommentModule extends BaseModule {
     }
 
     if (result.reviewRewards) {
-      result.reviewRewards.forEach(
-        (reviewReward) =>
-          reviewReward.reviewBaseReward?.reward &&
-          content.push(buildContributionRow("Review", "Base Review", 1, reviewReward.reviewBaseReward?.reward))
+      const { baseRewardReviewCount, totalReward } = result.reviewRewards.reduce(
+        (acc, reviewReward) => {
+          if (reviewReward.reviewBaseReward?.reward) {
+            acc.baseRewardReviewCount++;
+            acc.totalReward += reviewReward.reviewBaseReward.reward;
+          }
+          return acc;
+        },
+        { baseRewardReviewCount: 0, totalReward: 0 }
       );
+
+      if (baseRewardReviewCount > 0) {
+        content.push(buildContributionRow("Review", "Base Review", baseRewardReviewCount, totalReward));
+      }
 
       const reviewCount = result.reviewRewards.reduce(
         (total, reviewReward) => total + (reviewReward.reviews?.length ?? 0),
