@@ -279,7 +279,7 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
       isAdminMocked.mockImplementation(() => Promise.resolve(true));
     });
 
-    it("should generate permits for collaborative issue", async () => {
+    it("should directly pay or generate permits for collaborative issue", async () => {
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
@@ -296,10 +296,10 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
       await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
-      expect(result).toEqual(permitGenerationResults);
+      expect(result).toEqual(paymentResult);
     });
 
-    it("should generate permits for non-collaborative issue", async () => {
+    it("should directly pay or generate permits for non-collaborative issue", async () => {
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
@@ -316,7 +316,7 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
       await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
-      expect(result).toEqual(permitGenerationResults);
+      expect(result).toEqual(paymentResult);
     });
   });
 
@@ -325,7 +325,7 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
       isAdminMocked.mockImplementation(() => Promise.resolve(false));
     });
 
-    it("should generate permits for collaborative issue", async () => {
+    it("should directly pay or generate permits for collaborative issue", async () => {
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
@@ -342,10 +342,10 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
       await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
-      expect(result).toEqual(permitGenerationResults);
+      expect(result).toEqual(paymentResult);
     });
 
-    it("should not generate permits for non-collaborative issue", async () => {
+    it("should not directly pay or generate permits for non-collaborative issue", async () => {
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
@@ -362,7 +362,7 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
       await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
-      expect(result).not.toEqual(permitGenerationResults);
+      expect(result).not.toEqual(paymentResult);
     });
   });
 });
