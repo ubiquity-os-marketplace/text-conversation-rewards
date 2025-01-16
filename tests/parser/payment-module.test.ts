@@ -251,7 +251,7 @@ describe("payment-module.ts", () => {
     });
   });
 
-  describe("_getPayables()", () => {
+  describe("_getBeneficiaries()", () => {
     beforeEach(() => {
       ctx.env.PERMIT_FEE_RATE = "";
       drop(db);
@@ -269,11 +269,11 @@ describe("payment-module.ts", () => {
 
     it("Should return the correct total payable amount", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const payable = await paymentModule._getPayables(resultOriginal);
-      expect(payable == null).toEqual(false);
+      const beneficiaries = await paymentModule._getBeneficiaries(resultOriginal);
+      expect(beneficiaries == null).toEqual(false);
       let totalPayable = 0;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      for (const data of Object.values(payable!)) {
+      for (const data of Object.values(beneficiaries!)) {
         totalPayable += data.reward;
       }
       expect(totalPayable).toEqual(111.11);
@@ -301,14 +301,15 @@ describe("payment-module.ts", () => {
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
       ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
-      const [canTransferDirectly, erc20Wrapper, fundingWallet, payables] = await paymentModule._canTransferDirectly(
-        "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-        resultOriginal
-      );
+      const [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries] =
+        await paymentModule._canTransferDirectly(
+          "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+          resultOriginal
+        );
       expect(canTransferDirectly).toEqual(true);
       expect(erc20Wrapper).not.toBeNull();
       expect(fundingWallet).not.toBeNull();
-      expect(payables).not.toBeNull();
+      expect(beneficiaries).not.toBeNull();
 
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(

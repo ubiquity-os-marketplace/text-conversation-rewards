@@ -37,7 +37,7 @@ interface Payload {
   issue: { node_id: string };
 }
 
-interface Payable {
+interface Beneficiary {
   [username: string]: { address: string; reward: number };
 }
 
@@ -111,7 +111,7 @@ export class PaymentModule extends BaseModule {
 
     if (this._autoTransferMode) {
       // Check if funding wallet has enough reward token and gas to transfer rewards directly
-      const [canTransferDirectly, erc20Wrapper, fundingWallet, payables] = await this._canTransferDirectly(
+      const [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries] = await this._canTransferDirectly(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         privateKeyParsed.privateKey!,
         result
@@ -121,7 +121,7 @@ export class PaymentModule extends BaseModule {
           "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
         );
         for (const [username, reward] of Object.entries(result)) {
-          const beneficiaryWalletAddress = payables[username].address;
+          const beneficiaryWalletAddress = beneficiaries[username].address;
           const tx = await erc20Wrapper.sendTransferTransaction(fundingWallet, beneficiaryWalletAddress, reward.total);
           result[username].explorerUrl = `${networkExplorer}/tx/${tx?.hash}`;
         }
@@ -199,12 +199,12 @@ export class PaymentModule extends BaseModule {
    * This method checks that the funding wallet has enough reward tokens for a direct transfer and sufficient funds to cover gas fees.
    * @param private key of the funding wallet
    * @param result Result object
-   * @returns [canTransferDirectly, erc20Wrapper, fundingWallet, payables]
+   * @returns [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries]
    */
   async _canTransferDirectly(
     privateKey: string,
     result: Result
-  ): Promise<[true, Erc20Wrapper, ethers.Wallet, Payable] | [false, null, null, null]> {
+  ): Promise<[true, Erc20Wrapper, ethers.Wallet, Beneficiary] | [false, null, null, null]> {
     try {
       const tokenContract = await getErc20TokenContract(this._evmNetworkId, this._erc20RewardToken);
       const fundingWallet = await getEvmWallet(privateKey, tokenContract.provider);
@@ -216,13 +216,13 @@ export class PaymentModule extends BaseModule {
       // Fetch the funding wallet's native token balance
       const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
 
-      const payables = await this._getPayables(result);
-      if (payables == null) {
+      const beneficiaries = await this._getBeneficiaries(result);
+      if (beneficiaries == null) {
         return [false, null, null, null];
       }
       let totalFee = BigNumber.from("0");
       let totalReward = BigNumber.from("0");
-      for (const data of Object.values(payables)) {
+      for (const data of Object.values(beneficiaries)) {
         const fee = await erc20Wrapper.estimateTransferGas(fundingWallet.address, data.address, data.reward);
         totalFee = totalFee.add(fee);
         totalReward = totalReward.add(parseUnits(data.reward.toString(), decimals));
@@ -251,15 +251,15 @@ export class PaymentModule extends BaseModule {
         `[PaymentModule] The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
         gasAndRewardInfo
       );
-      return [true, erc20Wrapper, fundingWallet, payables];
+      return [true, erc20Wrapper, fundingWallet, beneficiaries];
     } catch (e) {
       this.context.logger.error(`[PaymentModule] Failed to fetch the funding wallet data: ${e}`, { e });
       return [false, null, null, null];
     }
   }
 
-  async _getPayables(result: Result): Promise<Payable | null> {
-    const addresses: Payable = {};
+  async _getBeneficiaries(result: Result): Promise<Beneficiary | null> {
+    const addresses: Beneficiary = {};
     for (const [username, reward] of Object.entries(result)) {
       // Obtain the beneficiary wallet address from the github user name
       const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
