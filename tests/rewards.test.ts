@@ -93,7 +93,7 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
     getBalance = mockRewardTokenBalance;
     getSymbol = jest.fn().mockReturnValue("WXDAI");
     getDecimals = jest.fn().mockReturnValue(18);
-    sendTransferTransaction = jest.fn().mockReturnValue("0xTransactionHash");
+    sendTransferTransaction = jest.fn().mockReturnValue({ hash: "0xTransactionHash" });
     estimateTransferGas = jest.fn().mockReturnValue(parseUnits("0.004", 18));
   }
   return {

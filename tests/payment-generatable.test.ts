@@ -13,7 +13,7 @@ import { server } from "./__mocks__/node";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
+import { BigNumber, Wallet } from "ethers";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -23,7 +23,9 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
     getBalance = mockRewardTokenBalance;
     getSymbol = jest.fn().mockReturnValue("WXDAI");
     getDecimals = jest.fn().mockReturnValue(18);
-    sendTransferTransaction = jest.fn().mockReturnValue("0xTransactionHash");
+    sendTransferTransaction = (evmWallet: Wallet, address: string, normalizedAmount: number) => {
+      return { hash: `0xSent${normalizedAmount}` };
+    };
     estimateTransferGas = jest.fn().mockReturnValue(parseUnits("0.004", 18));
   }
   return {
@@ -177,6 +179,24 @@ jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
   ]),
 }));
 
+jest.unstable_mockModule("@supabase/supabase-js", () => {
+  return {
+    createClient: jest.fn(() => ({
+      from: jest.fn(() => ({
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            single: jest.fn(() => ({
+              data: {
+                address: "0xAddress",
+              },
+            })),
+          })),
+        })),
+      })),
+    })),
+  };
+});
+
 const { IssueActivity } = await import("../src/issue-activity");
 const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
@@ -186,8 +206,27 @@ const { ReviewIncentivizerModule } = await import("../src/parser/review-incentiv
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
-beforeAll(() => {
+const issue = parseGitHubUrl(issueUrl);
+const activity = new IssueActivity(ctx, issue);
+
+beforeAll(async () => {
   server.listen();
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
+    return Promise.resolve("https://rpc");
+  };
+
+  await activity.init();
+  for (const item of dbSeed.users) {
+    mockDb.users.create(item);
+  }
+  for (const item of dbSeed.wallets) {
+    mockDb.wallets.create(item);
+  }
+  for (const item of dbSeed.locations) {
+    mockDb.locations.create(item);
+  }
 });
 
 afterEach(() => {
@@ -199,8 +238,12 @@ afterAll(() => {
   server.close();
 });
 
-// Run test twice for both auto transfer and permit genearation modes
-const testData = [[true], [false]];
+// Run the test twice to cover both auto-transfer and permit-generation modes.
+const autoTransferModeVector = [false, true];
+function payoutModeTitle(automaticTransferMode: boolean) {
+  // eslint-disable-next-line sonarjs/no-selector-parameter
+  return automaticTransferMode ? "directly pay" : "generate permits";
+}
 
 interface UserData {
   permitUrl?: string;
@@ -210,40 +253,20 @@ interface UserData {
 interface JsonData {
   [key: string]: UserData;
 }
-let paymentResult: JsonData;
-describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
-  const issue = parseGitHubUrl(issueUrl);
-  const activity = new IssueActivity(ctx, issue);
-
+let paymentResult: JsonData = {};
+describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode) => {
   beforeAll(async () => {
-    await activity.init();
-    for (const item of dbSeed.users) {
-      mockDb.users.create(item);
-    }
-    for (const item of dbSeed.wallets) {
-      mockDb.wallets.create(item);
-    }
-    for (const item of dbSeed.locations) {
-      mockDb.locations.create(item);
+    ctx.config.automaticTransferMode = autoTransferMode;
+    paymentResult = { ...permitGenerationResults };
+    if (autoTransferMode) {
+      for (const username of Object.keys(paymentResult)) {
+        delete paymentResult[username]["permitUrl"];
+        paymentResult[username].explorerUrl = `https://rpc/tx/0xSent${paymentResult[username].total}`;
+      }
     }
   });
 
   beforeEach(async () => {
-    ctx.config.automaticTransferMode = autoTransferMode;
-    Object.assign(paymentResult, permitGenerationResults);
-    if (autoTransferMode) {
-      for (const [username, userData] of Object.entries(permitGenerationResults)) {
-        if ("permitUrl" in userData) {
-          delete paymentResult[username]["permitUrl"];
-          paymentResult[username].explorerUrl = `https://rpc/tx/0xTransactionHash`;
-        }
-      }
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
-        return Promise.resolve("https://rpc");
-      };
-    }
-
     jest.clearAllMocks();
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
@@ -274,12 +297,12 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
     });
   });
 
-  describe("Admin User Tests", () => {
+  describe(`Admin User Tests (autoTransferMode : ${autoTransferMode})`, () => {
     beforeEach(() => {
       isAdminMocked.mockImplementation(() => Promise.resolve(true));
     });
 
-    it("should directly pay or generate permits for collaborative issue", async () => {
+    it(`should ${payoutModeTitle(autoTransferMode)} for collaborative issue`, async () => {
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
@@ -299,7 +322,7 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
       expect(result).toEqual(paymentResult);
     });
 
-    it("should directly pay or generate permits for non-collaborative issue", async () => {
+    it(`should ${payoutModeTitle(autoTransferMode)} for non - collaborative issue`, async () => {
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
@@ -320,12 +343,12 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
     });
   });
 
-  describe("Non-Admin User Tests", () => {
+  describe(`Non - Admin User Tests(autoTransferMode : ${autoTransferMode})`, () => {
     beforeEach(() => {
       isAdminMocked.mockImplementation(() => Promise.resolve(false));
     });
 
-    it("should directly pay or generate permits for collaborative issue", async () => {
+    it(`should ${payoutModeTitle(autoTransferMode)} for collaborative issue`, async () => {
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
@@ -345,7 +368,7 @@ describe.each(testData)("Payment Module Tests", (autoTransferMode) => {
       expect(result).toEqual(paymentResult);
     });
 
-    it("should not directly pay or generate permits for non-collaborative issue", async () => {
+    it(`should not ${payoutModeTitle(autoTransferMode)} for non - collaborative issue`, async () => {
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
