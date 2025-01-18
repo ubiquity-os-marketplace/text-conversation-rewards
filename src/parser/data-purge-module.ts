@@ -15,7 +15,7 @@ export class DataPurgeModule extends BaseModule {
   _assignmentPeriods: UserAssignments = {};
 
   readonly _openAi = new OpenAI({
-    baseURL: this._configuration?.openAi.endpoint ?? "https://openrouter.ai/api/v1",
+    baseURL: this._configuration?.openAi?.endpoint ?? "https://openrouter.ai/api/v1",
     apiKey: this.context.env.OPENROUTER_API_KEY,
   });
 

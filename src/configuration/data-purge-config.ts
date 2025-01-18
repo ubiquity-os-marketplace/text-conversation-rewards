@@ -14,7 +14,7 @@ const openAiType = Type.Object(
      * Specific endpoint to send the comments to.
      */
     endpoint: Type.String({
-      default: "https://api.openai.com/v1",
+      default: "https://openrouter.ai/api/v1",
       pattern: /^(https?:\/\/[^\s$.?#].\S*)$/i.source,
       description: "OpenAI endpoint for requests",
       examples: ["https://api.openai.com/v1"],
@@ -22,6 +22,7 @@ const openAiType = Type.Object(
   },
   { default: {} }
 );
+
 
 export const dataPurgeConfigurationType = Type.Object({
   skipCommentsWhileAssigned: Type.Union([Type.Literal("all"), Type.Literal("exact"), Type.Literal("none")], {
