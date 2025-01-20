@@ -2,6 +2,7 @@
   "name": "Conversation rewards",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
   "ubiquity:listeners": ["issues.closed"],
+  "ubiquity:skipBotEvents": false,
   "configuration": {
     "default": {},
     "type": "object",
