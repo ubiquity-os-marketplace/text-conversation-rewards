@@ -3,29 +3,8 @@ import { IssueActivity } from "../src/issue-activity";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { parseUnits } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
-
-const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("200", 18) as BigNumber);
-jest.unstable_mockModule("../src/helpers/web3", () => {
-  class MockErc20Wrapper {
-    getBalance = mockRewardTokenBalance;
-    getSymbol = jest.fn().mockReturnValue("WXDAI");
-    getDecimals = jest.fn().mockReturnValue(18);
-    sendTransferTransaction = jest.fn().mockReturnValue({ hash: "0xTransactionHash" });
-    estimateTransferGas = jest.fn().mockReturnValue(parseUnits("0.004", 18));
-  }
-  return {
-    Erc20Wrapper: MockErc20Wrapper,
-    getErc20TokenContract: jest.fn().mockReturnValue({ provider: "dummy" }),
-    getEvmWallet: jest.fn(() => ({
-      address: "0xAddress",
-      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
-    })),
-  };
-});
 
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},

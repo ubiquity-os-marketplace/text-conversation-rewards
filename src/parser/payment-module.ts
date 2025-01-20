@@ -72,6 +72,10 @@ export class PaymentModule extends BaseModule {
 
     // Decrypt the private key object
     const privateKeyParsed = await this._parsePrivateKey(this._evmPrivateEncrypted);
+    if (!privateKeyParsed.privateKey) {
+      this.context.logger.error("[PaymentModule] Private key is null.");
+      return Promise.resolve(result);
+    }
     const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(
       privateKeyParsed,
       this.context.payload.repository.owner.id,
@@ -112,8 +116,7 @@ export class PaymentModule extends BaseModule {
     if (this._autoTransferMode) {
       // Check if funding wallet has enough reward token and gas to transfer rewards directly
       const [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries] = await this._canTransferDirectly(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        privateKeyParsed.privateKey!,
+        privateKeyParsed.privateKey,
         result
       );
       if (canTransferDirectly) {
@@ -217,7 +220,7 @@ export class PaymentModule extends BaseModule {
       const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
 
       const beneficiaries = await this._getBeneficiaries(result);
-      if (beneficiaries == null) {
+      if (beneficiaries === null) {
         return [false, null, null, null];
       }
       let totalFee = BigNumber.from("0");
@@ -228,8 +231,8 @@ export class PaymentModule extends BaseModule {
         totalReward = totalReward.add(parseUnits(data.reward.toString(), decimals));
       }
 
-      const hasEnoughRewardToken = fundingWalletNativeTokenBalance.gt(totalFee);
-      const hasEnoughGas = fundingWalletRewardTokenBalance.gt(totalReward);
+      const hasEnoughGas = fundingWalletNativeTokenBalance.gt(totalFee);
+      const hasEnoughRewardToken = fundingWalletRewardTokenBalance.gt(totalReward);
       const gasAndRewardInfo = {
         gas: {
           has: fundingWalletNativeTokenBalance.toString(),
@@ -440,12 +443,7 @@ export class PaymentModule extends BaseModule {
 
   async _parsePrivateKey(evmPrivateEncrypted: string) {
     const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
-    const privateKeyParsed = parseDecryptedPrivateKey(privateKeyDecrypted);
-    return {
-      privateKey: privateKeyParsed.privateKey,
-      allowedOrganizationId: privateKeyParsed.allowedOrganizationId,
-      allowedRepositoryId: privateKeyParsed.allowedRepositoryId,
-    };
+    return parseDecryptedPrivateKey(privateKeyDecrypted);
   }
 
   /**

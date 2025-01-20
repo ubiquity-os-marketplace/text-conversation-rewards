@@ -38,7 +38,7 @@ describe("web3.ts", () => {
     expect(tokenBalance).toEqual(BigNumber.from("1000"));
   }, 120000);
 
-  it("Should return ERC20 token decimals", async () => {
+  it("Should return correct wallet address", async () => {
     const networkId = 100; // gnosis
     const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
     const contract = await getErc20TokenContract(networkId, tokenAddress);
