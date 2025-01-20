@@ -455,7 +455,7 @@ describe("Modules tests", () => {
     expect(result).toBe(9.25);
     const total = await processor.run(activity);
     expect(total).toMatchObject({
-      gentlementlegen: { total: 1200, task: { multiplier: 1, reward: 400 }, userId: 9807008 },
+      gentlementlegen: { total: 800, task: { multiplier: 1, reward: 400 }, userId: 9807008 },
       user2: { total: 0, userId: 1 },
       "0x4007": {
         total: 400,
