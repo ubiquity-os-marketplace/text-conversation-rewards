@@ -10,6 +10,7 @@ describe("ContentEvaluatorConfiguration Validation", () => {
       openAi: {
         model: "gpt-4o-2024-08-06",
         endpoint: "not-a-valid-url",
+        tokenCountLimit: 0,
       },
     };
 
@@ -27,6 +28,7 @@ describe("ContentEvaluatorConfiguration Validation", () => {
       openAi: {
         model: "gpt-4o-2024-08-06",
         endpoint: "https://api.openai.com/v1",
+        tokenCountLimit: 100,
       },
     };
 
