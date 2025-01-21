@@ -88,6 +88,7 @@ with:
       openAi:
         model: "gpt-4o"
         endpoint: "https://api.openai.com/v1"
+        tokenCountLimit: 124000
       multipliers:
         - role: [ISSUE_SPECIFICATION]
           relevance: 1

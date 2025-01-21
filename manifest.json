@@ -61,6 +61,12 @@
                         "examples": ["gpt-4o"],
                         "type": "string"
                       },
+                      "tokenCountLimit": {
+                        "default": 124000,
+                        "description": "Token count limit for a given model. If the content goes beyond the token limit, content will get truncated during evaluation.",
+                        "examples": [124000],
+                        "type": "integer"
+                      },
                       "endpoint": {
                         "default": "https://api.openai.com/v1",
                         "pattern": "^(https?:\\/\\/[^\\s$.?#].\\S*)$",
