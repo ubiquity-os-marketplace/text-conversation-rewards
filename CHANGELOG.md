@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.2.1...v1.2.2) (2025-01-21)
+
+
+### Bug Fixes
+
+* long prompts are now split by n-chucks and averaged after evaluation ([93308f4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/93308f4e1c5bf96fe1f18e723df7865f63b87d1b))
+* the comment splitting now processes differently pull-request and issue comments ([9ac8052](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/9ac8052993afff5921d703a0715361def534bba9))
+* the cosine similarity is evaluated for top comments and bot comments are ignored ([c3d091b](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c3d091b7520958a9ecfbab8eef50fb87e349c85c))
+* user permission level is also retrieved from the repository itself ([2de619f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2de619fce16b48338ea312a3788b7cc03ba01592))
+
 ## [1.2.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.2.0...v1.2.1) (2024-12-20)
 
 ### Bug Fixes
