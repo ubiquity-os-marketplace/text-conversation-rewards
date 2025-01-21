@@ -17,6 +17,7 @@ import githubCommentResults from "./__mocks__/results/github-comment-results.jso
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
+import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { CommentAssociation } from "../src/configuration/comment-types";
@@ -159,6 +160,7 @@ const { GithubCommentModule } = await import("../src/parser/github-comment-modul
 const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
+const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -198,6 +200,15 @@ describe("Modules tests", () => {
           })()
         );
       });
+
+    jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+      return {
+        "test.txt": {
+          addition: 50,
+          deletion: 50,
+        },
+      };
+    });
   });
 
   it("Should extract users from comments", async () => {
@@ -263,6 +274,20 @@ describe("Modules tests", () => {
     });
   });
 
+  it("Should incentivize reviews", async () => {
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
+    ];
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(reviewIncentivizerResult);
+  });
+
   it("Should generate permits", async () => {
     const processor = new Processor(ctx);
     processor["_transformers"] = [
@@ -270,6 +295,7 @@ describe("Modules tests", () => {
       new DataPurgeModule(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
       new PermitGenerationModule(ctx),
     ];
     // This catches calls by getFastestRpc
@@ -286,6 +312,7 @@ describe("Modules tests", () => {
       new DataPurgeModule(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
       new PermitGenerationModule(ctx),
       new GithubCommentModule(ctx),
     ];
@@ -298,6 +325,7 @@ describe("Modules tests", () => {
       fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")
     );
   });
+
   it("Should generate GitHub comment without zero total", async () => {
     const githubCommentModule = new GithubCommentModule(ctx);
     const postBody = await githubCommentModule.getBodyContent(
@@ -341,6 +369,7 @@ describe("Modules tests", () => {
       new DataPurgeModule(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
     ];
     processor["_result"] = {
       user1: {
@@ -371,7 +400,7 @@ describe("Modules tests", () => {
         total: 9.25,
       },
       whilefoo: {
-        total: 9.084,
+        total: 9.25,
       },
     });
     if (oldLabels && activity.self) {

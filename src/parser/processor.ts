@@ -13,6 +13,7 @@ import { PermitGenerationModule } from "./permit-generation-module";
 import { UserExtractorModule } from "./user-extractor-module";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { GitHubIssue } from "../github-types";
+import { ReviewIncentivizerModule } from "./review-incentivizer-module";
 
 export class Processor {
   private _transformers: Module[] = [];
@@ -25,6 +26,7 @@ export class Processor {
       .add(new DataPurgeModule(context))
       .add(new FormattingEvaluatorModule(context))
       .add(new ContentEvaluatorModule(context))
+      .add(new ReviewIncentivizerModule(context))
       .add(new PermitGenerationModule(context))
       .add(new GithubCommentModule(context));
     this._context = context;
@@ -50,8 +52,15 @@ export class Processor {
         this._result = await transformer.transform(data, this._result);
       }
       // Aggregate total result
-      for (const item of Object.keys(this._result)) {
-        this._result[item].total = this._sumRewards(this._result[item], this._getRewardsLimit(data.self));
+      for (const username of Object.keys(this._result)) {
+        if (data.self?.assignees?.map((v) => v.login).includes(username)) {
+          this._result[username].total = this._sumRewards(this._result[username], this._getRewardsLimit(data.self));
+        } else {
+          this._result[username].total = Math.min(
+            this._sumRewards(this._result[username], this._getRewardsLimit(data.self)),
+            this._getRewardsLimit(data.self)
+          );
+        }
       }
     }
     return this._result;
@@ -70,7 +79,6 @@ export class Processor {
 
   _sumRewards(obj: Record<string, unknown>, taskRewardLimit = Infinity) {
     let totalReward = new Decimal(0);
-
     for (const [key, value] of Object.entries(obj)) {
       if (key === "reward" && typeof value === "number") {
         totalReward = totalReward.add(Math.min(value, taskRewardLimit));

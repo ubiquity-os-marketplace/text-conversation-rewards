@@ -14,7 +14,7 @@ import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, WordResult } from "../types/results";
 import { typeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
-import { GitHubIssue } from "../github-types";
+import { parsePriorityLabel } from "../helpers/github";
 
 interface Multiplier {
   multiplier: number;
@@ -69,7 +69,7 @@ export class FormattingEvaluatorModule extends BaseModule {
         const { formatting, words } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
-        const priority = this._parsePriorityLabel(data.self?.labels);
+        const priority = parsePriorityLabel(data.self?.labels);
         const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
         comment.score = {
           ...comment.score,
@@ -191,21 +191,5 @@ export class FormattingEvaluatorModule extends BaseModule {
     );
 
     return { formatting, words };
-  }
-
-  _parsePriorityLabel(labels: GitHubIssue["labels"] | undefined) {
-    if (!labels) return 1;
-
-    for (const label of labels) {
-      const priorityLabel = typeof label === "string" ? label : (label.name ?? "");
-      const matched = priorityLabel.match(/^Priority:\s*(\d+)/i);
-
-      if (matched) {
-        const urgency = Number(matched[1]);
-        if (urgency) return urgency;
-      }
-    }
-
-    return 1;
   }
 }

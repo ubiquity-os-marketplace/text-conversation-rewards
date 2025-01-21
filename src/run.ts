@@ -11,7 +11,6 @@ import { isUserAllowedToGeneratePermits } from "./helpers/permissions";
 
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config } = context;
-
   if (eventName !== "issues.closed") {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }
