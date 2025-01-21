@@ -4,7 +4,6 @@ import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { ContextPlugin } from "../../src/types/plugin-input";
-import { Result } from "../../src/types/results";
 import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
@@ -80,48 +79,50 @@ jest.unstable_mockModule("../../src/helpers/web3", () => {
 });
 
 // original rewards object before fees are applied
-const resultOriginal: Result = {
-  molecula451: {
-    total: 100,
-    task: {
-      reward: 90,
-      multiplier: 1,
-    },
-    userId: 1,
-    comments: [
-      {
-        id: 57,
-        content: "comment 3",
-        url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-        type: CommentKind.ISSUE,
-        score: {
-          reward: 10,
-          multiplier: 1,
-        },
+function getResultOriginal() {
+  return {
+    molecula451: {
+      total: 100,
+      task: {
+        reward: 90,
+        multiplier: 1,
       },
-    ],
-  },
-  "0x4007": {
-    total: 11.11,
-    task: {
-      reward: 9.99,
-      multiplier: 1,
-    },
-    userId: 1,
-    comments: [
-      {
-        id: 57,
-        content: "comment 3",
-        url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-        type: CommentKind.ISSUE,
-        score: {
-          reward: 1.12,
-          multiplier: 1,
+      userId: 1,
+      comments: [
+        {
+          id: 57,
+          content: "comment 3",
+          url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
+          type: CommentKind.ISSUE,
+          score: {
+            reward: 10,
+            multiplier: 1,
+          },
         },
+      ],
+    },
+    "0x4007": {
+      total: 11.11,
+      task: {
+        reward: 9.99,
+        multiplier: 1,
       },
-    ],
-  },
-};
+      userId: 1,
+      comments: [
+        {
+          id: 57,
+          content: "comment 3",
+          url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
+          type: CommentKind.ISSUE,
+          score: {
+            reward: 1.12,
+            multiplier: 1,
+          },
+        },
+      ],
+    },
+  };
+}
 
 jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
@@ -173,7 +174,7 @@ describe("payment-module.ts", () => {
       ctx.env.PERMIT_FEE_RATE = "";
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
-      await paymentModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
       spyConsoleLog.mockReset();
@@ -183,7 +184,7 @@ describe("payment-module.ts", () => {
       ctx.env.PERMIT_FEE_RATE = "0";
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
-      await paymentModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
       spyConsoleLog.mockReset();
@@ -194,7 +195,7 @@ describe("payment-module.ts", () => {
       ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
-      await paymentModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation/);
       spyConsoleLog.mockReset();
@@ -203,7 +204,7 @@ describe("payment-module.ts", () => {
     it("Should not apply fees if ERC20 reward token is included in PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST", async () => {
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
-      await paymentModule._applyFees(resultOriginal, DOLLAR_ADDRESS);
+      await paymentModule._applyFees(getResultOriginal(), DOLLAR_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(
         new RegExp(`.*Token address ${DOLLAR_ADDRESS} is whitelisted to be fee free, skipping permit fee generation`)
@@ -213,7 +214,7 @@ describe("payment-module.ts", () => {
 
     it("Should apply fees", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const resultAfterFees = await paymentModule._applyFees(resultOriginal, WXDAI_ADDRESS);
+      const resultAfterFees = await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
 
       // check that 10% fee is subtracted from rewards
       expect(resultAfterFees["molecula451"].total).toEqual(90);
@@ -229,17 +230,6 @@ describe("payment-module.ts", () => {
   });
 
   describe("_getNetworkExplorer()", () => {
-    beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = "";
-      drop(db);
-      for (const table of Object.keys(dbSeed)) {
-        const tableName = table as keyof typeof dbSeed;
-        for (const row of dbSeed[tableName]) {
-          db[tableName].create(row);
-        }
-      }
-    });
-
     afterEach(() => {
       jest.restoreAllMocks();
     });
@@ -269,7 +259,7 @@ describe("payment-module.ts", () => {
 
     it("Should return the correct total payable amount", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const beneficiaries = await paymentModule._getBeneficiaries(resultOriginal);
+      const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
       expect(beneficiaries).not.toBeNull();
       let totalPayable = 0;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -279,18 +269,12 @@ describe("payment-module.ts", () => {
       expect(totalPayable).toEqual(111.11);
     });
   });
+
   const fundingWalletPrivateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   describe("_canTransferDirectly()", () => {
     beforeEach(() => {
       ctx.env.PERMIT_FEE_RATE = "";
       ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
-      drop(db);
-      for (const table of Object.keys(dbSeed)) {
-        const tableName = table as keyof typeof dbSeed;
-        for (const row of dbSeed[tableName]) {
-          db[tableName].create(row);
-        }
-      }
     });
 
     afterEach(() => {
@@ -302,11 +286,15 @@ describe("payment-module.ts", () => {
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
       const [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries] =
-        await paymentModule._canTransferDirectly(fundingWalletPrivateKey, resultOriginal);
+        await paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal());
       expect(canTransferDirectly).toEqual(true);
       expect(erc20Wrapper).not.toBeNull();
       expect(fundingWallet).not.toBeNull();
-      expect(beneficiaries).not.toBeNull();
+      if (beneficiaries) {
+        expect(Object.keys(beneficiaries).length).toEqual(2);
+      } else {
+        expect(beneficiaries).not.toBeNull();
+      }
 
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(
@@ -318,7 +306,7 @@ describe("payment-module.ts", () => {
       expect(logCallMetadata).not.toBeUndefined();
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("1", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.012", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.008", 18).toString());
       expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("200", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 
@@ -338,7 +326,7 @@ describe("payment-module.ts", () => {
 
       const [canTransferDirectly, , ,] = await paymentModule._canTransferDirectly(
         fundingWalletPrivateKey,
-        resultOriginal
+        getResultOriginal()
       );
       expect(canTransferDirectly).toEqual(false);
 
@@ -352,7 +340,7 @@ describe("payment-module.ts", () => {
       expect(logCallMetadata).not.toBeUndefined();
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("0.004", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.012", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.008", 18).toString());
       expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("200", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 
@@ -374,7 +362,7 @@ describe("payment-module.ts", () => {
 
       const [canTransferDirectly, , ,] = await paymentModule._canTransferDirectly(
         fundingWalletPrivateKey,
-        resultOriginal
+        getResultOriginal()
       );
       expect(canTransferDirectly).toEqual(false);
 
@@ -388,7 +376,7 @@ describe("payment-module.ts", () => {
       expect(logCallMetadata).not.toBeUndefined();
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("0.004", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.012", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.008", 18).toString());
       expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("50", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 
@@ -403,7 +391,7 @@ describe("payment-module.ts", () => {
 
       const [canTransferDirectly, , ,] = await paymentModule._canTransferDirectly(
         fundingWalletPrivateKey,
-        resultOriginal
+        getResultOriginal()
       );
       expect(canTransferDirectly).toEqual(false);
 
@@ -417,7 +405,7 @@ describe("payment-module.ts", () => {
       expect(logCallMetadata).not.toBeUndefined();
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("1", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.012", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.008", 18).toString());
       expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("50", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 
