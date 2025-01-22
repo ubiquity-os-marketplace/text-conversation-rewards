@@ -111,7 +111,13 @@ jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
   ]),
 }));
 
-beforeAll(() => server.listen());
+beforeAll(() => {
+  server.listen();
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
+    return Promise.resolve("https://rpc");
+  };
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
