@@ -398,3 +398,5 @@ curl -H "Accept: application/json" -H "Authorization: token GITHUB_PAT_TOKEN" ht
 5. Click "Encrypt" to get an encrypted value in the `CIPHER_TEXT` field
 6. Set the encrypted text (from step 5) in the `evmPrivateEncrypted` config parameter
 7. Set `X25519_PRIVATE_KEY` environment variable in github secrets of your forked instance of the `conversation-rewards` plugin
+
+Edit
