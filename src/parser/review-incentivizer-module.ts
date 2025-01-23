@@ -36,9 +36,6 @@ export class ReviewIncentivizerModule extends BaseModule {
       return result;
     }
 
-    const owner = this.context.payload.repository.owner.login;
-    const repo = this.context.payload.repository.name;
-
     if (data.linkedReviews.length > 1) {
       this.context.logger.info(
         `Pull requests ${data.linkedReviews.map((review) => review.self?.number)} are linked to this issue`
@@ -54,19 +51,20 @@ export class ReviewIncentivizerModule extends BaseModule {
       reward.reviewRewards = [];
 
       for (const linkedPullReviews of data.linkedReviews) {
-        if (linkedPullReviews.reviews && linkedPullReviews.self) {
+        if (linkedPullReviews.reviews && linkedPullReviews.self && username !== linkedPullReviews.self.user.login) {
           const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
 
           const reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED")
             ? { reward: this._conclusiveReviewCredit }
             : { reward: 0 };
           const headOwnerRepo = linkedPullReviews.self.head.repo.full_name;
-          const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser, headOwnerRepo);
+          const baseOwner = linkedPullReviews.self.base.repo.owner.login;
+          const baseRepo = linkedPullReviews.self.base.repo.name;
+          const reviewDiffs = await this.fetchReviewDiffRewards(baseOwner, baseRepo, headOwnerRepo, reviewsByUser);
           reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url, reviewBaseReward });
         }
       }
     }
-
     return result;
   }
 
@@ -109,10 +107,10 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async fetchReviewDiffRewards(
-    owner: string,
-    repo: string,
-    reviewsByUser: GitHubPullRequestReviewState[],
-    headOwnerRepo: string
+    prOwner: string,
+    prRepo: string,
+    headOwnerRepo: string,
+    reviewsByUser: GitHubPullRequestReviewState[]
   ) {
     if (reviewsByUser.length == 0) {
       return;
@@ -123,8 +121,8 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     const pullCommits = (
       await this.context.octokit.rest.pulls.listCommits({
-        owner: owner,
-        repo: repo,
+        owner: prOwner,
+        repo: prRepo,
         pull_number: pullNumber,
       })
     ).data;
@@ -144,7 +142,7 @@ export class ReviewIncentivizerModule extends BaseModule {
 
       if (headSha && baseSha !== currentReview.commit_id) {
         try {
-          const reviewEffect = await this.getReviewableDiff(owner, repo, baseSha, headSha, excludedFilePatterns);
+          const reviewEffect = await this.getReviewableDiff(prOwner, prRepo, baseSha, headSha, excludedFilePatterns);
           reviews.push({
             reviewId: currentReview.id,
             effect: reviewEffect,
