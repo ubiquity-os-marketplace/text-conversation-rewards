@@ -288,7 +288,7 @@ export class GithubCommentModule extends BaseModule {
       .map((reviewReward) => {
         const rows = reviewReward.reviews?.map(buildReviewRow).join("") ?? "";
         return `
-          <h6>Review Details for&nbsp;<a href="${reviewReward.url}" target="_blank" rel="noopener">Pull Request</a></h6>
+          <h6>Review Details for&nbsp;<a href="${reviewReward.url}" target="_blank" rel="noopener">#${reviewReward.url.split("/").slice(-1)[0]}</a></h6>
           <table>
             <thead>
               <tr>

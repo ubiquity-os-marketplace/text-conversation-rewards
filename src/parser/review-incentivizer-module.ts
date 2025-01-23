@@ -60,8 +60,8 @@ export class ReviewIncentivizerModule extends BaseModule {
           const reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED")
             ? { reward: this._conclusiveReviewCredit }
             : { reward: 0 };
-
-          const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser);
+          const headOwnerRepo = linkedPullReviews.self.head.repo.full_name;
+          const reviewDiffs = await this.fetchReviewDiffRewards(owner, repo, reviewsByUser, headOwnerRepo);
           reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url, reviewBaseReward });
         }
       }
@@ -108,7 +108,12 @@ export class ReviewIncentivizerModule extends BaseModule {
     return reviewEffect;
   }
 
-  async fetchReviewDiffRewards(owner: string, repo: string, reviewsByUser: GitHubPullRequestReviewState[]) {
+  async fetchReviewDiffRewards(
+    owner: string,
+    repo: string,
+    reviewsByUser: GitHubPullRequestReviewState[],
+    headOwnerRepo: string
+  ) {
     if (reviewsByUser.length == 0) {
       return;
     }
@@ -130,26 +135,24 @@ export class ReviewIncentivizerModule extends BaseModule {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
     const excludedFilePatterns = await getExcludedFiles(this.context);
-    for (let i = 0; i < reviewsByUser.length; i++) {
-      const currentReview = reviewsByUser[i];
+    for (const [i, currentReview] of reviewsByUser.entries()) {
+      if (!currentReview.commit_id) continue;
+
       const previousReview = reviewsByUser[i - 1];
+      const baseSha = previousReview?.commit_id ? previousReview.commit_id : firstCommitSha;
+      const headSha = `${headOwnerRepo.replace("/", ":")}:${currentReview.commit_id}`;
 
-      if (currentReview.commit_id) {
-        const baseSha = previousReview?.commit_id ? previousReview.commit_id : firstCommitSha;
-        const headSha = currentReview.commit_id;
-
-        if (headSha) {
-          try {
-            const reviewEffect = await this.getReviewableDiff(owner, repo, baseSha, headSha, excludedFilePatterns);
-            reviews.push({
-              reviewId: currentReview.id,
-              effect: reviewEffect,
-              reward: ((reviewEffect.addition + reviewEffect.deletion) * priority) / this._baseRate,
-              priority: priority,
-            });
-          } catch (e) {
-            this.context.logger.error(`Failed to get diff between commits ${baseSha} and ${headSha}:`, { e });
-          }
+      if (headSha && baseSha !== currentReview.commit_id) {
+        try {
+          const reviewEffect = await this.getReviewableDiff(owner, repo, baseSha, headSha, excludedFilePatterns);
+          reviews.push({
+            reviewId: currentReview.id,
+            effect: reviewEffect,
+            reward: ((reviewEffect.addition + reviewEffect.deletion) * priority) / this._baseRate,
+            priority: priority,
+          });
+        } catch (e) {
+          this.context.logger.error(`Failed to get diff between commits ${baseSha} and ${headSha}:`, { e });
         }
       }
     }
