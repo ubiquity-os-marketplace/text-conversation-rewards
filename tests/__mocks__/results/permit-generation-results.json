@@ -1,7 +1,7 @@
 {
   "gentlementlegen": {
     "userId": 9807008,
-    "total": 1855.688,
+    "total": 1851.688,
     "task": {
       "reward": 400,
       "multiplier": 1
@@ -1096,53 +1096,8 @@
         }
       }
     ],
-    "reviewRewards": [
-      {
-        "reviews": [
-          {
-            "reviewId": 2007888517,
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "reward": 1,
-            "priority": 1
-          },
-          {
-            "reviewId": 2013179924,
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "reward": 1,
-            "priority": 1
-          },
-          {
-            "reviewId": 2013180169,
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "reward": 1,
-            "priority": 1
-          },
-          {
-            "reviewId": 2014542130,
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "reward": 1,
-            "priority": 1
-          }
-        ],
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12",
-        "reviewBaseReward": {
-          "reward": 0
-        }
-      }
-    ],
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxODU1Njg4MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiODMwNzY0Mzc0NDY0OTk1ODkzMDQ2MTExMjg5NjM5MTY3MTAxMDY4ODYxMDI0MzYwMjM4ODE1MjAwNTgzNDY4MDA1Nzg3NTQ0MDE3NTUiLCJkZWFkbGluZSI6IjExNTc5MjA4OTIzNzMxNjE5NTQyMzU3MDk4NTAwODY4NzkwNzg1MzI2OTk4NDY2NTY0MDU2NDAzOTQ1NzU4NDAwNzkxMzEyOTYzOTkzNSJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIxODU1Njg4MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg5ZTEzZDY3YWEwYTI1M2M0MjQ1ZjJjZTBiZjc1ZjI2ZTA3ZGZhYzE0ZGYxNjQ5MmU2ODkwY2E4ZDVhNDVkOTBjNTNhNWVkNWZmYWExNjIzN2VmNTE1MzM1MzI5ZjczYmI0NmE2Y2YzNmFmNGMxOGI4MDhjMDJkZjhiNGZjYWVlNTFiIiwibmV0d29ya0lkIjoxMDB9XQ=="
+    "reviewRewards": [],
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIxODUxNjg4MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiODMwNzY0Mzc0NDY0OTk1ODkzMDQ2MTExMjg5NjM5MTY3MTAxMDY4ODYxMDI0MzYwMjM4ODE1MjAwNTgzNDY4MDA1Nzg3NTQ0MDE3NTUiLCJkZWFkbGluZSI6IjExNTc5MjA4OTIzNzMxNjE5NTQyMzU3MDk4NTAwODY4NzkwNzg1MzI2OTk4NDY2NTY0MDU2NDAzOTQ1NzU4NDAwNzkxMzEyOTYzOTkzNSJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIxODUxNjg4MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHhlODg1ZWQzZWFmNDZmMmZkMTUzYzFlNjI3YWIwYmNlNmMwNzI5MmM0ZmM5NTg4ZGJjZTI5NGU5Njk1MzI3MTIxMTZkMmQ0MjM3NzFjNzYzMDUxOGE4NjM4MTA3ZTA4NjY4ZjIwMDMzYjcyZWIwN2YwN2RkNWI5ODBhODM4OTY5ZjFiIiwibmV0d29ya0lkIjoxMDB9XQ=="
   },
   "0x4007": {
     "total": 537.356,
