@@ -49,6 +49,7 @@ export class PaymentModule extends BaseModule {
   readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
@@ -124,9 +125,13 @@ export class PaymentModule extends BaseModule {
           "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
         );
         for (const [username, reward] of Object.entries(result)) {
-          const beneficiaryWalletAddress = beneficiaries[username].address;
-          const tx = await erc20Wrapper.sendTransferTransaction(fundingWallet, beneficiaryWalletAddress, reward.total);
-          result[username].explorerUrl = `${networkExplorer}/tx/${tx?.hash}`;
+          try {
+            const beneficiaryWalletAddress = beneficiaries[username].address;
+            const tx = await this._transferReward(erc20Wrapper, fundingWallet, beneficiaryWalletAddress, reward.total);
+            result[username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
+          } catch (e) {
+            this.context.logger.error(`[PaymentModule] Failed to transfer funds for user ${username}`, { e });
+          }
         }
         return result;
       }
@@ -279,6 +284,52 @@ export class PaymentModule extends BaseModule {
       addresses[username] = { address: walletData.address, reward: reward.total };
     }
     return addresses;
+  }
+
+  async _transferReward(
+    erc20Wrapper: Erc20Wrapper,
+    fundingWallet: ethers.Wallet,
+    beneficiaryWalletAddress: string,
+    total: number,
+    maxRetries = 5,
+    initialDelayMs = 500
+  ): Promise<ethers.providers.TransactionResponse> {
+    let attempt = 0;
+    let delay = initialDelayMs;
+
+    while (attempt < maxRetries) {
+      try {
+        this.context.logger.info(`Attempt ${attempt + 1}: Sending transaction...`);
+
+        // Send the transfer transaction
+        const tx = await erc20Wrapper.sendTransferTransaction(fundingWallet, beneficiaryWalletAddress, total);
+        this.context.logger.info(`Transaction hash: ${tx.hash}`);
+
+        // Wait for the transaction to be confirmed
+        const receipt = await tx.wait();
+        this.context.logger.info(`Transaction confirmed in block: ${receipt.blockNumber}`);
+        return tx;
+      } catch (e) {
+        if (typeof e === "object" && e !== null) {
+          if ("code" in e && e.code === ethers.errors.INSUFFICIENT_FUNDS) {
+            throw new Error(
+              this.context.logger.error(`Error: Insufficient funds to complete the transaction`, { e }).logMessage.raw
+            );
+          } else if ("message" in e && typeof e.message === "string" && e.message.includes("INSUFFICIENT_FUNDS")) {
+            throw new Error(this.context.logger.error("Error: Insufficient gas or balance detected").logMessage.raw);
+          }
+        }
+
+        attempt++;
+        this.context.logger.error(`Attempt ${attempt} failed: ${e}`, { e });
+
+        // Exponential backoff delay
+        this.context.logger.info(`Retrying in ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        delay *= 2;
+      }
+    }
+    throw new Error(this.context.logger.error(`Transaction failed after ${maxRetries}`).logMessage.raw);
   }
 
   /**

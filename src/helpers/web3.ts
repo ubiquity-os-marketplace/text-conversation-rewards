@@ -105,11 +105,11 @@ export class Erc20Wrapper {
   async sendTransferTransaction(evmWallet: Wallet, address: string, normalizedAmount: number) {
     const tokenDecimals = await this.getDecimals();
     const _amount = utils.parseUnits(normalizedAmount.toString(), tokenDecimals);
+    const contract = new Contract(this._contract.address, ERC20_ABI, evmWallet);
 
     // Create the signed transaction
     try {
-      const tx = await this._contract.transfer(address, _amount);
-      return await evmWallet.sendTransaction(tx);
+      return await contract.transfer(address, _amount);
     } catch (error) {
       const errorMessage = `Error sending transaction: ${error}`;
       throw new Error(errorMessage);
