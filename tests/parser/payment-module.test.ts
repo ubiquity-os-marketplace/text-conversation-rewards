@@ -65,12 +65,16 @@ jest.unstable_mockModule("../../src/helpers/web3", () => {
     getBalance = mockRewardTokenBalance;
     getSymbol = jest.fn().mockReturnValue("WXDAI");
     getDecimals = jest.fn().mockReturnValue(18);
-    sendTransferTransaction = jest.fn().mockReturnValue({ hash: "0xTransactionHash" });
-    estimateTransferGas = jest.fn().mockReturnValue(parseUnits("0.004", 18));
+  }
+  class MockDisperseAppWrapper {
+    sendDisperseTokenTransaction = jest.fn().mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({}) });
+    estimateDisperseTokenGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
   }
   return {
     Erc20Wrapper: MockErc20Wrapper,
-    getErc20TokenContract: jest.fn().mockReturnValue({ provider: "dummy" }),
+    DISPERSE_APP_CONTRACT_ADDRESS: "0xDisperseApp",
+    DisperseAppWrapper: MockDisperseAppWrapper,
+    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
     getEvmWallet: jest.fn(() => ({
       address: "0xAddress",
       getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
@@ -265,14 +269,13 @@ describe("payment-module.ts", () => {
 
     it("Should return the correct total payable amount", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
+      const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal(), 18);
       expect(beneficiaries).not.toBeNull();
-      let totalPayable = 0;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      for (const data of Object.values(beneficiaries!)) {
-        totalPayable += data.reward;
-      }
-      expect(totalPayable).toEqual(111.11);
+      const totalPayable = beneficiaries?.values.reduce(
+        (accumulator, current) => accumulator.add(current),
+        BigNumber.from(0)
+      );
+      expect(totalPayable).toEqual(parseUnits("111.11", 18));
     });
   });
 
@@ -297,7 +300,7 @@ describe("payment-module.ts", () => {
       expect(erc20Wrapper).not.toBeNull();
       expect(fundingWallet).not.toBeNull();
       if (beneficiaries) {
-        expect(Object.keys(beneficiaries).length).toEqual(2);
+        expect(beneficiaries.usernames.length).toEqual(2);
       } else {
         expect(beneficiaries).not.toBeNull();
       }
@@ -312,7 +315,7 @@ describe("payment-module.ts", () => {
       expect(logCallMetadata).not.toBeUndefined();
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("1", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.008", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.02", 18).toString());
       expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("200", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 
@@ -346,7 +349,7 @@ describe("payment-module.ts", () => {
       expect(logCallMetadata).not.toBeUndefined();
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("0.004", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.008", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.02", 18).toString());
       expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("200", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 
@@ -382,7 +385,7 @@ describe("payment-module.ts", () => {
       expect(logCallMetadata).not.toBeUndefined();
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("0.004", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.008", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.02", 18).toString());
       expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("50", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 
@@ -411,7 +414,7 @@ describe("payment-module.ts", () => {
       expect(logCallMetadata).not.toBeUndefined();
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("1", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.008", 18).toString());
+      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.02", 18).toString());
       expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("50", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 

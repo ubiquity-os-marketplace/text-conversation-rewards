@@ -1,5 +1,5 @@
 import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/rpc-handler";
-import { ethers, utils, Contract, Wallet, BigNumber } from "ethers";
+import { ethers, Contract, Wallet, BigNumber } from "ethers";
 
 // Required ERC20 ABI functions
 export const ERC20_ABI = [
@@ -9,14 +9,24 @@ export const ERC20_ABI = [
   "function transfer(address,uint256) public returns (bool)",
 ];
 
+// Disperse App ABI functions
+export const DISPERSE_APP_ABI = [
+  "function disperseEther(address[],uint256[]) external payable",
+  "function disperseToken(address,address[],uint256[]) external",
+  "function disperseTokenSimple(address,address[],uint256[]) external",
+];
+
+export const DISPERSE_APP_CONTRACT_ADDRESS = "0xD152f549545093347A162Dce210e7293f1452150";
+
 /**
- * Returns ERC20 token contract
+ * Returns EVM token contract
  * @param networkId Network id
  * @param tokenAddress ERC20 token address
- * @returns ERC20 token contract
+ * @param abi Contract ABI
+ * @returns EVM token contract
  */
 
-export async function getErc20TokenContract(networkId: number, tokenAddress: string) {
+export async function getContract(networkId: number, tokenAddress: string, abi = ERC20_ABI) {
   // get fastest RPC
   const config: HandlerConstructorConfig = {
     networkName: null,
@@ -37,7 +47,7 @@ export async function getErc20TokenContract(networkId: number, tokenAddress: str
   const handler = new RPCHandler(config);
   const provider = await handler.getFastestRpcProvider();
 
-  return new Contract(tokenAddress, ERC20_ABI, provider);
+  return new Contract(tokenAddress, abi, provider);
 }
 
 /**
@@ -82,36 +92,53 @@ export class Erc20Wrapper {
   async getBalance(address: string): Promise<BigNumber> {
     return await this._contract.balanceOf(address);
   }
+}
+
+/**
+ * A wrapper class for interacting with the Disperse application.
+ * Provides functionality to disperse ERC20 tokens to multiple recipients.
+ */
+export class DisperseAppWrapper {
+  constructor(private _contract: Contract) {}
 
   /**
-   * Returns Fee estimation of erc20 transfer request
-   * @param address input address
-   * @param normalizedAmount Human readable amount of ERC20 token to be transferred
-   * @returns Fee estimation of erc20 transfer request
+   * Returns Fee estimation of disperseToken function call
+   * @param from msg.sender address
+   * @param tokenAddress ERC20 token address
+   * @param recipients Recipient addresses
+   * @param values Respective values of the ERC20 tokens to be transferred to the recipients
+   * @returns Fee estimation of disperseToken function call
    */
-  async estimateTransferGas(from: string, to: string, normalizedAmount: number) {
-    const tokenDecimals = await this.getDecimals();
-    const _amount = utils.parseUnits(normalizedAmount.toString(), tokenDecimals);
-    return await this._contract.estimateGas.transfer(to, _amount, { from });
+  async estimateDisperseTokenGas(
+    from: string,
+    tokenAddress: string,
+    recipients: string[],
+    values: BigNumber[]
+  ): Promise<BigNumber> {
+    return await this._contract.estimateGas.disperseToken(tokenAddress, recipients, values, { from });
   }
 
   /**
-   * Returns Transaction data of the ERC20 token transfer
+   * Returns Transaction response of the disperseToken contract call
    * @param evmWallet Wallet to transfer ERC20 token from
-   * @param address Address to send ERC20 token
-   * @param normalizedAmount Human readable amount of ERC20 token to be transferred
-   * @returns Transaction data of the ERC20 token transfer
+   * @param tokenAddress ERC20 token address
+   * @param recipients Recipient addresses
+   * @param values Respective values of the ERC20 tokens to be transferred to the recipients
+   * @returns Transaction response of the disperseToken contract call
    */
-  async sendTransferTransaction(evmWallet: Wallet, address: string, normalizedAmount: number) {
-    const tokenDecimals = await this.getDecimals();
-    const _amount = utils.parseUnits(normalizedAmount.toString(), tokenDecimals);
-    const contract = new Contract(this._contract.address, ERC20_ABI, evmWallet);
+  async sendDisperseTokenTransaction(
+    evmWallet: Wallet,
+    tokenAddress: string,
+    recipients: string[],
+    values: BigNumber[]
+  ): Promise<ethers.providers.TransactionResponse> {
+    const contract = new Contract(this._contract.address, DISPERSE_APP_ABI, evmWallet);
 
     // Create the signed transaction
     try {
-      return await contract.transfer(address, _amount);
+      return await contract.disperseToken(tokenAddress, recipients, values);
     } catch (error) {
-      const errorMessage = `Error sending transaction: ${error}`;
+      const errorMessage = `Failed to send the transaction for the disperseToken contract call: ${error}`;
       throw new Error(errorMessage);
     }
   }

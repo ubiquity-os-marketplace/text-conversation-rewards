@@ -13,7 +13,7 @@ import { server } from "./__mocks__/node";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
-import { BigNumber, Wallet } from "ethers";
+import { BigNumber } from "ethers";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -23,14 +23,16 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
     getBalance = mockRewardTokenBalance;
     getSymbol = jest.fn().mockReturnValue("WXDAI");
     getDecimals = jest.fn().mockReturnValue(18);
-    sendTransferTransaction = (evmWallet: Wallet, address: string, normalizedAmount: number) => {
-      return { hash: `0xSent${normalizedAmount}` };
-    };
-    estimateTransferGas = jest.fn().mockReturnValue(parseUnits("0.004", 18));
+  }
+  class MockDisperseAppWrapper {
+    sendDisperseTokenTransaction = jest.fn().mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({}) });
+    estimateDisperseTokenGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
   }
   return {
     Erc20Wrapper: MockErc20Wrapper,
-    getErc20TokenContract: jest.fn().mockReturnValue({ provider: "dummy" }),
+    DISPERSE_APP_CONTRACT_ADDRESS: "0xDisperseApp",
+    DisperseAppWrapper: MockDisperseAppWrapper,
+    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
     getEvmWallet: jest.fn(() => ({
       address: "0xAddress",
       getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
@@ -240,11 +242,6 @@ afterAll(() => {
 
 // Run the test twice to cover both auto-transfer and permit-generation modes.
 const autoTransferModeVector = [false, true];
-function payoutModeTitle(automaticTransferMode: boolean) {
-  // eslint-disable-next-line sonarjs/no-selector-parameter
-  return automaticTransferMode ? "directly pay" : "generate permits";
-}
-
 interface UserData {
   permitUrl?: string;
   [key: string]: unknown;
@@ -261,7 +258,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
     if (autoTransferMode) {
       for (const username of Object.keys(paymentResult)) {
         delete paymentResult[username]["permitUrl"];
-        paymentResult[username].explorerUrl = `https://rpc/tx/0xSent${paymentResult[username].total}`;
+        paymentResult[username].explorerUrl = `https://rpc/tx/0xSent`;
       }
     }
   });
@@ -302,7 +299,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       isAdminMocked.mockImplementation(() => Promise.resolve(true));
     });
 
-    it(`should ${payoutModeTitle(autoTransferMode)} for collaborative issue`, async () => {
+    it(`should pay for collaborative issue`, async () => {
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
@@ -322,7 +319,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       expect(result).toEqual(paymentResult);
     });
 
-    it(`should ${payoutModeTitle(autoTransferMode)} for non - collaborative issue`, async () => {
+    it(`should pay for non - collaborative issue`, async () => {
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
@@ -348,7 +345,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       isAdminMocked.mockImplementation(() => Promise.resolve(false));
     });
 
-    it(`should ${payoutModeTitle(autoTransferMode)} for collaborative issue`, async () => {
+    it(`should pay for collaborative issue`, async () => {
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
@@ -368,7 +365,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       expect(result).toEqual(paymentResult);
     });
 
-    it(`should not ${payoutModeTitle(autoTransferMode)} for non - collaborative issue`, async () => {
+    it(`should not pay for non - collaborative issue`, async () => {
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);

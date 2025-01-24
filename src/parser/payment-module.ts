@@ -25,9 +25,14 @@ import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
-import { Erc20Wrapper, getErc20TokenContract, getEvmWallet } from "../helpers/web3";
+import {
+  DisperseAppWrapper,
+  Erc20Wrapper,
+  getContract,
+  getEvmWallet,
+  DISPERSE_APP_CONTRACT_ADDRESS,
+} from "../helpers/web3";
 import { BigNumber, ethers } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
 
 interface Payload {
   evmNetworkId: number;
@@ -37,8 +42,10 @@ interface Payload {
   issue: { node_id: string };
 }
 
-interface Beneficiary {
-  [username: string]: { address: string; reward: number };
+interface Beneficiaries {
+  usernames: string[];
+  addresses: string[];
+  values: BigNumber[];
 }
 
 export class PaymentModule extends BaseModule {
@@ -49,7 +56,6 @@ export class PaymentModule extends BaseModule {
   readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
@@ -116,7 +122,7 @@ export class PaymentModule extends BaseModule {
 
     if (this._autoTransferMode) {
       // Check if funding wallet has enough reward token and gas to transfer rewards directly
-      const [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries] = await this._canTransferDirectly(
+      const [canTransferDirectly, disperseAppWrapper, fundingWallet, beneficiaries] = await this._canTransferDirectly(
         privateKeyParsed.privateKey,
         result
       );
@@ -124,14 +130,18 @@ export class PaymentModule extends BaseModule {
         this.context.logger.info(
           "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
         );
-        for (const [username, reward] of Object.entries(result)) {
-          try {
-            const beneficiaryWalletAddress = beneficiaries[username].address;
-            const tx = await this._transferReward(erc20Wrapper, fundingWallet, beneficiaryWalletAddress, reward.total);
+        try {
+          const tx = await this._transferReward(
+            disperseAppWrapper,
+            fundingWallet,
+            beneficiaries.addresses,
+            beneficiaries.values
+          );
+          beneficiaries.usernames.forEach((username) => {
             result[username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
-          } catch (e) {
-            this.context.logger.error(`[PaymentModule] Failed to transfer funds for user ${username}`, { e });
-          }
+          });
+        } catch (e) {
+          this.context.logger.error(`[PaymentModule] Failed to transfer rewards through Disperse.app`, { e });
         }
         return result;
       }
@@ -212,11 +222,11 @@ export class PaymentModule extends BaseModule {
   async _canTransferDirectly(
     privateKey: string,
     result: Result
-  ): Promise<[true, Erc20Wrapper, ethers.Wallet, Beneficiary] | [false, null, null, null]> {
+  ): Promise<[true, DisperseAppWrapper, ethers.Wallet, Beneficiaries] | [false, null, null, null]> {
     try {
-      const tokenContract = await getErc20TokenContract(this._evmNetworkId, this._erc20RewardToken);
-      const fundingWallet = await getEvmWallet(privateKey, tokenContract.provider);
-      const erc20Wrapper = new Erc20Wrapper(tokenContract);
+      const erc20Contract = await getContract(this._evmNetworkId, this._erc20RewardToken);
+      const fundingWallet = await getEvmWallet(privateKey, erc20Contract.provider);
+      const erc20Wrapper = new Erc20Wrapper(erc20Contract);
       const decimals = await erc20Wrapper.getDecimals();
       // Fetch and normalize the funding wallet's reward token balance
       const fundingWalletRewardTokenBalance: BigNumber = await erc20Wrapper.getBalance(fundingWallet.address);
@@ -224,17 +234,24 @@ export class PaymentModule extends BaseModule {
       // Fetch the funding wallet's native token balance
       const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
 
-      const beneficiaries = await this._getBeneficiaries(result);
+      const beneficiaries = await this._getBeneficiaries(result, decimals);
       if (beneficiaries === null) {
         return [false, null, null, null];
       }
-      let totalFee = BigNumber.from("0");
-      let totalReward = BigNumber.from("0");
-      for (const data of Object.values(beneficiaries)) {
-        const fee = await erc20Wrapper.estimateTransferGas(fundingWallet.address, data.address, data.reward);
-        totalFee = totalFee.add(fee);
-        totalReward = totalReward.add(parseUnits(data.reward.toString(), decimals));
-      }
+
+      const disperseAppContract = await getContract(this._evmNetworkId, DISPERSE_APP_CONTRACT_ADDRESS);
+      const disperseAppWrapper = new DisperseAppWrapper(disperseAppContract);
+
+      const totalFee = await disperseAppWrapper.estimateDisperseTokenGas(
+        fundingWallet.address,
+        this._erc20RewardToken,
+        beneficiaries.addresses,
+        beneficiaries.values
+      );
+      const totalReward = beneficiaries.values.reduce(
+        (accumulator, current) => accumulator.add(current),
+        BigNumber.from(0)
+      );
 
       const hasEnoughGas = fundingWalletNativeTokenBalance.gt(totalFee);
       const hasEnoughRewardToken = fundingWalletRewardTokenBalance.gt(totalReward);
@@ -259,15 +276,15 @@ export class PaymentModule extends BaseModule {
         `[PaymentModule] The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
         gasAndRewardInfo
       );
-      return [true, erc20Wrapper, fundingWallet, beneficiaries];
+      return [true, disperseAppWrapper, fundingWallet, beneficiaries];
     } catch (e) {
       this.context.logger.error(`[PaymentModule] Failed to fetch the funding wallet data: ${e}`, { e });
       return [false, null, null, null];
     }
   }
 
-  async _getBeneficiaries(result: Result): Promise<Beneficiary | null> {
-    const addresses: Beneficiary = {};
+  async _getBeneficiaries(result: Result, decimals: number): Promise<Beneficiaries | null> {
+    const beneficiaries: Beneficiaries = { usernames: [], addresses: [], values: [] };
     for (const [username, reward] of Object.entries(result)) {
       // Obtain the beneficiary wallet address from the github user name
       const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
@@ -281,16 +298,18 @@ export class PaymentModule extends BaseModule {
         this.context.logger.error("Beneficiary wallet not found");
         return null;
       }
-      addresses[username] = { address: walletData.address, reward: reward.total };
+      beneficiaries.usernames.push(username);
+      beneficiaries.addresses.push(walletData.address);
+      beneficiaries.values.push(ethers.utils.parseUnits(reward.total.toString(), decimals));
     }
-    return addresses;
+    return beneficiaries;
   }
 
   async _transferReward(
-    erc20Wrapper: Erc20Wrapper,
+    disperseAppWrapper: DisperseAppWrapper,
     fundingWallet: ethers.Wallet,
-    beneficiaryWalletAddress: string,
-    total: number,
+    beneficiaryWalletAddresses: string[],
+    beneficiaryRewardValues: BigNumber[],
     maxRetries = 5,
     initialDelayMs = 500
   ): Promise<ethers.providers.TransactionResponse> {
@@ -302,7 +321,12 @@ export class PaymentModule extends BaseModule {
         this.context.logger.info(`Attempt ${attempt + 1}: Sending transaction...`);
 
         // Send the transfer transaction
-        const tx = await erc20Wrapper.sendTransferTransaction(fundingWallet, beneficiaryWalletAddress, total);
+        const tx = await disperseAppWrapper.sendDisperseTokenTransaction(
+          fundingWallet,
+          this._erc20RewardToken,
+          beneficiaryWalletAddresses,
+          beneficiaryRewardValues
+        );
         this.context.logger.info(`Transaction hash: ${tx.hash}`);
 
         // Wait for the transaction to be confirmed
