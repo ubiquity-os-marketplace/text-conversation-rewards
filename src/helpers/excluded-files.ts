@@ -33,8 +33,8 @@ async function parseGitAttributes(content: string): Promise<GitAttributes[]> {
     .filter((item): item is GitAttributes => item !== null);
 }
 
-export async function getExcludedFiles(context: ContextPlugin) {
-  const gitAttributesContent = await getFileContent(context, ".gitattributes");
+export async function getExcludedFiles(context: ContextPlugin, owner: string, repo: string) {
+  const gitAttributesContent = await getFileContent(context, ".gitattributes", owner, repo);
   if (!gitAttributesContent) {
     return null;
   }
@@ -45,11 +45,16 @@ export async function getExcludedFiles(context: ContextPlugin) {
   return gitAttributesLinguistGenerated;
 }
 
-async function getFileContent(context: ContextPlugin, path: string): Promise<string | null> {
+async function getFileContent(
+  context: ContextPlugin,
+  path: string,
+  owner: string,
+  repo: string
+): Promise<string | null> {
   try {
     const response = await context.octokit.rest.repos.getContent({
-      owner: context.payload.repository.owner.login,
-      repo: context.payload.repository.name,
+      owner,
+      repo,
       path,
     });
 

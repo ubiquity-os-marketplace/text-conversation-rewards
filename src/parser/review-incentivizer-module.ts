@@ -36,15 +36,16 @@ export class ReviewIncentivizerModule extends BaseModule {
       return result;
     }
 
-    if (data.linkedReviews.length > 1) {
-      this.context.logger.info(
-        `Pull requests ${data.linkedReviews.map((review) => review.self?.number)} are linked to this issue`
-      );
-    } else if (data.linkedReviews.length == 1) {
-      this.context.logger.info(`Pull request ${data.linkedReviews[0].self?.number} is linked to this issue`);
-    } else {
+    const prNumbers = data.linkedReviews.map((review) => review.self?.number);
+    if (!prNumbers.length) {
       throw this.context.logger.error(`No pull request linked to this issue, Aborting`);
     }
+
+    const message =
+      prNumbers.length === 1
+        ? `Pull request ${prNumbers[0]} is linked to this issue`
+        : `Pull requests ${prNumbers} are linked to this issue`;
+    this.context.logger.info(message);
 
     for (const username of Object.keys(result)) {
       const reward = result[username];
@@ -57,10 +58,15 @@ export class ReviewIncentivizerModule extends BaseModule {
           const reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED")
             ? { reward: this._conclusiveReviewCredit }
             : { reward: 0 };
-          const headOwnerRepo = linkedPullReviews.self.head.repo.full_name;
+          const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
           const baseOwner = linkedPullReviews.self.base.repo.owner.login;
           const baseRepo = linkedPullReviews.self.base.repo.name;
-          const reviewDiffs = await this.fetchReviewDiffRewards(baseOwner, baseRepo, headOwnerRepo, reviewsByUser);
+          const reviewDiffs = await this.fetchReviewDiffRewards(
+            baseOwner,
+            baseRepo,
+            headOwnerRepo ?? "",
+            reviewsByUser
+          );
           reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url, reviewBaseReward });
         }
       }
@@ -132,7 +138,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
-    const excludedFilePatterns = await getExcludedFiles(this.context);
+    const excludedFilePatterns = await getExcludedFiles(this.context, prOwner, prRepo);
     for (const [i, currentReview] of reviewsByUser.entries()) {
       if (!currentReview.commit_id) continue;
 
