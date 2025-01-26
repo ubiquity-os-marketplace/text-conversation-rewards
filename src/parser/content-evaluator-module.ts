@@ -60,11 +60,13 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
     const promises: Promise<GithubCommentScore[]>[] = [];
-    const allCommentsUnClean = data.allComments || [];
     const allComments: { id: number; comment: string; author: string }[] = [];
-    for (const commentObj of allCommentsUnClean) {
-      if (commentObj.user) {
-        allComments.push({ id: commentObj.id, comment: commentObj.body ?? "", author: commentObj.user.login });
+
+    for (const [user, data] of Object.entries(result)) {
+      if (data.comments?.length) {
+        allComments.push(
+          ...data.comments.map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
+        );
       }
     }
 
@@ -167,29 +169,108 @@ export class ContentEvaluatorModule extends BaseModule {
     return { commentsToEvaluate, prCommentsToEvaluate };
   }
 
-  async _evaluateComments(
+  _splitArrayToChunks<T extends CommentToEvaluate[] | AllComments>(array: T, chunks: number) {
+    const arrayCopy = [...array];
+    const result = [];
+    for (let i = chunks; i > 0; i--) {
+      result.push(arrayCopy.splice(0, Math.ceil(arrayCopy.length / i)));
+    }
+    return result;
+  }
+
+  async _splitPromptForIssueCommentEvaluation(
     specification: string,
     comments: CommentToEvaluate[],
+    allComments: AllComments
+  ) {
+    const commentRelevances: Relevances = {};
+    const chunks = 2;
+
+    for (const commentSplit of this._splitArrayToChunks(allComments, chunks)) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
+      const promptForComments = this._generatePromptForComments(specification, comments, commentSplit);
+
+      for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxTokens))) {
+        if (commentRelevances[key]) {
+          commentRelevances[key] = new Decimal(commentRelevances[key]).add(value).toNumber();
+        } else {
+          commentRelevances[key] = value;
+        }
+      }
+    }
+    for (const key of Object.keys(commentRelevances)) {
+      commentRelevances[key] = new Decimal(commentRelevances[key]).div(chunks).toNumber();
+    }
+
+    return commentRelevances;
+  }
+
+  async _splitPromptForPullRequestCommentEvaluation(specification: string, comments: PrCommentToEvaluate[]) {
+    const commentRelevances: Relevances = {};
+    const chunks = 2;
+
+    for (const commentSplit of this._splitArrayToChunks(comments, chunks)) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(commentSplit), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
+      const promptForComments = this._generatePromptForPrComments(specification, commentSplit);
+
+      for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxTokens))) {
+        if (commentRelevances[key]) {
+          commentRelevances[key] = new Decimal(commentRelevances[key]).add(value).toNumber();
+        } else {
+          commentRelevances[key] = value;
+        }
+      }
+    }
+    for (const key of Object.keys(commentRelevances)) {
+      commentRelevances[key] = new Decimal(commentRelevances[key]).div(chunks).toNumber();
+    }
+
+    return commentRelevances;
+  }
+
+  async _evaluateComments(
+    specification: string,
+    userIssueComments: CommentToEvaluate[],
     allComments: AllComments,
-    prComments: PrCommentToEvaluate[]
+    userPrComments: PrCommentToEvaluate[]
   ): Promise<Relevances> {
     let commentRelevances: Relevances = {};
     let prCommentRelevances: Relevances = {};
 
-    if (comments.length) {
-      const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
-      const maxTokens = this._calculateMaxTokens(dummyResponse);
-
-      const promptForComments = this._generatePromptForComments(specification, comments, allComments);
-      commentRelevances = await this._submitPrompt(promptForComments, maxTokens);
+    if (!this._configuration?.openAi.tokenCountLimit) {
+      throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
     }
 
-    if (prComments.length) {
-      const dummyResponse = JSON.stringify(this._generateDummyResponse(prComments), null, 2);
+    const tokenLimit = this._configuration?.openAi.tokenCountLimit;
+
+    if (userIssueComments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
       const maxTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForPrComments = this._generatePromptForPrComments(specification, prComments);
-      prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
+      const promptForIssueComments = this._generatePromptForComments(specification, userIssueComments, allComments);
+      if (this._calculateMaxTokens(promptForIssueComments, Infinity) > tokenLimit) {
+        commentRelevances = await this._splitPromptForIssueCommentEvaluation(
+          specification,
+          userIssueComments,
+          allComments
+        );
+      } else {
+        commentRelevances = await this._submitPrompt(promptForIssueComments, maxTokens);
+      }
+    }
+
+    if (userPrComments.length) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(userPrComments), null, 2);
+      const maxTokens = this._calculateMaxTokens(dummyResponse);
+
+      const promptForPrComments = this._generatePromptForPrComments(specification, userPrComments);
+      if (this._calculateMaxTokens(promptForPrComments, Infinity) > tokenLimit) {
+        prCommentRelevances = await this._splitPromptForPullRequestCommentEvaluation(specification, userPrComments);
+      } else {
+        prCommentRelevances = await this._submitPrompt(promptForPrComments, maxTokens);
+      }
     }
 
     return { ...commentRelevances, ...prCommentRelevances };
@@ -249,12 +330,12 @@ export class ContentEvaluatorModule extends BaseModule {
     }
   }
 
-  _generatePromptForComments(issue: string, comments: CommentToEvaluate[], allComments: AllComments) {
+  _generatePromptForComments(issue: string, userComments: CommentToEvaluate[], allComments: AllComments) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
     const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
-    const commentsMap = comments.map((value) => `${value.id}: "${value.comment}"`);
+    const userCommentsMap = userComments.map((value) => `${value.id}: "${value.comment}"`);
     return `
       Evaluate the relevance of GitHub comments to an issue. Provide a JSON object with comment IDs and their relevance scores.
       Issue: ${issue}
@@ -263,7 +344,7 @@ export class ContentEvaluatorModule extends BaseModule {
       ${allCommentsMap.join("\n")}
 
       Comments to evaluate:
-      ${commentsMap.join("\n")}
+      ${userCommentsMap.join("\n")}
 
       Instructions:
       1. Read all comments carefully, considering their context and content.
@@ -284,18 +365,18 @@ export class ContentEvaluatorModule extends BaseModule {
       Notes:
       - Even minor details may be significant.
       - Comments may reference earlier comments.
-      - The number of entries in the JSON response must equal ${commentsMap.length}.
+      - The number of entries in the JSON response must equal ${userCommentsMap.length}.
     `;
   }
 
-  _generatePromptForPrComments(issue: string, comments: PrCommentToEvaluate[]) {
+  _generatePromptForPrComments(issue: string, userComments: PrCommentToEvaluate[]) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
     return `I need to evaluate the value of a GitHub contributor's comments in a pull request. Some of these comments are code review comments, and some are general suggestions or a part of the discussion. I'm interested in how much each comment helps to solve the GitHub issue and improve code quality. Please provide a float between 0 and 1 to represent the value of each comment. A score of 1 indicates that the comment is very valuable and significantly improves the submitted solution and code quality, whereas a score of 0 indicates a negative or zero impact. A stringified JSON is given below that contains the specification of the GitHub issue, and comments by different contributors. The property "diffHunk" presents the chunk of code being addressed for a possible change in a code review comment. \n\n\`\`\`\n${JSON.stringify(
-      { specification: issue, comments: comments }
+      { specification: issue, comments: userComments }
     )}\n\`\`\`\n\n\nTo what degree are each of the comments valuable? Please reply with ONLY a JSON where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${
-      comments.length
+      userComments.length
     }.`;
   }
 }

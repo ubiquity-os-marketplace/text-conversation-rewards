@@ -11,6 +11,12 @@ const openAiType = Type.Object(
       description: "OpenAI model, e.g. gpt-4o",
       examples: ["gpt-4o"],
     }),
+    tokenCountLimit: Type.Integer({
+      default: 124000,
+      description:
+        "Token count limit for a given model. If the content goes beyond the token limit, content will get truncated during evaluation.",
+      examples: [124000],
+    }),
     /**
      * Specific endpoint to send the comments to.
      */
