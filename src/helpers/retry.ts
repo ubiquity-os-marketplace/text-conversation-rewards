@@ -1,7 +1,8 @@
 interface RetryOptions {
   maxRetries: number;
   onError?: (error: unknown) => void | Promise<void>;
-  isErrorRetryable?: (error: unknown) => boolean;
+  // Return false to stop retrying, return true to automatically delay the next retry, or a number to set the delay before the next retry
+  isErrorRetryable?: (error: unknown) => boolean | number;
 }
 
 function sleep(ms: number) {
@@ -18,8 +19,13 @@ export async function retry<T>(fn: () => Promise<T>, options: RetryOptions): Pro
       if (options.onError) {
         await options.onError(err);
       }
-      if (options.isErrorRetryable && !options.isErrorRetryable(err)) {
-        throw err;
+      if (options.isErrorRetryable) {
+        const res = options.isErrorRetryable(err);
+        if (res === false) {
+          throw err;
+        } else if (typeof res === "number") {
+          delay = res;
+        }
       }
       lastError = err;
     }

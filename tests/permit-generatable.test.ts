@@ -211,6 +211,9 @@ describe("Permit Generation Module Tests", () => {
           })()
         );
       });
+    jest
+      .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
+      .mockImplementation(() => Promise.resolve(Infinity));
   });
 
   describe("Admin User Tests", () => {

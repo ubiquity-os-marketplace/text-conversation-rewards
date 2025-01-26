@@ -200,6 +200,9 @@ describe("Modules tests", () => {
           })()
         );
       });
+    jest
+      .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
+      .mockImplementation(() => Promise.resolve(Infinity));
   });
 
   it("Should extract users from comments", async () => {
