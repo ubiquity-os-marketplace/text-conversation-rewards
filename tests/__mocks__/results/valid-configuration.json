@@ -325,6 +325,10 @@
     "requirePriceLabel": true,
     "userExtractor": {
       "redeemTask": true
+    },
+    "reviewIncentivizer": {
+      "baseRate": 100,
+      "conclusiveReviewCredit": 25
     }
   }
 }

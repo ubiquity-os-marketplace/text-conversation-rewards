@@ -330,6 +330,30 @@
               }
             ]
           },
+          "reviewIncentivizer": {
+            "default": null,
+            "anyOf": [
+              {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "baseRate": {
+                    "default": 100,
+                    "description": "Number of lines of code that equals $1 in review credit",
+                    "type": "number"
+                  },
+                  "conclusiveReviewCredit": {
+                    "default": 25,
+                    "description": "Flat rate bonus in dollars for completing a conclusive review i.e (Approved or Changes Requested)",
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "formattingEvaluator": {
             "default": null,
             "anyOf": [

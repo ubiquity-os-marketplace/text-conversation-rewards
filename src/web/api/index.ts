@@ -10,6 +10,7 @@ import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { getPayload } from "./payload";
 import { IssueActivityCache } from "../db/issue-activity-cache";
+import { cors } from "hono/cors";
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
@@ -32,12 +33,14 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   }
 );
 
+baseApp.use("*", cors());
+
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
     if (
       request.method === "POST" &&
       new URL(request.url).pathname === "/" &&
-      request.headers.get("referer")?.includes("http://localhost:4000")
+      request.headers.get("referer")?.startsWith("http://localhost")
     ) {
       try {
         const originalBody = await request.json();
@@ -52,13 +55,20 @@ const app = {
           headers: request.headers,
           body: JSON.stringify(modifiedBody),
         });
-        return baseApp.fetch(modifiedRequest, env, ctx);
+        const res = await baseApp.fetch(modifiedRequest, env, ctx);
+        res.headers.set("Access-Control-Allow-Origin", "*");
+        return res;
       } catch (error) {
         console.error(error);
-        return new Response("Invalid JSON", { status: 400 });
+        return new Response("Invalid JSON", {
+          status: 400,
+          headers: { "Access-Control-Allow-Origin": "*" },
+        });
       }
     }
-    return baseApp.fetch(request, env, ctx);
+    const res = await baseApp.fetch(request, env, ctx);
+    res.headers.set("Access-Control-Allow-Origin", "*");
+    return res;
   },
   use: baseApp.use.bind(baseApp),
   post: baseApp.post.bind(baseApp),

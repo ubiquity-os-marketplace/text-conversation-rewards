@@ -22,14 +22,14 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
     eventName: "issues.closed",
     action: "closed",
     env: process.env,
-    command: null,
-    settings: {
+    command: "null",
+    settings: JSON.stringify({
       ...cfgFile,
       evmPrivateEncrypted: cfgFile.evmPrivateEncrypted ?? process.env.EVM_PRIVATE_ENCRYPTED,
       ...(useCache && { useCache }),
-    },
+    }),
     authToken: process.env.GITHUB_TOKEN,
-    eventPayload: {
+    eventPayload: JSON.stringify({
       issue: {
         state_reason: "completed",
         url: `https://api.github.com/repos/${ownerRepo}/issues/${issueId}`,
@@ -225,6 +225,6 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
         type: "User",
         site_admin: false,
       },
-    },
+    }),
   };
 }
