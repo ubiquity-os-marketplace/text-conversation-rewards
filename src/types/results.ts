@@ -11,6 +11,11 @@ export interface Result {
     feeRate?: number;
     permitUrl?: string;
     userId: number;
+    reviewRewards?: {
+      reviews?: ReviewScore[];
+      reviewBaseReward?: { reward: number };
+      url: string;
+    }[];
     evaluationCommentHtml?: string;
   };
 }
@@ -19,6 +24,16 @@ export interface WordResult {
   wordCount: number;
   wordValue: number;
   result: number;
+}
+
+export interface ReviewScore {
+  priority: number;
+  reviewId: number;
+  effect: {
+    addition: number;
+    deletion: number;
+  };
+  reward: number;
 }
 
 export interface GithubCommentScore {

@@ -160,6 +160,7 @@ const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
 const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
@@ -211,6 +212,14 @@ describe("Permit Generation Module Tests", () => {
           })()
         );
       });
+    jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+      return {
+        "test.txt": {
+          addition: 50,
+          deletion: 50,
+        },
+      };
+    });
   });
 
   describe("Admin User Tests", () => {
@@ -227,6 +236,7 @@ describe("Permit Generation Module Tests", () => {
         new DataPurgeModule(ctx),
         new FormattingEvaluatorModule(ctx),
         new ContentEvaluatorModule(ctx),
+        new ReviewIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -246,6 +256,7 @@ describe("Permit Generation Module Tests", () => {
         new DataPurgeModule(ctx),
         new FormattingEvaluatorModule(ctx),
         new ContentEvaluatorModule(ctx),
+        new ReviewIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -271,6 +282,7 @@ describe("Permit Generation Module Tests", () => {
         new DataPurgeModule(ctx),
         new FormattingEvaluatorModule(ctx),
         new ContentEvaluatorModule(ctx),
+        new ReviewIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -290,6 +302,7 @@ describe("Permit Generation Module Tests", () => {
         new DataPurgeModule(ctx),
         new FormattingEvaluatorModule(ctx),
         new ContentEvaluatorModule(ctx),
+        new ReviewIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
