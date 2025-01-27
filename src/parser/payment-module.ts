@@ -26,13 +26,15 @@ import { Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
 import {
-  DisperseAppWrapper,
   Erc20Wrapper,
   getContract,
   getEvmWallet,
-  DISPERSE_APP_CONTRACT_ADDRESS,
+  Permit2Wrapper,
+  BatchTransferPermit,
+  PERMIT2_ABI,
 } from "../helpers/web3";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
+import { permit2Address } from "@uniswap/permit2-sdk";
 
 interface Payload {
   evmNetworkId: number;
@@ -45,7 +47,7 @@ interface Payload {
 interface Beneficiaries {
   usernames: string[];
   addresses: string[];
-  values: BigNumber[];
+  amounts: BigNumber[];
 }
 
 export class PaymentModule extends BaseModule {
@@ -121,10 +123,13 @@ export class PaymentModule extends BaseModule {
     result = await this._applyFees(result, payload.erc20RewardToken);
 
     if (this._autoTransferMode) {
+      // Generate the batch transfer nonce
+      const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
       // Check if funding wallet has enough reward token and gas to transfer rewards directly
-      const [canTransferDirectly, disperseAppWrapper, fundingWallet, beneficiaries] = await this._canTransferDirectly(
+      const [canTransferDirectly, permit2Wrapper, fundingWallet, beneficiaries] = await this._canTransferDirectly(
         privateKeyParsed.privateKey,
-        result
+        result,
+        nonce
       );
       if (canTransferDirectly) {
         this.context.logger.info(
@@ -132,10 +137,11 @@ export class PaymentModule extends BaseModule {
         );
         try {
           const tx = await this._transferReward(
-            disperseAppWrapper,
+            permit2Wrapper,
             fundingWallet,
             beneficiaries.addresses,
-            beneficiaries.values
+            beneficiaries.amounts,
+            nonce
           );
           beneficiaries.usernames.forEach((username) => {
             result[username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
@@ -221,8 +227,9 @@ export class PaymentModule extends BaseModule {
    */
   async _canTransferDirectly(
     privateKey: string,
-    result: Result
-  ): Promise<[true, DisperseAppWrapper, ethers.Wallet, Beneficiaries] | [false, null, null, null]> {
+    result: Result,
+    nonce: string
+  ): Promise<[true, Permit2Wrapper, ethers.Wallet, Beneficiaries] | [false, null, null, null]> {
     try {
       const erc20Contract = await getContract(this._evmNetworkId, this._erc20RewardToken);
       const fundingWallet = await getEvmWallet(privateKey, erc20Contract.provider);
@@ -239,16 +246,24 @@ export class PaymentModule extends BaseModule {
         return [false, null, null, null];
       }
 
-      const disperseAppContract = await getContract(this._evmNetworkId, DISPERSE_APP_CONTRACT_ADDRESS);
-      const disperseAppWrapper = new DisperseAppWrapper(disperseAppContract);
+      const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
+      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
 
-      const totalFee = await disperseAppWrapper.estimateDisperseTokenGas(
-        fundingWallet.address,
-        this._erc20RewardToken,
-        beneficiaries.addresses,
-        beneficiaries.values
-      );
-      const totalReward = beneficiaries.values.reduce(
+      let batchTransferPermit: BatchTransferPermit;
+      try {
+        batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
+          fundingWallet,
+          this._erc20RewardToken,
+          beneficiaries.addresses,
+          beneficiaries.amounts,
+          BigNumber.from(nonce)
+        );
+      } catch (e) {
+        throw new Error(this.context.logger.error("Failed to generate batch transfer permit", { e }).logMessage.raw);
+      }
+
+      const totalFee = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
+      const totalReward = beneficiaries.amounts.reduce(
         (accumulator, current) => accumulator.add(current),
         BigNumber.from(0)
       );
@@ -276,7 +291,7 @@ export class PaymentModule extends BaseModule {
         `[PaymentModule] The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
         gasAndRewardInfo
       );
-      return [true, disperseAppWrapper, fundingWallet, beneficiaries];
+      return [true, permit2Wrapper, fundingWallet, beneficiaries];
     } catch (e) {
       this.context.logger.error(`[PaymentModule] Failed to fetch the funding wallet data: ${e}`, { e });
       return [false, null, null, null];
@@ -284,7 +299,7 @@ export class PaymentModule extends BaseModule {
   }
 
   async _getBeneficiaries(result: Result, decimals: number): Promise<Beneficiaries | null> {
-    const beneficiaries: Beneficiaries = { usernames: [], addresses: [], values: [] };
+    const beneficiaries: Beneficiaries = { usernames: [], addresses: [], amounts: [] };
     for (const [username, reward] of Object.entries(result)) {
       // Obtain the beneficiary wallet address from the github user name
       const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
@@ -300,34 +315,43 @@ export class PaymentModule extends BaseModule {
       }
       beneficiaries.usernames.push(username);
       beneficiaries.addresses.push(walletData.address);
-      beneficiaries.values.push(ethers.utils.parseUnits(reward.total.toString(), decimals));
+      beneficiaries.amounts.push(ethers.utils.parseUnits(reward.total.toString(), decimals));
     }
     return beneficiaries;
   }
 
   async _transferReward(
-    disperseAppWrapper: DisperseAppWrapper,
+    permit2Wrapper: Permit2Wrapper,
     fundingWallet: ethers.Wallet,
     beneficiaryWalletAddresses: string[],
-    beneficiaryRewardValues: BigNumber[],
+    beneficiaryRewardAmounts: BigNumber[],
+    nonce: string,
     maxRetries = 5,
     initialDelayMs = 500
   ): Promise<ethers.providers.TransactionResponse> {
     let attempt = 0;
     let delay = initialDelayMs;
+    let batchTransferPermit: BatchTransferPermit;
+    try {
+      batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
+        fundingWallet,
+        this._erc20RewardToken,
+        beneficiaryWalletAddresses,
+        beneficiaryRewardAmounts,
+        BigNumber.from(nonce)
+      );
+    } catch (e) {
+      throw new Error(this.context.logger.error("Failed to generate batch transfer permit", { e }).logMessage.raw);
+    }
 
+    // Executing permitTransferFrom immediately to process the reward transfers.
     while (attempt < maxRetries) {
       try {
         this.context.logger.info(`Attempt ${attempt + 1}: Sending transaction...`);
 
-        // Send the transfer transaction
-        const tx = await disperseAppWrapper.sendDisperseTokenTransaction(
-          fundingWallet,
-          this._erc20RewardToken,
-          beneficiaryWalletAddresses,
-          beneficiaryRewardValues
-        );
-        this.context.logger.info(`Transaction hash: ${tx.hash}`);
+        // Perform the Permit2 batch transfer transaction.
+        const tx = await permit2Wrapper.sendPermitTransferFrom(fundingWallet, batchTransferPermit);
+        this.context.logger.info(`Executed permitTransferFrom contract call, transaction hash: ${tx.hash}`);
 
         // Wait for the transaction to be confirmed
         const receipt = await tx.wait();
@@ -343,10 +367,8 @@ export class PaymentModule extends BaseModule {
             throw new Error(this.context.logger.error("Error: Insufficient gas or balance detected").logMessage.raw);
           }
         }
-
         attempt++;
         this.context.logger.error(`Attempt ${attempt} failed: ${e}`, { e });
-
         // Exponential backoff delay
         this.context.logger.info(`Retrying in ${delay}ms...`);
         await new Promise((resolve) => setTimeout(resolve, delay));

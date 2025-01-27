@@ -14,6 +14,7 @@ import permitGenerationResults from "./__mocks__/results/permit-generation-resul
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
+import { PERMIT2_ABI } from "../src/helpers/web3";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -24,14 +25,15 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
     getSymbol = jest.fn().mockReturnValue("WXDAI");
     getDecimals = jest.fn().mockReturnValue(18);
   }
-  class MockDisperseAppWrapper {
-    sendDisperseTokenTransaction = jest.fn().mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({}) });
-    estimateDisperseTokenGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
+  class MockPermit2Wrapper {
+    generateBatchTransferPermit = jest.fn();
+    sendPermitTransferFrom = jest.fn().mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({}) });
+    estimatePermitTransferFromGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
   }
   return {
+    PERMIT2_ABI: PERMIT2_ABI,
     Erc20Wrapper: MockErc20Wrapper,
-    DISPERSE_APP_CONTRACT_ADDRESS: "0xDisperseApp",
-    DisperseAppWrapper: MockDisperseAppWrapper,
+    Permit2Wrapper: MockPermit2Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
     getEvmWallet: jest.fn(() => ({
       address: "0xAddress",

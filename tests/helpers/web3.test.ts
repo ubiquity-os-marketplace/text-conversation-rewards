@@ -1,4 +1,4 @@
-import { Erc20Wrapper, getEvmWallet, getContract, ERC20_ABI, DisperseAppWrapper } from "../../src/helpers/web3";
+import { Erc20Wrapper, getEvmWallet, getContract, ERC20_ABI, Permit2Wrapper } from "../../src/helpers/web3";
 import { Interface, parseUnits } from "ethers/lib/utils";
 import { BigNumber, ethers, utils } from "ethers";
 import { describe, expect, it, jest } from "@jest/globals";
@@ -8,27 +8,34 @@ const mockErc20Contract = {
   symbol: jest.fn().mockReturnValue("WXDAI"),
   decimals: jest.fn().mockReturnValue(18),
   transfer: jest.fn().mockReturnValue("0xTransactionData"),
-  estimateGas: {
-    transfer: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
-  },
 };
 
-const mockDisperseAppContract = {
-  disperseToken: jest.fn().mockReturnValue("0xTransactionData"),
+const mockExecutePermitTransferFrom = jest.fn().mockReturnValue({ hash: "0xTransactionHash" });
+const mockPermit2Contract = {
   estimateGas: {
-    disperToken: jest.fn().mockReturnValue(parseUnits("0.02", 18)),
+    permitTransferFrom: jest.fn().mockReturnValue(parseUnits("0.02", 18)),
   },
+  provider: {
+    getNetwork() {
+      return 1;
+    },
+  },
+  connect: jest.fn().mockReturnValue({ executePermitTransferFrom: mockExecutePermitTransferFrom }),
 };
 
 const mockWallet = {
-  sendTransaction: jest.fn().mockReturnValue({ hash: "0xTransactionHash" }),
+  address: "0xAddress",
+  _signTypedData: jest.fn().mockReturnValue("signature"),
 };
 
 const erc20Wrapper = new Erc20Wrapper(mockErc20Contract as unknown as ethers.Contract);
 
-const disperseAppWrapper = new DisperseAppWrapper(mockDisperseAppContract as unknown as ethers.Contract);
+const permit2Wrapper = new Permit2Wrapper(mockPermit2Contract as unknown as ethers.Contract);
 
 describe("web3.ts", () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
+  });
   it("Should return correct ERC20 token contract", async () => {
     const networkId = 100; // gnosis
     const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
@@ -60,23 +67,37 @@ describe("web3.ts", () => {
   }, 120000);
 
   it("Should return a valid tx", async () => {
-    const tx = await disperseAppWrapper.sendDisperseTokenTransaction(
+    const permitBatchTransferFromData = await permit2Wrapper.generateBatchTransferPermit(
       mockWallet as unknown as ethers.Wallet,
       "0xTokenAddress",
       ["0xRecipient1", "0xRecipient2"],
-      [utils.parseUnits("100", 18), utils.parseUnits("200", 18)]
+      [utils.parseUnits("100", 18), utils.parseUnits("200", 18)],
+      BigNumber.from("0")
     );
-    expect(mockDisperseAppContract.disperseToken).toHaveBeenCalledWith("0xRecipient", parseUnits("1000", 18));
-    expect(mockWallet.sendTransaction).toHaveBeenCalledWith("0xTransactionData");
+    const tx = await permit2Wrapper.sendPermitTransferFrom(
+      mockWallet as unknown as ethers.Wallet,
+      permitBatchTransferFromData
+    );
+    expect(mockExecutePermitTransferFrom).toHaveBeenCalledWith(
+      permitBatchTransferFromData.permitBatchTransferFromData,
+      permitBatchTransferFromData.transfers,
+      "0xAddress",
+      permitBatchTransferFromData.signature
+    );
     expect(tx.hash).toEqual("0xTransactionHash");
   }, 120000);
 
   it("Should estimates transfer fee correctly", async () => {
-    const estimate = await disperseAppWrapper.estimateDisperseTokenGas(
-      "0xfrom",
+    const permitBatchTransferFromData = await permit2Wrapper.generateBatchTransferPermit(
+      mockWallet as unknown as ethers.Wallet,
       "0xTokenAddress",
       ["0xRecipient1", "0xRecipient2"],
-      [utils.parseUnits("100", 18), utils.parseUnits("200", 18)]
+      [utils.parseUnits("100", 18), utils.parseUnits("200", 18)],
+      BigNumber.from("0")
+    );
+    const estimate = await permit2Wrapper.estimatePermitTransferFromGas(
+      mockWallet as unknown as ethers.Wallet,
+      permitBatchTransferFromData
     );
     expect(estimate).toEqual(parseUnits("0.02", 18));
   }, 120000);
