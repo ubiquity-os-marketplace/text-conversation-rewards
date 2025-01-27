@@ -352,9 +352,11 @@ export class ContentEvaluatorModule extends BaseModule {
         {
           maxRetries: this._configuration?.openAi.maxRetries ?? 3,
           onError: async (error) => {
-            await postComment(this.context, this.context.logger.info("Results are being retried", { err: error }), {
-              updateComment: true,
-            });
+            if (this.context.config.incentives.githubComment?.post) {
+              await postComment(this.context, this.context.logger.ok("Results are being retried", { err: error }), {
+                updateComment: true,
+              });
+            }
           },
           isErrorRetryable: (error) => {
             if (error instanceof OpenAI.APIError && error.status) {
