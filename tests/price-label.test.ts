@@ -51,6 +51,12 @@ describe("Price tests", () => {
           html_url: "https://github.com/ubiquity-os/comment-incentives/issues/22",
           number: 1,
           state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+          ],
         },
         repository: {
           name: "conversation-rewards",

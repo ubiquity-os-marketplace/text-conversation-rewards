@@ -37,6 +37,16 @@ describe("GithubCommentModule Fee Tests", () => {
           html_url: issueUrl,
           number: 69,
           state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+            {
+              id: 2,
+              login: "0x4007",
+            },
+          ],
         },
         repository: {
           name: "conversation-rewards",

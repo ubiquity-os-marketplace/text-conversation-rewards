@@ -108,6 +108,16 @@ describe("Payload truncate tests", () => {
           html_url: issueUrl,
           number: 1,
           state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+            {
+              id: 2,
+              login: "0x4007",
+            },
+          ],
         },
         repository: {
           name: "conversation-rewards",
@@ -138,6 +148,18 @@ describe("Payload truncate tests", () => {
                         id: "PR_kwDOKzVPS85zXUok",
                         title: "fix: add state to sorting manager for bottom and top 2",
                         number: 71,
+                        url: "https://github.com/ubiquity/work.ubq.fi/pull/71",
+                        state: "MERGED",
+                        author: {
+                          login: "0x4007",
+                          id: 4975670,
+                        },
+                        repository: {
+                          owner: {
+                            login: "ubiquity",
+                          },
+                          name: "work.ubq.fi",
+                        },
                       },
                     },
                   ],
