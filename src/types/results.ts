@@ -16,6 +16,12 @@ export interface Result {
       reviewBaseReward?: { reward: number };
       url: string;
     }[];
+    events?: {
+      [eventName: string]: {
+        count: number;
+        reward: number;
+      };
+    };
     evaluationCommentHtml?: string;
   };
 }
