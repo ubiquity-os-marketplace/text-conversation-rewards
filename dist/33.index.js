@@ -146,5 +146,3 @@ async function fileFromPath(path, filenameOrOptions, options) {
 /***/ })
 
 };
-
-//# sourceMappingURL=33.index.js.map
