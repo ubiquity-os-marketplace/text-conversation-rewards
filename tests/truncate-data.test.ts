@@ -2,6 +2,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { GitHubIssueComment } from "../src/github-types";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
@@ -165,5 +166,40 @@ describe("Payload truncate tests", () => {
       },
     };
     expect(result).toEqual(expectedResult);
+  });
+
+  it("Should split the node retrieval into chunks to avoid crashing GraphQL API", async () => {
+    const { getMinimizedCommentStatus } = await import("../src/helpers/get-comment-details");
+    const gql = jest.fn();
+    const context = {
+      octokit: {
+        graphql: gql,
+      },
+    } as unknown as ContextPlugin;
+    let arrayLength = 76;
+    let comments = Array.from({ length: arrayLength }, (v, k) => ({ node_id: k })) as unknown as GitHubIssueComment[];
+
+    await getMinimizedCommentStatus(context, comments);
+    expect(gql).toHaveBeenCalledTimes(1);
+    expect(gql).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ node_ids: Array.from({ length: arrayLength }, (v, k) => k) })
+    );
+    gql.mockReset();
+
+    arrayLength = 150;
+    comments = Array.from({ length: arrayLength }, (v, k) => ({ node_id: k })) as unknown as GitHubIssueComment[];
+    await getMinimizedCommentStatus(context, comments);
+    expect(gql).toHaveBeenCalledTimes(2);
+    expect(gql).toHaveBeenNthCalledWith(
+      1,
+      expect.anything(),
+      expect.objectContaining({ node_ids: Array.from({ length: 100 }, (v, k) => k) })
+    );
+    expect(gql).toHaveBeenNthCalledWith(
+      2,
+      expect.anything(),
+      expect.objectContaining({ node_ids: Array.from({ length: 50 }, (v, k) => k + 100) })
+    );
   });
 });
