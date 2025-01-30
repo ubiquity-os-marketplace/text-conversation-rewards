@@ -38,7 +38,9 @@
     "laeiouy",
     "Flesch",
     "Kincaid",
-    "flesch"
+    "flesch",
+    "keccak",
+    "Numberish"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

@@ -34,7 +34,8 @@ import {
   PERMIT2_ABI,
 } from "../helpers/web3";
 import { BigNumber, ethers, utils } from "ethers";
-import { permit2Address } from "@uniswap/permit2-sdk";
+import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
+import { EnvConfig } from "../types/env-type";
 
 interface Payload {
   evmNetworkId: number;
@@ -136,26 +137,32 @@ export class PaymentModule extends BaseModule {
           "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
         );
         try {
-          const tx = await this._transferReward(
+          const [tx, permits] = await this._transferReward(
             permit2Wrapper,
             fundingWallet,
             beneficiaries.addresses,
             beneficiaries.amounts,
             nonce
           );
-          beneficiaries.usernames.forEach((username) => {
-            result[username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
-          });
+          await Promise.all(
+            beneficiaries.usernames.map(async (username) => {
+              result[username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
+              await this._savePermitsToDatabase(
+                result[username].userId,
+                { issueUrl: payload.issueUrl, issueId },
+                permits
+              );
+            })
+          );
+          // remove treasury item from final result in order not to display permit fee in GitHub comments
+          this._removeTreasuryItem(result, env);
+          return result;
         } catch (e) {
-          this.context.logger.error(`[PaymentModule] Failed to transfer rewards through Disperse.app`, { e });
+          this.context.logger.error(`[PaymentModule] Failed to auto transfer rewards via batch permit transfer`, { e });
         }
-        return result;
       }
-      this.context.logger.info(
-        "[PaymentModule] AutoTransformMode is enabled, but the funding wallet lacks sufficient funds. Skipping."
-      );
     }
-
+    this.context.logger.info("[PaymentModule] Transitioning to permit generation.");
     for (const [username, reward] of Object.entries(result)) {
       this.context.logger.debug(`Updating result for user ${username}`);
       const config: Context["config"] = {
@@ -195,12 +202,18 @@ export class PaymentModule extends BaseModule {
         result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
         await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
         // remove treasury item from final result in order not to display permit fee in GitHub comments
-        if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
+        this._removeTreasuryItem(result, env);
       } catch (e) {
         this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${username}`, { e });
       }
     }
     return result;
+  }
+
+  private _removeTreasuryItem(result: Result, env: EnvConfig) {
+    if (env.PERMIT_TREASURY_GITHUB_USERNAME) {
+      delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
+    }
   }
 
   async _getNetworkExplorer(networkId: number): Promise<string> {
@@ -328,7 +341,7 @@ export class PaymentModule extends BaseModule {
     nonce: string,
     maxRetries = 5,
     initialDelayMs = 500
-  ): Promise<ethers.providers.TransactionResponse> {
+  ): Promise<[ethers.providers.TransactionResponse, PermitReward[]]> {
     let attempt = 0;
     let delay = initialDelayMs;
     let batchTransferPermit: BatchTransferPermit;
@@ -356,14 +369,32 @@ export class PaymentModule extends BaseModule {
         // Wait for the transaction to be confirmed
         const receipt = await tx.wait();
         this.context.logger.info(`Transaction confirmed in block: ${receipt.blockNumber}`);
-        return tx;
+        const permits = beneficiaryWalletAddresses.map(
+          (address, idx) =>
+            ({
+              tokenType: TokenType.ERC20,
+              tokenAddress: this._erc20RewardToken,
+              beneficiary: address,
+              nonce: nonce,
+              deadline: MaxUint256,
+              owner: fundingWallet.address,
+              signature: batchTransferPermit.signature,
+              networkId: this._evmNetworkId,
+              amount: beneficiaryRewardAmounts[idx],
+            }) as PermitReward
+        );
+        return [tx, permits];
       } catch (e) {
-        if (typeof e === "object" && e !== null) {
+        if (e instanceof Object) {
           if ("code" in e && e.code === ethers.errors.INSUFFICIENT_FUNDS) {
             throw new Error(
               this.context.logger.error(`Error: Insufficient funds to complete the transaction`, { e }).logMessage.raw
             );
-          } else if ("message" in e && typeof e.message === "string" && e.message.includes("INSUFFICIENT_FUNDS")) {
+          } else if (
+            "message" in e &&
+            typeof e.message === "string" &&
+            e.message.includes(ethers.errors.INSUFFICIENT_FUNDS)
+          ) {
             throw new Error(this.context.logger.error("Error: Insufficient gas or balance detected").logMessage.raw);
           }
         }
