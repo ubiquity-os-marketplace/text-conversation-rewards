@@ -1,9 +1,11 @@
+import { RestEndpointMethodTypes } from "@octokit/rest";
+import { Value } from "@sinclair/typebox/value";
+import { eventIncentivesConfigurationType } from "../configuration/event-incentives-config";
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result } from "../types/results";
-import { RestEndpointMethodTypes } from "@octokit/rest";
 
 export class EventIncentivesModule extends BaseModule {
   constructor(context: ContextPlugin) {
@@ -11,6 +13,10 @@ export class EventIncentivesModule extends BaseModule {
   }
 
   get enabled(): boolean {
+    if (!Value.Check(eventIncentivesConfigurationType, this.context.config.incentives.eventIncentives)) {
+      this.context.logger.error("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
+      return false;
+    }
     return true;
   }
 
@@ -27,7 +33,6 @@ export class EventIncentivesModule extends BaseModule {
       issue_number: issue_number,
       per_page: 100,
     });
-    const issueEvents = data.events;
     const issueReactions = await octokit.paginate(octokit.rest.reactions.listForIssue, {
       owner: owner,
       repo: repo,
@@ -40,10 +45,13 @@ export class EventIncentivesModule extends BaseModule {
       result[username].events = {};
     }
 
-    this.processEvents("issue", issueEvents, issueTimelineEvents, result);
+    this.processEvents("issue", issueTimelineEvents, result);
     this.processReactions(data.self.user.login, issueReactions, result);
 
-    for (const comment of issueComments.filter((comment) => comment.user?.type === "User")) {
+    const filteredComments = issueComments.filter(
+      (comment) => comment.user?.type === "User" && (comment.reactions?.total_count ?? 0) > 0
+    );
+    for (const comment of filteredComments) {
       const issueCommentReactions = await octokit.paginate(octokit.rest.reactions.listForIssueComment, {
         owner: owner,
         repo: repo,
@@ -63,38 +71,37 @@ export class EventIncentivesModule extends BaseModule {
         issue_number: pull.self.number,
         per_page: 100,
       });
-      const pullEvents = await octokit.paginate(octokit.rest.issues.listEvents, {
-        owner: pull.self.base.repo.owner.login,
-        repo: pull.self.base.repo.name,
-        issue_number: pull.self.number,
-        per_page: 100,
-      });
-      this.processEvents("pull_request", pullEvents, pullTimelineEvents, result);
+      this.processEvents("pull_request", pullTimelineEvents, result);
 
-      if (pull.comments) {
-        for (const comment of pull.comments.filter((comment) => comment.user?.type === "User")) {
-          const pullCommentReactions = await octokit.paginate(octokit.rest.reactions.listForIssueComment, {
-            owner: pull.self.base.repo.owner.login,
-            repo: pull.self.base.repo.name,
-            comment_id: comment.id,
-            per_page: 100,
-          });
-          this.processReactions(comment.user?.login, pullCommentReactions, result);
-        }
+      const filteredPrComments =
+        pull.comments?.filter(
+          (comment) => comment.user?.type === "User" && (comment.reactions?.total_count ?? 0) > 0
+        ) ?? [];
+
+      for (const comment of filteredPrComments) {
+        const pullCommentReactions = await octokit.paginate(octokit.rest.reactions.listForIssueComment, {
+          owner: pull.self.base.repo.owner.login,
+          repo: pull.self.base.repo.name,
+          comment_id: comment.id,
+          per_page: 100,
+        });
+        this.processReactions(comment.user?.login, pullCommentReactions, result);
       }
 
-      if (pull.reviewComments) {
-        for (const reviewComment of pull.reviewComments.filter((comment) => comment.user.type === "User")) {
-          this.increaseEventCount(result, reviewComment.user.login, "pull_request.review_comment");
-          const reviewReactions = await octokit.paginate(octokit.rest.reactions.listForPullRequestReviewComment, {
-            owner: pull.self.base.repo.owner.login,
-            repo: pull.self.base.repo.name,
-            pull_number: pull.self.number,
-            comment_id: reviewComment.id,
-            per_page: 100,
-          });
-          this.processReactions(reviewComment.user.login, reviewReactions, result);
+      const filteredReviewComments = pull.reviewComments?.filter((comment) => comment.user.type === "User") ?? [];
+      for (const reviewComment of filteredReviewComments) {
+        this.increaseEventCount(result, reviewComment.user.login, "pull_request.review_comment");
+        if ((reviewComment.reactions?.total_count ?? 0) === 0) {
+          continue;
         }
+        const reviewReactions = await octokit.paginate(octokit.rest.reactions.listForPullRequestReviewComment, {
+          owner: pull.self.base.repo.owner.login,
+          repo: pull.self.base.repo.name,
+          pull_number: pull.self.number,
+          comment_id: reviewComment.id,
+          per_page: 100,
+        });
+        this.processReactions(reviewComment.user.login, reviewReactions, result);
       }
     }
 
@@ -103,24 +110,11 @@ export class EventIncentivesModule extends BaseModule {
 
   processEvents(
     prefix: "pull_request" | "issue",
-    events: RestEndpointMethodTypes["issues"]["listEvents"]["response"]["data"],
     timelineEvents: RestEndpointMethodTypes["issues"]["listEventsForTimeline"]["response"]["data"],
     result: Result
   ) {
     timelineEvents.forEach((ev) => {
       if ("actor" in ev && ev.actor && ev.actor.type !== "Bot") {
-        this.increaseEventCount(result, ev.actor.login, `${prefix}.${ev.event}`);
-      }
-    });
-    events.forEach((ev) => {
-      if (
-        ev.actor &&
-        ev.actor.type !== "Bot" &&
-        !timelineEvents
-          .filter((e) => "id" in e)
-          .map((e) => e.id)
-          .includes(ev.id)
-      ) {
         this.increaseEventCount(result, ev.actor.login, `${prefix}.${ev.event}`);
       }
     });

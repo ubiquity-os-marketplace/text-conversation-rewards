@@ -316,6 +316,7 @@
       ],
       "wordCountExponent": 0.85
     },
+    "eventIncentives": {},
     "githubComment": {
       "debug": true,
       "post": false
