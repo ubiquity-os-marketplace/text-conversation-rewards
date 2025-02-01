@@ -3,12 +3,7 @@ import { ethers, Contract, Wallet, BigNumber, ContractInterface, BigNumberish } 
 import { PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer, MaxUint256 } from "@uniswap/permit2-sdk";
 
 export interface BatchTransferPermit {
-  permitBatchTransferFromData: {
-    permitted: { token: string; amount: BigNumberish }[];
-    spender: string;
-    nonce: BigNumberish;
-    deadline: BigNumberish;
-  };
+  permitBatchTransferFromData: PermitBatchTransferFrom;
   signature: string;
   transfers: { to: string; requestedAmount: BigNumberish }[];
 }
