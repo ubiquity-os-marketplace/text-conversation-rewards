@@ -11,6 +11,7 @@ import { Interface } from "ethers/lib/utils";
 import { BigNumber, ethers, utils } from "ethers";
 import { describe, expect, it, jest } from "@jest/globals";
 import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
+import { Beneficiary } from "../../src/parser/payment-module";
 
 const mockErc20Contract = {
   balanceOf: jest.fn().mockReturnValue(BigNumber.from("1000")),
@@ -30,7 +31,7 @@ describe("web3.ts", () => {
   it("Should return correct ERC20 token contract", async () => {
     const networkId = 100; // gnosis
     const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
-    const contract = await getContract(networkId, tokenAddress);
+    const contract = await getContract(networkId, tokenAddress, ERC20_ABI);
     expect(contract.address).toEqual(tokenAddress);
     expect(contract.interface).toEqual(new Interface(ERC20_ABI));
   }, 120000);
@@ -63,8 +64,18 @@ describe("web3.ts", () => {
     const permitBatchTransferFromData = await permit2Wrapper.generateBatchTransferPermit(
       evmWallet,
       tokenAddress,
-      ["0x1", "0x2"],
-      [utils.parseUnits("100", 18), utils.parseUnits("200", 18)],
+      [
+        {
+          username: "test1",
+          address: "0x1",
+          amount: utils.parseUnits("100", 18),
+        },
+        {
+          username: "test2",
+          address: "0x2",
+          amount: utils.parseUnits("200", 18),
+        },
+      ] as Beneficiary[],
       BigNumber.from("0")
     );
     expect(permitBatchTransferFromData).toEqual({
@@ -86,7 +97,7 @@ describe("web3.ts", () => {
     } as BatchTransferPermit);
   }, 120000);
 
-  it("should estimatePermitTransferFromGas() throws an UNPREDICTABLE_GAS_LIMIT error when executed with a random wallet", async () => {
+  it("should estimatePermitTransferFromGas() reverts with an TRANSFER_FROM_FAILED error when executed with a random wallet", async () => {
     const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"; // WXDAI
     const evmWallet = await getEvmWallet(
       "100958e64966448354216e91d4d4b9418c3fa0cb0a21b935535ced1df8145a0e",
@@ -95,19 +106,20 @@ describe("web3.ts", () => {
     const permitBatchTransferFromData = await permit2Wrapper.generateBatchTransferPermit(
       evmWallet,
       tokenAddress,
-      [evmWallet.address],
-      [utils.parseUnits("100", 18)],
+      [
+        {
+          username: "test",
+          address: evmWallet.address,
+          amount: utils.parseUnits("100", 18),
+        },
+      ] as Beneficiary[],
       BigNumber.from("0")
     );
-    try {
-      await permit2Wrapper.estimatePermitTransferFromGas(evmWallet, permitBatchTransferFromData);
-    } catch (e) {
-      console.log(e);
-      if (e instanceof Object && "code" in e) {
-        expect(e.code).toBe(ethers.errors.UNPREDICTABLE_GAS_LIMIT);
-      } else {
-        fail(new Error("Expected an error with the code UNPREDICTABLE_GAS_LIMIT"));
-      }
-    }
+
+    await expect(
+      permit2Wrapper.estimatePermitTransferFromGas(evmWallet, permitBatchTransferFromData)
+    ).rejects.toMatchObject({
+      message: expect.stringMatching(/.*TRANSFER_FROM_FAILED/),
+    });
   }, 120000);
 });

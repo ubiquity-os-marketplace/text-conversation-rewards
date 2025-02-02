@@ -10,7 +10,7 @@ import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-import { PERMIT2_ABI } from "../../src/helpers/web3";
+import { ERC20_ABI, PERMIT2_ABI } from "../../src/helpers/web3";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -74,6 +74,7 @@ jest.unstable_mockModule("../../src/helpers/web3", () => {
   }
   return {
     PERMIT2_ABI: PERMIT2_ABI,
+    ERC20_ABI: ERC20_ABI,
     Erc20Wrapper: MockErc20Wrapper,
     Permit2Wrapper: MockPermit2Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
@@ -273,8 +274,8 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal(), 18);
       expect(beneficiaries).not.toBeNull();
-      const totalPayable = beneficiaries?.amounts.reduce(
-        (accumulator, current) => accumulator.add(current),
+      const totalPayable = beneficiaries?.reduce(
+        (accumulator, current) => accumulator.add(current.amount),
         BigNumber.from(0)
       );
       expect(totalPayable).toEqual(parseUnits("111.11", 18));
@@ -296,13 +297,15 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
-      const [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries] =
-        await paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0");
+      const [canTransferDirectly, fundingWallet, beneficiaries] = await paymentModule._canTransferDirectly(
+        fundingWalletPrivateKey,
+        getResultOriginal(),
+        "0"
+      );
       expect(canTransferDirectly).toEqual(true);
-      expect(erc20Wrapper).not.toBeNull();
       expect(fundingWallet).not.toBeNull();
       if (beneficiaries) {
-        expect(beneficiaries.usernames.length).toEqual(2);
+        expect(beneficiaries.length).toEqual(2);
       } else {
         expect(beneficiaries).not.toBeNull();
       }

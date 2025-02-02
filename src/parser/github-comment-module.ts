@@ -12,7 +12,7 @@ import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
-import { getContract, Erc20Wrapper } from "../helpers/web3";
+import { getContract, Erc20Wrapper, ERC20_ABI } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
@@ -111,7 +111,7 @@ export class GithubCommentModule extends BaseModule {
     }
     if (this._configuration?.post) {
       try {
-        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
+        if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
           await postComment(this.context, this.context.logger.info(body), { raw: true, updateComment: true });
         } else {
           const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
@@ -322,7 +322,11 @@ export class GithubCommentModule extends BaseModule {
       },
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
-    const tokenContract = await getContract(this.context.config.evmNetworkId, this.context.config.erc20RewardToken);
+    const tokenContract = await getContract(
+      this.context.config.evmNetworkId,
+      this.context.config.erc20RewardToken,
+      ERC20_ABI
+    );
     const tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
 
     const rewardsSum =
@@ -336,7 +340,7 @@ export class GithubCommentModule extends BaseModule {
         <b>
           <h3>
             &nbsp;
-            <a href="${result.permitUrl}" target="_blank" rel="noopener">
+            <a href="${result.permitUrl ?? result.explorerUrl}" target="_blank" rel="noopener">
               [ ${result.total} ${tokenSymbol} ]
             </a>
             &nbsp;

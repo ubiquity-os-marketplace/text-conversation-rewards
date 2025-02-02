@@ -14,7 +14,7 @@ import permitGenerationResults from "./__mocks__/results/permit-generation-resul
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-import { PERMIT2_ABI } from "../src/helpers/web3";
+import { ERC20_ABI, PERMIT2_ABI } from "../src/helpers/web3";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -26,12 +26,17 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
     getDecimals = jest.fn().mockReturnValue(18);
   }
   class MockPermit2Wrapper {
-    generateBatchTransferPermit = jest.fn();
-    sendPermitTransferFrom = jest.fn().mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({}) });
+    generateBatchTransferPermit = jest.fn().mockReturnValue({
+      signature: "signature",
+    });
+    sendPermitTransferFrom = jest
+      .fn()
+      .mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({ blockNumber: 1 }) });
     estimatePermitTransferFromGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
   }
   return {
     PERMIT2_ABI: PERMIT2_ABI,
+    ERC20_ABI: ERC20_ABI,
     Erc20Wrapper: MockErc20Wrapper,
     Permit2Wrapper: MockPermit2Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
@@ -243,7 +248,7 @@ afterAll(() => {
 });
 
 // Run the test twice to cover both auto-transfer and permit-generation modes.
-const autoTransferModeVector = [false];
+const autoTransferModeVector = [false, true];
 interface UserData {
   permitUrl?: string;
   [key: string]: unknown;

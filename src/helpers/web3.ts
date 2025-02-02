@@ -1,6 +1,8 @@
 import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/rpc-handler";
 import { ethers, Contract, Wallet, BigNumber, ContractInterface, BigNumberish } from "ethers";
 import { PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer, MaxUint256 } from "@uniswap/permit2-sdk";
+import { Beneficiary } from "../parser/payment-module";
+import { permit2Abi } from "../abi/permit2";
 
 export interface BatchTransferPermit {
   permitBatchTransferFromData: PermitBatchTransferFrom;
@@ -16,9 +18,7 @@ export const ERC20_ABI = [
 ];
 
 // Required PERMIT2 ABI functions
-export const PERMIT2_ABI = [
-  "function permitTransferFrom(((address,uint256)[],uint256,uint256),(address,uint256)[],address,bytes) external",
-];
+export const PERMIT2_ABI = permit2Abi;
 
 /**
  * Returns EVM token contract
@@ -31,7 +31,7 @@ export const PERMIT2_ABI = [
 export async function getContract(
   networkId: number,
   contractAddress: string,
-  abi: ContractInterface = ERC20_ABI,
+  abi: ContractInterface,
   retryCount: number = 5,
   retryDelay: number = 500
 ) {
@@ -45,6 +45,7 @@ export async function getContract(
       logTier: null,
       logger: null,
       strictLogs: false,
+      disabled: retryCount === 0,
     },
     runtimeRpcs: null,
     networkId: String(networkId) as NetworkId,
@@ -54,7 +55,6 @@ export async function getContract(
   };
   const handler = new RPCHandler(config);
   const provider = await handler.getFastestRpcProvider();
-
   return new Contract(contractAddress, abi, provider);
 }
 
@@ -114,20 +114,18 @@ export class Permit2Wrapper {
    * Returns Batch transfer permit
    * @param evmWallet Wallet to transfer ERC20 token from
    * @param tokenAddress ERC20 token address
-   * @param recipients Recipient addresses
-   * @param amounts Respective amounts of the ERC20 tokens to be transferred to the recipients
+   * @param beneficiaries List of Beneficiary
    * @param nonce The nonce used for Permit2 SignatureTransform
    * @returns Batch transfer permit
    */
   async generateBatchTransferPermit(
     evmWallet: Wallet,
     tokenAddress: string,
-    recipients: string[],
-    amounts: BigNumber[],
+    beneficiaries: Beneficiary[],
     nonce: BigNumber
   ): Promise<BatchTransferPermit> {
     const permitBatchTransferFromData: PermitBatchTransferFrom = {
-      permitted: amounts.map((amount) => ({ token: tokenAddress, amount })),
+      permitted: beneficiaries.map((beneficiary) => ({ token: tokenAddress, amount: beneficiary.amount })),
       spender: evmWallet.address,
       nonce,
       deadline: MaxUint256,
@@ -139,9 +137,9 @@ export class Permit2Wrapper {
       _network.chainId
     );
     const signature = await evmWallet._signTypedData(domain, types, values);
-    const transfers = recipients.map((recipient, idx) => ({
-      to: recipient,
-      requestedAmount: amounts[idx],
+    const transfers = beneficiaries.map((beneficiary) => ({
+      to: beneficiary.address,
+      requestedAmount: beneficiary.amount,
     }));
     return { permitBatchTransferFromData, signature, transfers };
   }
@@ -154,12 +152,12 @@ export class Permit2Wrapper {
    */
   async estimatePermitTransferFromGas(evmWallet: Wallet, batchTransferPermit: BatchTransferPermit): Promise<BigNumber> {
     return await this._permit2.connect(evmWallet).estimateGas.permitTransferFrom(
-      [
-        batchTransferPermit.permitBatchTransferFromData.permitted.map(({ token, amount }) => [token, amount]), // permitted[]
-        batchTransferPermit.permitBatchTransferFromData.nonce,
-        batchTransferPermit.permitBatchTransferFromData.deadline,
-      ],
-      batchTransferPermit.transfers.map(({ to, requestedAmount }) => [to, requestedAmount]),
+      {
+        permitted: batchTransferPermit.permitBatchTransferFromData.permitted,
+        nonce: batchTransferPermit.permitBatchTransferFromData.nonce,
+        deadline: batchTransferPermit.permitBatchTransferFromData.deadline,
+      },
+      batchTransferPermit.transfers,
       evmWallet.address,
       batchTransferPermit.signature
     );
@@ -174,13 +172,13 @@ export class Permit2Wrapper {
     evmWallet: Wallet,
     batchTransferPermit: BatchTransferPermit
   ): Promise<ethers.providers.TransactionResponse> {
-    return await this._permit2.connect(evmWallet).executePermitTransferFrom(
-      [
-        batchTransferPermit.permitBatchTransferFromData.permitted.map(({ token, amount }) => [token, amount]), // permitted[]
-        batchTransferPermit.permitBatchTransferFromData.nonce,
-        batchTransferPermit.permitBatchTransferFromData.deadline,
-      ],
-      batchTransferPermit.transfers.map(({ to, requestedAmount }) => [to, requestedAmount]),
+    return await this._permit2.connect(evmWallet).permitTransferFrom(
+      {
+        permitted: batchTransferPermit.permitBatchTransferFromData.permitted,
+        nonce: batchTransferPermit.permitBatchTransferFromData.nonce,
+        deadline: batchTransferPermit.permitBatchTransferFromData.deadline,
+      },
+      batchTransferPermit.transfers,
       evmWallet.address,
       batchTransferPermit.signature
     );
