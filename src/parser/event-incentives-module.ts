@@ -114,7 +114,11 @@ export class EventIncentivesModule extends BaseModule {
     result: Result
   ) {
     timelineEvents.forEach((ev) => {
-      if ("actor" in ev && ev.actor && ev.actor.type !== "Bot") {
+      if (ev.event === "reviewed" && "user" in ev && "state" in ev) {
+        this.increaseEventCount(result, ev.user.login, `${prefix}.${ev.event}.${ev.state}`);
+      } else if (ev.event === "commented" && "user" in ev) {
+        this.increaseEventCount(result, ev.user.login, `${prefix}.${ev.event}`);
+      } else if ("actor" in ev && ev.actor && ev.actor.type !== "Bot") {
         this.increaseEventCount(result, ev.actor.login, `${prefix}.${ev.event}`);
       }
     });

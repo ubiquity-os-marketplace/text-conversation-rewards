@@ -2266,6 +2266,10 @@
         "count": 21,
         "reward": 0
       },
+      "pull_request.reviewed.commented": {
+        "count": 6,
+        "reward": 0
+      },
       "pull_request.subscribed": {
         "count": 2,
         "reward": 0
@@ -2705,6 +2709,14 @@
       },
       "pull_request.review_comment": {
         "count": 11,
+        "reward": 0
+      },
+      "pull_request.reviewed.approved": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.reviewed.changes_requested": {
+        "count": 1,
         "reward": 0
       },
       "reaction.received.+1": {
