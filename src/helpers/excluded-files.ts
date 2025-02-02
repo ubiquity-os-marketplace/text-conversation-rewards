@@ -65,7 +65,7 @@ async function getFileContent(
     return null;
   } catch (err) {
     if (err instanceof Error && "status" in err && err.status === 404) {
-      context.logger.error(
+      context.logger.info(
         `.gitattributes was not found for ${context.payload.repository.owner.login}/${context.payload.repository.name}`
       );
       return null;

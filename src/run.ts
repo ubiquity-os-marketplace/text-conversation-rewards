@@ -68,7 +68,9 @@ async function preCheck(context: ContextPlugin) {
   const { payload, octokit, logger } = context;
 
   const issue = parseGitHubUrl(payload.issue.html_url);
-  const linkedPulls = await collectLinkedMergedPulls(context, issue);
+  const linkedPulls = (await collectLinkedMergedPulls(context, issue)).filter((pullRequest) =>
+    context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login)
+  );
   logger.debug("Checking open linked pull-requests for", {
     issue,
     linkedPulls,
