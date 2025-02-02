@@ -32,7 +32,9 @@
     "Rpcs",
     "sonarjs",
     "pico",
-    "timespan"
+    "timespan",
+    "Retryable",
+    "ratelimit"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

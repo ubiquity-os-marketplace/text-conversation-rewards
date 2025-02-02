@@ -219,6 +219,9 @@ describe("Permit Generation Module Tests", () => {
           })()
         );
       });
+    jest
+      .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
+      .mockImplementation(() => Promise.resolve(Infinity));
     jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
       return {
         "test.txt": {

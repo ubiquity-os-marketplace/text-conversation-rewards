@@ -147,6 +147,8 @@ jest
     );
   });
 
+jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
+
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);
   const ctx = {
