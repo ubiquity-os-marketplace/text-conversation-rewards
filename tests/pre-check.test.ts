@@ -95,6 +95,16 @@ describe("Pre-check tests", () => {
           html_url: issueUrl,
           number: 1,
           state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+            {
+              id: 2,
+              login: "0x4007",
+            },
+          ],
         },
         repository: {
           name: "conversation-rewards",
@@ -138,6 +148,16 @@ describe("Pre-check tests", () => {
           html_url: issueUrl,
           number: 1,
           state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+            {
+              id: 2,
+              login: "0x4007",
+            },
+          ],
         },
         repository: {
           name: "conversation-rewards",
@@ -167,6 +187,21 @@ describe("Pre-check tests", () => {
     }));
     const ctx = {
       payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+            {
+              id: 2,
+              login: "0x4007",
+            },
+          ],
+        },
         sender: {
           login: "ubiquity-os",
         },

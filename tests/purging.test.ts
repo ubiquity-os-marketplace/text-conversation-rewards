@@ -51,6 +51,7 @@ const ctx = {
       html_url: issueUrl,
       number: 13,
       state_reason: "completed",
+      assignees: [],
     },
     repository: {
       name: "conversation-rewards",
