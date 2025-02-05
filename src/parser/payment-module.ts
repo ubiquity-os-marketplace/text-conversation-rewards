@@ -33,6 +33,7 @@ import {
   BatchTransferPermit,
   PERMIT2_ABI,
   ERC20_ABI,
+  isEthersError,
 } from "../helpers/web3";
 import { BigNumber, ethers, utils } from "ethers";
 import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
@@ -387,20 +388,25 @@ export class PaymentModule extends BaseModule {
           }) as PermitReward
       );
       return [tx, permits];
-    } catch (error) {
-      const e = error as { reason: string; code: string; message: string };
-      if (e.code === ethers.errors.INSUFFICIENT_FUNDS || e.message.includes(ethers.errors.INSUFFICIENT_FUNDS)) {
-        throw new Error(
-          this.context.logger.error(`Insufficient funds to complete the transaction`, { e }).logMessage.raw
-        );
-      } else if (
-        e.code === ethers.errors.INSUFFICIENT_FUNDS ||
-        e.message.includes(ethers.errors.UNPREDICTABLE_GAS_LIMIT)
-      ) {
-        throw new Error(this.context.logger.error("The gas limit could not be estimated", { e }).logMessage.raw);
-      } else {
-        throw new Error(this.context.logger.error(`Transaction failed: ${e.message}`, { e }).logMessage.raw);
+    } catch (e) {
+      if (isEthersError(e)) {
+        if (e.code === ethers.errors.INSUFFICIENT_FUNDS || e.message.includes(ethers.errors.INSUFFICIENT_FUNDS)) {
+          throw new Error(
+            this.context.logger.error(`Insufficient funds to complete the transaction`, { e }).logMessage.raw
+          );
+        } else if (
+          e.code === ethers.errors.UNPREDICTABLE_GAS_LIMIT ||
+          e.message.includes("TRANSFER_FROM_FAILED") ||
+          e.message.includes(ethers.errors.UNPREDICTABLE_GAS_LIMIT)
+        ) {
+          const message = e.message.includes("TRANSFER_FROM_FAILED")
+            ? "The gas limit could not be estimated because the transaction might fail"
+            : "The gas limit could not be estimated";
+
+          throw new Error(this.context.logger.error(message, { e }).logMessage.raw);
+        }
       }
+      throw new Error(this.context.logger.error(`Transaction failed: ${e}`, { e }).logMessage.raw);
     }
   }
 

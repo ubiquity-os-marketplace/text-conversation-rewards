@@ -4,6 +4,21 @@ import { PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer, MaxUint256
 import { Beneficiary } from "../parser/payment-module";
 import { permit2Abi } from "../abi/permit2";
 
+type EthersErrorType = { reason: string; code: string; message: string };
+
+export function isEthersError(error: unknown): error is EthersErrorType {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "reason" in error &&
+    "code" in error &&
+    "message" in error &&
+    typeof error.reason === "string" &&
+    typeof error.code === "string" &&
+    typeof error.message === "string"
+  );
+}
+
 export interface BatchTransferPermit {
   permitBatchTransferFromData: PermitBatchTransferFrom;
   signature: string;
