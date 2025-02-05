@@ -11,8 +11,8 @@
         "@supabase/supabase-js": "2.42.0",
         "@ubiquity-dao/rpc-handler": "1.3.0",
         "@ubiquity-os/permit-generation": "^2.0.6",
-        "@ubiquity-os/plugin-sdk": "^2.0.2",
-        "@ubiquity-os/ubiquity-os-logger": "^1.3.2",
+        "@ubiquity-os/plugin-sdk": "^2.0.6",
+        "@ubiquity-os/ubiquity-os-logger": "^1.4.0",
         "decimal.js": "10.4.3",
         "ethers": "^5.7.2",
         "js-tiktoken": "1.0.15",
@@ -808,9 +808,9 @@
 
     "@ubiquity-os/permit-generation": ["@ubiquity-os/permit-generation@2.0.6", "", { "dependencies": { "@actions/core": "^1.10.1", "@actions/github": "^6.0.0", "@octokit/rest": "^20.1.0", "@octokit/webhooks": "^13.3.0", "@sinclair/typebox": "^0.32.5", "@supabase/supabase-js": "2.42.0", "@ubiquity-dao/rpc-handler": "1.3.0", "@uniswap/permit2-sdk": "^1.2.0", "dotenv": "^16.4.4", "ethers": "^5.7.2", "libsodium-wrappers": "^0.7.13" } }, "sha512-NnBijxuwdM6vIS1oU6lZg2Ke1GGSaLtm+hqGgzbpyeO/IkzinWTWEuN7nMKIMvES98ZwUSz13NOOWexSUcN4MQ=="],
 
-    "@ubiquity-os/plugin-sdk": ["@ubiquity-os/plugin-sdk@2.0.2", "", { "dependencies": { "@actions/core": "^1.11.1", "@actions/github": "^6.0.0", "@octokit/core": "^6.1.2", "@octokit/plugin-paginate-graphql": "^5.2.4", "@octokit/plugin-paginate-rest": "^11.3.5", "@octokit/plugin-rest-endpoint-methods": "^13.2.6", "@octokit/plugin-retry": "^7.1.2", "@octokit/plugin-throttling": "^9.3.2", "@octokit/rest": "^21.0.2", "@octokit/types": "^13.6.1", "@octokit/webhooks": "^13.3.0", "@ubiquity-os/ubiquity-os-logger": "^1.3.2", "dotenv": "^16.4.5", "hono": "^4.6.9" }, "peerDependencies": { "@sinclair/typebox": "0.34.3" } }, "sha512-Pdxl64w8ZSWovzvSfoDWdohpjr93gZ2eMTo18PSt164kB/r5JMsMSni/WV9duxxKoscpinfxcws2zOebPpXS3A=="],
+    "@ubiquity-os/plugin-sdk": ["@ubiquity-os/plugin-sdk@2.0.6", "", { "dependencies": { "@actions/core": "^1.11.1", "@actions/github": "^6.0.0", "@octokit/core": "^6.1.2", "@octokit/plugin-paginate-graphql": "^5.2.4", "@octokit/plugin-paginate-rest": "^11.3.5", "@octokit/plugin-rest-endpoint-methods": "^13.2.6", "@octokit/plugin-retry": "^7.1.2", "@octokit/plugin-throttling": "^9.3.2", "@octokit/rest": "^21.0.2", "@octokit/types": "^13.6.1", "@octokit/webhooks": "^13.3.0", "@ubiquity-os/ubiquity-os-logger": "^1.4.0", "dotenv": "^16.4.5", "hono": "^4.6.9" }, "peerDependencies": { "@sinclair/typebox": "0.34.3" } }, "sha512-xXdmOBu6Oygr2DmAeUKtluJb3yGdLvLoPVhZEbrXLOOWpvsDU73b+GAsDyrQfGjE16ZBFeoZ0N9VChbvWU9GSA=="],
 
-    "@ubiquity-os/ubiquity-os-logger": ["@ubiquity-os/ubiquity-os-logger@1.3.2", "", {}, "sha512-oTIzR8z4jAQmaeJp98t1bZUKE3Ws9pas0sbxt58fC37MwXclPMWrLO+a0JlhPkdJYsvpv/q/79wC2MKVhOIVXQ=="],
+    "@ubiquity-os/ubiquity-os-logger": ["@ubiquity-os/ubiquity-os-logger@1.4.0", "", {}, "sha512-giybluPmu0sreEWi60t9X8NxC5d48X7oQAb9RjXR7wX/ZNYugbAaKgj0TYEqECvSVDqgzpKo7UNerh1UQBscGw=="],
 
     "@uniswap/permit2-sdk": ["@uniswap/permit2-sdk@1.3.0", "", { "dependencies": { "ethers": "^5.7.0", "tiny-invariant": "^1.1.0" } }, "sha512-LstYQWP47dwpQrgqBJ+ysFstne9LgI5FGiKHc2ewjj91MTY8Mq1reocu6U/VDncdR5ef30TUOcZ7gPExRY8r6Q=="],
 
