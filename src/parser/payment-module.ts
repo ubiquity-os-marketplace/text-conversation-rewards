@@ -244,6 +244,10 @@ export class PaymentModule extends BaseModule {
       const decimals = await erc20Wrapper.getDecimals();
       // Fetch and normalize the funding wallet's reward token balance
       const fundingWalletRewardTokenBalance: BigNumber = await erc20Wrapper.getBalance(fundingWallet.address);
+      const fundingWalletRewardTokenAllowance: BigNumber = await erc20Wrapper.getAllowance(
+        fundingWallet.address,
+        permit2Address(this._evmNetworkId)
+      );
 
       // Fetch the funding wallet's native token balance
       const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
@@ -275,7 +279,8 @@ export class PaymentModule extends BaseModule {
       );
 
       const hasEnoughGas = fundingWalletNativeTokenBalance.gt(totalFee);
-      const hasEnoughRewardToken = fundingWalletRewardTokenBalance.gt(totalReward);
+      const hasEnoughRewardToken =
+        fundingWalletRewardTokenBalance.gt(totalReward) && fundingWalletRewardTokenAllowance.gt(totalReward);
       const gasAndRewardInfo = {
         gas: {
           has: fundingWalletNativeTokenBalance.toString(),
@@ -283,6 +288,7 @@ export class PaymentModule extends BaseModule {
         },
         rewardToken: {
           has: fundingWalletRewardTokenBalance.toString(),
+          allowed: fundingWalletRewardTokenAllowance.toString(),
           required: totalReward.toString(),
         },
       };

@@ -17,6 +17,7 @@ const mockErc20Contract = {
   balanceOf: jest.fn().mockReturnValue(BigNumber.from("1000")),
   symbol: jest.fn().mockReturnValue("WXDAI"),
   decimals: jest.fn().mockReturnValue(18),
+  allowance: jest.fn().mockReturnValue(BigNumber.from("100")),
 };
 
 const erc20Wrapper = new Erc20Wrapper(mockErc20Contract as unknown as ethers.Contract);
@@ -40,8 +41,10 @@ describe("web3.ts", () => {
     const tokenSymbol = await erc20Wrapper.getSymbol();
     const tokenDecimals = await erc20Wrapper.getDecimals();
     const tokenBalance = await erc20Wrapper.getBalance("0xRecipient");
+    const tokenAllowance = await erc20Wrapper.getAllowance("0xFrom", "0xTo");
     expect(tokenSymbol).toEqual("WXDAI");
     expect(tokenDecimals).toEqual(18);
+    expect(tokenAllowance).toEqual(BigNumber.from("100"));
     expect(mockErc20Contract.balanceOf).toHaveBeenCalledWith("0xRecipient");
     expect(tokenBalance).toEqual(BigNumber.from("1000"));
   }, 120000);

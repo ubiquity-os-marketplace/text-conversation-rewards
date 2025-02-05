@@ -100,6 +100,16 @@ export class Erc20Wrapper {
   async getBalance(address: string): Promise<BigNumber> {
     return await this._contract.balanceOf(address);
   }
+
+  /**
+   * Returns ERC20 token allowance
+   * @param from address
+   * @param to address
+   * @returns ERC20 token allowance
+   */
+  async getAllowance(from: string, to: string): Promise<BigNumber> {
+    return await this._contract.allowance(from, to);
+  }
 }
 
 /**

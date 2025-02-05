@@ -24,6 +24,7 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
     getBalance = mockRewardTokenBalance;
     getSymbol = jest.fn().mockReturnValue("WXDAI");
     getDecimals = jest.fn().mockReturnValue(18);
+    getAllowance = mockRewardTokenBalance;
   }
   class MockPermit2Wrapper {
     generateBatchTransferPermit = jest.fn().mockReturnValue({
