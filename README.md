@@ -22,6 +22,110 @@
    bun run server
    ```
 
+## Technical Architecture
+
+The Text Conversation Rewards system is a sophisticated GitHub Action that revolutionizes open source collaboration by implementing an AI-powered reward mechanism for quality contributions.
+
+### Core Components
+
+#### Content Evaluation Engine
+
+At the heart of the system is a sophisticated content evaluation module that leverages OpenAI's GPT-4 model to analyze the quality of contributions. Here's how it works:
+
+1. The system processes both issue comments and pull request review comments through different evaluation pipelines.
+
+2. For issue comments, it generates a context-aware prompt that includes:
+   - The original issue description
+   - All comments in the conversation for context
+   - The specific comments being evaluated
+
+3. The evaluation process handles GitHub-flavored markdown intelligently:
+   - It distinguishes between quoted text (starting with '>') and original content
+   - Only evaluates the commenter's original contributions
+   - Considers the relationship between comments and their context
+
+4. The AI model assigns relevance scores from 0 to 1:
+   ```typescript
+   interface Relevances {
+     [commentId: string]: number; // 0 = irrelevant, 1 = highly relevant
+   }
+   ```
+
+#### Review Incentivization System
+
+The review incentivization module implements a sophisticated algorithm for rewarding code reviews:
+
+```typescript
+interface ReviewScore {
+  reviewId: number;
+  effect: {
+    addition: number;
+    deletion: number;
+  };
+  reward: number;
+  priority: number;
+}
+```
+
+The system calculates rewards based on:
+1. The scope of code reviewed (additions + deletions)
+2. Issue priority labels
+3. The conclusiveness of the review (APPROVED or CHANGES_REQUESTED states receive additional credit)
+4. File-specific exclusions through pattern matching
+
+#### Permit Generation and Reward Distribution
+
+The permit generation module handles the secure distribution of rewards:
+
+1. Security Checks:
+   - Validates that the issue is collaborative
+   - Verifies private key permissions against organization and repository IDs
+   - Implements a multi-format encryption system for private keys
+
+2. Fee Processing:
+   - Automatically calculates and deducts platform fees
+   - Supports token-specific fee exemptions through whitelist
+   - Creates treasury allocations for fee distribution
+
+3. Reward Distribution:
+   - Generates ERC20 token permits for each contributor
+   - Stores permit data securely in a Supabase database
+   - Creates claimable reward URLs in the format: `https://pay.ubq.fi?claim=[encoded_permit]`
+
+### Technical Implementation Details
+
+#### Token Management
+The system uses decimal.js for precise token calculations:
+```typescript
+const feeRateDecimal = new Decimal(100).minus(env.PERMIT_FEE_RATE).div(100);
+const totalAfterFee = new Decimal(rewardResult.total)
+  .mul(feeRateDecimal)
+  .toNumber();
+```
+
+#### Smart Token Handling
+For large conversations, the system implements intelligent token management:
+```typescript
+_calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
+  const tokenizer = encodingForModel("gpt-4o-2024-08-06");
+  const inputTokens = tokenizer.encode(prompt).length;
+  return Math.min(inputTokens, totalTokenLimit);
+}
+```
+
+#### Database Integration
+The system maintains a comprehensive record of all permits and rewards:
+```typescript
+interface PermitRecord {
+  amount: string;
+  nonce: string;
+  deadline: string;
+  signature: string;
+  beneficiary_id: number;
+  location_id: number;
+}
+```
+
 ## Data structure
 
 ```json
