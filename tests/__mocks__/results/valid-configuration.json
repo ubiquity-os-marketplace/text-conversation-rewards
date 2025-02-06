@@ -17,12 +17,16 @@
       ],
       "openAi": {
         "endpoint": "https://api.openai.com/v1",
-        "model": "gpt-4o",
-        "tokenCountLimit": 124000
+        "model": "gpt-4o"
       }
     },
     "dataPurge": {},
     "formattingEvaluator": {
+      "readabilityScoring": {
+        "enabled": true,
+        "weight": 0.3,
+        "targetReadabilityScore": 60
+      },
       "multipliers": [
         {
           "multiplier": 1,
