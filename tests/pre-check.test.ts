@@ -178,6 +178,62 @@ describe("Pre-check tests", () => {
     expect(result).toEqual("You are not allowed to generate permits.");
   });
 
+  it("Should post a warning message that bots cannot trigger permit generation", async () => {
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: jest.fn(() => []),
+    }));
+    jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
+      postComment: jest.fn(),
+    }));
+    const { run } = await import("../src/run");
+
+    const result = await run({
+      eventName: "issues.closed",
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "ubiquity-os",
+            },
+          ],
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717,
+          },
+        },
+        sender: {
+          login: "bot-user",
+          type: "Bot",
+        },
+      },
+      config: cfg,
+      logger: new Logs("debug"),
+      octokit: {
+        rest: {
+          orgs: {
+            getMembershipForUser: jest.fn(() => {
+              throw new Error();
+            }),
+          },
+          repos: {
+            getCollaboratorPermissionLevel: jest.fn(() => {
+              return { data: { role_name: "read" } };
+            }),
+          },
+        },
+      },
+    } as unknown as ContextPlugin);
+
+    expect(result).toEqual("Bots can not generate permits.");
+  });
+
   it("Should deny a user to generate permits if non-admin and allow admins", async () => {
     const getMembershipForUser = jest.fn(() => ({}));
     const getCollaboratorPermissionLevel = jest.fn(() => ({
