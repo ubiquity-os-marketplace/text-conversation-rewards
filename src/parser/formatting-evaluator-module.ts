@@ -11,7 +11,7 @@ import {
 } from "../configuration/formatting-evaluator-config";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { GithubCommentScore, Result, WordResult } from "../types/results";
+import { GithubCommentScore, ReadabilityScore, Result, WordResult } from "../types/results";
 import { typeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 import { parsePriorityLabel } from "../helpers/github";
@@ -28,6 +28,7 @@ export class FormattingEvaluatorModule extends BaseModule {
   private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: number]: Multiplier } = {};
   private readonly _wordCountExponent: number;
+  private readonly _readabilityConfig: FormattingEvaluatorConfiguration["readabilityScoring"];
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -40,6 +41,11 @@ export class FormattingEvaluatorModule extends BaseModule {
 
   constructor(context: ContextPlugin) {
     super(context);
+    this._readabilityConfig = this._configuration?.readabilityScoring ?? {
+      enabled: true,
+      weight: 0.3,
+      targetReadabilityScore: 60,
+    };
     if (this._configuration?.multipliers) {
       this._multipliers = this._configuration.multipliers.reduce((acc, curr) => {
         return {
@@ -61,14 +67,57 @@ export class FormattingEvaluatorModule extends BaseModule {
     this._wordCountExponent = this._configuration?.wordCountExponent ?? 0.85;
   }
 
+  private _countSyllables(word: string): number {
+    word = word.toLowerCase();
+    if (word.length <= 3) return 1;
+
+    word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, "");
+    word = word.replace(/^y/, "");
+    const syllables = word.match(/[aeiouy]{1,2}/g);
+    return syllables ? syllables.length : 1;
+  }
+
+  private _calculateFleschKincaid(text: string): ReadabilityScore {
+    const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length ?? 1;
+    const words = text.match(new RegExp(wordRegex, "g")) ?? [];
+    const wordCount = words.length ?? 1;
+    const syllableCount = words.reduce((count, word) => count + this._countSyllables(word), 0);
+    const wordsPerSentence = wordCount / Math.max(1, sentences);
+    const syllablesPerWord = syllableCount / Math.max(1, wordCount);
+    const fleschKincaid = sentences && wordCount ? 206.835 - 1.015 * wordsPerSentence - 84.6 * syllablesPerWord : 0;
+
+    // Normalize score between 0 and 1
+    let normalizedScore: number;
+    if (fleschKincaid > 100) {
+      normalizedScore = 1.0;
+    } else if (fleschKincaid <= 0) {
+      normalizedScore = 0.0;
+    } else {
+      const distance = Math.abs(fleschKincaid - (this._readabilityConfig?.targetReadabilityScore ?? 60));
+      normalizedScore = Math.max(0, Math.min(1, (100 - distance) / 100));
+    }
+
+    return {
+      fleschKincaid,
+      syllables: syllableCount,
+      sentences,
+      score: normalizedScore,
+    };
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result) {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
-      const comments = currentElement.comments || [];
+      const comments = currentElement.comments ?? [];
       for (const comment of comments) {
-        const { formatting, words } = this._getFormattingScore(comment);
+        const { formatting, words, readability } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
-        const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
+        const formattingTotal = this._calculateFormattingTotal(
+          formatting,
+          words,
+          multiplierFactor,
+          readability
+        ).toDecimalPlaces(2);
         const priority = parsePriorityLabel(data.self?.labels);
         const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
         comment.score = {
@@ -80,6 +129,7 @@ export class FormattingEvaluatorModule extends BaseModule {
           },
           priority: priority,
           words,
+          readability,
           multiplier: multiplierFactor.multiplier,
         };
       }
@@ -90,7 +140,8 @@ export class FormattingEvaluatorModule extends BaseModule {
   private _calculateFormattingTotal(
     formatting: ReturnType<typeof this._getFormattingScore>["formatting"],
     regex: WordResult,
-    multiplierFactor: Multiplier
+    multiplierFactor: Multiplier,
+    readability?: ReadabilityScore
   ): Decimal {
     if (!formatting) return new Decimal(0);
 
@@ -102,6 +153,13 @@ export class FormattingEvaluatorModule extends BaseModule {
     });
 
     sum = sum.add(new Decimal(regex.result));
+
+    // Apply readability scoring if enabled
+    if (this._readabilityConfig.enabled && readability) {
+      const readabilityScore = new Decimal(readability.score).mul(this._readabilityConfig.weight).mul(sum);
+      sum = sum.add(readabilityScore);
+    }
+
     return sum.mul(multiplierFactor.multiplier);
   }
 
@@ -120,7 +178,8 @@ export class FormattingEvaluatorModule extends BaseModule {
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
       const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
-      return { formatting: res.formatting, words: res.words };
+      const readability = this._calculateFleschKincaid(temp.window.document.body.textContent ?? "");
+      return { formatting: res.formatting, words: res.words, readability };
     } else {
       throw new Error(`Could not create DOM for comment [${JSON.stringify(comment)}]`);
     }
