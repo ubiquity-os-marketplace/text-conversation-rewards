@@ -17,7 +17,8 @@
       ],
       "openAi": {
         "endpoint": "https://api.openai.com/v1",
-        "model": "gpt-4o"
+        "model": "gpt-4o",
+        "tokenCountLimit": 124000
       }
     },
     "dataPurge": {},
