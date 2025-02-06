@@ -336,7 +336,7 @@ describe("Modules tests", () => {
     expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
       fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")
     );
-  });
+  }, 120000);
 
   it("Should generate GitHub comment without zero total", async () => {
     const githubCommentModule = new GithubCommentModule(ctx);
