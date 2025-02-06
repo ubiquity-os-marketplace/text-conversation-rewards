@@ -11,7 +11,7 @@ function isCollaboratorRole(role: string) {
   return COLLABORATOR_ROLES.includes(role.toLowerCase());
 }
 
-export async function isUserAllowedToGeneratePermits(context: ContextPlugin) {
+export async function isUserAllowedToGenerateRewards(context: ContextPlugin) {
   const { octokit, payload } = context;
   const username = payload.sender.login;
   try {

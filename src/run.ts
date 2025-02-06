@@ -7,7 +7,7 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
-import { isUserAllowedToGeneratePermits } from "./helpers/permissions";
+import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config } = context;
@@ -25,7 +25,7 @@ export async function run(context: ContextPlugin) {
     return result.logMessage.raw;
   }
 
-  if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGeneratePermits(context))) {
+  if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {
     const result =
       payload.sender.type === "Bot"
         ? logger.warn("Bots can not generate rewards.")
