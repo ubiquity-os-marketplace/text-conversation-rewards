@@ -34,7 +34,11 @@
     "pico",
     "timespan",
     "Retryable",
-    "ratelimit"
+    "ratelimit",
+    "laeiouy",
+    "Flesch",
+    "Kincaid",
+    "flesch"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
