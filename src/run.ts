@@ -28,7 +28,7 @@ export async function run(context: ContextPlugin) {
   if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGeneratePermits(context))) {
     const result =
       payload.sender.type === "Bot"
-        ? logger.info("A human action is needed to generate permits.")
+        ? logger.warn("Bots can not generate permits.")
         : logger.error("You are not allowed to generate permits.");
     await postComment(context, result);
     return result.logMessage.raw;
