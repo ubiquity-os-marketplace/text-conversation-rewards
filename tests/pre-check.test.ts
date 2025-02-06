@@ -175,10 +175,10 @@ describe("Pre-check tests", () => {
       octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
     } as unknown as ContextPlugin);
 
-    expect(result).toEqual("You are not allowed to generate permits.");
+    expect(result).toEqual("You are not allowed to generate rewards.");
   });
 
-  it("Should post a warning message that bots cannot trigger permit generation", async () => {
+  it("Should post a warning message that bots cannot trigger reward generation", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedMergedPulls: jest.fn(() => []),
     }));
@@ -231,10 +231,10 @@ describe("Pre-check tests", () => {
       },
     } as unknown as ContextPlugin);
 
-    expect(result).toEqual("Bots can not generate permits.");
+    expect(result).toEqual("Bots can not generate rewards.");
   });
 
-  it("Should deny a user to generate permits if non-admin and allow admins", async () => {
+  it("Should deny a user to generate rewards if non-admin and allow admins", async () => {
     const getMembershipForUser = jest.fn(() => ({}));
     const getCollaboratorPermissionLevel = jest.fn(() => ({
       data: {
