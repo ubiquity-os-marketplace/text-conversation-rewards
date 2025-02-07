@@ -30,12 +30,19 @@ The Text Conversation Rewards system is a sophisticated GitHub Action that revol
 
 #### Content Evaluation Engine
 
-At the heart of the system is a sophisticated content evaluation module that leverages OpenAI's GPT-4 model to analyze the quality of contributions. Here's how it works:
+At the heart of the system is a sophisticated content evaluation module that assigns monetary value to contributor comments in the context of work projects with specifications. Here's how it works:
 
-1. The system processes both issue comments and pull request review comments through different evaluation pipelines.
+1. The system processes both issue comments and pull request review comments through different evaluation pipelines, with comprehensive preprocessing that:
+   - Removes user commands (starting with /) and bot responses
+   - Filters out quoted text (starting with >)
+   - Removes HTML comments and footnotes
+   - Considers comment timestamps to exclude those posted during assignment periods
+   - Processes linked pull request comments through GraphQL API
+   - Handles minimized/hidden comments
+   - Credits only unique links to prevent duplicates
 
 2. For issue comments, it generates a context-aware prompt that includes:
-   - The original issue description
+   - The original issue description and specification
    - All comments in the conversation for context
    - The specific comments being evaluated
 
@@ -44,7 +51,7 @@ At the heart of the system is a sophisticated content evaluation module that lev
    - Only evaluates the commenter's original contributions
    - Considers the relationship between comments and their context
 
-4. The AI model assigns relevance scores from 0 to 1:
+4. The language model assigns relevance scores from 0 to 1:
    ```typescript
    interface Relevances {
      [commentId: string]: number; // 0 = irrelevant, 1 = highly relevant
@@ -106,10 +113,21 @@ const totalAfterFee = new Decimal(rewardResult.total)
 #### Smart Token Handling
 For large conversations, the system implements intelligent token management:
 ```typescript
+// Dynamically handles token limits and chunking for large conversations
 _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
-  const tokenizer = encodingForModel("gpt-4o-2024-08-06");
-  const inputTokens = tokenizer.encode(prompt).length;
-  return Math.min(inputTokens, totalTokenLimit);
+  // Token limit is configurable and adjusts based on model and rate limits
+  const inputTokens = this.tokenizer.encode(prompt).length;
+  const limit = Math.min(this._configuration?.tokenCountLimit, this._rateLimit);
+  return Math.min(inputTokens, limit);
+}
+
+// Splits large conversations into manageable chunks
+async _splitPromptForEvaluation(specification: string, comments: Comment[]) {
+  let chunks = 2;
+  while (this._exceedsTokenLimit(comments, chunks)) {
+    chunks++;
+  }
+  return this._processChunks(specification, comments, chunks);
 }
 ```
 
@@ -189,10 +207,11 @@ with:
     limitRewards: true
     collaboratorOnlyPaymentInvocation: true
     contentEvaluator:
-      openAi:
-        model: "gpt-4o"
-        endpoint: "https://api.openai.com/v1"
-        tokenCountLimit: 124000
+      llm:
+        model: "gpt-4" # Model identifier
+        endpoint: "https://api.openrouter.ai/api/v1" # Configurable LLM endpoint
+        tokenCountLimit: 124000 # Adjustable token limit
+        maxRetries: 3 # Number of retries for rate limits/errors
       multipliers:
         - role: [ISSUE_SPECIFICATION]
           relevance: 1
