@@ -278,7 +278,7 @@ describe("Modules tests", () => {
     ];
     await expect(processor.run(activity)).rejects.toMatchObject({
       logMessage: {
-        diff: "```diff\n! Relevance / Comment length mismatch!\n```",
+        diff: "> [!CAUTION]\n> Relevance / Comment length mismatch!",
         level: "error",
         raw: "Relevance / Comment length mismatch!",
         type: "error",

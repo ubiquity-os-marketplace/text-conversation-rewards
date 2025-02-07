@@ -127,7 +127,7 @@ describe("Action tests", () => {
       } as unknown as ContextPlugin)
     ).rejects.toEqual({
       logMessage: {
-        diff: "```diff\n! Could not fetch issue data: HttpError\n```",
+        diff: "> [!CAUTION]\n> Could not fetch issue data: HttpError",
         level: "error",
         raw: "Could not fetch issue data: HttpError",
         type: "error",
