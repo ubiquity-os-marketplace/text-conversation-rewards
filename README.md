@@ -33,6 +33,7 @@ The Text Conversation Rewards system is a sophisticated GitHub Action that revol
 At the heart of the system is a sophisticated content evaluation module that assigns monetary value to contributor comments in the context of work projects with specifications. Here's how it works:
 
 1. The system processes both issue comments and pull request review comments through different evaluation pipelines, with comprehensive preprocessing that:
+
    - Removes user commands (starting with /) and bot responses
    - Filters out quoted text (starting with >)
    - Removes HTML comments and footnotes
@@ -42,11 +43,13 @@ At the heart of the system is a sophisticated content evaluation module that ass
    - Credits only unique links to prevent duplicates
 
 2. For issue comments, it generates a context-aware prompt that includes:
+
    - The original issue description and specification
    - All comments in the conversation for context
    - The specific comments being evaluated
 
 3. The evaluation process handles GitHub-flavored markdown intelligently:
+
    - It distinguishes between quoted text (starting with '>') and original content
    - Only evaluates the commenter's original contributions
    - Considers the relationship between comments and their context
@@ -75,6 +78,7 @@ interface ReviewScore {
 ```
 
 The system calculates rewards based on:
+
 1. The scope of code reviewed (additions + deletions)
 2. Issue priority labels
 3. The conclusiveness of the review (APPROVED or CHANGES_REQUESTED states receive additional credit)
@@ -85,11 +89,13 @@ The system calculates rewards based on:
 The permit generation module handles the secure distribution of rewards:
 
 1. Security Checks:
+
    - Validates that the issue is collaborative
    - Verifies private key permissions against organization and repository IDs
    - Implements a multi-format encryption system for private keys
 
 2. Fee Processing:
+
    - Automatically calculates and deducts platform fees
    - Supports token-specific fee exemptions through whitelist
    - Creates treasury allocations for fee distribution
@@ -102,16 +108,18 @@ The permit generation module handles the secure distribution of rewards:
 ### Technical Implementation Details
 
 #### Token Management
+
 The system uses decimal.js for precise token calculations:
+
 ```typescript
 const feeRateDecimal = new Decimal(100).minus(env.PERMIT_FEE_RATE).div(100);
-const totalAfterFee = new Decimal(rewardResult.total)
-  .mul(feeRateDecimal)
-  .toNumber();
+const totalAfterFee = new Decimal(rewardResult.total).mul(feeRateDecimal).toNumber();
 ```
 
 #### Smart Token Handling
+
 For large conversations, the system implements intelligent token management:
+
 ```typescript
 // Dynamically handles token limits and chunking for large conversations
 _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
@@ -132,7 +140,9 @@ async _splitPromptForEvaluation(specification: string, comments: Comment[]) {
 ```
 
 #### Database Integration
+
 The system maintains a comprehensive record of all permits and rewards:
+
 ```typescript
 interface PermitRecord {
   amount: string;
