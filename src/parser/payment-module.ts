@@ -270,7 +270,7 @@ export class PaymentModule extends BaseModule {
           BigNumber.from(nonce)
         );
       } catch (e) {
-        throw new Error(this.context.logger.error("Failed to generate batch transfer permit", { e }).logMessage.raw);
+        throw this.context.logger.error("Failed to generate batch transfer permit", { e });
       }
 
       const totalFee = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
@@ -361,7 +361,7 @@ export class PaymentModule extends BaseModule {
         BigNumber.from(nonce)
       );
     } catch (e) {
-      throw new Error(this.context.logger.error("Failed to generate batch transfer permit", { e }).logMessage.raw);
+      throw this.context.logger.error("Failed to generate batch transfer permit", { e });
     }
 
     // Executing permitTransferFrom immediately to process the reward transfers.
@@ -391,9 +391,7 @@ export class PaymentModule extends BaseModule {
     } catch (e) {
       if (isEthersError(e)) {
         if (e.code === ethers.errors.INSUFFICIENT_FUNDS || e.message.includes(ethers.errors.INSUFFICIENT_FUNDS)) {
-          throw new Error(
-            this.context.logger.error(`Insufficient funds to complete the transaction`, { e }).logMessage.raw
-          );
+          throw this.context.logger.error(`Insufficient funds to complete the transaction`, { e });
         } else if (
           e.code === ethers.errors.UNPREDICTABLE_GAS_LIMIT ||
           e.message.includes("TRANSFER_FROM_FAILED") ||
@@ -403,10 +401,10 @@ export class PaymentModule extends BaseModule {
             ? "The gas limit could not be estimated because the transaction might fail"
             : "The gas limit could not be estimated";
 
-          throw new Error(this.context.logger.error(message, { e }).logMessage.raw);
+          throw this.context.logger.error(message, { e });
         }
       }
-      throw new Error(this.context.logger.error(`Transaction failed: ${e}`, { e }).logMessage.raw);
+      throw this.context.logger.error(`Transaction failed: ${e}`, { e });
     }
   }
 
@@ -536,9 +534,7 @@ export class PaymentModule extends BaseModule {
       locationId = locationData.id;
     }
     if (!locationId) {
-      throw new Error(
-        this.context.logger.error("Failed to retrieve the related location from issue", { issue }).logMessage.raw
-      );
+      throw this.context.logger.error("Failed to retrieve the related location from issue", { issue });
     }
     return locationId;
   }

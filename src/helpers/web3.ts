@@ -118,12 +118,12 @@ export class Erc20Wrapper {
 
   /**
    * Returns ERC20 token allowance
-   * @param from address
-   * @param to address
+   * @param owner address
+   * @param spender address
    * @returns ERC20 token allowance
    */
   async getAllowance(owner: string, spender: string): Promise<BigNumber> {
-    return await this._contract.allowance(from, to);
+    return await this._contract.allowance(owner, spender);
   }
 }
 
