@@ -10,7 +10,7 @@ import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-import { ERC20_ABI, PERMIT2_ABI } from "../../src/helpers/web3";
+import { ERC20_ABI, isEthersError, PERMIT2_ABI } from "../../src/helpers/web3";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -76,6 +76,7 @@ jest.unstable_mockModule("../../src/helpers/web3", () => {
   return {
     PERMIT2_ABI: PERMIT2_ABI,
     ERC20_ABI: ERC20_ABI,
+    isEthersError: isEthersError,
     Erc20Wrapper: MockErc20Wrapper,
     Permit2Wrapper: MockPermit2Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),

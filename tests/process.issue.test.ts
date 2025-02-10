@@ -24,8 +24,6 @@ import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
 import OpenAI from "openai";
-import { parseUnits } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
