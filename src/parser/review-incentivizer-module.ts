@@ -38,7 +38,7 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     const prNumbers = data.linkedReviews.map((review) => review.self?.number);
     if (!prNumbers.length) {
-      this.context.logger.error(`No pull request is linked to this issue, won't run review incentivizer`);
+      this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
       return result;
     }
 
