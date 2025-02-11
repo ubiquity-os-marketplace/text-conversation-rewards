@@ -1,6 +1,9 @@
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
-import { eventIncentivesConfigurationType } from "../configuration/event-incentives-config";
+import {
+  EventIncentivesConfiguration,
+  eventIncentivesConfigurationType,
+} from "../configuration/event-incentives-config";
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
@@ -8,6 +11,8 @@ import { ContextPlugin } from "../types/plugin-input";
 import { Result } from "../types/results";
 
 export class EventIncentivesModule extends BaseModule {
+  readonly _configuration: EventIncentivesConfiguration | null = this.context.config.incentives.eventIncentives;
+
   constructor(context: ContextPlugin) {
     super(context);
   }
