@@ -37,7 +37,7 @@ At the heart of the system is a sophisticated content evaluation module that ass
    - Removes user commands (starting with /) and bot responses
    - Filters out quoted text (starting with >)
    - Removes HTML comments and footnotes
-   - Considers comment timestamps to exclude those posted during assignment periods
+   - For assigned users, considers comment timestamps to exclude those posted during assignment periods
    - Processes linked pull request comments through GraphQL API
    - Handles minimized/hidden comments
    - Credits only unique links to prevent duplicates
