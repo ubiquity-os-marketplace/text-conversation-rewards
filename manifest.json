@@ -361,6 +361,27 @@
                 "default": {},
                 "type": "object",
                 "properties": {
+                  "readabilityScoring": {
+                    "default": {},
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "default": true,
+                        "description": "Enable Flesch-Kincaid readability scoring",
+                        "type": "boolean"
+                      },
+                      "weight": {
+                        "default": 0.3,
+                        "description": "Weight of readability score in the total formatting score",
+                        "type": "number"
+                      },
+                      "targetReadabilityScore": {
+                        "default": 60,
+                        "description": "Ideal Flesch-Kincaid score (60-70 is considered ideal for general audience)",
+                        "type": "number"
+                      }
+                    }
+                  },
                   "multipliers": {
                     "description": "Multipliers applied to different parts of the comment according the role of the author",
                     "default": [

@@ -26,6 +26,13 @@ export interface WordResult {
   result: number;
 }
 
+export interface ReadabilityScore {
+  fleschKincaid: number;
+  syllables: number;
+  sentences: number;
+  score: number;
+}
+
 export interface ReviewScore {
   priority: number;
   reviewId: number;
@@ -48,6 +55,7 @@ export interface GithubCommentScore {
       result: number;
     };
     words?: WordResult;
+    readability?: ReadabilityScore;
     multiplier: number;
     relevance?: number;
     clarity?: number;

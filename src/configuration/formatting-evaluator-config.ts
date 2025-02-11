@@ -62,6 +62,26 @@ const rewardsType = Type.Object(
 export const formattingEvaluatorConfigurationType = Type.Object(
   {
     /**
+     * Configuration for readability scoring using Flesch-Kincaid
+     */
+    readabilityScoring: Type.Object(
+      {
+        enabled: Type.Boolean({
+          default: true,
+          description: "Enable Flesch-Kincaid readability scoring",
+        }),
+        weight: Type.Number({
+          default: 0.3,
+          description: "Weight of readability score in the total formatting score",
+        }),
+        targetReadabilityScore: Type.Number({
+          default: 60,
+          description: "Ideal Flesch-Kincaid score (60-70 is considered ideal for general audience)",
+        }),
+      },
+      { default: {} }
+    ),
+    /**
      * Multipliers applied to different parts of the comment body content
      */
     multipliers: Type.Transform(
