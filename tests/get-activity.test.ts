@@ -21,6 +21,26 @@ describe("GetActivity class", () => {
       config: cfg,
       logger: new Logs("debug"),
       octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+          ],
+        },
+        repository: {
+          name: "text-conversation-rewards",
+          owner: {
+            login: "ubiquity-os-marketplace",
+            id: 76412717,
+          },
+        },
+      },
     } as unknown as ContextPlugin,
     issue
   );

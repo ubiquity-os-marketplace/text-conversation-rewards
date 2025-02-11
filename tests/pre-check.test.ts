@@ -8,7 +8,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
-import { isUserAllowedToGeneratePermits } from "../src/helpers/permissions";
+import { isUserAllowedToGenerateRewards } from "../src/helpers/permissions";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -95,6 +95,16 @@ describe("Pre-check tests", () => {
           html_url: issueUrl,
           number: 1,
           state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+            {
+              id: 2,
+              login: "0x4007",
+            },
+          ],
         },
         repository: {
           name: "conversation-rewards",
@@ -138,6 +148,16 @@ describe("Pre-check tests", () => {
           html_url: issueUrl,
           number: 1,
           state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+            {
+              id: 2,
+              login: "0x4007",
+            },
+          ],
         },
         repository: {
           name: "conversation-rewards",
@@ -155,10 +175,66 @@ describe("Pre-check tests", () => {
       octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
     } as unknown as ContextPlugin);
 
-    expect(result).toEqual("You are not allowed to generate permits.");
+    expect(result).toEqual("You are not allowed to generate rewards.");
   });
 
-  it("Should deny a user to generate permits if non-admin and allow admins", async () => {
+  it("Should post a warning message that bots cannot trigger reward generation", async () => {
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: jest.fn(() => []),
+    }));
+    jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
+      postComment: jest.fn(),
+    }));
+    const { run } = await import("../src/run");
+
+    const result = await run({
+      eventName: "issues.closed",
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "ubiquity-os",
+            },
+          ],
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717,
+          },
+        },
+        sender: {
+          login: "bot-user",
+          type: "Bot",
+        },
+      },
+      config: cfg,
+      logger: new Logs("debug"),
+      octokit: {
+        rest: {
+          orgs: {
+            getMembershipForUser: jest.fn(() => {
+              throw new Error();
+            }),
+          },
+          repos: {
+            getCollaboratorPermissionLevel: jest.fn(() => {
+              return { data: { role_name: "read" } };
+            }),
+          },
+        },
+      },
+    } as unknown as ContextPlugin);
+
+    expect(result).toEqual("Bots can not generate rewards.");
+  });
+
+  it("Should deny a user to generate rewards if non-admin and allow admins", async () => {
     const getMembershipForUser = jest.fn(() => ({}));
     const getCollaboratorPermissionLevel = jest.fn(() => ({
       data: {
@@ -167,6 +243,21 @@ describe("Pre-check tests", () => {
     }));
     const ctx = {
       payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+            {
+              id: 2,
+              login: "0x4007",
+            },
+          ],
+        },
         sender: {
           login: "ubiquity-os",
         },
@@ -189,17 +280,17 @@ describe("Pre-check tests", () => {
       },
     } as unknown as ContextPlugin;
 
-    expect(await isUserAllowedToGeneratePermits(ctx)).toEqual(true);
+    expect(await isUserAllowedToGenerateRewards(ctx)).toEqual(true);
     getMembershipForUser.mockImplementationOnce(() => {
       throw new Error();
     });
-    expect(await isUserAllowedToGeneratePermits(ctx)).toEqual(false);
+    expect(await isUserAllowedToGenerateRewards(ctx)).toEqual(false);
     getMembershipForUser.mockImplementationOnce(() => {
       throw new Error();
     });
     getCollaboratorPermissionLevel.mockImplementationOnce(() => {
       return { data: { role_name: "write" } };
     });
-    expect(await isUserAllowedToGeneratePermits(ctx)).toEqual(true);
+    expect(await isUserAllowedToGenerateRewards(ctx)).toEqual(true);
   });
 });

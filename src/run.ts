@@ -7,7 +7,7 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
-import { isUserAllowedToGeneratePermits } from "./helpers/permissions";
+import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config } = context;
@@ -25,8 +25,11 @@ export async function run(context: ContextPlugin) {
     return result.logMessage.raw;
   }
 
-  if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGeneratePermits(context))) {
-    const result = logger.error("You are not allowed to generate permits.");
+  if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {
+    const result =
+      payload.sender.type === "Bot"
+        ? logger.warn("Bots can not generate rewards.")
+        : logger.error("You are not allowed to generate rewards.");
     await postComment(context, result);
     return result.logMessage.raw;
   }
@@ -68,7 +71,9 @@ async function preCheck(context: ContextPlugin) {
   const { payload, octokit, logger } = context;
 
   const issue = parseGitHubUrl(payload.issue.html_url);
-  const linkedPulls = await collectLinkedMergedPulls(context, issue);
+  const linkedPulls = (await collectLinkedMergedPulls(context, issue)).filter((pullRequest) =>
+    context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login)
+  );
   logger.debug("Checking open linked pull-requests for", {
     issue,
     linkedPulls,

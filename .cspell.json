@@ -32,7 +32,13 @@
     "Rpcs",
     "sonarjs",
     "pico",
-    "timespan"
+    "timespan",
+    "Retryable",
+    "ratelimit",
+    "laeiouy",
+    "Flesch",
+    "Kincaid",
+    "flesch"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
