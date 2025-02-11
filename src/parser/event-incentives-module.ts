@@ -118,6 +118,14 @@ export class EventIncentivesModule extends BaseModule {
         this.increaseEventCount(result, ev.user.login, `${prefix}.${ev.event}.${ev.state}`);
       } else if (ev.event === "commented" && "user" in ev) {
         this.increaseEventCount(result, ev.user.login, `${prefix}.${ev.event}`);
+      } else if (
+        ev.event === "review_requested" &&
+        "requested_reviewer" in ev &&
+        ev.requested_reviewer &&
+        "review_requester" in ev
+      ) {
+        this.increaseEventCount(result, ev.requested_reviewer.login, `${prefix}.received.${ev.event}`);
+        this.increaseEventCount(result, ev.review_requester.login, `${prefix}.sent.${ev.event}`);
       } else if ("actor" in ev && ev.actor && ev.actor.type !== "Bot") {
         this.increaseEventCount(result, ev.actor.login, `${prefix}.${ev.event}`);
       }

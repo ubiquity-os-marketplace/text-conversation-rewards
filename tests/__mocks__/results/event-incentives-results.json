@@ -1364,7 +1364,7 @@
         "count": 22,
         "reward": 0
       },
-      "pull_request.review_requested": {
+      "pull_request.sent.review_requested": {
         "count": 5,
         "reward": 0
       },
@@ -2652,6 +2652,10 @@
         "count": 2,
         "reward": 0
       },
+      "pull_request.received.review_requested": {
+        "count": 2,
+        "reward": 0
+      },
       "pull_request.commented": {
         "count": 1,
         "reward": 0
@@ -3179,6 +3183,10 @@
       },
       "issue.subscribed": {
         "count": 3,
+        "reward": 0
+      },
+      "pull_request.received.review_requested": {
+        "count": 2,
         "reward": 0
       },
       "pull_request.review_comment": {
