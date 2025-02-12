@@ -16,6 +16,7 @@ import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
+import { calculateFeeString } from "../utils/calculate";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -146,6 +147,7 @@ export class GithubCommentModule extends BaseModule {
             <td>${contribution}</td>
             <td>${count}</td>
             <td>${reward || "-"}</td>
+            <td>${calculateFeeString(reward, result.feeRate)}</td>
           </tr>`;
     }
 
