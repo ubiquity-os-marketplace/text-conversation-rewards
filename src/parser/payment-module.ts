@@ -83,11 +83,7 @@ export class PaymentModule extends BaseModule {
 
     // Decrypt the private key object
     const privateKeyParsed = await this._parsePrivateKey(this._evmPrivateEncrypted);
-    if (!privateKeyParsed.privateKey) {
-      this.context.logger.error("[PaymentModule] Private key is null.");
-      return Promise.resolve(result);
-    }
-    const isPrivateKeyAllowed = await this._isPrivateKeyAllowed(
+    const [isPrivateKeyAllowed, privateKey] = await this._isPrivateKeyAllowed(
       privateKeyParsed,
       this.context.payload.repository.owner.id,
       this.context.payload.repository.id
@@ -129,7 +125,7 @@ export class PaymentModule extends BaseModule {
       const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
       // Check if funding wallet has enough reward token and gas to transfer rewards directly
       const [canTransferDirectly, fundingWallet, beneficiaries] = await this._canTransferDirectly(
-        privateKeyParsed.privateKey,
+        privateKey,
         result,
         nonce
       );
@@ -216,7 +212,7 @@ export class PaymentModule extends BaseModule {
     if (!networkExplorer || networkExplorer.length === 0) {
       return "https://blockscan.com";
     }
-    return networkExplorer[0].url;
+    return networkExplorer[0]?.url;
   }
 
   async _canMakePayment(data: Readonly<IssueActivity>) {
@@ -250,42 +246,22 @@ export class PaymentModule extends BaseModule {
         permit2Address(this._evmNetworkId)
       );
 
-      // Fetch the funding wallet's native token balance
-      const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
-
       const beneficiaries = await this._getBeneficiaries(result, decimals);
       if (beneficiaries === null) {
         return [false, null, null];
       }
-
-      const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
-      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
-
-      let batchTransferPermit: BatchTransferPermit;
-      try {
-        batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
-          fundingWallet,
-          this._erc20RewardToken,
-          beneficiaries,
-          BigNumber.from(nonce)
-        );
-      } catch (e) {
-        throw this.context.logger.error("Failed to generate batch transfer permit", { e });
-      }
-
-      const totalFee = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
+      const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
       const totalReward = beneficiaries.reduce(
         (accumulator, current) => accumulator.add(current.amount),
         BigNumber.from(0)
       );
 
-      const hasEnoughGas = fundingWalletNativeTokenBalance.gt(totalFee);
       const hasEnoughRewardToken =
         fundingWalletRewardTokenBalance.gt(totalReward) && fundingWalletRewardTokenAllowance.gt(totalReward);
       const gasAndRewardInfo = {
         gas: {
           has: fundingWalletNativeTokenBalance.toString(),
-          required: totalFee.toString(),
+          required: "Unavailable",
         },
         rewardToken: {
           has: fundingWalletRewardTokenBalance.toString(),
@@ -293,12 +269,49 @@ export class PaymentModule extends BaseModule {
           required: totalReward.toString(),
         },
       };
-      if (!hasEnoughGas || !hasEnoughRewardToken) {
+
+      if (!hasEnoughRewardToken) {
         this.context.logger.error(
-          `[PaymentModule] The funding wallet lacks sufficient gas and/or reward tokens to perform direct transfers`,
+          `[PaymentModule] The funding wallet lacks sufficient reward tokens to perform direct transfers`,
           gasAndRewardInfo
         );
         return [false, null, null];
+      }
+      // Ensure there is enough gas available to complete the transfer transaction
+      const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
+      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
+
+      let totalFee: BigNumber | null = null;
+      try {
+        const batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
+          fundingWallet,
+          this._erc20RewardToken,
+          beneficiaries,
+          BigNumber.from(nonce)
+        );
+        totalFee = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
+      } catch (e) {
+        if (isEthersError(e)) {
+          if (
+            e.code === ethers.errors.UNPREDICTABLE_GAS_LIMIT ||
+            e.message.includes("TRANSFER_FROM_FAILED") ||
+            e.message.includes(ethers.errors.UNPREDICTABLE_GAS_LIMIT)
+          ) {
+            this.context.logger.error("The gas limit could not be estimated because the transaction might fail", { e });
+          }
+        }
+        this.context.logger.error("Failed to estimate the total gas limit", { e });
+      }
+      if (totalFee !== null) {
+        gasAndRewardInfo.gas.required = totalFee.toString();
+        const hasEnoughGas = fundingWalletNativeTokenBalance.gt(totalFee);
+        if (!hasEnoughGas) {
+          this.context.logger.error(
+            `[PaymentModule] The funding wallet lacks sufficient gas to perform direct transfers`,
+            gasAndRewardInfo
+          );
+          return [false, null, null];
+        }
       }
       this.context.logger.info(
         `[PaymentModule] The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
@@ -606,10 +619,10 @@ export class PaymentModule extends BaseModule {
     },
     githubContextOwnerId: number,
     githubContextRepositoryId: number
-  ): Promise<boolean> {
+  ): Promise<[true, string] | [false, null]> {
     if (!privateKeyParsed.privateKey) {
       this.context.logger.error("Private key could not be decrypted");
-      return false;
+      return [false, null];
     }
     // private key + owner id
     // Format: PRIVATE_KEY:GITHUB_OWNER_ID
@@ -618,9 +631,9 @@ export class PaymentModule extends BaseModule {
         this.context.logger.info(
           `Current organization/user id ${githubContextOwnerId} is not allowed to use this private key`
         );
-        return false;
+        return [false, null];
       }
-      return true;
+      return [true, privateKeyParsed.privateKey];
     }
 
     // private key + owner id + repository id
