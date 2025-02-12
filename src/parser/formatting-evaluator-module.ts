@@ -11,7 +11,14 @@ import {
 } from "../configuration/formatting-evaluator-config";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { GithubCommentScore, ReadabilityScore, Result, WordResult } from "../types/results";
+import {
+  FormattingScore,
+  FormattingScoreElement,
+  GithubCommentScore,
+  ReadabilityScore,
+  Result,
+  WordResult,
+} from "../types/results";
 import { typeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 import { parsePriorityLabel } from "../helpers/github";
@@ -101,7 +108,7 @@ export class FormattingEvaluatorModule extends BaseModule {
       fleschKincaid,
       syllables: syllableCount,
       sentences,
-      score: normalizedScore,
+      score: new Decimal(normalizedScore).toDecimalPlaces(2).toNumber(),
     };
   }
 
@@ -110,14 +117,9 @@ export class FormattingEvaluatorModule extends BaseModule {
       const currentElement = result[key];
       const comments = currentElement.comments ?? [];
       for (const comment of comments) {
-        const { formatting, words, readability } = this._getFormattingScore(comment);
+        const { formatting, words } = this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
-        const formattingTotal = this._calculateFormattingTotal(
-          formatting,
-          words,
-          multiplierFactor,
-          readability
-        ).toDecimalPlaces(2);
+        const formattingTotal = this._calculateFormattingTotal(formatting, words, multiplierFactor).toDecimalPlaces(2);
         const priority = parsePriorityLabel(data.self?.labels);
         const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
         comment.score = {
@@ -125,11 +127,16 @@ export class FormattingEvaluatorModule extends BaseModule {
           reward,
           formatting: {
             content: formatting,
-            result: Object.values(formatting).reduce((acc, curr) => acc + curr.score * curr.elementCount, 0),
+            result: Object.values(formatting).reduce((acc, curr) => {
+              if ("elementCount" in curr) {
+                return acc + curr.score * curr.elementCount;
+              }
+              //Readability score is not included in the total formatting score
+              return acc;
+            }, 0),
           },
           priority: priority,
           words,
-          readability,
           multiplier: multiplierFactor.multiplier,
         };
       }
@@ -140,23 +147,26 @@ export class FormattingEvaluatorModule extends BaseModule {
   private _calculateFormattingTotal(
     formatting: ReturnType<typeof this._getFormattingScore>["formatting"],
     regex: WordResult,
-    multiplierFactor: Multiplier,
-    readability?: ReadabilityScore
+    multiplierFactor: Multiplier
   ): Decimal {
     if (!formatting) return new Decimal(0);
 
     let sum = new Decimal(0);
     Object.values(formatting).forEach((formattingElement) => {
       const score = new Decimal(formattingElement.score);
-      const elementTotalValue = score.mul(formattingElement.elementCount);
-      sum = sum.add(elementTotalValue);
+      if ("elementCount" in formattingElement) {
+        const elementTotalValue = score.mul(formattingElement.elementCount);
+        sum = sum.add(elementTotalValue);
+      }
     });
 
     sum = sum.add(new Decimal(regex.result));
 
     // Apply readability scoring if enabled
-    if (this._readabilityConfig.enabled && readability) {
-      const readabilityScore = new Decimal(readability.score).mul(this._readabilityConfig.weight).mul(sum);
+    if (this._readabilityConfig.enabled && formatting["readability"]) {
+      const readabilityScore = new Decimal(formatting["readability"].score)
+        .mul(this._readabilityConfig.weight)
+        .mul(sum);
       sum = sum.add(readabilityScore);
     }
 
@@ -179,7 +189,8 @@ export class FormattingEvaluatorModule extends BaseModule {
     if (temp.window.document.body) {
       const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
       const readability = this._calculateFleschKincaid(temp.window.document.body.textContent ?? "");
-      return { formatting: res.formatting, words: res.words, readability };
+      Object.assign(res.formatting, { readability: { score: readability.score } });
+      return { formatting: res.formatting, words: res.words };
     } else {
       throw new Error(`Could not create DOM for comment [${JSON.stringify(comment)}]`);
     }
@@ -196,9 +207,9 @@ export class FormattingEvaluatorModule extends BaseModule {
     };
   }
 
-  _updateTagCount(tagCount: Record<string, { score: number; elementCount: number }>, tagName: string, score: number) {
+  _updateTagCount(tagCount: Record<string, FormattingScore | FormattingScoreElement>, tagName: string, score: number) {
     // If we already had that tag included in the result, merge them and update total count
-    if (Object.keys(tagCount).includes(tagName)) {
+    if (Object.keys(tagCount).includes(tagName) && "elementCount" in tagCount[tagName]) {
       tagCount[tagName].elementCount += 1;
     } else {
       tagCount[tagName] = {
@@ -209,7 +220,7 @@ export class FormattingEvaluatorModule extends BaseModule {
   }
 
   _classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
-    const formatting: Record<string, { score: number; elementCount: number }> = {};
+    const formatting: Record<string, FormattingScore | FormattingScoreElement> = {};
     const elements = htmlElement.getElementsByTagName("*");
     const urlSet = new Set<string>();
 

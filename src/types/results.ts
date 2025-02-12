@@ -43,6 +43,15 @@ export interface ReviewScore {
   reward: number;
 }
 
+export interface FormattingScoreElement {
+  score: number;
+  elementCount: number;
+}
+
+export interface FormattingScore {
+  score: number;
+}
+
 export interface GithubCommentScore {
   id: number;
   content: string;
@@ -51,7 +60,7 @@ export interface GithubCommentScore {
   diffHunk?: string;
   score?: {
     formatting?: {
-      content: Record<string, { score: number; elementCount: number }>;
+      content: Record<string, FormattingScoreElement | FormattingScore>;
       result: number;
     };
     words?: WordResult;
