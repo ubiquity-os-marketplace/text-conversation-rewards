@@ -270,13 +270,6 @@ export class PaymentModule extends BaseModule {
         },
       };
 
-      if (!hasEnoughRewardToken) {
-        this.context.logger.error(
-          `[PaymentModule] The funding wallet lacks sufficient reward tokens to perform direct transfers`,
-          gasAndRewardInfo
-        );
-        return [false, null, null];
-      }
       // Ensure there is enough gas available to complete the transfer transaction
       const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
       const permit2Wrapper = new Permit2Wrapper(permit2Contract);
@@ -292,16 +285,22 @@ export class PaymentModule extends BaseModule {
         totalFee = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
       } catch (e) {
         if (isEthersError(e)) {
-          if (
-            e.code === ethers.errors.UNPREDICTABLE_GAS_LIMIT ||
-            e.message.includes("TRANSFER_FROM_FAILED") ||
-            e.message.includes(ethers.errors.UNPREDICTABLE_GAS_LIMIT)
-          ) {
+          if (e.message.includes("TRANSFER_FROM_FAILED"))
             this.context.logger.error("The gas limit could not be estimated because the transaction might fail", { e });
-          }
+          else if (e.reason === "InvalidNonce" || e.message.includes("InvalidNonce"))
+            this.context.logger.error("The transaction is likely to be reverted due to an invalid nonce", { e });
         }
         this.context.logger.error("Failed to estimate the total gas limit", { e });
       }
+
+      if (!hasEnoughRewardToken) {
+        this.context.logger.error(
+          `[PaymentModule] The funding wallet lacks sufficient reward tokens to perform direct transfers`,
+          gasAndRewardInfo
+        );
+        return [false, null, null];
+      }
+
       if (totalFee !== null) {
         gasAndRewardInfo.gas.required = totalFee.toString();
         const hasEnoughGas = fundingWalletNativeTokenBalance.gt(totalFee);
@@ -646,14 +645,14 @@ export class PaymentModule extends BaseModule {
         this.context.logger.info(
           `Current organization/user id ${githubContextOwnerId} and repository id ${githubContextRepositoryId} are not allowed to use this private key`
         );
-        return false;
+        return [false, null];
       }
-      return true;
+      return [true, privateKeyParsed.privateKey];
     }
 
     // otherwise invalid private key format
     this.context.logger.error("Invalid private key format");
-    return false;
+    return [false, null];
   }
 
   get enabled(): boolean {

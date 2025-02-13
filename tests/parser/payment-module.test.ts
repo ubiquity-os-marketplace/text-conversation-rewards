@@ -418,7 +418,7 @@ describe("payment-module.ts", () => {
       const githubContextRepositoryId = 2;
 
       const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
-      const isAllowed = await paymentModule._isPrivateKeyAllowed(
+      const [isAllowed] = await paymentModule._isPrivateKeyAllowed(
         privateKeyParsed,
         githubContextOrganizationId,
         githubContextRepositoryId
@@ -455,7 +455,7 @@ describe("payment-module.ts", () => {
       const githubContextRepositoryId = 2;
 
       const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
-      const isAllowed = await paymentModule._isPrivateKeyAllowed(
+      const [isAllowed] = await paymentModule._isPrivateKeyAllowed(
         privateKeyParsed,
         githubContextOrganizationId,
         githubContextRepositoryId
@@ -478,7 +478,7 @@ describe("payment-module.ts", () => {
       const githubContextRepositoryId = 2;
 
       const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
-      const isAllowed = await paymentModule._isPrivateKeyAllowed(
+      const [isAllowed] = await paymentModule._isPrivateKeyAllowed(
         privateKeyParsed,
         githubContextOrganizationId,
         githubContextRepositoryId
@@ -499,7 +499,7 @@ describe("payment-module.ts", () => {
       const githubContextRepositoryId = 2;
 
       const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
-      const isAllowed = await paymentModule._isPrivateKeyAllowed(
+      const [isAllowed] = await paymentModule._isPrivateKeyAllowed(
         privateKeyParsed,
         githubContextOrganizationId,
         githubContextRepositoryId
@@ -525,7 +525,7 @@ describe("payment-module.ts", () => {
       const githubContextRepositoryId = 99;
 
       const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
-      const isAllowed = await paymentModule._isPrivateKeyAllowed(
+      const [isAllowed] = await paymentModule._isPrivateKeyAllowed(
         privateKeyParsed,
         githubContextOrganizationId,
         githubContextRepositoryId
@@ -550,7 +550,7 @@ describe("payment-module.ts", () => {
       const githubContextRepositoryId = 2;
 
       const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
-      const isAllowed = await paymentModule._isPrivateKeyAllowed(
+      const [isAllowed] = await paymentModule._isPrivateKeyAllowed(
         privateKeyParsed,
         githubContextOrganizationId,
         githubContextRepositoryId
@@ -571,7 +571,7 @@ describe("payment-module.ts", () => {
       const githubContextRepositoryId = 2;
 
       const privateKeyParsed = await paymentModule._parsePrivateKey(privateKeyEncrypted);
-      const isAllowed = await paymentModule._isPrivateKeyAllowed(
+      const [isAllowed] = await paymentModule._isPrivateKeyAllowed(
         privateKeyParsed,
         githubContextOrganizationId,
         githubContextRepositoryId
