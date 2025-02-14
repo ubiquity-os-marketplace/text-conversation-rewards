@@ -366,6 +366,10 @@ with:
         debug: false
 ```
 
+## Permit2 allowance UI helper
+
+https://permit2-allowance.ubq.fi
+
 ## How to encrypt the `evmPrivateEncrypted` parameter
 
 Partner private key (`evmPrivateEncrypted` config param in `conversation-rewards` plugin) supports 2 formats:
