@@ -24,7 +24,7 @@
 
 ## Technical Architecture
 
-The Text Conversation Rewards system is a sophisticated GitHub Action that revolutionizes open source collaboration by implementing an AI-powered reward mechanism for quality contributions.
+This plugin revolutionizes open source collaboration by implementing an AI-powered reward mechanism for quality contributions.
 
 ### Core Components
 
