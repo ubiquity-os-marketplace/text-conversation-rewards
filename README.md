@@ -30,7 +30,7 @@ This plugin revolutionizes open source collaboration by implementing an AI-power
 
 #### Content Evaluation Engine
 
-At the heart of the system is a sophisticated content evaluation module that assigns monetary value to contributor comments in the context of work projects with specifications. Here's how it works:
+At the heart of the system is a content evaluation module that assigns monetary value to contributor comments in the context of work projects with specifications. Here's how it works:
 
 1. The system processes both issue comments and pull request review comments through different evaluation pipelines, with comprehensive preprocessing that:
 
