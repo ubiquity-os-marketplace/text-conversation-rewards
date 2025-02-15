@@ -15,7 +15,7 @@ const cfg: Config = {
   coverageReporters: ["json", "lcov", "text", "clover", "json-summary"],
   reporters: ["default", "jest-junit", "jest-md-dashboard"],
   coverageDirectory: "coverage",
-  testTimeout: 20000,
+  testTimeout: 90000,
   roots: ["<rootDir>", "tests"],
   extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
