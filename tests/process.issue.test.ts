@@ -1,9 +1,15 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
+import OpenAI from "openai";
+import { CommentAssociation } from "../src/configuration/comment-types";
+import { GitHubIssue } from "../src/github-types";
+import { retry } from "../src/helpers/retry";
+import { EventIncentivesModule } from "../src/parser/event-incentives-module";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
@@ -12,18 +18,14 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
+import eventincentivesResults from "./__mocks__/results/event-incentives-results.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
-import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
+import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
-import { CommentAssociation } from "../src/configuration/comment-types";
-import { GitHubIssue } from "../src/github-types";
-import { retry } from "../src/helpers/retry";
-import OpenAI from "openai";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -300,6 +302,21 @@ describe("Modules tests", () => {
     expect(result).toEqual(reviewIncentivizerResult);
   });
 
+  it("Should incentivize events", async () => {
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
+      new EventIncentivesModule(ctx),
+    ];
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(eventincentivesResults);
+  });
+
   it("Should generate permits", async () => {
     const processor = new Processor(ctx);
     processor["_transformers"] = [
@@ -308,6 +325,7 @@ describe("Modules tests", () => {
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
+      new EventIncentivesModule(ctx),
       new PaymentModule(ctx),
     ];
     // This catches calls by getFastestRpc
@@ -325,6 +343,7 @@ describe("Modules tests", () => {
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
+      new EventIncentivesModule(ctx),
       new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];

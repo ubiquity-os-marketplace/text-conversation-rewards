@@ -1307,6 +1307,88 @@
       }
     ],
     "reviewRewards": [],
+    "events": {
+      "issue.closed": {
+        "count": 1,
+        "reward": 0
+      },
+      "issue.commented": {
+        "count": 10,
+        "reward": 0
+      },
+      "issue.cross-referenced": {
+        "count": 4,
+        "reward": 0
+      },
+      "issue.labeled": {
+        "count": 2,
+        "reward": 0
+      },
+      "issue.mentioned": {
+        "count": 1,
+        "reward": 0
+      },
+      "issue.subscribed": {
+        "count": 1,
+        "reward": 0
+      },
+      "issue.unlabeled": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.closed": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.commented": {
+        "count": 2,
+        "reward": 0
+      },
+      "pull_request.cross-referenced": {
+        "count": 2,
+        "reward": 0
+      },
+      "pull_request.head_ref_deleted": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.merged": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.ready_for_review": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.review_comment": {
+        "count": 22,
+        "reward": 0
+      },
+      "pull_request.sent.review_requested": {
+        "count": 5,
+        "reward": 0
+      },
+      "reaction.received.+1": {
+        "count": 2,
+        "reward": 0
+      },
+      "reaction.received.eyes": {
+        "count": 2,
+        "reward": 0
+      },
+      "reaction.sent.+1": {
+        "count": 5,
+        "reward": 0
+      },
+      "reaction.sent.eyes": {
+        "count": 2,
+        "reward": 0
+      },
+      "reaction.sent.rocket": {
+        "count": 1,
+        "reward": 0
+      }
+    },
     "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiIyMjIxODY4MDAwMDAwMDAwMDAwMDAwIn0sIm5vbmNlIjoiODMwNzY0Mzc0NDY0OTk1ODkzMDQ2MTExMjg5NjM5MTY3MTAxMDY4ODYxMDI0MzYwMjM4ODE1MjAwNTgzNDY4MDA1Nzg3NTQ0MDE3NTUiLCJkZWFkbGluZSI6IjExNTc5MjA4OTIzNzMxNjE5NTQyMzU3MDk4NTAwODY4NzkwNzg1MzI2OTk4NDY2NTY0MDU2NDAzOTQ1NzU4NDAwNzkxMzEyOTYzOTkzNSJ9LCJ0cmFuc2ZlckRldGFpbHMiOnsidG8iOiIweDREMDcwNGY0MDBENTdCYTkzZUVhODg3NjVDM0ZjREJEODI2ZENGYzQiLCJyZXF1ZXN0ZWRBbW91bnQiOiIyMjIxODY4MDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg5ZWJjOWQ4ODQwODQ5OWIyZDU1MmI0MzAzOTFiMjUwN2VhYzNmODg5NDc1MGE3MjY2YzQ5OGJiNTlhMzQ3OTMzNDU0N2QwNzhiMGUwZjE3NzQ2OTQ4MzFmM2JlODdkNjcyNzEyNzgyNDljYzRmYjg5NzUxYzhkNmI0ZjI0ZmIyNzFjIiwibmV0d29ya0lkIjoxMDB9XQ=="
   },
   "0x4007": {
@@ -2554,6 +2636,72 @@
         }
       }
     ],
+    "events": {
+      "issue.commented": {
+        "count": 9,
+        "reward": 0
+      },
+      "issue.labeled": {
+        "count": 1,
+        "reward": 0
+      },
+      "issue.mentioned": {
+        "count": 2,
+        "reward": 0
+      },
+      "issue.subscribed": {
+        "count": 2,
+        "reward": 0
+      },
+      "pull_request.received.review_requested": {
+        "count": 2,
+        "reward": 0
+      },
+      "pull_request.commented": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.mentioned": {
+        "count": 2,
+        "reward": 0
+      },
+      "pull_request.reopened": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.review_comment": {
+        "count": 21,
+        "reward": 0
+      },
+      "pull_request.reviewed.commented": {
+        "count": 6,
+        "reward": 0
+      },
+      "pull_request.subscribed": {
+        "count": 2,
+        "reward": 0
+      },
+      "reaction.received.+1": {
+        "count": 2,
+        "reward": 0
+      },
+      "reaction.received.eyes": {
+        "count": 2,
+        "reward": 0
+      },
+      "reaction.received.rocket": {
+        "count": 1,
+        "reward": 0
+      },
+      "reaction.sent.+1": {
+        "count": 1,
+        "reward": 0
+      },
+      "reaction.sent.eyes": {
+        "count": 2,
+        "reward": 0
+      }
+    },
     "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOiI2Nzc4MTIwMDAwMDAwMDAwMDAwMDAifSwibm9uY2UiOiIzMzkyOTQxNzYyNzkzOTc1NTkzMTc4MTExNTY1OTgzNzk3NDc1ODk0MDM3NDk1NDA0MTMxMjg2MzgyNzgwNDExNjg3NzA4MzUyODg4IiwiZGVhZGxpbmUiOiIxMTU3OTIwODkyMzczMTYxOTU0MjM1NzA5ODUwMDg2ODc5MDc4NTMyNjk5ODQ2NjU2NDA1NjQwMzk0NTc1ODQwMDc5MTMxMjk2Mzk5MzUifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50IjoiNjc3ODEyMDAwMDAwMDAwMDAwMDAwIn0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg2NmFkYmRmYWFhYTkzZjUyNGVkODJkN2YzMjU1YTRiZjA4NmFkYjJiNTQ0ZTA2MDczOGVhNGVjMTU5YTE1YzQ1NzExMzI4NjU1N2NiOGQ0NTJmYjIzMGExNDFlMzg2OTQ1OWU0N2RlOTg4YTdhMDI3YTg5ZDUwNjI3YzFmNDljNzFjIiwibmV0d29ya0lkIjoxMDB9XQ=="
   },
   "whilefoo": {
@@ -3025,6 +3173,44 @@
           "reward": 25
         }
       }
-    ]
+    ],
+    "events": {
+      "issue.commented": {
+        "count": 1,
+        "reward": 0
+      },
+      "issue.mentioned": {
+        "count": 3,
+        "reward": 0
+      },
+      "issue.subscribed": {
+        "count": 3,
+        "reward": 0
+      },
+      "pull_request.received.review_requested": {
+        "count": 2,
+        "reward": 0
+      },
+      "pull_request.review_comment": {
+        "count": 11,
+        "reward": 0
+      },
+      "pull_request.reviewed.approved": {
+        "count": 1,
+        "reward": 0
+      },
+      "pull_request.reviewed.changes_requested": {
+        "count": 1,
+        "reward": 0
+      },
+      "reaction.received.+1": {
+        "count": 3,
+        "reward": 0
+      },
+      "reaction.sent.+1": {
+        "count": 1,
+        "reward": 0
+      }
+    }
   }
 }
