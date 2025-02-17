@@ -1,9 +1,13 @@
+import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import { postComment } from "@ubiquity-os/plugin-sdk";
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
+import ms, { StringValue } from "ms";
 import OpenAI from "openai";
-import { commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
+import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import { retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -15,10 +19,6 @@ import {
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
-import { postComment } from "@ubiquity-os/plugin-sdk";
-import { retry } from "../helpers/retry";
-import ms, { StringValue } from "ms";
-import { TypeBoxError } from "@sinclair/typebox";
 
 /**
  * Evaluates and rates comments.
@@ -139,7 +139,11 @@ export class ContentEvaluatorModule extends BaseModule {
       }
 
       const currentReward = new Decimal(currentComment.score?.reward ?? 0);
-      const priority = currentComment.score?.priority ?? 1;
+      const priority =
+        // We do not apply priority multiplier on issue specification
+        currentComment.score?.priority && !(currentComment.type & CommentAssociation.SPECIFICATION)
+          ? currentComment.score.priority
+          : 1;
 
       currentComment.score = {
         ...(currentComment.score || { multiplier: 0 }),
