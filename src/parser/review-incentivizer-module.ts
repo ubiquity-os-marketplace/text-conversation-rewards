@@ -1,16 +1,16 @@
 import { Value } from "@sinclair/typebox/value";
+import { minimatch } from "minimatch";
 import {
   ReviewIncentivizerConfiguration,
   reviewIncentivizerConfigurationType,
 } from "../configuration/review-incentivizer-config";
+import { GitHubPullRequestReviewState } from "../github-types";
+import { getExcludedFiles } from "../helpers/excluded-files";
+import { parsePriorityLabel } from "../helpers/github";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
-import { Result, ReviewScore } from "../types/results";
 import { ContextPlugin } from "../types/plugin-input";
-import { GitHubPullRequestReviewState } from "../github-types";
-import { parsePriorityLabel } from "../helpers/github";
-import { getExcludedFiles } from "../helpers/excluded-files";
-import { minimatch } from "minimatch";
+import { Result, ReviewScore } from "../types/results";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -135,7 +135,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     ).data;
 
     // Get the first commit of the PR
-    const firstCommitSha = pullCommits[0]?.parents[0]?.sha;
+    const firstCommitSha = pullCommits[0]?.parents[0]?.sha || pullCommits[0]?.sha;
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
