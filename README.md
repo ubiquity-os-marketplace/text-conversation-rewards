@@ -37,7 +37,7 @@ At the heart of the system is a content evaluation module that assigns monetary 
    - Removes user commands (starting with /) and bot responses
    - Filters out quoted text (starting with >)
    - Removes HTML comments and footnotes
-   - For assigned users, considers comment timestamps to optionally exclude those posted during assignment periods, to reduce gaming 
+   - For assigned users, considers comment timestamps to optionally exclude those posted during assignment periods, to reduce gaming
    - Processes linked pull request comments through GraphQL API
    - Handles minimized/hidden comments
    - Credits only unique links to prevent duplicates
