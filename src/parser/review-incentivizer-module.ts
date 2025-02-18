@@ -62,9 +62,11 @@ export class ReviewIncentivizerModule extends BaseModule {
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
           const baseOwner = linkedPullReviews.self.base.repo.owner.login;
           const baseRepo = linkedPullReviews.self.base.repo.name;
+          const baseRef = linkedPullReviews.self.base.ref;
           const reviewDiffs = await this.fetchReviewDiffRewards(
             baseOwner,
             baseRepo,
+            baseRef,
             headOwnerRepo ?? "",
             reviewsByUser
           );
@@ -114,8 +116,9 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async fetchReviewDiffRewards(
-    prOwner: string,
-    prRepo: string,
+    baseOwner: string,
+    baseRepo: string,
+    baseRef: string,
     headOwnerRepo: string,
     reviewsByUser: GitHubPullRequestReviewState[]
   ) {
@@ -128,8 +131,8 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     const pullCommits = (
       await this.context.octokit.rest.pulls.listCommits({
-        owner: prOwner,
-        repo: prRepo,
+        owner: baseOwner,
+        repo: baseRepo,
         pull_number: pullNumber,
       })
     ).data;
@@ -139,7 +142,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
-    const excludedFilePatterns = await getExcludedFiles(this.context, prOwner, prRepo);
+    const excludedFilePatterns = await getExcludedFiles(this.context, baseOwner, baseRepo, baseRef);
     for (const [i, currentReview] of reviewsByUser.entries()) {
       if (!currentReview.commit_id) continue;
 
@@ -149,7 +152,13 @@ export class ReviewIncentivizerModule extends BaseModule {
 
       if (headSha && baseSha !== currentReview.commit_id) {
         try {
-          const reviewEffect = await this.getReviewableDiff(prOwner, prRepo, baseSha, headSha, excludedFilePatterns);
+          const reviewEffect = await this.getReviewableDiff(
+            baseOwner,
+            baseRepo,
+            baseSha,
+            headSha,
+            excludedFilePatterns
+          );
           reviews.push({
             reviewId: currentReview.id,
             effect: reviewEffect,

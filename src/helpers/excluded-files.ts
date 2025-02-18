@@ -33,8 +33,8 @@ async function parseGitAttributes(content: string): Promise<GitAttributes[]> {
     .filter((item): item is GitAttributes => item !== null);
 }
 
-export async function getExcludedFiles(context: ContextPlugin, owner: string, repo: string) {
-  const gitAttributesContent = await getFileContent(context, ".gitattributes", owner, repo);
+export async function getExcludedFiles(context: ContextPlugin, owner: string, repo: string, ref?: string) {
+  const gitAttributesContent = await getFileContent(context, owner, repo, ".gitattributes", ref);
   if (!gitAttributesContent) {
     return null;
   }
@@ -47,15 +47,17 @@ export async function getExcludedFiles(context: ContextPlugin, owner: string, re
 
 async function getFileContent(
   context: ContextPlugin,
-  path: string,
   owner: string,
-  repo: string
+  repo: string,
+  path: string,
+  ref?: string
 ): Promise<string | null> {
   try {
     const response = await context.octokit.rest.repos.getContent({
       owner,
       repo,
       path,
+      ref,
     });
 
     // GitHub API returns content as base64
