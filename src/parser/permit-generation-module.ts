@@ -7,8 +7,6 @@ import {
   createAdapters,
   Database,
   decrypt,
-  encodePermits,
-  generatePayoutPermit,
   parseDecryptedPrivateKey,
   PermitReward,
   SupportedEvents,
@@ -19,12 +17,13 @@ import {
   PermitGenerationConfiguration,
   permitGenerationConfigurationType,
 } from "../configuration/permit-generation-configuration";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
+import { generatePermitUrlPayload } from "../helpers/permit";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
-import { isAdmin, isCollaborative } from "../helpers/checkers";
 
 interface Payload {
   evmNetworkId: number;
@@ -110,28 +109,23 @@ export class PermitGenerationModule extends BaseModule {
             },
           ],
         };
-        const permits = await generatePayoutPermit(
-          {
+        result[key].permitUrl = `https://pay.ubq.fi?claim=${await generatePermitUrlPayload(
+          this.context,
+          key,
+          payload.evmNetworkId,
+          value.total,
+          payload.erc20RewardToken,
+          createAdapters(this._supabase, {
             env,
             eventName,
-            logger: permitLogger,
-            payload,
-            adapters: createAdapters(this._supabase, {
-              env,
-              eventName,
-              octokit,
-              config,
-              logger: permitLogger,
-              payload,
-              adapters,
-            }),
             octokit,
             config,
-          },
-          config.permitRequests
-        );
-        result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-        await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
+            logger: permitLogger,
+            payload,
+            adapters,
+          })
+        )}`;
+        // await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
       } catch (e) {
         this.context.logger.error(`[PermitGenerationModule] Failed to generate permits for user ${key}`, { e });
       }
