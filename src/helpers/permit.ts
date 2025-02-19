@@ -87,6 +87,12 @@ export async function generatePermitUrlPayload(
   const spenderWallet = new ethers.Wallet(privateKey);
   const { data: userData } = await context.octokit.rest.users.getByUsername({ username: userName });
 
+  context.logger.info("Generating permit.", {
+    userName,
+    amount,
+    chainId,
+  });
+
   if (!userData) {
     throw new Error(`GitHub user was not found for id ${userName}`);
   }
