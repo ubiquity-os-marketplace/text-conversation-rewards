@@ -18,7 +18,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
-import eventincentivesResults from "./__mocks__/results/event-incentives-results.json";
+import eventIncentivesResults from "./__mocks__/results/event-incentives-results.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
@@ -314,7 +314,7 @@ describe("Modules tests", () => {
     ];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    expect(result).toEqual(eventincentivesResults);
+    expect(result).toEqual(eventIncentivesResults);
   });
 
   it("Should generate permits", async () => {
