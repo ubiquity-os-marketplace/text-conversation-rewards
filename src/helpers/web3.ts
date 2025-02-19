@@ -30,6 +30,7 @@ export const ERC20_ABI = [
   "function decimals() public view returns (uint8)",
   "function balanceOf(address) view returns (uint256)",
   "function transfer(address,uint256) public returns (bool)",
+  "function allowance(address,address) view returns (uint256)",
 ];
 
 // Required PERMIT2 ABI functions
