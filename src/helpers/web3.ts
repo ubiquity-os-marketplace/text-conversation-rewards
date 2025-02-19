@@ -8,10 +8,10 @@
  * @returns ERC20 token symbol
  */
 export async function getErc20TokenSymbol(networkId: number, tokenAddress: string) {
-  if (networkId === 100) {
-    return "WXDAI";
+  if (tokenAddress === "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068") {
+    return "UUSD";
   }
-  return "UUSD";
+  return "WXDAI";
   // const abi = ["function symbol() view returns (string)"];
   //
   // // get fastest RPC
