@@ -25,7 +25,7 @@ jobs:
     name: Rewards
     runs-on: ubuntu-latest
     permissions: write-all
-    environment: ${{ github.ref == 'refs/heads/main' && 'main' || 'development' }}
+    environment: main
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
