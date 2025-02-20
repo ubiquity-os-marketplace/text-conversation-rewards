@@ -345,6 +345,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       ];
 
       server.use(http.post("https://*", () => passthrough()));
+      await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
       expect(result).toEqual(paymentResult);
