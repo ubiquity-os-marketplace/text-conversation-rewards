@@ -116,7 +116,7 @@ function getResultOriginal() {
         reward: 9.99,
         multiplier: 1,
       },
-      userId: 1,
+      userId: 2,
       comments: [
         {
           id: 57,
@@ -139,11 +139,10 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
       from: jest.fn(() => ({
         select: jest.fn(() => ({
           // eslint-disable-next-line sonarjs/no-nested-functions
-          eq: jest.fn((id, value) => ({
+          eq: jest.fn(() => ({
             single: jest.fn(() => ({
               data: {
-                id: value === "molecula451" ? 1 : 2,
-                address: "0xAddress",
+                wallets: { address: "0xAddress" },
               },
             })),
           })),
