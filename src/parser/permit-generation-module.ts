@@ -269,7 +269,7 @@ export class PermitGenerationModule extends BaseModule {
         .select("id")
         .single();
       if (!newLocationData || error) {
-        console.error("Failed to create a new location", error);
+        this.context.logger.error("Failed to create a new location", error);
       } else {
         locationId = newLocationData.id;
       }
@@ -277,9 +277,7 @@ export class PermitGenerationModule extends BaseModule {
       locationId = locationData.id;
     }
     if (!locationId) {
-      throw new Error(
-        this.context.logger.error("Failed to retrieve the related location from issue", { issue }).logMessage.raw
-      );
+      throw this.context.logger.error("Failed to retrieve the related location from issue", { issue }).logMessage.raw;
     }
     return locationId;
   }
@@ -305,7 +303,7 @@ export class PermitGenerationModule extends BaseModule {
         .single();
 
       if (error || !insertedToken) {
-        console.error("Failed to insert a new token:", error);
+        this.context.logger.error("Failed to insert a new token:", error);
       } else {
         tokenId = insertedToken.id;
       }
@@ -313,12 +311,10 @@ export class PermitGenerationModule extends BaseModule {
       tokenId = tokenData.id;
     }
     if (!tokenId) {
-      throw new Error(
-        this.context.logger.error("Failed to retrieve the related token from permit", {
-          address,
-          network,
-        }).logMessage.raw
-      );
+      throw this.context.logger.error("Failed to retrieve the related token from permit", {
+        address,
+        network,
+      }).logMessage.raw;
     }
 
     return tokenId;
@@ -340,7 +336,7 @@ export class PermitGenerationModule extends BaseModule {
         .single();
 
       if (error || !insertedWallet) {
-        console.error("Failed to insert a new wallet:", error);
+        this.context.logger.error("Failed to insert a new wallet:", error);
       } else {
         walletId = insertedWallet.id;
       }
@@ -348,9 +344,7 @@ export class PermitGenerationModule extends BaseModule {
       walletId = walletData.id;
     }
     if (!walletId) {
-      throw new Error(
-        this.context.logger.error("Failed to retrieve the related wallet from permit", { address }).logMessage.raw
-      );
+      throw this.context.logger.error("Failed to retrieve the related wallet from permit", { address }).logMessage.raw;
     }
 
     const { data: partnerData } = await this._supabase.from("partners").select("id").eq("wallet_id", walletId).single();
@@ -365,7 +359,7 @@ export class PermitGenerationModule extends BaseModule {
         .single();
 
       if (error || !insertedPartner) {
-        console.error("Failed to insert a new token:", error);
+        this.context.logger.error("Failed to insert a new token:", error);
       } else {
         partnerId = insertedPartner.id;
       }
@@ -373,9 +367,7 @@ export class PermitGenerationModule extends BaseModule {
       partnerId = partnerData.id;
     }
     if (!partnerId) {
-      throw new Error(
-        this.context.logger.error("Failed to retrieve the related partner from permit", { address }).logMessage.raw
-      );
+      throw this.context.logger.error("Failed to retrieve the related partner from permit", { address }).logMessage.raw;
     }
 
     return partnerId;
