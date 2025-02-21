@@ -333,14 +333,18 @@ export class PaymentModule extends BaseModule {
         return null;
       }
       const userId = userData.id;
-      const { data: walletData } = await this._supabase.from("wallets").select("address").eq("id", userId).single();
-      if (!walletData?.address) {
-        this.context.logger.error("Beneficiary wallet not found");
+      const { data: walletData, error: err } = await this._supabase
+        .from("users")
+        .select("wallets(*)")
+        .eq("id", userId)
+        .single();
+      if (err || !walletData.wallets?.address) {
+        this.context.logger.error("Failed to get wallet", { userId, err, walletData });
         return null;
       }
       beneficiaries.push({
         username: username,
-        address: walletData.address,
+        address: walletData.wallets?.address,
         amount: ethers.utils.parseUnits(reward.total.toString(), decimals),
       });
     }
