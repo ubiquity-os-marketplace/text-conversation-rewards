@@ -19,7 +19,7 @@ export class EventIncentivesModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(eventIncentivesConfigurationType, this.context.config.incentives.eventIncentives)) {
-      this.context.logger.error("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
+      this.context.logger.error("Invalid / missing configuration detected for EventIncentivesModule, disabling.");
       return false;
     }
     return true;

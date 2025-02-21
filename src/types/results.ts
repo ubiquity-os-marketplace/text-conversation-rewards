@@ -10,6 +10,7 @@ export interface Result {
     };
     feeRate?: number;
     permitUrl?: string;
+    explorerUrl?: string;
     userId: number;
     reviewRewards?: {
       reviews?: ReviewScore[];
