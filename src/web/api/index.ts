@@ -3,14 +3,14 @@ import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { ExecutionContext } from "hono";
 import { serveStatic } from "hono/bun";
+import { cors } from "hono/cors";
 import manifest from "../../../manifest.json";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
-import { getPayload } from "./payload";
 import { IssueActivityCache } from "../db/issue-activity-cache";
-import { cors } from "hono/cors";
+import { getPayload } from "./payload";
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
