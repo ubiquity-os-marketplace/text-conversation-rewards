@@ -8,6 +8,7 @@ incentives:
   formattingEvaluator: {}
   permitGeneration: {}
   reviewIncentivizer: {}
+  simplificiatoinIncentivizer: {}
   githubComment:
     post: false
     debug: false
