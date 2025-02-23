@@ -39,7 +39,7 @@ async function backfillPermits() {
   console.log("Found permits", permitsData.length);
 
   for (const permit of permitsData) {
-    // skip if already propperly filled
+    // skip if already properly filled
     if (permit.partner_id && permit.token_id) {
       console.log(`Permit ${permit.id}: already filled`);
       continue;
