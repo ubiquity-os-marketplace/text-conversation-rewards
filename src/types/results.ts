@@ -16,6 +16,9 @@ export interface Result {
       reviewBaseReward?: { reward: number };
       url: string;
     }[];
+    simplificationReward?: {
+      reward: number;
+    };
     events?: {
       [eventName: string]: {
         count: number;
