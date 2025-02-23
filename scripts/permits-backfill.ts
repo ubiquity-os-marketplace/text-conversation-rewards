@@ -1,13 +1,13 @@
 /*
-* this is supposed to be executed as a standalone. the context behind this is: 
-* as of 02/22/2025, the columns `token_id` and `partner_id` in our permits table 
-* at supabase are empty. this means that we can't derive the chain id, token address, 
-* nor permit owner from the db.
-* 
-* this script should not be needed once the following PR is merged. filling the columns
-* https://github.com/ubiquity-os-marketplace/text-conversation-rewards/pull/285
-* 
-* context: https://github.com/ubiquity/pay.ubq.fi/issues/368
+ * this is supposed to be executed as a standalone. the context behind this is:
+ * as of 02/22/2025, the columns `token_id` and `partner_id` in our permits table
+ * at supabase are empty. this means that we can't derive the chain id, token address,
+ * nor permit owner from the db.
+ *
+ * this script should not be needed once the following PR is merged. filling the columns
+ * https://github.com/ubiquity-os-marketplace/text-conversation-rewards/pull/285
+ *
+ * context: https://github.com/ubiquity/pay.ubq.fi/issues/368
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -20,41 +20,19 @@ import { QUERY_COMMENT_DETAILS } from "../src/types/requests";
 const _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const _octokit = new customOctokit({ auth: process.env.GITHUB_TOKEN });
 
-/** 
- * minimal type with only the fields we need to backfill
- */
 interface MinimalPermitReward {
   owner: string;
   tokenAddress: string;
   networkId: number;
 }
 
-/**
- * the structure of each array item in the *oldest* comment format. e.g https://github.com/ubiquity/work.ubq.fi/issues/20
- */
-interface OldFormatItem {
-  owner: string;
-  networkId: number;
-  permit: {
-    permitted: {
-      token: string;    // e.g., "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
-      amount: string;   // e.g., "45000000000000000000"
-    };
-    nonce: string;
-    deadline: string;
-  };
-  transferDetails: {
-    to: string;         // e.g., "0x4007CE2083c7F3E18097aeB3A39bb8eC149a341d"
-    requestedAmount: string;
-  };
-  signature: string;
-}
-
+// this is not part of core logic, so disabling lint is ok
+// eslint-disable-next-line sonarjs/cognitive-complexity
 async function backfillPermits() {
-  const { data: permitsData } = await _supabase.from('permits').select('*');
+  const { data: permitsData } = await _supabase.from("permits").select("*");
 
   if (!permitsData) {
-    console.log('No permits found');
+    console.log("No permits found");
     return;
   }
 
@@ -71,79 +49,82 @@ async function backfillPermits() {
       console.log(`Permit ${permit.id}: missing a beneficiary_id`);
       continue;
     }
-
     if (!permit.location_id) {
       console.log(`Permit ${permit.id}: missing a location_id`);
       continue;
     }
-    
-    // fetch the user record using beneficiary_id.
+    if (!permit.signature) {
+      console.log(`Permit ${permit.id}: missing a signature`);
+      continue;
+    }
+
+    // fetch the user record
     const { data: userData, error: userError } = await _supabase
-      .from('users')
-      .select('id, wallet_id')
-      .eq('id', permit.beneficiary_id)
+      .from("users")
+      .select("id, wallet_id")
+      .eq("id", permit.beneficiary_id)
       .single();
-    if (userError || !userData || !userData.wallet_id) {
+    if (userError || !userData?.wallet_id) {
       console.log(`Permit ${permit.id}: user ${permit.beneficiary_id} not found`);
       continue;
     }
 
-    // with the user`s wallet_id, fetch the wallet address.
+    // fetch the user's wallet address
     const { data: userWalletData, error: userWalletError } = await _supabase
-      .from('wallets')
-      .select('address')
-      .eq('id', userData.wallet_id)
+      .from("wallets")
+      .select("address")
+      .eq("id", userData.wallet_id)
       .single();
-    if (userWalletError || !userWalletData || !userWalletData.address) {
+    if (userWalletError || !userWalletData?.address) {
       console.log(`Permit ${permit.id}: wallet for user ${permit.beneficiary_id} not found`);
       continue;
     }
     const userAddress = userWalletData.address;
 
-    // fetch from locations table to extract the issue URL
+    // fetch location to get the GitHub issue URL
     const { data: locationData } = await _supabase
-      .from('locations')
-      .select('node_url')
-      .eq('id', permit.location_id)
+      .from("locations")
+      .select("node_url")
+      .eq("id", permit.location_id)
       .single();
-    if (!locationData || !locationData.node_url) {
+    if (!locationData?.node_url) {
       console.log(`Permit ${permit.id}: invalid node_url`);
       continue;
     }
 
+    // parse out the GitHub issue details
     const match = locationData.node_url.match(/https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/);
     if (!match) {
       console.log(`Permit ${permit.id}: invalid location node_url: ${locationData.node_url}`);
       continue;
     }
-
-    const [_, repoOwner, repoName, issueNumber] = match;
-    const issueParams = {
-      owner: repoOwner,
-      repo: repoName,
-      issue_number: parseInt(issueNumber, 10),
-    };
+    const [, repoOwner, repoName, issueNumber] = match;
 
     // pull comments from GitHub
     const comments: GitHubIssueComment[] = await _octokit.paginate(
-      _octokit.rest.issues.listComments.endpoint.merge(issueParams)
+      _octokit.rest.issues.listComments.endpoint.merge({
+        owner: repoOwner,
+        repo: repoName,
+        issue_number: parseInt(issueNumber, 10),
+      })
     );
     await getMinimizedCommentStatus(comments);
 
-    // try to find a matching "permit reward" in the comments
-    let foundPermit: MinimalPermitReward | null = null;
+    // find a permit that matches this permit's signature and user address
+    let matchedPermit: MinimalPermitReward | null = null;
     for (const comment of comments) {
       if (!comment.body) continue;
-      foundPermit = await extractPermit(comment.body, permit.beneficiary_id, userAddress);
-      if (foundPermit) break;
+      matchedPermit = findMatchingPermitRewardInComment(comment.body, permit.signature, userAddress);
+      if (matchedPermit) break;
     }
-    if (!foundPermit) {
-      console.log(`Permit ${permit.id}: no matching reward found`);
+
+    if (!matchedPermit) {
+      console.log(`Permit ${permit.id}: no matching reward found (signature: ${permit.signature})`);
       continue;
     }
 
-    // create instances in db to backfill
-    const partnerWalletId = await getOrCreateWallet(foundPermit.owner);
+    // proceed with backfilling
+    const partnerWalletId = await getOrCreateWallet(matchedPermit.owner);
     if (!partnerWalletId) {
       console.error(`Permit ${permit.id}: could not get/create partner wallet`);
       continue;
@@ -155,17 +136,17 @@ async function backfillPermits() {
       continue;
     }
 
-    const tokenId = await getOrCreateToken(foundPermit.tokenAddress, foundPermit.networkId);
+    const tokenId = await getOrCreateToken(matchedPermit.tokenAddress, matchedPermit.networkId);
     if (!tokenId) {
       console.error(`Permit ${permit.id}: could not get/create token`);
       continue;
     }
 
-    // update the permit in db
+    // update the permit
     const { error: updateError } = await _supabase
-      .from('permits')
+      .from("permits")
       .update({ partner_id: partnerId, token_id: tokenId })
-      .eq('id', permit.id);
+      .eq("id", permit.id);
     if (updateError) {
       console.error(`Permit ${permit.id}: error updating permit`, updateError);
     } else {
@@ -174,102 +155,41 @@ async function backfillPermits() {
   }
 }
 
-/**
- * figures out whether this comment is in the "latest" or "oldest" format
- * and returns a MinimalPermitReward if found, otherwise null.
- */
-async function extractPermit(
+// scans the comment for any "https://pay.ubq.fi/?claim=..." urls, decodes them,
+// and looks for one whose signature == permitSignature and beneficiary == userAddress.
+function findMatchingPermitRewardInComment(
   commentBody: string,
-  beneficiaryId: number,
+  permitSignature: string,
   userAddress: string
-): Promise<MinimalPermitReward | null> {
-  const latestFormatMarker = "Ubiquity - GithubCommentModule - GithubCommentModule.getBodyContent";
-  const oldestFormatMarker = "Ubiquity - Transactions - generatePermits -";
-
-  if (commentBody.includes(latestFormatMarker)) {
-    return extractFromLatestFormat(commentBody, beneficiaryId);
-  } else if (commentBody.includes(oldestFormatMarker)) {
-    return extractFromOldestFormat(commentBody, userAddress);
-  }
-  return null;
-}
-
-/**
- * for the *latest format*, we decode a base64 "claim" param from the permitUrl
- * and pick out the fields we need (owner, tokenAddress, networkId)
- */
-function extractFromLatestFormat(
-  commentBody: string,
-  beneficiaryId: number
 ): MinimalPermitReward | null {
-  const jsonMatch = commentBody.match(/<!--[\s\S]*?(\{[\s\S]+\})\s*-->/);
-  if (!jsonMatch) {
-    console.log("Latest format: didn't find JSON");
-    return null;
-  }
-  try {
-    const data = JSON.parse(jsonMatch[1]);
-    const output = data.output;
-    for (const user of Object.values(output)) {
-      // we match the beneficiaryId to userId
-      if ((user as any)?.userId === beneficiaryId) {
-        const permitUrl = (user as any).permitUrl;
-        const claimParam = new URL(permitUrl).searchParams.get('claim');
-        if (!claimParam) {
-          console.error("Latest format: Permit not found in URL", permitUrl);
-          return null;
+  // find all matches of pay.ubq.fi with a claim param
+  // example: https://pay.ubq.fi/?claim=eyJ0b2tlbkFkZHJlc3MiOiJ...
+  const regex = /https:\/\/pay\.ubq\.fi\/?\?claim=([A-Za-z0-9+/=_-]+)/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(commentBody)) !== null) {
+    const encoded = match[1];
+    try {
+      // decodePermits typically returns an array of PermitReward
+      const decodedList = decodePermits(encoded);
+      for (const decoded of decodedList) {
+        // check if this matches the permit's signature and the user address
+        if (
+          decoded.signature?.toLowerCase() === permitSignature.toLowerCase() &&
+          decoded.beneficiary?.toLowerCase() === userAddress.toLowerCase()
+        ) {
+          return {
+            owner: decoded.owner,
+            tokenAddress: decoded.tokenAddress,
+            networkId: decoded.networkId,
+          };
         }
-        const [decoded] = decodePermits(claimParam);
-        return {
-          owner: decoded.owner,
-          tokenAddress: decoded.tokenAddress,
-          networkId: decoded.networkId,
-        };
       }
+    } catch (err) {
+      console.error("Error decoding claim from comment", err);
     }
-  } catch (e) {
-    console.error("Latest format: JSON parsing error", e);
   }
-  return null;
-}
 
-/**
- * for the *oldest format*, we have an array of objects (OldFormatItem[]).
- * we pick the one whose `transferDetails.to` matches the userAddress,
- * then return just the fields we need
- */
-function extractFromOldestFormat(
-  commentBody: string,
-  userAddress: string
-): MinimalPermitReward | null {
-  const jsonMatch = commentBody.match(/<!--[\s\S]*?(\[[\s\S]+\])\s*-->/);
-  if (!jsonMatch) {
-    console.log("Oldest format: didn't find JSON array");
-    return null;
-  }
-  try {
-    const data: OldFormatItem[] = JSON.parse(jsonMatch[1]);
-    if (!Array.isArray(data) || data.length === 0) {
-      return null;
-    }
-
-    // look for the item whose `transferDetails.to` matches the user
-    const entry = data.find(
-      (item) => item.transferDetails.to.toLowerCase() === userAddress.toLowerCase()
-    );
-    if (!entry) {
-      console.error("Oldest format: Permit not found for user", userAddress);
-      return null;
-    }
-
-    return {
-      owner: entry.owner,
-      tokenAddress: entry.permit.permitted.token,
-      networkId: entry.networkId,
-    };
-  } catch (e) {
-    console.error("Oldest format: JSON parsing error", e);
-  }
   return null;
 }
 
@@ -279,9 +199,9 @@ function extractFromOldestFormat(
 async function getOrCreateWallet(address: string): Promise<number | null> {
   // 1) try to find existing wallet
   const { data: existing, error: findError } = await _supabase
-    .from('wallets')
-    .select('id')
-    .eq('address', address)
+    .from("wallets")
+    .select("id")
+    .eq("address", address)
     .maybeSingle();
 
   if (findError) {
@@ -294,9 +214,9 @@ async function getOrCreateWallet(address: string): Promise<number | null> {
 
   // 2) insert new wallet
   const { data: inserted, error: insertError } = await _supabase
-    .from('wallets')
+    .from("wallets")
     .insert({ address })
-    .select('id')
+    .select("id")
     .single();
   if (insertError || !inserted) {
     console.error(`Error inserting new wallet with address ${address}`, insertError);
@@ -311,9 +231,9 @@ async function getOrCreateWallet(address: string): Promise<number | null> {
 async function getOrCreatePartner(walletId: number): Promise<number | null> {
   // 1) try to find existing partner
   const { data: existing, error: findError } = await _supabase
-    .from('partners')
-    .select('id')
-    .eq('wallet_id', walletId)
+    .from("partners")
+    .select("id")
+    .eq("wallet_id", walletId)
     .maybeSingle();
 
   if (findError) {
@@ -326,9 +246,9 @@ async function getOrCreatePartner(walletId: number): Promise<number | null> {
 
   // 2) insert new partner
   const { data: inserted, error: insertError } = await _supabase
-    .from('partners')
+    .from("partners")
     .insert({ wallet_id: walletId })
-    .select('id')
+    .select("id")
     .single();
   if (insertError || !inserted) {
     console.error(`Error inserting new partner for wallet_id ${walletId}`, insertError);
@@ -343,10 +263,10 @@ async function getOrCreatePartner(walletId: number): Promise<number | null> {
 async function getOrCreateToken(address: string, network: number): Promise<number | null> {
   // 1) try to find existing token
   const { data: existing, error: findError } = await _supabase
-    .from('tokens')
-    .select('id')
-    .eq('address', address)
-    .eq('network', network)
+    .from("tokens")
+    .select("id")
+    .eq("address", address)
+    .eq("network", network)
     .maybeSingle();
 
   if (findError) {
@@ -359,9 +279,9 @@ async function getOrCreateToken(address: string, network: number): Promise<numbe
 
   // 2) insert new token
   const { data: inserted, error: insertError } = await _supabase
-    .from('tokens')
+    .from("tokens")
     .insert({ address, network })
-    .select('id')
+    .select("id")
     .single();
   if (insertError || !inserted) {
     console.error(`Error inserting new token with address ${address} and network ${network}`, insertError);
