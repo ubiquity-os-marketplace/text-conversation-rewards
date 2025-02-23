@@ -8,10 +8,10 @@
 * https://github.com/ubiquity-os-marketplace/text-conversation-rewards/pull/285
 * 
 * context: https://github.com/ubiquity/pay.ubq.fi/issues/368
-*/
+ */
 
 import { createClient } from "@supabase/supabase-js";
-import { Database, decodePermits, PermitReward } from "@ubiquity-os/permit-generation";
+import { Database, decodePermits } from "@ubiquity-os/permit-generation";
 import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { GitHubIssueComment } from "../src/github-types";
 import { IssueComment } from "@octokit/graphql-schema";
@@ -19,6 +19,36 @@ import { QUERY_COMMENT_DETAILS } from "../src/types/requests";
 
 const _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const _octokit = new customOctokit({ auth: process.env.GITHUB_TOKEN });
+
+/** 
+ * minimal type with only the fields we need to backfill
+ */
+interface MinimalPermitReward {
+  owner: string;
+  tokenAddress: string;
+  networkId: number;
+}
+
+/**
+ * the structure of each array item in the *oldest* comment format. e.g https://github.com/ubiquity/work.ubq.fi/issues/20
+ */
+interface OldFormatItem {
+  owner: string;
+  networkId: number;
+  permit: {
+    permitted: {
+      token: string;    // e.g., "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
+      amount: string;   // e.g., "45000000000000000000"
+    };
+    nonce: string;
+    deadline: string;
+  };
+  transferDetails: {
+    to: string;         // e.g., "0x4007CE2083c7F3E18097aeB3A39bb8eC149a341d"
+    requestedAmount: string;
+  };
+  signature: string;
+}
 
 async function backfillPermits() {
   const { data: permitsData } = await _supabase.from('permits').select('*');
@@ -50,7 +80,7 @@ async function backfillPermits() {
     // fetch the user record using beneficiary_id.
     const { data: userData, error: userError } = await _supabase
       .from('users')
-      .select('*')
+      .select('id, wallet_id')
       .eq('id', permit.beneficiary_id)
       .single();
     if (userError || !userData || !userData.wallet_id) {
@@ -73,12 +103,11 @@ async function backfillPermits() {
     // fetch from locations table to extract the issue URL
     const { data: locationData } = await _supabase
       .from('locations')
-      .select('*')
+      .select('node_url')
       .eq('id', permit.location_id)
       .single();
-
     if (!locationData || !locationData.node_url) {
-      console.log(`Permit ${permit.id}: location ${permit.location_id} not found or invalid node_url`);
+      console.log(`Permit ${permit.id}: invalid node_url`);
       continue;
     }
 
@@ -88,33 +117,33 @@ async function backfillPermits() {
       continue;
     }
 
-    const [_, owner, repo, issue_number] = match;
-
+    const [_, repoOwner, repoName, issueNumber] = match;
     const issueParams = {
-      owner,
-      repo,
-      issue_number: parseInt(issue_number, 10),
+      owner: repoOwner,
+      repo: repoName,
+      issue_number: parseInt(issueNumber, 10),
     };
 
+    // pull comments from GitHub
     const comments: GitHubIssueComment[] = await _octokit.paginate(
       _octokit.rest.issues.listComments.endpoint.merge(issueParams)
     );
     await getMinimizedCommentStatus(comments);
-    
-    // iterate over comments to extract the permit reward.
-    let foundPermitReward: PermitReward | null = null;
+
+    // try to find a matching "permit reward" in the comments
+    let foundPermit: MinimalPermitReward | null = null;
     for (const comment of comments) {
       if (!comment.body) continue;
-      // pass in the userAddress fetched from the users table.
-      foundPermitReward = await extractPermitFromRewardComment(comment.body, permit.beneficiary_id, userAddress);
-      if (foundPermitReward) break;
+      foundPermit = await extractPermit(comment.body, permit.beneficiary_id, userAddress);
+      if (foundPermit) break;
     }
-    if (!foundPermitReward) {
+    if (!foundPermit) {
       console.log(`Permit ${permit.id}: no matching reward found`);
       continue;
     }
 
-    const partnerWalletId = await getOrCreateWallet(foundPermitReward.owner);
+    // create instances in db to backfill
+    const partnerWalletId = await getOrCreateWallet(foundPermit.owner);
     if (!partnerWalletId) {
       console.error(`Permit ${permit.id}: could not get/create partner wallet`);
       continue;
@@ -126,13 +155,13 @@ async function backfillPermits() {
       continue;
     }
 
-    const tokenId = await getOrCreateToken(foundPermitReward.tokenAddress, foundPermitReward.networkId);
+    const tokenId = await getOrCreateToken(foundPermit.tokenAddress, foundPermit.networkId);
     if (!tokenId) {
       console.error(`Permit ${permit.id}: could not get/create token`);
       continue;
     }
 
-    // update the permit with the backfilled partner_id and token_id.
+    // update the permit in db
     const { error: updateError } = await _supabase
       .from('permits')
       .update({ partner_id: partnerId, token_id: tokenId })
@@ -146,34 +175,33 @@ async function backfillPermits() {
 }
 
 /**
- * delegates extraction to the appropriate helper based on comment content
- * passes the fetched userAddress for the older format extraction
+ * figures out whether this comment is in the "latest" or "oldest" format
+ * and returns a MinimalPermitReward if found, otherwise null.
  */
-async function extractPermitFromRewardComment(
+async function extractPermit(
   commentBody: string,
   beneficiaryId: number,
   userAddress: string
-): Promise<PermitReward | null> {
+): Promise<MinimalPermitReward | null> {
   const latestFormatMarker = "Ubiquity - GithubCommentModule - GithubCommentModule.getBodyContent";
   const oldestFormatMarker = "Ubiquity - Transactions - generatePermits -";
 
   if (commentBody.includes(latestFormatMarker)) {
-    return await extractPermitFromLatestFormat(commentBody, beneficiaryId);
+    return extractFromLatestFormat(commentBody, beneficiaryId);
+  } else if (commentBody.includes(oldestFormatMarker)) {
+    return extractFromOldestFormat(commentBody, userAddress);
   }
-  if (commentBody.includes(oldestFormatMarker)) {
-    return await extractPermitFromOldestFormat(commentBody, userAddress);
-  }
-  // fallback for unknown formats.
   return null;
 }
 
 /**
- * extracts permit data from the latest format which contains a JSON object with an `output` property.
+ * for the *latest format*, we decode a base64 "claim" param from the permitUrl
+ * and pick out the fields we need (owner, tokenAddress, networkId)
  */
-async function extractPermitFromLatestFormat(
+function extractFromLatestFormat(
   commentBody: string,
   beneficiaryId: number
-): Promise<PermitReward | null> {
+): MinimalPermitReward | null {
   const jsonMatch = commentBody.match(/<!--[\s\S]*?(\{[\s\S]+\})\s*-->/);
   if (!jsonMatch) {
     console.log("Latest format: didn't find JSON");
@@ -182,15 +210,21 @@ async function extractPermitFromLatestFormat(
   try {
     const data = JSON.parse(jsonMatch[1]);
     const output = data.output;
-    for (const user in output) {
-      if (output[user]?.userId === beneficiaryId) {
-        const permitUrl = output[user].permitUrl;
+    for (const user of Object.values(output)) {
+      // we match the beneficiaryId to userId
+      if ((user as any)?.userId === beneficiaryId) {
+        const permitUrl = (user as any).permitUrl;
         const claimParam = new URL(permitUrl).searchParams.get('claim');
         if (!claimParam) {
           console.error("Latest format: Permit not found in URL", permitUrl);
           return null;
         }
-        return decodePermits(claimParam)[0];
+        const [decoded] = decodePermits(claimParam);
+        return {
+          owner: decoded.owner,
+          tokenAddress: decoded.tokenAddress,
+          networkId: decoded.networkId,
+        };
       }
     }
   } catch (e) {
@@ -200,29 +234,39 @@ async function extractPermitFromLatestFormat(
 }
 
 /**
- * extracts permit data from the oldest format which provides a JSON array directly
- * overrides the `owner` field with the provided userAddress
+ * for the *oldest format*, we have an array of objects (OldFormatItem[]).
+ * we pick the one whose `transferDetails.to` matches the userAddress,
+ * then return just the fields we need
  */
-async function extractPermitFromOldestFormat(
+function extractFromOldestFormat(
   commentBody: string,
   userAddress: string
-): Promise<PermitReward | null> {
+): MinimalPermitReward | null {
   const jsonMatch = commentBody.match(/<!--[\s\S]*?(\[[\s\S]+\])\s*-->/);
   if (!jsonMatch) {
     console.log("Oldest format: didn't find JSON array");
     return null;
   }
   try {
-    const data = JSON.parse(jsonMatch[1]);
-    if (Array.isArray(data) && data.length > 0) {
-      console.log(data);
-      const entry = data.find((item) => item.to === userAddress);
-      if (!entry) {
-        console.error("Oldest format: Permit not found for user", userAddress);
-        return null;
-      }
-      return entry;
+    const data: OldFormatItem[] = JSON.parse(jsonMatch[1]);
+    if (!Array.isArray(data) || data.length === 0) {
+      return null;
     }
+
+    // look for the item whose `transferDetails.to` matches the user
+    const entry = data.find(
+      (item) => item.transferDetails.to.toLowerCase() === userAddress.toLowerCase()
+    );
+    if (!entry) {
+      console.error("Oldest format: Permit not found for user", userAddress);
+      return null;
+    }
+
+    return {
+      owner: entry.owner,
+      tokenAddress: entry.permit.permitted.token,
+      networkId: entry.networkId,
+    };
   } catch (e) {
     console.error("Oldest format: JSON parsing error", e);
   }
