@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.6.0...v1.6.1) (2025-02-23)
+
+
+### Bug Fixes
+
+* added ref ([b641a7c](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/b641a7c88ec8d76d29f63d8ee2439e87069b0371))
+
 ## [1.6.0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.5.0...v1.6.0) (2025-02-18)
 
 
