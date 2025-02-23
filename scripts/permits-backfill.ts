@@ -31,8 +31,9 @@ async function backfillPermits() {
   console.log("Found permits", permitsData.length);
 
   for (const permit of permitsData) {
-    // if the permit does not have partner or token id, we need to backfill from location
+    // skip if already propperly filled
     if (permit.partner_id && permit.token_id) {
+      console.log(`Permit ${permit.id}: already filled`);
       continue;
     }
 
@@ -45,8 +46,37 @@ async function backfillPermits() {
       console.log(`Permit ${permit.id}: missing a location_id`);
       continue;
     }
+    
+    // fetch the user record using beneficiary_id.
+    const { data: userData, error: userError } = await _supabase
+      .from('users')
+      .select('*')
+      .eq('id', permit.beneficiary_id)
+      .single();
+    if (userError || !userData || !userData.wallet_id) {
+      console.log(`Permit ${permit.id}: user ${permit.beneficiary_id} not found`);
+      continue;
+    }
 
-    const { data: locationData } = await _supabase.from('locations').select('*').eq('id', permit.location_id).single();
+    // with the user`s wallet_id, fetch the wallet address.
+    const { data: userWalletData, error: userWalletError } = await _supabase
+      .from('wallets')
+      .select('address')
+      .eq('id', userData.wallet_id)
+      .single();
+    if (userWalletError || !userWalletData || !userWalletData.address) {
+      console.log(`Permit ${permit.id}: wallet for user ${permit.beneficiary_id} not found`);
+      continue;
+    }
+    const userAddress = userWalletData.address;
+
+    // fetch from locations table to extract the issue URL
+    const { data: locationData } = await _supabase
+      .from('locations')
+      .select('*')
+      .eq('id', permit.location_id)
+      .single();
+
     if (!locationData || !locationData.node_url) {
       console.log(`Permit ${permit.id}: location ${permit.location_id} not found or invalid node_url`);
       continue;
@@ -58,12 +88,12 @@ async function backfillPermits() {
       continue;
     }
 
-    const [, owner, repo, issueNumber] = match;
+    const [_, owner, repo, issue_number] = match;
 
     const issueParams = {
       owner,
       repo,
-      issueNumber: parseInt(issueNumber, 10),
+      issue_number: parseInt(issue_number, 10),
     };
 
     const comments: GitHubIssueComment[] = await _octokit.paginate(
@@ -71,96 +101,229 @@ async function backfillPermits() {
     );
     await getMinimizedCommentStatus(comments);
     
-    // iterate over comments to extract the permitUrl based on beneficiary_id.
+    // iterate over comments to extract the permit reward.
     let foundPermitReward: PermitReward | null = null;
     for (const comment of comments) {
       if (!comment.body) continue;
-      foundPermitReward = extractPermitFromRewardComment(comment.body, permit.beneficiary_id);
+      // pass in the userAddress fetched from the users table.
+      foundPermitReward = await extractPermitFromRewardComment(comment.body, permit.beneficiary_id, userAddress);
       if (foundPermitReward) break;
     }
     if (!foundPermitReward) {
-      console.log(`Permit${permit.id}: no matching reward found for permit`);
+      console.log(`Permit ${permit.id}: no matching reward found`);
       continue;
     }
 
-    // find or create a partner wallet 
-    const { data: partnerWalletData, error: partnerWalletError } = await _supabase.from('wallets').upsert({
-      address: foundPermitReward.owner,
-    }).select('id').single();
-    if (partnerWalletError || !partnerWalletData) {
-      console.error(`Permit ${permit.id}: error upserting wallet`, partnerWalletError);
-      continue;
-    }
-    const partnerWalletId = partnerWalletData.id;
-
-    // find or create a partner
-    const { data: partnerData, error: partnerError } = await _supabase.from('partners').upsert({
-      wallet_id: partnerWalletId,
-    }).select('id').single();
-    if (partnerError || !partnerData) {
-      console.error(`Permit ${permit.id}: error upserting partner`, partnerError);
+    const partnerWalletId = await getOrCreateWallet(foundPermitReward.owner);
+    if (!partnerWalletId) {
+      console.error(`Permit ${permit.id}: could not get/create partner wallet`);
       continue;
     }
 
-    // find or create a token
-    const { data: tokenData, error: tokenError } = await _supabase.from('tokens').upsert({
-      address: foundPermitReward.tokenAddress,
-      network: foundPermitReward.networkId
-    }).select('id').single();
-    if (tokenError || !tokenData) {
-      console.error(`Permit ${permit.id}: error upserting token`, tokenError);
+    const partnerId = await getOrCreatePartner(partnerWalletId);
+    if (!partnerId) {
+      console.error(`Permit ${permit.id}: could not get/create partner`);
       continue;
     }
 
-    // update the permit with the backfilled partner_id and token_id
-    const { error: updateError } = await _supabase.from('permits').update({
-      partner_id: partnerData.id,
-      token_id: tokenData.id,
-    }).eq('id', permit.id);
+    const tokenId = await getOrCreateToken(foundPermitReward.tokenAddress, foundPermitReward.networkId);
+    if (!tokenId) {
+      console.error(`Permit ${permit.id}: could not get/create token`);
+      continue;
+    }
+
+    // update the permit with the backfilled partner_id and token_id.
+    const { error: updateError } = await _supabase
+      .from('permits')
+      .update({ partner_id: partnerId, token_id: tokenId })
+      .eq('id', permit.id);
     if (updateError) {
-      console.error(`Permit ${permit.id}: error updating permit}`, updateError);
+      console.error(`Permit ${permit.id}: error updating permit`, updateError);
     } else {
       console.log(`Permit ${permit.id}: successfully backfilled!`);
     }
   }
 }
 
-function extractPermitFromRewardComment(commentBody: string, beneficiaryId: number): PermitReward | null {
-	// latest format
-  if (commentBody.includes("Ubiquity - GithubCommentModule - GithubCommentModule.getBodyContent")) {
-    // use regex to extract reward JSON from comment 
-    const jsonMatch = commentBody.match(/<!--[\s\S]*?(\{[\s\S]+\})\s*-->/);
-    if (!jsonMatch){
-      console.log("latest format: didn't find JSON");
-      return null;
-    } 
-    try {
-      const data = JSON.parse(jsonMatch[1]);
-      const output = data.output;
-      for (const user in output) {
-        if (output[user]?.userId === beneficiaryId) {
-          const permitUrl = output[user].permitUrl;
-          const claimParam = new URL(permitUrl).searchParams.get('claim');
-          const encoded64Permit = claimParam;
-          if(!encoded64Permit) {
-            console.error("Permit not found in URL", permitUrl);
-            return null;
-          }
-          return decodePermits(encoded64Permit)[0];
-        }
-      }
-    } catch (e) {
-      console.error("JSON parsing error", e);
-    }
+/**
+ * delegates extraction to the appropriate helper based on comment content
+ * passes the fetched userAddress for the older format extraction
+ */
+async function extractPermitFromRewardComment(
+  commentBody: string,
+  beneficiaryId: number,
+  userAddress: string
+): Promise<PermitReward | null> {
+  const latestFormatMarker = "Ubiquity - GithubCommentModule - GithubCommentModule.getBodyContent";
+  const oldestFormatMarker = "Ubiquity - Transactions - generatePermits -";
+
+  if (commentBody.includes(latestFormatMarker)) {
+    return await extractPermitFromLatestFormat(commentBody, beneficiaryId);
+  }
+  if (commentBody.includes(oldestFormatMarker)) {
+    return await extractPermitFromOldestFormat(commentBody, userAddress);
+  }
+  // fallback for unknown formats.
+  return null;
+}
+
+/**
+ * extracts permit data from the latest format which contains a JSON object with an `output` property.
+ */
+async function extractPermitFromLatestFormat(
+  commentBody: string,
+  beneficiaryId: number
+): Promise<PermitReward | null> {
+  const jsonMatch = commentBody.match(/<!--[\s\S]*?(\{[\s\S]+\})\s*-->/);
+  if (!jsonMatch) {
+    console.log("Latest format: didn't find JSON");
     return null;
   }
+  try {
+    const data = JSON.parse(jsonMatch[1]);
+    const output = data.output;
+    for (const user in output) {
+      if (output[user]?.userId === beneficiaryId) {
+        const permitUrl = output[user].permitUrl;
+        const claimParam = new URL(permitUrl).searchParams.get('claim');
+        if (!claimParam) {
+          console.error("Latest format: Permit not found in URL", permitUrl);
+          return null;
+        }
+        return decodePermits(claimParam)[0];
+      }
+    }
+  } catch (e) {
+    console.error("Latest format: JSON parsing error", e);
+  }
+  return null;
+}
 
-  // oldest format
-  if (commentBody.includes("Ubiquity - Transactions - generatePermits")) {
+/**
+ * extracts permit data from the oldest format which provides a JSON array directly
+ * overrides the `owner` field with the provided userAddress
+ */
+async function extractPermitFromOldestFormat(
+  commentBody: string,
+  userAddress: string
+): Promise<PermitReward | null> {
+  const jsonMatch = commentBody.match(/<!--[\s\S]*?(\[[\s\S]+\])\s*-->/);
+  if (!jsonMatch) {
+    console.log("Oldest format: didn't find JSON array");
+    return null;
+  }
+  try {
+    const data = JSON.parse(jsonMatch[1]);
+    if (Array.isArray(data) && data.length > 0) {
+      console.log(data);
+      const entry = data.find((item) => item.to === userAddress);
+      if (!entry) {
+        console.error("Oldest format: Permit not found for user", userAddress);
+        return null;
+      }
+      return entry;
+    }
+  } catch (e) {
+    console.error("Oldest format: JSON parsing error", e);
+  }
+  return null;
+}
 
+/**
+ * attempts to find a wallet by address. ff none found, inserts a new wallet
+ */
+async function getOrCreateWallet(address: string): Promise<number | null> {
+  // 1) try to find existing wallet
+  const { data: existing, error: findError } = await _supabase
+    .from('wallets')
+    .select('id')
+    .eq('address', address)
+    .maybeSingle();
+
+  if (findError) {
+    console.error(`Error finding wallet with address ${address}`, findError);
+    return null;
+  }
+  if (existing) {
+    return existing.id;
   }
 
-  return null;
+  // 2) insert new wallet
+  const { data: inserted, error: insertError } = await _supabase
+    .from('wallets')
+    .insert({ address })
+    .select('id')
+    .single();
+  if (insertError || !inserted) {
+    console.error(`Error inserting new wallet with address ${address}`, insertError);
+    return null;
+  }
+  return inserted.id;
+}
+
+/**
+ * attempts to find a partner by wallet_id. if none found, inserts a new partner
+ */
+async function getOrCreatePartner(walletId: number): Promise<number | null> {
+  // 1) try to find existing partner
+  const { data: existing, error: findError } = await _supabase
+    .from('partners')
+    .select('id')
+    .eq('wallet_id', walletId)
+    .maybeSingle();
+
+  if (findError) {
+    console.error(`Error finding partner for wallet_id ${walletId}`, findError);
+    return null;
+  }
+  if (existing) {
+    return existing.id;
+  }
+
+  // 2) insert new partner
+  const { data: inserted, error: insertError } = await _supabase
+    .from('partners')
+    .insert({ wallet_id: walletId })
+    .select('id')
+    .single();
+  if (insertError || !inserted) {
+    console.error(`Error inserting new partner for wallet_id ${walletId}`, insertError);
+    return null;
+  }
+  return inserted.id;
+}
+
+/**
+ * attempts to find a token by (address, network). if none found, inserts a new token
+ */
+async function getOrCreateToken(address: string, network: number): Promise<number | null> {
+  // 1) try to find existing token
+  const { data: existing, error: findError } = await _supabase
+    .from('tokens')
+    .select('id')
+    .eq('address', address)
+    .eq('network', network)
+    .maybeSingle();
+
+  if (findError) {
+    console.error(`Error finding token with address ${address} and network ${network}`, findError);
+    return null;
+  }
+  if (existing) {
+    return existing.id;
+  }
+
+  // 2) insert new token
+  const { data: inserted, error: insertError } = await _supabase
+    .from('tokens')
+    .insert({ address, network })
+    .select('id')
+    .single();
+  if (insertError || !inserted) {
+    console.error(`Error inserting new token with address ${address} and network ${network}`, insertError);
+    return null;
+  }
+  return inserted.id;
 }
 
 export async function getMinimizedCommentStatus(comments: GitHubIssueComment[]) {
