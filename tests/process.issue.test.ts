@@ -3,7 +3,7 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import fs, { writeFileSync } from "fs";
+import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
@@ -332,7 +332,6 @@ describe("Modules tests", () => {
     ];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    writeFileSync("a.json", processor.dump());
     expect(result).toEqual(simplificationIncentivizerResults);
   });
 
@@ -352,7 +351,6 @@ describe("Modules tests", () => {
     server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    writeFileSync("b.json", processor.dump());
     expect(result).toEqual(permitGenerationResults);
   });
 
@@ -373,7 +371,6 @@ describe("Modules tests", () => {
     server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    writeFileSync("c.json", processor.dump());
     expect(result).toEqual(githubCommentResults);
     expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
       fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")
