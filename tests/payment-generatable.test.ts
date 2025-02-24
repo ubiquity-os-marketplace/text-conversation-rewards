@@ -199,7 +199,9 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
           eq: jest.fn(() => ({
             single: jest.fn(() => ({
               data: {
-                address: "0xAddress",
+                wallets: {
+                  address: "0xAddress",
+                },
               },
             })),
           })),
