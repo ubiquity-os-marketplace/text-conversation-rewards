@@ -366,6 +366,18 @@
               }
             ]
           },
+          "simplificationIncentivizer": {
+            "default": null,
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "formattingEvaluator": {
             "default": null,
             "anyOf": [
