@@ -3,7 +3,7 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import fs from "fs";
+import fs, { writeFileSync } from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
@@ -19,6 +19,7 @@ import { server } from "./__mocks__/node";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import eventIncentivesResults from "./__mocks__/results/event-incentives-results.json";
+import simplificationIncentivizerResults from "./__mocks__/results/simplification-incentivizer.results.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
@@ -26,6 +27,7 @@ import permitGenerationResults from "./__mocks__/results/permit-generation-resul
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { SimplificationIncentivizerModule } from "../src/parser/simplification-incentivizer-module";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -317,6 +319,23 @@ describe("Modules tests", () => {
     expect(result).toEqual(eventIncentivesResults);
   });
 
+  it("Should incentivize simplifications", async () => {
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
+      new EventIncentivesModule(ctx),
+      new SimplificationIncentivizerModule(ctx),
+    ];
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    writeFileSync("a.json", processor.dump());
+    expect(result).toEqual(simplificationIncentivizerResults);
+  });
+
   it("Should generate permits", async () => {
     const processor = new Processor(ctx);
     processor["_transformers"] = [
@@ -326,12 +345,14 @@ describe("Modules tests", () => {
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
       new EventIncentivesModule(ctx),
+      new SimplificationIncentivizerModule(ctx),
       new PermitGenerationModule(ctx),
     ];
     // This catches calls by getFastestRpc
     server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
+    writeFileSync("b.json", processor.dump());
     expect(result).toEqual(permitGenerationResults);
   });
 
@@ -344,6 +365,7 @@ describe("Modules tests", () => {
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
       new EventIncentivesModule(ctx),
+      new SimplificationIncentivizerModule(ctx),
       new PermitGenerationModule(ctx),
       new GithubCommentModule(ctx),
     ];
@@ -351,6 +373,7 @@ describe("Modules tests", () => {
     server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
+    writeFileSync("c.json", processor.dump());
     expect(result).toEqual(githubCommentResults);
     expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
       fs.readFileSync("./tests/__mocks__/results/output.html", "utf-8")

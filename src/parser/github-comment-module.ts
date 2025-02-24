@@ -153,6 +153,10 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
     }
 
+    if (result.simplificationReward) {
+      content.push(buildContributionRow("Issue", "Task Simplification", 1, result.simplificationReward.reward));
+    }
+
     if (result.reviewRewards) {
       result.reviewRewards.forEach((reviewReward) => {
         const reviewRewardPullNumber = reviewReward.url.split("/").slice(-1)[0];

@@ -33,7 +33,7 @@ export class SimplificationIncentivizerModule extends BaseModule {
     for (const pull of linkedPullRequests) {
       if (!pull) continue;
       const prAuthor = pull.user.login;
-      const simplificationReward = Math.min((pull.deletions - pull.additions) / 10, 0);
+      const simplificationReward = Math.max((pull.deletions - pull.additions) / 10, 0);
       result[prAuthor].simplificationReward = { reward: simplificationReward };
     }
 
