@@ -13,6 +13,7 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { SimplificationIncentivizerModule } from "../src/parser/simplification-incentivizer-module";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -249,6 +250,7 @@ describe("Permit Generation Module Tests", () => {
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -270,6 +272,7 @@ describe("Permit Generation Module Tests", () => {
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -297,6 +300,7 @@ describe("Permit Generation Module Tests", () => {
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -318,6 +322,7 @@ describe("Permit Generation Module Tests", () => {
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
