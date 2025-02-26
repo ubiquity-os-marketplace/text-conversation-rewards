@@ -35,7 +35,7 @@ export const pluginSettingsSchema = T.Object(
     automaticTransferMode: T.Boolean({
       default: true,
       description:
-        "If set to false or if there are insufficient funds to settle the payment, permits will be generated instead of processing direct payouts.",
+        "If set to false, or if there are insufficient funds to settle the payment, permits will be generated instead of immediately transferring rewards to the beneficiaries.",
     }),
     incentives: T.Object(
       {
