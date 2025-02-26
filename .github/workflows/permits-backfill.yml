@@ -12,6 +12,9 @@ jobs:
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
       - uses: oven-sh/setup-bun@v2
 
       - name: Bun install and run
