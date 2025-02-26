@@ -10,6 +10,7 @@
  * context: https://github.com/ubiquity/pay.ubq.fi/issues/368
  */
 
+import { RequestError } from "@octokit/request-error";
 import { createClient } from "@supabase/supabase-js";
 import { Database, decodePermits } from "@ubiquity-os/permit-generation";
 import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
@@ -36,7 +37,7 @@ async function backfillPermits() {
     return;
   }
 
-  console.log("Found permits", permitsData.length);
+  console.log("Found ", permitsData.length, "permits");
 
   for (const permit of permitsData) {
     // skip if already properly filled
@@ -101,13 +102,12 @@ async function backfillPermits() {
     const [, repoOwner, repoName, issueNumber] = match;
 
     // pull comments from GitHub
-    const comments: GitHubIssueComment[] = await _octokit.paginate(
-      _octokit.rest.issues.listComments.endpoint.merge({
-        owner: repoOwner,
-        repo: repoName,
-        issue_number: parseInt(issueNumber, 10),
-      })
-    );
+    const comments = await fetchGithubComments(repoOwner, repoName, parseInt(issueNumber, 10));
+    if (!comments) {
+      console.log(`Permit ${permit.id}: Skipping due to GitHub fetch failure.`);
+      return;
+    }
+
     await getMinimizedCommentStatus(comments);
 
     // find a permit that matches this permit's signature and user address
@@ -153,6 +153,36 @@ async function backfillPermits() {
       console.log(`Permit ${permit.id}: successfully backfilled!`);
     }
   }
+
+  console.log("Finished backfilling permits");
+}
+
+// GitHub fetch with retry logic
+async function fetchGithubComments(owner: string, repo: string, issueNumber: number): Promise<GitHubIssueComment[]> {
+  try {
+    return await _octokit.paginate(
+      _octokit.rest.issues.listComments.endpoint.merge({
+        owner,
+        repo,
+        issue_number: issueNumber,
+      })
+    );
+  } catch (error) {
+    if (error instanceof RequestError) {
+      if (error.status === 404) {
+        console.log(`GitHub ${owner + "/" + repo + "/issues/" + issueNumber} not found, skipping.`);
+        return [];
+      } else if (error.status === 403 && error.response && error.response.headers["x-ratelimit-remaining"] === "0") {
+        const waitTime = parseInt(error.response.headers["x-ratelimit-reset"] ?? "2") * 1000 - Date.now();
+        console.log(`GitHub API rate limit hit, waiting ${waitTime / 1000} seconds...`);
+        await new Promise((res) => setTimeout(res, waitTime));
+        return fetchGithubComments(owner, repo, issueNumber);
+      }
+      console.error(`Error fetching GitHub comments for issue ${issueNumber}:`, error);
+      return [];
+    }
+  }
+  return [];
 }
 
 // scans the comment for any "https://pay.ubq.fi/?claim=..." urls, decodes them,
