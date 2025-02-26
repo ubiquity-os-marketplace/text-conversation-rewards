@@ -14,7 +14,7 @@
         "type": "number"
       },
       "evmPrivateEncrypted": {
-        "description": "The encrypted Ethereum private key to use for funding rewards.",
+        "description": "The encrypted key to use for permit generation and auto transfers",
         "examples": ["0x000..."],
         "type": "string"
       },
@@ -24,7 +24,7 @@
       },
       "automaticTransferMode": {
         "default": true,
-        "description": "If set to false, or if there are insufficient funds to settle the payment, permits will be generated instead of immediately transferring rewards to the beneficiaries.",
+        "description": "If set to false or if there are insufficient funds to settle the payment, permits will be generated instead of processing direct payouts.",
         "type": "boolean"
       },
       "incentives": {
