@@ -22,8 +22,8 @@ export class SimplificationIncentivizerModule extends BaseModule {
       this.context.logger.warn(`No pull request is linked to this issue, won't run SimplificationIncentivizer`);
       return result;
     }
-
-    this.context.logger.info(`Pull requests linked to this issue ${linkedPullRequests.map((pull) => pull?.number)}`);
+    const prNumbers = linkedPullRequests.map((pull) => pull?.number);
+    this.context.logger.info("Pull requests linked to this issue", { prNumbers });
 
     for (const pull of linkedPullRequests) {
       if (!pull) continue;

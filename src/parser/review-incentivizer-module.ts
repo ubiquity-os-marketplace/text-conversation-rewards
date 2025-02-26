@@ -42,7 +42,7 @@ export class ReviewIncentivizerModule extends BaseModule {
       return result;
     }
 
-    this.context.logger.info(`Pull requests linked to this issue ${prNumbers}`);
+    this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
 
     for (const username of Object.keys(result)) {
       const reward = result[username];
