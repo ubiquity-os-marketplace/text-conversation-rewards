@@ -21,7 +21,7 @@ export const pluginSettingsSchema = T.Object(
      * The encrypted key to use for permit generation
      */
     evmPrivateEncrypted: T.String({
-      description: "The encrypted key to use for permit generation and auto transfers",
+      description: "The encrypted Ethereum private key to use for funding rewards.",
       examples: ["0x000..."],
     }),
     /**
