@@ -9,8 +9,8 @@ import { githubCommentConfigurationType } from "../configuration/github-comment-
 import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
 import { reviewIncentivizerConfigurationType } from "../configuration/review-incentivizer-config";
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
-import { EnvConfig } from "./env-type";
 import { simplificationIncentivizerConfigurationType } from "../configuration/simplification-incentivizer-config";
+import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
   {

@@ -19,16 +19,11 @@ export class SimplificationIncentivizerModule extends BaseModule {
   async transform(data: Readonly<IssueActivity>, result: Result) {
     const linkedPullRequests = data.linkedReviews.map((review) => review.self);
     if (!linkedPullRequests.length) {
-      this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
+      this.context.logger.warn(`No pull request is linked to this issue, won't run SimplificationIncentivizer`);
       return result;
     }
 
-    const message =
-      linkedPullRequests.length === 1
-        ? `Pull request ${linkedPullRequests[0]?.number} is linked to this issue`
-        : `Pull requests ${linkedPullRequests.map((pull) => pull?.number)} are linked to this issue`;
-
-    this.context.logger.info(message);
+    this.context.logger.info(`Pull requests linked to this issue ${linkedPullRequests.map((pull) => pull?.number)}`);
 
     for (const pull of linkedPullRequests) {
       if (!pull) continue;
