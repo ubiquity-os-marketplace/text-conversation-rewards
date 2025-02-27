@@ -4,6 +4,7 @@ import { LOG_LEVEL } from "@ubiquity-os/ubiquity-os-logger";
 const envConfigSchema = Type.Object({
   SUPABASE_URL: Type.String(),
   SUPABASE_KEY: Type.String(),
+  SUPABASE_PRIVATE_KEY: Type.String(),
   GITHUB_TOKEN: Type.String(),
   X25519_PRIVATE_KEY: Type.String(),
   OPENAI_API_KEY: Type.String(),
