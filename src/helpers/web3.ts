@@ -2,7 +2,7 @@ import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/r
 import { ethers, Contract, Wallet, BigNumber, ContractInterface, BigNumberish } from "ethers";
 import { PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer, MaxUint256 } from "@uniswap/permit2-sdk";
 import { Beneficiary } from "../parser/payment-module";
-import { permit2Abi } from "../abi/permit2";
+import permit2Abi from "../abi/permit2.json";
 
 type EthersErrorType = { reason: string; code: string; message: string };
 

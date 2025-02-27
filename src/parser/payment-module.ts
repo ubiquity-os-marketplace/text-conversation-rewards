@@ -124,12 +124,9 @@ export class PaymentModule extends BaseModule {
       // Generate the batch transfer nonce
       const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
       // Check if funding wallet has enough reward token and gas to transfer rewards directly
-      const [canTransferDirectly, fundingWallet, beneficiaries] = await this._canTransferDirectly(
-        privateKey,
-        result,
-        nonce
-      );
-      if (canTransferDirectly) {
+      const transferData = await this._canTransferDirectly(privateKey, result, nonce);
+      if (transferData) {
+        const { fundingWallet, beneficiaries } = transferData;
         this.context.logger.info(
           "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
         );
@@ -229,11 +226,12 @@ export class PaymentModule extends BaseModule {
    * @param result Result object
    * @returns [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries]
    */
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   async _canTransferDirectly(
     privateKey: string,
     result: Result,
     nonce: string
-  ): Promise<[true, ethers.Wallet, Beneficiary[]] | [false, null, null]> {
+  ): Promise<{ canTransferDirectly: boolean; fundingWallet: ethers.Wallet; beneficiaries: Beneficiary[] } | null> {
     try {
       const erc20Contract = await getContract(this._evmNetworkId, this._erc20RewardToken, ERC20_ABI);
       const fundingWallet = await getEvmWallet(privateKey, erc20Contract.provider);
@@ -248,7 +246,7 @@ export class PaymentModule extends BaseModule {
 
       const beneficiaries = await this._getBeneficiaries(result, decimals);
       if (beneficiaries === null) {
-        return [false, null, null];
+        return null;
       }
       const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
       const totalReward = beneficiaries.reduce(
@@ -289,8 +287,9 @@ export class PaymentModule extends BaseModule {
             this.context.logger.error("The gas limit could not be estimated because the transaction might fail", { e });
           else if (e.reason === "InvalidNonce" || e.message.includes("InvalidNonce"))
             this.context.logger.error("The transaction is likely to be reverted due to an invalid nonce", { e });
+        } else {
+          this.context.logger.error("Failed to estimate the total gas limit", { e });
         }
-        this.context.logger.error("Failed to estimate the total gas limit", { e });
       }
 
       if (!hasEnoughRewardToken) {
@@ -298,7 +297,7 @@ export class PaymentModule extends BaseModule {
           `[PaymentModule] The funding wallet lacks sufficient reward tokens to perform direct transfers`,
           gasAndRewardInfo
         );
-        return [false, null, null];
+        return null;
       }
 
       if (totalFee !== null) {
@@ -309,17 +308,17 @@ export class PaymentModule extends BaseModule {
             `[PaymentModule] The funding wallet lacks sufficient gas to perform direct transfers`,
             gasAndRewardInfo
           );
-          return [false, null, null];
+          return null;
         }
       }
       this.context.logger.info(
         `[PaymentModule] The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
         gasAndRewardInfo
       );
-      return [true, fundingWallet, beneficiaries];
+      return { canTransferDirectly: true, fundingWallet, beneficiaries };
     } catch (e) {
       this.context.logger.error(`[PaymentModule] Failed to fetch the funding wallet data: ${e}`, { e });
-      return [false, null, null];
+      return null;
     }
   }
 
