@@ -7,7 +7,7 @@ import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
-import { GitHubIssue } from "../src/github-types";
+import { GithubDiff, GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
 import { EventIncentivesModule } from "../src/parser/event-incentives-module";
 import { parseGitHubUrl } from "../src/start";
@@ -215,13 +215,19 @@ describe("Modules tests", () => {
       .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
       .mockImplementation(() => Promise.resolve(Infinity));
 
-    jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+    jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementation(async () => {
       return {
-        "test.txt": {
-          addition: 50,
-          deletion: 50,
+        data: {
+          files: [
+            {
+              filename: "test.txt",
+              additions: 50,
+              deletions: 50,
+              status: "added",
+            },
+          ],
         },
-      };
+      } as unknown as GithubDiff;
     });
   });
 
