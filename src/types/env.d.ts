@@ -5,7 +5,6 @@ declare global {
       OPENAI_API_KEY: string;
       X25519_PRIVATE_KEY: string;
       SUPABASE_KEY: string;
-      SUPABASE_PRIVATE_KEY: string;
       SUPABASE_URL: string;
       NFT_CONTRACT_ADDRESS: string;
       NFT_MINTER_PRIVATE_KEY: string;

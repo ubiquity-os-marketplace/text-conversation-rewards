@@ -18,7 +18,7 @@ import { GitHubIssueComment } from "../src/github-types";
 import { IssueComment } from "@octokit/graphql-schema";
 import { QUERY_COMMENT_DETAILS } from "../src/types/requests";
 
-const _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_PRIVATE_KEY);
+const _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const _octokit = new customOctokit({ auth: process.env.GITHUB_TOKEN });
 
 interface MinimalPermitReward {
