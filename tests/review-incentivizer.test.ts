@@ -9,6 +9,7 @@ import { db, db as mockDb } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
 import Mock = jest.Mock;
 import { drop } from "@mswjs/data";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 
 const ctx = {
   eventName: "issues.closed",
@@ -132,5 +133,49 @@ describe("Review Incentivizer", () => {
     await processor.run(activity);
     expect(spy).not.toHaveBeenCalled();
     spy.mockClear();
+  });
+
+  it("Should skip removed files in review incentives diff calculation", async () => {
+    jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementationOnce(async () => {
+      return {
+        data: {
+          files: [
+            {
+              filename: "added.txt",
+              additions: 10,
+              deletions: 5,
+              status: "added",
+            },
+            {
+              filename: "modified.txt",
+              additions: 20,
+              deletions: 10,
+              status: "modified",
+            },
+            {
+              filename: "removed.txt",
+              additions: 0,
+              deletions: 30,
+              status: "removed",
+            },
+          ],
+        },
+      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
+    });
+
+    const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
+    const reviewIncentivizerModule = new ReviewIncentivizerModule(ctx);
+
+    const diff = await reviewIncentivizerModule.getTripleDotDiffAsObject(
+      "ubiquity-os",
+      "conversation-rewards",
+      "base",
+      "head"
+    );
+
+    expect(Object.keys(diff).length).toBe(2);
+    expect(diff["added.txt"]).toEqual({ addition: 10, deletion: 5 });
+    expect(diff["modified.txt"]).toEqual({ addition: 20, deletion: 10 });
+    expect(diff["removed.txt"]).toEqual(undefined);
   });
 });
