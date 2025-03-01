@@ -286,11 +286,7 @@ export class GithubCommentModule extends BaseModule {
     const reviewTables = result.reviewRewards
       .filter((reviewReward) => reviewReward.reviews && reviewReward.reviews.length > 0)
       .map((reviewReward) => {
-        const rows =
-          reviewReward.reviews
-            ?.filter((review) => review.reward != 0)
-            .map(buildReviewRow)
-            .join("") ?? "";
+        const rows = reviewReward.reviews?.map(buildReviewRow).join("") ?? "";
         return `
           <h6>Review Details for&nbsp;<a href="${reviewReward.url}" target="_blank" rel="noopener">#${reviewReward.url.split("/").slice(-1)[0]}</a></h6>
           <table>
