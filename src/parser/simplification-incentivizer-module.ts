@@ -10,10 +10,12 @@ import {
 
 export class SimplificationIncentivizerModule extends BaseModule {
   private readonly _configuration: SimplificationIncentivizerConfiguration | null =
-    this.context.config.incentives.reviewIncentivizer;
+    this.context.config.incentives.simplificationIncentivizer;
+  private readonly _simplificationRate: number;
 
   constructor(context: ContextPlugin) {
     super(context);
+    this._simplificationRate = this._configuration?.simplificationRate ?? 100;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
@@ -28,7 +30,7 @@ export class SimplificationIncentivizerModule extends BaseModule {
     for (const pull of linkedPullRequests) {
       if (!pull) continue;
       const prAuthor = pull.user.login;
-      const simplificationReward = Math.max((pull.deletions - pull.additions) / 10, 0);
+      const simplificationReward = Math.max((pull.deletions - pull.additions) / this._simplificationRate, 0);
       result[prAuthor].simplificationReward = { reward: simplificationReward };
     }
 
