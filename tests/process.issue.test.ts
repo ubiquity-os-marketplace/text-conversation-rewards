@@ -7,7 +7,7 @@ import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
-import { GithubDiff, GitHubIssue } from "../src/github-types";
+import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
 import { EventIncentivesModule } from "../src/parser/event-incentives-module";
 import { parseGitHubUrl } from "../src/start";
@@ -26,6 +26,7 @@ import permitGenerationResults from "./__mocks__/results/permit-generation-resul
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -227,7 +228,7 @@ describe("Modules tests", () => {
             },
           ],
         },
-      } as unknown as GithubDiff;
+      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
     });
   });
 

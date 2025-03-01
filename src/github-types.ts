@@ -10,4 +10,3 @@ export type GitHubRepository = RestEndpointMethodTypes["repos"]["get"]["response
 export type GitHubPullRequestReviewState = RestEndpointMethodTypes["pulls"]["listReviews"]["response"]["data"][0];
 export type GitHubPullRequestReviewComment =
   RestEndpointMethodTypes["pulls"]["listReviewComments"]["response"]["data"][0];
-export type GithubDiff = RestEndpointMethodTypes["repos"]["compareCommits"]["response"];

@@ -9,7 +9,7 @@ import { db, db as mockDb } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
 import Mock = jest.Mock;
 import { drop } from "@mswjs/data";
-import { GithubDiff } from "../src/github-types";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 
 const ctx = {
   eventName: "issues.closed",
@@ -160,7 +160,7 @@ describe("Review Incentivizer", () => {
             },
           ],
         },
-      } as unknown as GithubDiff;
+      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
     });
 
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
