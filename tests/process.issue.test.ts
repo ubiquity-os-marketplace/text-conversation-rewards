@@ -26,6 +26,7 @@ import permitGenerationResults from "./__mocks__/results/permit-generation-resul
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -215,13 +216,19 @@ describe("Modules tests", () => {
       .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
       .mockImplementation(() => Promise.resolve(Infinity));
 
-    jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+    jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementation(async () => {
       return {
-        "test.txt": {
-          addition: 50,
-          deletion: 50,
+        data: {
+          files: [
+            {
+              filename: "test.txt",
+              additions: 50,
+              deletions: 50,
+              status: "added",
+            },
+          ],
         },
-      };
+      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
     });
   });
 
