@@ -22,7 +22,7 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
-import { Result } from "../types/results";
+import { PayoutMode, Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
 import {
@@ -37,6 +37,7 @@ import {
 } from "../helpers/web3";
 import { BigNumber, ethers, utils } from "ethers";
 import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
+import { PAYOUT_MODE_DIRECT, PAYOUT_MODE_PERMIT } from "../helpers/constants";
 
 interface Payload {
   evmNetworkId: number;
@@ -120,21 +121,33 @@ export class PaymentModule extends BaseModule {
     // apply fees
     result = await this._applyFees(result, payload.erc20RewardToken);
 
+    // Check the previous transfer if exists
+    const payoutMode = await this._getPayoutMode(data);
+    if (payoutMode !== null) {
+      this.context.logger.info("[PaymentModule] Rewards already paid, skipping...");
+      for (const username of Object.keys(result)) {
+        result[username].payoutMode = payoutMode;
+        result[username].paid = true;
+      }
+      return result;
+    }
     if (this._autoTransferMode) {
-      // Generate the batch transfer nonce
-      const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
-      // Check if funding wallet has enough reward token and gas to transfer rewards directly
-      const transferData = await this._canTransferDirectly(privateKey, result, nonce);
-      if (transferData) {
-        const { fundingWallet, beneficiaries } = transferData;
-        this.context.logger.info(
-          "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
-        );
-        try {
+      try {
+        // Generate the batch transfer nonce
+        const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
+        // Check if funding wallet has enough reward token and gas to transfer rewards directly
+        const transferInfo = await this._canTransferDirectly(privateKey, result, nonce);
+        if (transferInfo) {
+          const { fundingWallet, beneficiaries } = transferInfo;
+          this.context.logger.info(
+            "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
+          );
           const [tx, permits] = await this._transferReward(fundingWallet, beneficiaries, nonce);
           await Promise.all(
             beneficiaries.map(async (beneficiary, idx) => {
               result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
+              result[beneficiary.username].payoutMode = "direct";
+              result[beneficiary.username].paid = true;
               await this._savePermitsToDatabase(
                 result[beneficiary.username].userId,
                 { issueUrl: payload.issueUrl, issueId },
@@ -144,12 +157,18 @@ export class PaymentModule extends BaseModule {
           );
           // remove treasury item from final result in order not to display permit fee in GitHub comments
           this._removeTreasuryItem(result);
-          return result;
-        } catch (e) {
-          this.context.logger.error(`[PaymentModule] Failed to auto transfer rewards via batch permit transfer`, { e });
         }
+      } catch (e) {
+        this.context.logger.error(`[PaymentModule] Failed to auto transfer rewards via batch permit transfer`, { e });
+      }
+
+      // Terminate if funds are directly transferred
+      if (Object.values(result)[0].payoutMode === "direct") {
+        this.context.logger.info(`[PaymentModule] Terminating, rewards are transferred via autoTransferMode: true`);
+        return result;
       }
     }
+
     this.context.logger.info("[PaymentModule] Transitioning to permit generation.");
     for (const [username, reward] of Object.entries(result)) {
       this.context.logger.debug(`Updating result for user ${username}`);
@@ -188,6 +207,8 @@ export class PaymentModule extends BaseModule {
           config.permitRequests
         );
         result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+        result[username].payoutMode = "permit";
+        result[username].paid = true;
         await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
         // remove treasury item from final result in order not to display permit fee in GitHub comments
         this._removeTreasuryItem(result);
@@ -204,6 +225,15 @@ export class PaymentModule extends BaseModule {
     }
   }
 
+  async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
+    for (const comment of data.comments) {
+      if (comment.body) {
+        if (comment.body.indexOf(PAYOUT_MODE_DIRECT) != -1) return "direct";
+        else if (comment.body.indexOf(PAYOUT_MODE_PERMIT) != -1) return "permit";
+      }
+    }
+    return null;
+  }
   async _getNetworkExplorer(networkId: number): Promise<string> {
     const networkExplorer = getNetworkExplorer(String(networkId) as NetworkId);
     if (!networkExplorer || networkExplorer.length === 0) {

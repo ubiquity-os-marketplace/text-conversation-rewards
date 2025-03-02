@@ -7,7 +7,7 @@ import { stringify } from "yaml";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
-import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
+import { GITHUB_COMMENT_PAYLOAD_LIMIT, PAYOUT_MODE_DIRECT, PAYOUT_MODE_PERMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
@@ -39,6 +39,7 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const keysToRemove: string[] = [];
     const bodyArray: (string | undefined)[] = [];
@@ -84,6 +85,18 @@ export class GithubCommentModule extends BaseModule {
         output: JSON.parse(JSON.stringify(metadataResult, typeReplacer, 2)),
       })
     );
+
+    const someReward = Object.values(result)[0];
+    if (someReward.paid) {
+      const payoutMetadata = someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
+      // Add the workflow run url and the metadata in the GitHub's comment
+      bodyArray.push(
+        createStructuredMetadata("GithubCommentModule", {
+          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+          output: payoutMetadata,
+        })
+      );
+    }
 
     const body = bodyArray.join("");
     // We check this length because GitHub has a comment length limit

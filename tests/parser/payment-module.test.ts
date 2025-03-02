@@ -298,12 +298,10 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
-      const [canTransferDirectly, fundingWallet, beneficiaries] = await paymentModule._canTransferDirectly(
-        fundingWalletPrivateKey,
-        getResultOriginal(),
-        "0"
-      );
-      expect(canTransferDirectly).toEqual(true);
+      const transferInfo = await paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0");
+      expect(transferInfo).not.toBeNull();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { fundingWallet, beneficiaries } = transferInfo!;
       expect(fundingWallet).not.toBeNull();
       if (beneficiaries) {
         expect(beneficiaries.length).toEqual(2);
@@ -340,12 +338,8 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(ctx.logger, "error");
 
-      const [canTransferDirectly, , ,] = await paymentModule._canTransferDirectly(
-        fundingWalletPrivateKey,
-        getResultOriginal(),
-        "0"
-      );
-      expect(canTransferDirectly).toEqual(false);
+      const transferInfo = await paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0");
+      expect(transferInfo).toBeNull();
 
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*The funding wallet lacks sufficient gas to perform direct transfers/);
@@ -376,12 +370,8 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(ctx.logger, "error");
 
-      const [canTransferDirectly, , ,] = await paymentModule._canTransferDirectly(
-        fundingWalletPrivateKey,
-        getResultOriginal(),
-        "0"
-      );
-      expect(canTransferDirectly).toEqual(false);
+      const transferInfo = await paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0");
+      expect(transferInfo).toBeNull();
 
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*The funding wallet lacks sufficient reward tokens to perform direct transfers/);
