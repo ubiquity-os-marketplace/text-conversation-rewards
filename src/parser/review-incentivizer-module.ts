@@ -85,6 +85,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     const diff: CommitDiff = {};
 
     for (const file of files) {
+      if (file.status === "removed") continue;
       diff[file.filename] = {
         addition: file.additions || 0,
         deletion: file.deletions || 0,
@@ -93,6 +94,7 @@ export class ReviewIncentivizerModule extends BaseModule {
 
     return diff;
   }
+
   async getReviewableDiff(
     owner: string,
     repo: string,
