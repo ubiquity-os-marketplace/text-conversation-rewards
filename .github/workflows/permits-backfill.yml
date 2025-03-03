@@ -1,0 +1,21 @@
+name: Backfill permits table
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill:
+    name: Backfill permits table
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_PRIVATE_KEY }} # needs to be secret key not anon key
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Bun install and run
+        run: bun install && bun scripts/permits-backfill.ts
