@@ -125,7 +125,11 @@ export class FormattingEvaluatorModule extends BaseModule {
           reward,
           formatting: {
             content: formatting,
-            result: Object.values(formatting).reduce((acc, curr) => acc + curr.score * curr.elementCount, 0),
+            result: parseFloat(
+              Object.values(formatting)
+                .reduce((acc, curr) => acc + curr.score * curr.elementCount, 0)
+                .toFixed(3)
+            ),
           },
           priority: priority,
           words,
