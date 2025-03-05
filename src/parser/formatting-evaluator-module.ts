@@ -125,11 +125,7 @@ export class FormattingEvaluatorModule extends BaseModule {
           reward,
           formatting: {
             content: formatting,
-            result: parseFloat(
-              Object.values(formatting)
-                .reduce((acc, curr) => acc + curr.score * curr.elementCount, 0)
-                .toFixed(3)
-            ),
+            result: this._calculateFormattingResult(formatting),
           },
           priority: priority,
           words,
@@ -139,6 +135,13 @@ export class FormattingEvaluatorModule extends BaseModule {
       }
     }
     return result;
+  }
+
+  private _calculateFormattingResult(formatting: ReturnType<typeof this._getFormattingScore>["formatting"]) {
+    return Object.values(formatting)
+      .reduce((acc, curr) => acc.add(new Decimal(curr.score).mul(new Decimal(curr.elementCount))), new Decimal(0))
+      .toDecimalPlaces(3)
+      .toNumber();
   }
 
   private _calculateFormattingTotal(
