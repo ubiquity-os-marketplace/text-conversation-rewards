@@ -209,7 +209,6 @@ export class PaymentModule extends BaseModule {
         );
         result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
         result[username].payoutMode = "permit";
-        result[username].paid = true;
         await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
         // remove treasury item from final result in order not to display permit fee in GitHub comments
         this._removeTreasuryItem(result);
