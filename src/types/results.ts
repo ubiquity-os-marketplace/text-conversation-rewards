@@ -12,7 +12,6 @@ export interface Result {
     feeRate?: number;
     permitUrl?: string;
     explorerUrl?: string;
-    paid?: boolean;
     payoutMode?: PayoutMode;
     userId: number;
     reviewRewards?: {

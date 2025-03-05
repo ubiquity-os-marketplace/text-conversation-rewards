@@ -87,7 +87,7 @@ export class GithubCommentModule extends BaseModule {
     );
 
     const someReward = Object.values(result)[0];
-    if (someReward.paid) {
+    if (someReward.payoutMode) {
       const payoutMetadata = someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
       // Add the workflow run url and the metadata in the GitHub's comment
       bodyArray.push(

@@ -121,20 +121,22 @@ export class PaymentModule extends BaseModule {
     // apply fees
     result = await this._applyFees(result, payload.erc20RewardToken);
 
-    // Check the previous transfer if exists
-    const payoutMode = await this._getPayoutMode(data);
-    if (payoutMode !== null) {
-      this.context.logger.info("[PaymentModule] Rewards already paid, skipping...");
+    // get the payout mode
+    let payoutMode = await this._getPayoutMode(data);
+    if (payoutMode === null) {
+      // Indicates that rewards have already been paid via direct transfer.
+      this.context.logger.info("[PaymentModule] Rewards have already been paid out directly; skipping...");
       for (const username of Object.keys(result)) {
-        result[username].payoutMode = payoutMode;
-        result[username].paid = true;
+        result[username].payoutMode = "direct";
       }
       return result;
     }
-    if (this._autoTransferMode) {
+
+    if (payoutMode === "direct") {
       try {
         // Generate the batch transfer nonce
         const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
+
         // Check if funding wallet has enough reward token and gas to transfer rewards directly
         const transferInfo = await this._canTransferDirectly(privateKey, result, nonce);
         if (transferInfo) {
@@ -143,11 +145,11 @@ export class PaymentModule extends BaseModule {
             "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
           );
           const [tx, permits] = await this._transferReward(fundingWallet, beneficiaries, nonce);
+          payoutMode = null;
           await Promise.all(
             beneficiaries.map(async (beneficiary, idx) => {
               result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
               result[beneficiary.username].payoutMode = "direct";
-              result[beneficiary.username].paid = true;
               await this._savePermitsToDatabase(
                 result[beneficiary.username].userId,
                 { issueUrl: payload.issueUrl, issueId },
@@ -161,12 +163,11 @@ export class PaymentModule extends BaseModule {
       } catch (e) {
         this.context.logger.error(`[PaymentModule] Failed to auto transfer rewards via batch permit transfer`, { e });
       }
+    }
 
-      // Terminate if funds are directly transferred
-      if (Object.values(result)[0].payoutMode === "direct") {
-        this.context.logger.info(`[PaymentModule] Terminating, rewards are transferred via autoTransferMode: true`);
-        return result;
-      }
+    if (payoutMode === null) {
+      this.context.logger.info(`[PaymentModule] Terminating, Rewards have already been paid out directly`);
+      return result;
     }
 
     this.context.logger.info("[PaymentModule] Transitioning to permit generation.");
@@ -225,14 +226,20 @@ export class PaymentModule extends BaseModule {
     }
   }
 
+  /* This method returns the transfer mode based on the following conditions:
+   - null: Indicates that the payout was previously transferred directly, meaning no further payout is required.
+   - permit: Applies if autoTransferMode is set to false or if rewards were previously generated using the permit method.
+   - direct: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
+  */
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
     for (const comment of data.comments) {
       if (comment.body) {
-        if (comment.body.indexOf(PAYOUT_MODE_DIRECT) != -1) return "direct";
+        if (comment.body.indexOf(PAYOUT_MODE_DIRECT) != -1) return null;
         else if (comment.body.indexOf(PAYOUT_MODE_PERMIT) != -1) return "permit";
       }
     }
-    return null;
+    if (this._autoTransferMode) return "direct";
+    return "permit";
   }
   async _getNetworkExplorer(networkId: number): Promise<string> {
     const networkExplorer = getNetworkExplorer(String(networkId) as NetworkId);
