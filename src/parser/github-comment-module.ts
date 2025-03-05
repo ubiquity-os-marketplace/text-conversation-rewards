@@ -153,7 +153,7 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
     }
 
-    if (result.simplificationReward && result.simplificationReward.reward != 0) {
+    if (result.simplificationReward && result.simplificationReward.reward !== 0) {
       content.push(buildContributionRow("Issue", "Task Simplification", 1, result.simplificationReward.reward));
     }
 
