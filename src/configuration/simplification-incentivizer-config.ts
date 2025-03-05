@@ -7,6 +7,7 @@ export const simplificationIncentivizerConfigurationType = Type.Object(
      */
     simplificationRate: Type.Number({
       default: 100,
+      exclusiveMinimum: 0,
       description: "The amount of lines simplified to be credited 1$ of incentive",
       examples: ["100"],
     }),
