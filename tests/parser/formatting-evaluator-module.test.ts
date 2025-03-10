@@ -129,5 +129,43 @@ describe("FormattingEvaluatorModule", () => {
       expect(result.score).toBeGreaterThanOrEqual(0);
       expect(result.score).toBeLessThanOrEqual(0.2);
     });
+
+    it("Formatting result should be limited to a maximum of three decimal places", () => {
+      const formatting1 = {
+        p: { score: 0, elementCount: 11 },
+        ul: { score: 0, elementCount: 2 },
+        li: { score: 0.1, elementCount: 6 },
+      };
+      const result1 = module["_calculateFormattingResult"](formatting1);
+
+      expect(result1).toBe(0.6);
+
+      const formatting2 = {
+        p: { score: 0, elementCount: 11 },
+        ul: { score: 0, elementCount: 2 },
+        li: { score: 0.11000000000001, elementCount: 6 },
+      };
+      const result2 = module["_calculateFormattingResult"](formatting2);
+
+      expect(result2).toBe(0.66);
+
+      const formatting3 = {
+        p: { score: 0, elementCount: 11 },
+        ul: { score: 0, elementCount: 2 },
+        li: { score: 0.11100000000001, elementCount: 6 },
+      };
+      const result3 = module["_calculateFormattingResult"](formatting3);
+
+      expect(result3).toBe(0.666);
+
+      const formatting4 = {
+        p: { score: 0, elementCount: 11 },
+        ul: { score: 0, elementCount: 2 },
+        li: { score: 0.11101000000001, elementCount: 6 },
+      };
+      const result4 = module["_calculateFormattingResult"](formatting4);
+
+      expect(result4).toBe(0.666);
+    });
   });
 });
