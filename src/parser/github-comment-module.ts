@@ -259,7 +259,7 @@ export class GithubCommentModule extends BaseModule {
             <td>
             <details>
               <summary>
-                ${new Decimal(commentScore.score?.words?.result ?? 0).add(new Decimal(commentScore.score?.formatting?.result ?? 0))}
+                ${new Decimal(commentScore.score?.words?.result ?? 0).add(new Decimal(commentScore.score?.formatting?.result ?? 0)).toDecimalPlaces(3)}
               </summary>
               <pre>${formatting}</pre>
              </details>
