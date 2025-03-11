@@ -257,6 +257,8 @@ afterAll(() => {
 const autoTransferModeVector = [false, true];
 interface UserData {
   permitUrl?: string;
+  payoutMode?: PayoutMode;
+  explorerUrl?: string;
   [key: string]: unknown;
 }
 
@@ -269,12 +271,14 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
     ctx.config.automaticTransferMode = autoTransferMode;
     paymentResult = { ...permitGenerationResults };
     const payoutMode: PayoutMode = autoTransferMode ? "direct" : "permit";
-    if (autoTransferMode) {
-      for (const username of Object.keys(paymentResult)) {
+
+    for (const username of Object.keys(paymentResult)) {
+      if (!paymentResult[username]["permitUrl"]) continue;
+      if (autoTransferMode) {
         delete paymentResult[username]["permitUrl"];
         paymentResult[username].explorerUrl = "https://rpc/tx/0xSent";
-        paymentResult[username].payoutMode = payoutMode;
       }
+      paymentResult[username].payoutMode = payoutMode;
     }
   });
 
