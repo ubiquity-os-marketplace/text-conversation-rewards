@@ -7,6 +7,8 @@ import {
   SimplificationIncentivizerConfiguration,
   simplificationIncentivizerConfigurationType,
 } from "../configuration/simplification-incentivizer-config";
+import { getExcludedFiles } from "../helpers/excluded-files";
+import { minimatch } from "minimatch";
 
 export class SimplificationIncentivizerModule extends BaseModule {
   private readonly _configuration: SimplificationIncentivizerConfiguration | null =
@@ -28,9 +30,33 @@ export class SimplificationIncentivizerModule extends BaseModule {
     this.context.logger.info("Pull requests linked to this issue", { prNumbers });
 
     for (const pull of linkedPullRequests) {
-      if (!pull) continue;
+      if (!pull?.head.repo) continue;
+      const excludedFilePatterns = await getExcludedFiles(
+        this.context,
+        pull.head.repo.owner.login,
+        pull.head.repo.name
+      );
       const prAuthor = pull.user.login;
-      const simplificationReward = Math.max((pull.deletions - pull.additions) / this._simplificationRate, 0);
+      const files = await this.context.octokit.rest.pulls.listFiles({
+        owner: pull.head.repo.owner.login,
+        repo: pull.head.repo.name,
+        pull_number: pull.number,
+      });
+
+      let totalAdditions = 0;
+      let totalDeletions = 0;
+
+      for (const file of files.data) {
+        if (
+          !excludedFilePatterns?.length ||
+          !excludedFilePatterns.some((pattern) => minimatch(file.filename, pattern))
+        ) {
+          totalAdditions += file.additions;
+          totalDeletions += file.deletions;
+        }
+      }
+
+      const simplificationReward = Math.max((totalDeletions - totalAdditions) / this._simplificationRate, 0);
       result[prAuthor].simplificationReward = { reward: simplificationReward };
     }
 
