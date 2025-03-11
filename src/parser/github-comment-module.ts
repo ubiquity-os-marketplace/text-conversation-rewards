@@ -63,6 +63,18 @@ export class GithubCommentModule extends BaseModule {
       return bodyArray.join("");
     }
 
+    const someReward = Object.values(result)[0];
+    if (someReward.payoutMode) {
+      const payoutMetadata = someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
+      // Add the workflow run url and the metadata in the GitHub's comment
+      bodyArray.push(
+        createStructuredMetadata("GithubCommentModule", {
+          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+          output: payoutMetadata,
+        })
+      );
+    }
+
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
       if (result[key].total <= 0) {
@@ -85,18 +97,6 @@ export class GithubCommentModule extends BaseModule {
         output: JSON.parse(JSON.stringify(metadataResult, typeReplacer, 2)),
       })
     );
-
-    const someReward = Object.values(result)[0];
-    if (someReward.payoutMode) {
-      const payoutMetadata = someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
-      // Add the workflow run url and the metadata in the GitHub's comment
-      bodyArray.push(
-        createStructuredMetadata("GithubCommentModule", {
-          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-          output: payoutMetadata,
-        })
-      );
-    }
 
     const body = bodyArray.join("");
     // We check this length because GitHub has a comment length limit

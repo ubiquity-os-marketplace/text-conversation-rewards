@@ -11,6 +11,8 @@ import cfg from "../__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { ERC20_ABI, isEthersError, PERMIT2_ABI } from "../../src/helpers/web3";
+import { PAYOUT_MODE_DIRECT, PAYOUT_MODE_PERMIT } from "../../src/helpers/constants";
+import { IssueActivity } from "../../src/issue-activity";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -280,6 +282,52 @@ describe("payment-module.ts", () => {
         BigNumber.from(0)
       );
       expect(totalPayable).toEqual(parseUnits("111.11", 18));
+    });
+  });
+
+  describe("_getPayoutMode()", () => {
+    beforeEach(() => {
+      ctx.env.PERMIT_FEE_RATE = "";
+      drop(db);
+      for (const table of Object.keys(dbSeed)) {
+        const tableName = table as keyof typeof dbSeed;
+        for (const row of dbSeed[tableName]) {
+          db[tableName].create(row);
+        }
+      }
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("Should return null if the `payoutMode` was already set to `direct`", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const payoutMode = await paymentModule._getPayoutMode({
+        comments: [{ body: `...${PAYOUT_MODE_DIRECT}....` }],
+      } as unknown as IssueActivity);
+      expect(payoutMode).toEqual(null);
+    });
+
+    it("Should return `permit` if the `payoutMode` was already set to `permit` or `autoTransferMode` is set to `false`", async () => {
+      ctx.config.automaticTransferMode = false;
+      const paymentModule = new PaymentModule(ctx);
+
+      let payoutMode = await paymentModule._getPayoutMode({
+        comments: [{ body: `...${PAYOUT_MODE_PERMIT}...` }],
+      } as unknown as IssueActivity);
+      expect(payoutMode).toEqual("permit");
+
+      payoutMode = await paymentModule._getPayoutMode({ comments: [""] } as unknown as IssueActivity);
+      expect(payoutMode).toEqual("permit");
+    });
+
+    it("Should return `direct` if the `payoutMode` was not set and `autoTransferMode` is set to `true`", async () => {
+      ctx.config.automaticTransferMode = true;
+      const paymentModule = new PaymentModule(ctx);
+
+      const payoutMode = await paymentModule._getPayoutMode({ comments: [{ body: "" }] } as unknown as IssueActivity);
+      expect(payoutMode).toEqual("direct");
     });
   });
 

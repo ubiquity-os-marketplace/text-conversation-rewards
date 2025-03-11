@@ -76,7 +76,7 @@ export class PaymentModule extends BaseModule {
       evmNetworkId: this.context.config.evmNetworkId,
       erc20RewardToken: this.context.config.erc20RewardToken,
     };
-    const issueId = Number(payload.issueUrl.match(/\d+$/)?.[0]);
+    const { issue_number: issueId } = parseGitHubUrl(payload.issueUrl);
     payload.issue = {
       node_id: this.context.payload.issue.node_id,
     };
@@ -122,16 +122,12 @@ export class PaymentModule extends BaseModule {
     result = await this._applyFees(result, payload.erc20RewardToken);
 
     // get the payout mode
-    let payoutMode = await this._getPayoutMode(data);
+    const payoutMode = await this._getPayoutMode(data);
     if (payoutMode === null) {
-      // Indicates that rewards have already been paid via direct transfer.
-      this.context.logger.info("[PaymentModule] Rewards have already been paid out directly; skipping...");
-      for (const username of Object.keys(result)) {
-        result[username].payoutMode = "direct";
-      }
-      return result;
+      throw this.context.logger.warn("[PaymentModule] Rewards have already been paid out directly; skipping...");
     }
 
+    let directTransferError;
     if (payoutMode === "direct") {
       try {
         // Generate the batch transfer nonce
@@ -145,7 +141,7 @@ export class PaymentModule extends BaseModule {
             "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
           );
           const [tx, permits] = await this._transferReward(fundingWallet, beneficiaries, nonce);
-          payoutMode = null;
+          this.context.logger.info(`[PaymentModule] Rewards have already been paid out directly`);
           await Promise.all(
             beneficiaries.map(async (beneficiary, idx) => {
               result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
@@ -157,65 +153,63 @@ export class PaymentModule extends BaseModule {
               );
             })
           );
-          // remove treasury item from final result in order not to display permit fee in GitHub comments
-          this._removeTreasuryItem(result);
         }
       } catch (e) {
         this.context.logger.error(`[PaymentModule] Failed to auto transfer rewards via batch permit transfer`, { e });
+        directTransferError = e;
       }
     }
 
-    if (payoutMode === null) {
-      this.context.logger.info(`[PaymentModule] Terminating, Rewards have already been paid out directly`);
-      return result;
-    }
-
-    this.context.logger.info("[PaymentModule] Transitioning to permit generation.");
-    for (const [username, reward] of Object.entries(result)) {
-      this.context.logger.debug(`Updating result for user ${username}`);
-      const config: Context["config"] = {
-        evmNetworkId: payload.evmNetworkId,
-        evmPrivateEncrypted: payload.evmPrivateEncrypted,
-        permitRequests: [
-          {
-            amount: reward.total,
-            username: username,
-            contributionType: "",
-            type: TokenType.ERC20,
-            tokenAddress: payload.erc20RewardToken,
-          },
-        ],
-      };
-      try {
-        const permits = await generatePayoutPermit(
-          {
-            env,
-            eventName,
-            logger: permitLogger,
-            payload,
-            adapters: createAdapters(this._supabase, {
+    if (payoutMode === "permit" || directTransferError) {
+      this.context.logger.info("[PaymentModule] Transitioning to permit generation.");
+      for (const [username, reward] of Object.entries(result)) {
+        this.context.logger.debug(`Updating result for user ${username}`);
+        const config: Context["config"] = {
+          evmNetworkId: payload.evmNetworkId,
+          evmPrivateEncrypted: payload.evmPrivateEncrypted,
+          permitRequests: [
+            {
+              amount: reward.total,
+              username: username,
+              contributionType: "",
+              type: TokenType.ERC20,
+              tokenAddress: payload.erc20RewardToken,
+            },
+          ],
+        };
+        try {
+          const permits = await generatePayoutPermit(
+            {
               env,
               eventName,
-              octokit,
-              config,
               logger: permitLogger,
               payload,
-              adapters,
-            }),
-            octokit,
-            config,
-          },
-          config.permitRequests
-        );
-        result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-        result[username].payoutMode = "permit";
-        await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
-        // remove treasury item from final result in order not to display permit fee in GitHub comments
-        this._removeTreasuryItem(result);
-      } catch (e) {
-        this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${username}`, { e });
+              adapters: createAdapters(this._supabase, {
+                env,
+                eventName,
+                octokit,
+                config,
+                logger: permitLogger,
+                payload,
+                adapters,
+              }),
+              octokit,
+              config,
+            },
+            config.permitRequests
+          );
+          result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+          result[username].payoutMode = "permit";
+          await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
+          // remove treasury item from final result in order not to display permit fee in GitHub comments
+        } catch (e) {
+          this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${username}`, { e });
+        }
       }
     }
+
+    // remove treasury item from final result in order not to display permit fee in GitHub comments
+    this._removeTreasuryItem(result);
     return result;
   }
 
@@ -237,9 +231,9 @@ export class PaymentModule extends BaseModule {
         else if (comment.body.indexOf(PAYOUT_MODE_PERMIT) != -1) return "permit";
       }
     }
-    if (this._autoTransferMode) return "direct";
-    return "permit";
+    return this._autoTransferMode ? "direct" : "permit";
   }
+
   async _getNetworkExplorer(networkId: number): Promise<string> {
     const networkExplorer = getNetworkExplorer(String(networkId) as NetworkId);
     if (!networkExplorer || networkExplorer.length === 0) {
@@ -590,11 +584,104 @@ export class PaymentModule extends BaseModule {
     return locationId;
   }
 
+  async _getOrCreateToken(address: string, network: number) {
+    let tokenId: number | null = null;
+
+    const { data: tokenData } = await this._supabase
+      .from("tokens")
+      .select("id")
+      .eq("address", address)
+      .eq("network", network)
+      .single();
+
+    if (!tokenData) {
+      const { data: insertedToken, error } = await this._supabase
+        .from("tokens")
+        .insert({
+          address,
+          network,
+        })
+        .select("id")
+        .single();
+
+      if (error || !insertedToken) {
+        this.context.logger.error("Failed to insert a new token:", error);
+      } else {
+        tokenId = insertedToken.id;
+      }
+    } else {
+      tokenId = tokenData.id;
+    }
+    if (!tokenId) {
+      throw this.context.logger.error("Failed to retrieve the related token from permit", {
+        address,
+        network,
+      });
+    }
+
+    return tokenId;
+  }
+
+  async _getOrCreatePartner(address: string) {
+    let walletId: number | null = null;
+    let partnerId: number | null = null;
+
+    const { data: walletData } = await this._supabase.from("wallets").select("id").eq("address", address).single();
+
+    if (!walletData) {
+      const { data: insertedWallet, error } = await this._supabase
+        .from("wallets")
+        .insert({
+          address,
+        })
+        .select("id")
+        .single();
+
+      if (error || !insertedWallet) {
+        this.context.logger.error("Failed to insert a new wallet:", error);
+      } else {
+        walletId = insertedWallet.id;
+      }
+    } else {
+      walletId = walletData.id;
+    }
+    if (!walletId) {
+      throw this.context.logger.error("Failed to retrieve the related wallet from permit", { address });
+    }
+
+    const { data: partnerData } = await this._supabase.from("partners").select("id").eq("wallet_id", walletId).single();
+
+    if (!partnerData) {
+      const { data: insertedPartner, error } = await this._supabase
+        .from("partners")
+        .insert({
+          wallet_id: walletId,
+        })
+        .select("id")
+        .single();
+
+      if (error || !insertedPartner) {
+        this.context.logger.error("Failed to insert a new token:", error);
+      } else {
+        partnerId = insertedPartner.id;
+      }
+    } else {
+      partnerId = partnerData.id;
+    }
+    if (!partnerId) {
+      throw this.context.logger.error("Failed to retrieve the related partner from permit", { address });
+    }
+
+    return partnerId;
+  }
+
   async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: PermitReward[]) {
     for (const permit of permits) {
       try {
         const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
         const locationId = await this._getOrCreateIssueLocation(issue);
+        const tokenId = await this._getOrCreateToken(permit.tokenAddress, permit.networkId);
+        const partnerId = await this._getOrCreatePartner(permit.owner);
 
         if (userData) {
           const { error } = await this._supabase.from("permits").insert({
@@ -604,6 +691,8 @@ export class PaymentModule extends BaseModule {
             signature: permit.signature,
             beneficiary_id: userData.id,
             location_id: locationId,
+            token_id: tokenId,
+            partner_id: partnerId,
           });
           if (error) {
             this.context.logger.error("Failed to insert a new permit", error);

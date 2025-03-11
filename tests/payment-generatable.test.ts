@@ -16,6 +16,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { ERC20_ABI, isEthersError, PERMIT2_ABI } from "../src/helpers/web3";
+import { PayoutMode } from "../src/types/results";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -267,10 +268,12 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
   beforeAll(async () => {
     ctx.config.automaticTransferMode = autoTransferMode;
     paymentResult = { ...permitGenerationResults };
+    const payoutMode: PayoutMode = autoTransferMode ? "direct" : "permit";
     if (autoTransferMode) {
       for (const username of Object.keys(paymentResult)) {
         delete paymentResult[username]["permitUrl"];
-        paymentResult[username].explorerUrl = `https://rpc/tx/0xSent`;
+        paymentResult[username].explorerUrl = "https://rpc/tx/0xSent";
+        paymentResult[username].payoutMode = payoutMode;
       }
     }
   });
