@@ -256,9 +256,6 @@ afterAll(() => {
 // Run the test twice to cover both auto-transfer and permit-generation modes.
 const autoTransferModeVector = [false, true];
 interface UserData {
-  permitUrl?: string;
-  payoutMode?: PayoutMode;
-  explorerUrl?: string;
   [key: string]: unknown;
 }
 
@@ -273,7 +270,8 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
     const payoutMode: PayoutMode = autoTransferMode ? "direct" : "permit";
 
     for (const username of Object.keys(paymentResult)) {
-      if (!paymentResult[username]["permitUrl"]) continue;
+      if (!paymentResult[username]["permitUrl"] && !autoTransferMode) continue; // getWalletByUserId mock returns null here
+
       if (autoTransferMode) {
         delete paymentResult[username]["permitUrl"];
         paymentResult[username].explorerUrl = "https://rpc/tx/0xSent";
