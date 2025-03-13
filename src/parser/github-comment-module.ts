@@ -153,8 +153,15 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
     }
 
-    if (result.simplificationReward && result.simplificationReward.reward !== 0) {
-      content.push(buildContributionRow("Issue", "Task Simplification", 1, result.simplificationReward.reward));
+    if (result.simplificationReward && Object.keys(result.simplificationReward).length != 0) {
+      content.push(
+        buildContributionRow(
+          "Issue",
+          "Task Simplification",
+          1,
+          Object.values(result.simplificationReward).reduce((sum, { reward }) => sum + reward, 0)
+        )
+      );
     }
 
     if (result.reviewRewards) {
@@ -273,6 +280,32 @@ export class GithubCommentModule extends BaseModule {
     return content.join("");
   }
 
+  _createSimplificationRows(result: Result[0]) {
+    if (!result.simplificationReward || Object.keys(result.simplificationReward).length === 0) return;
+    const rows = [];
+    for (const [filename, value] of Object.entries(result.simplificationReward)) {
+      rows.push(`
+        <tr>
+          <td>${filename}</td>
+          <td>${value.reward}</td>
+        </tr>`);
+    }
+
+    return `
+    <h6>Simplfication details</h6>
+    <table>
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Reward</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.join()}
+      </tbody>
+    </table>`;
+  }
+
   _createReviewRows(result: Result[0]) {
     if (result.reviewRewards?.every((reviewReward) => reviewReward.reviews?.length === 0) || !result.reviewRewards) {
       return "";
@@ -369,6 +402,7 @@ export class GithubCommentModule extends BaseModule {
           ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
+      ${!stripComments ? this._createSimplificationRows(result) : ""}
       ${!stripComments ? this._createReviewRows(result) : ""}
       ${
         !stripComments

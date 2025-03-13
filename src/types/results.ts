@@ -17,7 +17,11 @@ export interface Result {
       url: string;
     }[];
     simplificationReward?: {
-      reward: number;
+      [fileName: string]: {
+        reward: number;
+        additions: number;
+        deletions: number;
+      };
     };
     events?: {
       [eventName: string]: {

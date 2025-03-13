@@ -43,21 +43,21 @@ export class SimplificationIncentivizerModule extends BaseModule {
         pull_number: pull.number,
       });
 
-      let totalAdditions = 0;
-      let totalDeletions = 0;
+      result[prAuthor].simplificationReward = {};
 
       for (const file of files.data) {
         if (
           !excludedFilePatterns?.length ||
           !excludedFilePatterns.some((pattern) => minimatch(file.filename, pattern))
         ) {
-          totalAdditions += file.additions;
-          totalDeletions += file.deletions;
+          const reward = Math.max((file.deletions - file.additions) / this._simplificationRate, 0);
+          if (reward != 0) {
+            result[prAuthor].simplificationReward[file.filename].additions = file.additions;
+            result[prAuthor].simplificationReward[file.filename].deletions = file.deletions;
+            result[prAuthor].simplificationReward[file.filename].reward = reward;
+          }
         }
       }
-
-      const simplificationReward = Math.max((totalDeletions - totalAdditions) / this._simplificationRate, 0);
-      result[prAuthor].simplificationReward = { reward: simplificationReward };
     }
 
     return result;
