@@ -187,6 +187,7 @@ interface PermitRecord {
     },
     "feeRate": 0.1,
     "permitUrl": "https://example.com/permit",
+    "payoutMode": "permit",
     "userId": 123,
     "evaluationCommentHtml": "<p>Evaluation comment</p>"
   }

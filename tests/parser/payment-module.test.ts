@@ -304,7 +304,7 @@ describe("payment-module.ts", () => {
     it("Should return null if the `payoutMode` was already set to `direct`", async () => {
       const paymentModule = new PaymentModule(ctx);
       const payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: `...${PAYOUT_MODE_DIRECT}....` }],
+        comments: [{ body: `...${PAYOUT_MODE_DIRECT}....`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual(null);
     });
@@ -314,11 +314,23 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
 
       let payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: `...${PAYOUT_MODE_PERMIT}...` }],
+        comments: [{ body: `...${PAYOUT_MODE_PERMIT}...`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
 
-      payoutMode = await paymentModule._getPayoutMode({ comments: [""] } as unknown as IssueActivity);
+      payoutMode = await paymentModule._getPayoutMode({
+        comments: [{ body: "", user: { type: "Bot" } }],
+      } as unknown as IssueActivity);
+      expect(payoutMode).toEqual("permit");
+    });
+
+    it("Should return `permit` if the `payoutMode` was already set to `permit` even if `autoTransferMode` is set to `true`", async () => {
+      ctx.config.automaticTransferMode = true;
+      const paymentModule = new PaymentModule(ctx);
+
+      const payoutMode = await paymentModule._getPayoutMode({
+        comments: [{ body: `...${PAYOUT_MODE_PERMIT}...`, user: { type: "Bot" } }],
+      } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
     });
 
@@ -326,7 +338,9 @@ describe("payment-module.ts", () => {
       ctx.config.automaticTransferMode = true;
       const paymentModule = new PaymentModule(ctx);
 
-      const payoutMode = await paymentModule._getPayoutMode({ comments: [{ body: "" }] } as unknown as IssueActivity);
+      const payoutMode = await paymentModule._getPayoutMode({
+        comments: [{ body: "", user: { type: "Bot" } }],
+      } as unknown as IssueActivity);
       expect(payoutMode).toEqual("direct");
     });
   });

@@ -39,7 +39,21 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+  _createPayoutMetadata(result: Result): string | null {
+    const someReward = Object.values(result)[0];
+    if (someReward.payoutMode) {
+      const payoutMetadata = someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
+      // Add the workflow run url and the metadata in the GitHub's comment
+      return (
+        createStructuredMetadata("GithubCommentModule", {
+          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+          output: payoutMetadata,
+        }) + "\n"
+      );
+    }
+    return null;
+  }
+
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const keysToRemove: string[] = [];
     const bodyArray: (string | undefined)[] = [];
@@ -63,17 +77,8 @@ export class GithubCommentModule extends BaseModule {
       return bodyArray.join("");
     }
 
-    const someReward = Object.values(result)[0];
-    if (someReward.payoutMode) {
-      const payoutMetadata = someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
-      // Add the workflow run url and the metadata in the GitHub's comment
-      bodyArray.push(
-        createStructuredMetadata("GithubCommentModule", {
-          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-          output: payoutMetadata,
-        })
-      );
-    }
+    const payoutMetadata = this._createPayoutMetadata(result);
+    if (payoutMetadata) bodyArray.push(payoutMetadata);
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed

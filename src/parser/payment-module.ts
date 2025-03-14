@@ -65,7 +65,7 @@ export class PaymentModule extends BaseModule {
     const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
     if (!canMakePayment) {
-      this.context.logger.error("[PaymentModule] Non collaborative issue detected, skipping.");
+      this.context.logger.error("Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
 
@@ -90,9 +90,7 @@ export class PaymentModule extends BaseModule {
       this.context.payload.repository.id
     );
     if (!isPrivateKeyAllowed) {
-      this.context.logger.error(
-        "[PaymentModule] Private key is not allowed to be used in this organization/repository."
-      );
+      this.context.logger.error("Private key is not allowed to be used in this organization/repository.");
       return Promise.resolve(result);
     }
 
@@ -124,7 +122,7 @@ export class PaymentModule extends BaseModule {
     // get the payout mode
     const payoutMode = await this._getPayoutMode(data);
     if (payoutMode === null) {
-      throw this.context.logger.warn("[PaymentModule] Rewards have already been paid out directly; skipping...");
+      throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
     let directTransferError;
@@ -138,10 +136,10 @@ export class PaymentModule extends BaseModule {
         if (transferInfo) {
           const { fundingWallet, beneficiaries } = transferInfo;
           this.context.logger.info(
-            "[PaymentModule] AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
+            "AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
           );
           const [tx, permits] = await this._transferReward(fundingWallet, beneficiaries, nonce);
-          this.context.logger.info(`[PaymentModule] Rewards have already been paid out directly`);
+          this.context.logger.info("Rewards have been transferred.");
           await Promise.all(
             beneficiaries.map(async (beneficiary, idx) => {
               result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
@@ -155,13 +153,13 @@ export class PaymentModule extends BaseModule {
           );
         }
       } catch (e) {
-        this.context.logger.error(`[PaymentModule] Failed to auto transfer rewards via batch permit transfer`, { e });
+        this.context.logger.error(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
       }
     }
 
     if (payoutMode === "permit" || directTransferError) {
-      this.context.logger.info("[PaymentModule] Transitioning to permit generation.");
+      this.context.logger.info("Transitioning to permit generation.");
       for (const [username, reward] of Object.entries(result)) {
         this.context.logger.debug(`Updating result for user ${username}`);
         const config: Context["config"] = {
@@ -203,7 +201,7 @@ export class PaymentModule extends BaseModule {
           await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
           // remove treasury item from final result in order not to display permit fee in GitHub comments
         } catch (e) {
-          this.context.logger.error(`[PaymentModule] Failed to generate permits for user ${username}`, { e });
+          this.context.logger.error(`Failed to generate permits for user ${username}`, { e });
         }
       }
     }
@@ -226,7 +224,7 @@ export class PaymentModule extends BaseModule {
   */
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
     for (const comment of data.comments) {
-      if (comment.body) {
+      if (comment.body && comment.user?.type === "Bot") {
         if (comment.body.indexOf(PAYOUT_MODE_DIRECT) != -1) return null;
         else if (comment.body.indexOf(PAYOUT_MODE_PERMIT) != -1) return "permit";
       }
@@ -256,98 +254,123 @@ export class PaymentModule extends BaseModule {
    * @param result Result object
    * @returns [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries]
    */
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   async _canTransferDirectly(
     privateKey: string,
     result: Result,
     nonce: string
   ): Promise<{ canTransferDirectly: boolean; fundingWallet: ethers.Wallet; beneficiaries: Beneficiary[] } | null> {
     try {
-      const erc20Contract = await getContract(this._evmNetworkId, this._erc20RewardToken, ERC20_ABI);
-      const fundingWallet = await getEvmWallet(privateKey, erc20Contract.provider);
-      const erc20Wrapper = new Erc20Wrapper(erc20Contract);
-      const decimals = await erc20Wrapper.getDecimals();
-      // Fetch and normalize the funding wallet's reward token balance
-      const fundingWalletRewardTokenBalance: BigNumber = await erc20Wrapper.getBalance(fundingWallet.address);
-      const fundingWalletRewardTokenAllowance: BigNumber = await erc20Wrapper.getAllowance(
-        fundingWallet.address,
-        permit2Address(this._evmNetworkId)
+      // Initialize contracts and wallet
+      const { erc20Wrapper, fundingWallet, beneficiaries } = await this._initializeContractsAndWallet(
+        privateKey,
+        result
+      );
+      if (!beneficiaries) return null;
+
+      // Fetch balances and allowances
+      const { rewardBalance, rewardAllowance, nativeBalance } = await this._fetchBalancesAndAllowances(
+        erc20Wrapper,
+        fundingWallet
       );
 
-      const beneficiaries = await this._getBeneficiaries(result, decimals);
-      if (beneficiaries === null) {
-        return null;
-      }
-      const fundingWalletNativeTokenBalance = await fundingWallet.getBalance();
+      // Calculate total reward and check if there are enough reward tokens
       const totalReward = beneficiaries.reduce(
         (accumulator, current) => accumulator.add(current.amount),
         BigNumber.from(0)
       );
+      const hasEnoughRewardToken = rewardBalance.gt(totalReward) && rewardAllowance.gt(totalReward);
 
-      const hasEnoughRewardToken =
-        fundingWalletRewardTokenBalance.gt(totalReward) && fundingWalletRewardTokenAllowance.gt(totalReward);
-      const gasAndRewardInfo = {
+      // Log gas and reward info
+      const directTransferLog = {
         gas: {
-          has: fundingWalletNativeTokenBalance.toString(),
+          has: nativeBalance.toString(),
           required: "Unavailable",
         },
         rewardToken: {
-          has: fundingWalletRewardTokenBalance.toString(),
-          allowed: fundingWalletRewardTokenAllowance.toString(),
+          has: rewardBalance.toString(),
+          allowed: rewardAllowance.toString(),
           required: totalReward.toString(),
         },
       };
 
-      // Ensure there is enough gas available to complete the transfer transaction
-      const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
-      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
-
-      let totalFee: BigNumber | null = null;
-      try {
-        const batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
-          fundingWallet,
-          this._erc20RewardToken,
-          beneficiaries,
-          BigNumber.from(nonce)
-        );
-        totalFee = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
-      } catch (e) {
-        if (isEthersError(e)) {
-          if (e.message.includes("TRANSFER_FROM_FAILED"))
-            this.context.logger.error("The gas limit could not be estimated because the transaction might fail", { e });
-          else if (e.reason === "InvalidNonce" || e.message.includes("InvalidNonce"))
-            this.context.logger.error("The transaction is likely to be reverted due to an invalid nonce", { e });
-        } else {
-          this.context.logger.error("Failed to estimate the total gas limit", { e });
-        }
-      }
-
       if (!hasEnoughRewardToken) {
         this.context.logger.error(
-          `[PaymentModule] The funding wallet lacks sufficient reward tokens to perform direct transfers`,
-          gasAndRewardInfo
+          `The funding wallet lacks sufficient reward tokens to perform direct transfers`,
+          directTransferLog
         );
         return null;
       }
 
-      if (totalFee !== null) {
-        gasAndRewardInfo.gas.required = totalFee.toString();
-        const hasEnoughGas = fundingWalletNativeTokenBalance.gt(totalFee);
-        if (!hasEnoughGas) {
-          this.context.logger.error(
-            `[PaymentModule] The funding wallet lacks sufficient gas to perform direct transfers`,
-            gasAndRewardInfo
-          );
-          return null;
-        }
+      // Check if there is enough gas for the transaction
+      const gasEstimation = await this._getGasEstimation(fundingWallet, beneficiaries, nonce);
+
+      if (!gasEstimation) {
+        return null;
       }
+      directTransferLog.gas.required = gasEstimation.toString();
+      if (nativeBalance.lte(gasEstimation)) {
+        this.context.logger.error(
+          `The funding wallet lacks sufficient gas to perform direct transfers`,
+          directTransferLog
+        );
+        return null;
+      }
+
       this.context.logger.info(
-        `[PaymentModule] The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
-        gasAndRewardInfo
+        `The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
+        directTransferLog
       );
       return { canTransferDirectly: true, fundingWallet, beneficiaries };
     } catch (e) {
-      this.context.logger.error(`[PaymentModule] Failed to fetch the funding wallet data: ${e}`, { e });
+      this.context.logger.error(`Failed to fetch the funding wallet data: ${e}`, { e });
+      return null;
+    }
+  }
+
+  // Helper function to initialize contracts and wallet
+  private async _initializeContractsAndWallet(privateKey: string, result: Result) {
+    const erc20Contract = await getContract(this._evmNetworkId, this._erc20RewardToken, ERC20_ABI);
+    const fundingWallet = await getEvmWallet(privateKey, erc20Contract.provider);
+    const erc20Wrapper = new Erc20Wrapper(erc20Contract);
+    const beneficiaries = await this._getBeneficiaries(result, await erc20Wrapper.getDecimals());
+    return { erc20Wrapper, fundingWallet, beneficiaries };
+  }
+
+  // Helper function to fetch balances and allowances
+  private async _fetchBalancesAndAllowances(erc20Wrapper: Erc20Wrapper, fundingWallet: ethers.Wallet) {
+    const rewardBalance = await erc20Wrapper.getBalance(fundingWallet.address);
+    const rewardAllowance = await erc20Wrapper.getAllowance(fundingWallet.address, permit2Address(this._evmNetworkId));
+    const nativeBalance = await fundingWallet.getBalance();
+    return { rewardBalance, rewardAllowance, nativeBalance };
+  }
+
+  // Helper function to get gas estimation
+  private async _getGasEstimation(
+    fundingWallet: ethers.Wallet,
+    beneficiaries: Beneficiary[],
+    nonce: string
+  ): Promise<BigNumber | null> {
+    const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
+    const permit2Wrapper = new Permit2Wrapper(permit2Contract);
+
+    try {
+      const batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
+        fundingWallet,
+        this._erc20RewardToken,
+        beneficiaries,
+        BigNumber.from(nonce)
+      );
+      return await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
+    } catch (e) {
+      if (isEthersError(e)) {
+        if (e.message.includes("TRANSFER_FROM_FAILED")) {
+          this.context.logger.error("The gas limit could not be estimated because the transaction might fail", { e });
+        } else if (e.reason === "InvalidNonce" || e.message.includes("InvalidNonce")) {
+          this.context.logger.error("The transaction is likely to be reverted due to an invalid nonce", { e });
+        }
+      } else {
+        this.context.logger.error("Failed to estimate the total gas limit", { e });
+      }
       return null;
     }
   }
