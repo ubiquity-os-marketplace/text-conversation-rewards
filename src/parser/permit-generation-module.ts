@@ -269,7 +269,7 @@ export class PermitGenerationModule extends BaseModule {
         .select("id")
         .single();
       if (!newLocationData || error) {
-        console.error("Failed to create a new location", error);
+        this.context.logger.error("Failed to create a new location", error);
       } else {
         locationId = newLocationData.id;
       }
@@ -277,11 +277,100 @@ export class PermitGenerationModule extends BaseModule {
       locationId = locationData.id;
     }
     if (!locationId) {
-      throw new Error(
-        this.context.logger.error("Failed to retrieve the related location from issue", { issue }).logMessage.raw
-      );
+      throw this.context.logger.error("Failed to retrieve the related location from issue", { issue });
     }
     return locationId;
+  }
+
+  async _getOrCreateToken(address: string, network: number) {
+    let tokenId: number | null = null;
+
+    const { data: tokenData } = await this._supabase
+      .from("tokens")
+      .select("id")
+      .eq("address", address)
+      .eq("network", network)
+      .single();
+
+    if (!tokenData) {
+      const { data: insertedToken, error } = await this._supabase
+        .from("tokens")
+        .insert({
+          address,
+          network,
+        })
+        .select("id")
+        .single();
+
+      if (error || !insertedToken) {
+        this.context.logger.error("Failed to insert a new token:", error);
+      } else {
+        tokenId = insertedToken.id;
+      }
+    } else {
+      tokenId = tokenData.id;
+    }
+    if (!tokenId) {
+      throw this.context.logger.error("Failed to retrieve the related token from permit", {
+        address,
+        network,
+      });
+    }
+
+    return tokenId;
+  }
+
+  async _getOrCreatePartner(address: string) {
+    let walletId: number | null = null;
+    let partnerId: number | null = null;
+
+    const { data: walletData } = await this._supabase.from("wallets").select("id").eq("address", address).single();
+
+    if (!walletData) {
+      const { data: insertedWallet, error } = await this._supabase
+        .from("wallets")
+        .insert({
+          address,
+        })
+        .select("id")
+        .single();
+
+      if (error || !insertedWallet) {
+        this.context.logger.error("Failed to insert a new wallet:", error);
+      } else {
+        walletId = insertedWallet.id;
+      }
+    } else {
+      walletId = walletData.id;
+    }
+    if (!walletId) {
+      throw this.context.logger.error("Failed to retrieve the related wallet from permit", { address });
+    }
+
+    const { data: partnerData } = await this._supabase.from("partners").select("id").eq("wallet_id", walletId).single();
+
+    if (!partnerData) {
+      const { data: insertedPartner, error } = await this._supabase
+        .from("partners")
+        .insert({
+          wallet_id: walletId,
+        })
+        .select("id")
+        .single();
+
+      if (error || !insertedPartner) {
+        this.context.logger.error("Failed to insert a new token:", error);
+      } else {
+        partnerId = insertedPartner.id;
+      }
+    } else {
+      partnerId = partnerData.id;
+    }
+    if (!partnerId) {
+      throw this.context.logger.error("Failed to retrieve the related partner from permit", { address });
+    }
+
+    return partnerId;
   }
 
   async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: PermitReward[]) {
@@ -289,6 +378,8 @@ export class PermitGenerationModule extends BaseModule {
       try {
         const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
         const locationId = await this._getOrCreateIssueLocation(issue);
+        const tokenId = await this._getOrCreateToken(permit.tokenAddress, permit.networkId);
+        const partnerId = await this._getOrCreatePartner(permit.owner);
 
         if (userData) {
           const { error } = await this._supabase.from("permits").insert({
@@ -298,6 +389,8 @@ export class PermitGenerationModule extends BaseModule {
             signature: permit.signature,
             beneficiary_id: userData.id,
             location_id: locationId,
+            token_id: tokenId,
+            partner_id: partnerId,
           });
           if (error) {
             this.context.logger.error("Failed to insert a new permit", error);
