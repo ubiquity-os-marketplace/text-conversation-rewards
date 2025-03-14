@@ -14,6 +14,5 @@ export default createActionsPlugin<PluginSettings, EnvConfig, null, SupportedEve
     envSchema: envConfigSchema,
     ...(process.env.KERNEL_PUBLIC_KEY && { kernelPublicKey: process.env.KERNEL_PUBLIC_KEY }),
     postCommentOnError: true,
-    bypassSignatureVerification: true, // TODO: remove this after test
   }
 );
