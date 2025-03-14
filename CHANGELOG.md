@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.7.0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.6.1...v1.7.0) (2025-03-14)
+
+
+### Features
+
+* add action ([62894f5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/62894f5aa755ac7a4b465e6f4f2d06ea8e8b58ad))
+* add test ([8d8d99b](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8d8d99bc9bf90a8f0d8e82646bf33148a75490b0))
+* fix ([41b426d](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/41b426d9780d5629ef4a14c47bbc0ae0b39f0001))
+* fix ([fa789ad](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/fa789ad47147dd0469a71bb2f97d46fa8649c133))
+* fix error throwing in permit module ([6bc2e24](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/6bc2e246ded63d8286267ea96d5cc5e8bce768c6))
+* github handle retry and 404 ([51dabc5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/51dabc56569503aa8f9278c09fb47aa8ba4fe6be))
+* rename properly ([3d49809](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/3d49809454874c339f176a9c93b76e66341c301d))
+* save token and partner data in supabase on permit generation ([5811d06](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/5811d064c37eb3d1587cb179c6abd5fd4580fccf))
+* supabase private key ([3ec4b7e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/3ec4b7e5eb4bb05df47973557194a41e9991d4e8))
+* test workflow ([638ded5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/638ded591cb8176fc6a2dee24de85764fc232925))
+* used ubiquity's knip-reporter ([0e7c900](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0e7c9009fe3c421f2e4ddd4073c20e5a9c9b4682))
+* used ubiquity's knip-reporter ([85915d1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/85915d1f52db7597504d1c68a2477189c6c5827e))
+
+
+### Bug Fixes
+
+* empty changes row ([506f2b3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/506f2b300a88b501dcc2690d679f399943d12080))
+* formatting score decimals ([0f1347f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0f1347f76020a8fe38dfb0331213adaaa0c9c012))
+* formatting score decimals ([2839788](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2839788c04869c8fefa5914514c26acf8d2a6cf9))
+* improvement, add test cases ([0b31a7d](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0b31a7d13824333b16d046edc3811299b4693858))
+* knip ([97c9546](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/97c9546ad7fedbb194f31117583a8ec5706c07c5))
+* revert ([bdf8018](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bdf8018512c8338420510b1fe8cc7c2c5b67b569))
+* skip over deleted files ([ad42b0a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ad42b0aed22ea05c825984bb4b8f1fccfac9bd32))
+
 ## [1.6.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.6.0...v1.6.1) (2025-02-23)
 
 
