@@ -11,10 +11,33 @@ import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
+import { mkdirSync } from "fs";
+
+function githubUrlToFileName(url: string): string {
+  const repoMatch = url.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/);
+
+  if (!repoMatch) {
+    throw new Error("Invalid GitHub URL");
+  }
+
+  const owner = repoMatch[1].toLowerCase();
+  const repo = repoMatch[2].toLowerCase();
+
+  const issueMatch = url.match(/\/issues\/(\d+)/);
+
+  if (issueMatch) {
+    const issueNumber = issueMatch[1];
+    return `results/${owner}_${repo}_${issueNumber}.json`;
+  }
+
+  return `results/${owner}_${repo}.json`;
+}
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
     const { payload, config } = context;
+    config.incentives.file = githubUrlToFileName(payload.issue.html_url);
+    mkdirSync("results", { recursive: true });
     const issue = parseGitHubUrl(payload.issue.html_url);
     const activity = new IssueActivityCache(context, issue, "useCache" in config);
     await activity.init();
