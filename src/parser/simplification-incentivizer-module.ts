@@ -52,9 +52,11 @@ export class SimplificationIncentivizerModule extends BaseModule {
         ) {
           const reward = Math.max((file.deletions - file.additions) / this._simplificationRate, 0);
           if (reward != 0) {
-            result[prAuthor].simplificationReward[file.filename].additions = file.additions;
-            result[prAuthor].simplificationReward[file.filename].deletions = file.deletions;
-            result[prAuthor].simplificationReward[file.filename].reward = reward;
+            result[prAuthor].simplificationReward[file.filename] = {
+              additions: file.additions,
+              deletions: file.deletions,
+              reward: reward,
+            };
           }
         }
       }
