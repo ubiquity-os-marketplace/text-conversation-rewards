@@ -16,6 +16,13 @@ export interface Result {
       reviewBaseReward?: { reward: number };
       url: string;
     }[];
+    simplificationReward?: {
+      [fileName: string]: {
+        reward: number;
+        additions: number;
+        deletions: number;
+      };
+    };
     events?: {
       [eventName: string]: {
         count: number;
