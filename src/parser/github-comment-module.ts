@@ -292,7 +292,7 @@ export class GithubCommentModule extends BaseModule {
     }
 
     return `
-    <h6>Simplfication details</h6>
+    <h6>Simplification details</h6>
     <table>
       <thead>
         <tr>
