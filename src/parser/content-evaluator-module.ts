@@ -321,6 +321,14 @@ export class ContentEvaluatorModule extends BaseModule {
       }
     }
 
+    if (
+      userIssueComments.length !== Object.keys(commentRelevances).length ||
+      userPrComments.length !== Object.keys(prCommentRelevances).length
+    ) {
+      this.context.logger.warn(
+        `[_evaluateComments]: Result mismatch. Evaluated ${userIssueComments.length} user issue comments that gave ${Object.keys(commentRelevances).length} comment relevance, and ${userPrComments.length} that gave ${Object.keys(prCommentRelevances).length} pr comment relevance.`
+      );
+    }
     return { ...commentRelevances, ...prCommentRelevances };
   }
 
