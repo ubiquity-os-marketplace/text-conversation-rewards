@@ -12,6 +12,7 @@ import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../typ
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 import { mkdirSync } from "fs";
+import { Organization, Repository } from "@octokit/graphql-schema";
 
 function githubUrlToFileName(url: string): string {
   const repoMatch = url.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/);
@@ -33,18 +34,102 @@ function githubUrlToFileName(url: string): string {
   return `results/${owner}_${repo}.json`;
 }
 
+const QUERY_ORG_REPOS = /* GraphQL */ `
+  query GetOrgRepositories($orgName: String!, $cursor: String) {
+    organization(login: $orgName) {
+      name
+      url
+      repositories(first: 100, after: $cursor) {
+        totalCount
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        nodes {
+          name
+          description
+          url
+          isPrivate
+          primaryLanguage {
+            name
+            color
+          }
+          stargazerCount
+          forkCount
+          updatedAt
+          createdAt
+        }
+      }
+    }
+  }
+`;
+
+const QUERY_REPO_ISSUES = /* GraphQL */ `
+  query GetRepositoryIssues($owner: String!, $repo: String!, $cursor: String) {
+    repository(owner: $owner, name: $repo) {
+      name
+      url
+      issues(first: 100, after: $cursor, orderBy: { field: CREATED_AT, direction: DESC }, states: [CLOSED]) {
+        totalCount
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        nodes {
+          number
+          title
+          url
+          state
+          createdAt
+          updatedAt
+          closedAt
+          author {
+            login
+            url
+          }
+          bodyText
+        }
+      }
+    }
+  }
+`;
+
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
-    const { payload, config } = context;
-    config.incentives.file = githubUrlToFileName(payload.issue.html_url);
+    const { config, octokit } = context;
     mkdirSync("results", { recursive: true });
-    const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivityCache(context, issue, "useCache" in config);
-    await activity.init();
-    const processor = new Processor(context);
-    await processor.run(activity);
-    const result = processor.dump();
-    return JSON.parse(result);
+
+    const { organization } = await octokit.graphql.paginate<{ organization: Organization }>(QUERY_ORG_REPOS, {
+      orgName: "Meniole",
+    });
+    const repositories = organization.repositories.nodes;
+    if (repositories) {
+      for (const repo of repositories) {
+        if (repo) {
+          console.log("> ", repo.name);
+          const { repository } = await octokit.graphql.paginate<{ repository: Repository }>(QUERY_REPO_ISSUES, {
+            owner: "Meniole",
+            repo: repo.name,
+          });
+          const issues = repository.issues.nodes;
+          if (issues) {
+            for (const issue of issues) {
+              if (issue) {
+                console.log("--- ", issue?.title);
+                config.incentives.file = githubUrlToFileName(issue.url);
+                const issueElem = parseGitHubUrl(issue.url);
+                const activity = new IssueActivityCache(context, issueElem, "useCache" in config);
+                await activity.init();
+                const processor = new Processor(context);
+                await processor.run(activity);
+                processor.dump();
+              }
+            }
+          }
+        }
+      }
+    }
+    return { output: { result: { evaluationCommentHtml: `<div>Done!</div>}` } } };
   },
   manifest as Manifest,
   {
