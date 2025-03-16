@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PLUGIN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
