@@ -44,11 +44,14 @@ export class GithubCommentModule extends BaseModule {
     if (someReward.payoutMode) {
       const payoutMetadata = someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
       // Add the workflow run url and the metadata in the GitHub's comment
-      return (
-        createStructuredMetadata("GithubCommentModule", {
+      return createStructuredMetadata(
+        "GithubCommentModule",
+        {
           workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
           output: payoutMetadata,
-        }) + "\n"
+        },
+        false,
+        true
       );
     }
     return null;
