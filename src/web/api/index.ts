@@ -96,11 +96,8 @@ baseApp.use("*", cors());
 
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
-    if (
-      request.method === "POST" &&
-      new URL(request.url).pathname === "/" &&
-      request.headers.get("referer")?.startsWith("http://localhost")
-    ) {
+    if (request.method === "POST" && new URL(request.url).pathname === "/") {
+      console.log(">>>>> Received POST request, proceeding");
       try {
         const originalBody = await request.json();
         const modifiedBody = await getPayload(
