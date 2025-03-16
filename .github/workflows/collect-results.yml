@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       organization:
-        description: 'Organization to parse (e.g. ubiquity-os-marketplace)'
+        description: "Organization to parse (e.g. ubiquity-os-marketplace)"
         required: true
         type: string
 
