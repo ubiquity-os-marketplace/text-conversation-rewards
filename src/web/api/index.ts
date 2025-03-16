@@ -8,14 +8,14 @@ import manifest from "../../../manifest.json";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
-import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
+import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 import { mkdirSync } from "fs";
 import { existsSync } from "node:fs";
 
 function githubUrlToFileName(url: string): string {
-  const repoMatch = url.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/);
+  const repoMatch = url.match(/github\.com\/([^/]+)\/([^/?#]+)/);
 
   if (!repoMatch) {
     throw new Error("Invalid GitHub URL");
@@ -69,8 +69,8 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           console.warn("No pricing label found, skipping.");
         } else {
           config.incentives.file = filePath;
-          context.payload.issue = issue;
-          context.payload.repository = repo;
+          context.payload.issue = issue as ContextPlugin["payload"]["issue"];
+          context.payload.repository = repo as ContextPlugin["payload"]["repository"];
           const issueElem = parseGitHubUrl(issue.html_url);
           const activity = new IssueActivityCache(context, issueElem, "useCache" in config);
           await activity.init();
