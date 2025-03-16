@@ -215,13 +215,18 @@ export class FormattingEvaluatorModule extends BaseModule {
     }
   }
 
+  _getBaseUrl(url: string) {
+    const urlObject = new URL(url);
+    return `${urlObject.protocol}//${urlObject.host}${urlObject.pathname}`;
+  }
+
   _createUniqueEntryForAnchor(element: Element, commentScore: GithubCommentScore) {
     const url = element.getAttribute("href");
     if (url) {
-      const urlObject = new URL(url);
-      const issueUrl = `${urlObject.protocol}//${urlObject.host}${urlObject.pathname}`;
+      const issueUrl = this._getBaseUrl(url);
+      const commentUrl = this._getBaseUrl(commentScore.url);
       // We only want to add urls that do not point to self
-      if (issueUrl !== commentScore.url) {
+      if (issueUrl !== commentUrl) {
         return url.split(/[#?]/)[0];
       }
     }
