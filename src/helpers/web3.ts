@@ -177,7 +177,7 @@ export class Permit2Wrapper {
    * @returns Gas estimation of permitTransferFrom contract call
    */
   async estimatePermitTransferFromGas(evmWallet: Wallet, batchTransferPermit: BatchTransferPermit): Promise<BigNumber> {
-    return await this._permit2.connect(evmWallet).estimateGas.permitTransferFrom(
+    const gasLimit = await this._permit2.connect(evmWallet).estimateGas.permitTransferFrom(
       {
         permitted: batchTransferPermit.permitBatchTransferFromData.permitted,
         nonce: batchTransferPermit.permitBatchTransferFromData.nonce,
@@ -187,6 +187,11 @@ export class Permit2Wrapper {
       evmWallet.address,
       batchTransferPermit.signature
     );
+
+    // Get the current gas price
+    const gasPrice = await this._permit2.provider.getGasPrice();
+    // Calculate the transaction gas usage estimation
+    return gasPrice.mul(gasLimit);
   }
   /**
    * Returns Transaction response of the permit2 permitTransferFrom contract call
