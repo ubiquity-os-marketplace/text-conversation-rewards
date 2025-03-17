@@ -15,6 +15,7 @@ import { GithubCommentScore, ReadabilityScore, Result, WordResult } from "../typ
 import { typeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 import { parsePriorityLabel } from "../helpers/github";
+import { areBaseUrlsEqual } from "../helpers/urls";
 
 interface Multiplier {
   multiplier: number;
@@ -215,18 +216,11 @@ export class FormattingEvaluatorModule extends BaseModule {
     }
   }
 
-  _getBaseUrl(url: string) {
-    const urlObject = new URL(url);
-    return `${urlObject.protocol}//${urlObject.host}${urlObject.pathname}`;
-  }
-
   _createUniqueEntryForAnchor(element: Element, commentScore: GithubCommentScore) {
     const url = element.getAttribute("href");
     if (url) {
-      const issueUrl = this._getBaseUrl(url);
-      const commentUrl = this._getBaseUrl(commentScore.url);
       // We only want to add urls that do not point to self
-      if (issueUrl !== commentUrl) {
+      if (areBaseUrlsEqual(url, commentScore.url)) {
         return url.split(/[#?]/)[0];
       }
     }
