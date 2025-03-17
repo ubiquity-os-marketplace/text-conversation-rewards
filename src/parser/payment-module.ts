@@ -308,7 +308,7 @@ export class PaymentModule extends BaseModule {
         return null;
       }
       directTransferLog.gas.required = gasEstimation.toString();
-      if (nativeBalance.lte(gasEstimation)) {
+      if (nativeBalance.lte(gasEstimation.mul(2))) {
         this.context.logger.error(
           `The funding wallet lacks sufficient gas to perform direct transfers`,
           directTransferLog

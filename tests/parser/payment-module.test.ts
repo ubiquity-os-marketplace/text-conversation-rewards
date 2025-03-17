@@ -302,8 +302,16 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return null if the `payoutMode` was already set to `direct`", async () => {
-      const paymentModule = new PaymentModule(ctx);
-      const payoutMode = await paymentModule._getPayoutMode({
+      ctx.config.automaticTransferMode = false;
+      let paymentModule = new PaymentModule(ctx);
+      let payoutMode = await paymentModule._getPayoutMode({
+        comments: [{ body: `...${PAYOUT_MODE_DIRECT}....`, user: { type: "Bot" } }],
+      } as unknown as IssueActivity);
+      expect(payoutMode).toEqual(null);
+
+      ctx.config.automaticTransferMode = true;
+      paymentModule = new PaymentModule(ctx);
+      payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: `...${PAYOUT_MODE_DIRECT}....`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual(null);

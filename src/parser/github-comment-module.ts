@@ -39,22 +39,12 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
-  _createPayoutMetadata(result: Result): string | null {
+  _getPayoutInfo(result: Result): string {
     const someReward = Object.values(result)[0];
-    if (someReward.payoutMode) {
-      const payoutMetadata = someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
-      // Add the workflow run url and the metadata in the GitHub's comment
-      return createStructuredMetadata(
-        "GithubCommentModule",
-        {
-          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-          output: payoutMetadata,
-        },
-        false,
-        true
-      );
+    if (!someReward.payoutMode) {
+      return "";
     }
-    return null;
+    return someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
   }
 
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
@@ -80,9 +70,6 @@ export class GithubCommentModule extends BaseModule {
       return bodyArray.join("");
     }
 
-    const payoutMetadata = this._createPayoutMetadata(result);
-    if (payoutMetadata) bodyArray.push(payoutMetadata);
-
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
       if (result[key].total <= 0) {
@@ -103,6 +90,7 @@ export class GithubCommentModule extends BaseModule {
       createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
         output: JSON.parse(JSON.stringify(metadataResult, typeReplacer, 2)),
+        payoutInfo: this._getPayoutInfo(result),
       })
     );
 
