@@ -136,7 +136,7 @@ export class PaymentModule extends BaseModule {
         if (transferInfo) {
           const { fundingWallet, beneficiaries } = transferInfo;
           this.context.logger.info(
-            "AutoTransformMode is enabled, and the funding wallet has sufficient funds available."
+            "AutoTransferMode is enabled, and the funding wallet has sufficient funds available."
           );
           const [tx, permits] = await this._transferReward(fundingWallet, beneficiaries, nonce);
           this.context.logger.info("Rewards have been transferred.");
