@@ -124,7 +124,7 @@ export class ContentEvaluatorModule extends BaseModule {
         );
 
         if (Object.keys(relevances).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
-          throw this.context.logger.error("Relevance / Comment length mismatch!", {
+          throw this.context.logger.error("There was a mismatch between the relevance scores and amount of comments.", {
             expectedRelevances: commentsToEvaluate.length + prCommentsToEvaluate.length,
             receivedRelevances: Object.keys(relevances).length,
             relevances,
