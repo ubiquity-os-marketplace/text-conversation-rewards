@@ -7,9 +7,9 @@ const openAiType = Type.Object(
      * AI model to use for comment evaluation.
      */
     model: Type.String({
-      default: "gpt-4o-2024-08-06",
-      description: "OpenAI model, e.g. gpt-4o",
-      examples: ["gpt-4o"],
+      default: "anthropic/claude-3.5-haiku",
+      description: "OpenAI model, e.g. openai/gpt-4o",
+      examples: ["anthropic/claude-3.5-haiku", "openai/gpt-4o"],
     }),
     tokenCountLimit: Type.Integer({
       default: 124000,
@@ -21,10 +21,10 @@ const openAiType = Type.Object(
      * Specific endpoint to send the comments to.
      */
     endpoint: Type.String({
-      default: "https://api.openai.com/v1",
+      default: "https://openrouter.ai/api/v1",
       pattern: /^(https?:\/\/[^\s$.?#].\S*)$/i.source,
       description: "OpenAI endpoint for requests",
-      examples: ["https://api.openai.com/v1"],
+      examples: ["https://openrouter.ai/api/v1", "https://api.openai.com/v1"],
     }),
     maxRetries: Type.Number({
       default: 10,
