@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.0...v1.7.1) (2025-03-18)
+
+
+### Bug Fixes
+
+* self urls do not count towards credits, and footnotes are removed ([0216949](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/02169493d1e35068fa0aacc2b3c300fc99d7c201))
+* self urls do not count towards credits, and footnotes are removed ([8d0ca90](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8d0ca90ae35bd311d502367fd7ba18f748d5e61e))
+
 ## [1.7.0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.6.1...v1.7.0) (2025-03-14)
 
 
