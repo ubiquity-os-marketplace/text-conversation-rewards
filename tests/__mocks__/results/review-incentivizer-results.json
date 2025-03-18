@@ -203,10 +203,6 @@
         "score": {
           "formatting": {
             "content": {
-              "a": {
-                "elementCount": 1,
-                "score": 1
-              },
               "code": {
                 "elementCount": 3,
                 "score": 1
@@ -224,7 +220,7 @@
                 "score": 0
               }
             },
-            "result": 11
+            "result": 10
           },
           "multiplier": 1,
           "priority": 4,
@@ -235,7 +231,7 @@
             "syllables": 361
           },
           "relevance": 0.8,
-          "reward": 83.52,
+          "reward": 79.456,
           "words": {
             "result": 9.57,
             "wordCount": 214,
@@ -1242,7 +1238,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12"
       }
     ],
-    "total": 677.812,
+    "total": 673.748,
     "userId": 4975670
   },
   "gentlementlegen": {

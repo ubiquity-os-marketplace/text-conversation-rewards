@@ -220,7 +220,7 @@ export class FormattingEvaluatorModule extends BaseModule {
     const url = element.getAttribute("href");
     if (url) {
       // We only want to add urls that do not point to self
-      if (areBaseUrlsEqual(url, commentScore.url)) {
+      if (!areBaseUrlsEqual(url, commentScore.url)) {
         return url.split(/[#?]/)[0];
       }
     }
