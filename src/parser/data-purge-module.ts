@@ -63,6 +63,8 @@ export class DataPurgeModule extends BaseModule {
           .replace(/<!--[\s\S]*?-->/g, "")
           // Remove the footnotes
           .replace(/^###### .*?\[\^\d+\^][\s\S]*$/gm, "")
+          .replace(/^\[\^[\w-]+\^?]:.*$/gm, "")
+          .replace(/\[\^[\w-]+\^?]/g, "")
           // Keep only one new line needed by markdown-it package to convert to html
           .replace(/\n\s*\n/g, "\n")
           .trim();
