@@ -333,8 +333,7 @@
       "redeemTask": true
     },
     "reviewIncentivizer": {
-      "baseRate": 100,
-      "conclusiveReviewCredit": 25
+      "baseRate": 100
     }
   }
 }
