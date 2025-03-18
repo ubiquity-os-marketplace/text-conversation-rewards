@@ -1,0 +1,50 @@
+name: Bun GitHub Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      organization:
+        description: "Organization to parse (e.g. ubiquity-os-marketplace)"
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Start server
+        run: bun run server &
+
+      - name: Wait for server to start
+        run: sleep 10
+
+      - name: Send network request
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "ownerRepo": "${{ github.event.inputs.organization || '' }}",
+              "useOpenAi": true,
+              "useCache": true
+            }' \
+            http://localhost:4000
+
+      - name: Zip results folder
+        run: zip -r results.zip results/
+
+      - name: Upload results artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: results.zip
