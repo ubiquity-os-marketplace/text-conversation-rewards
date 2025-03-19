@@ -51,6 +51,7 @@ export class GithubCommentModule extends BaseModule {
     const keysToRemove: string[] = [];
     const bodyArray: (string | undefined)[] = [];
     const taskReward = getTaskReward(data.self);
+    const payoutInfo = this._getPayoutInfo(result);
 
     if (stripContent) {
       this.context.logger.info("Stripping content due to excessive length.");
@@ -65,6 +66,7 @@ export class GithubCommentModule extends BaseModule {
       bodyArray.push(
         createStructuredMetadata("GithubCommentModule", {
           workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+          payoutInfo,
         })
       );
       return bodyArray.join("");
@@ -90,7 +92,7 @@ export class GithubCommentModule extends BaseModule {
       createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
         output: JSON.parse(JSON.stringify(metadataResult, typeReplacer, 2)),
-        payoutInfo: this._getPayoutInfo(result),
+        payoutInfo,
       })
     );
 
