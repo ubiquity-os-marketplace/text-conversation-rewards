@@ -57,9 +57,9 @@
                     "type": "object",
                     "properties": {
                       "model": {
-                        "default": "anthropic/claude-3.5-haiku",
+                        "default": "anthropic/claude-3.7-sonnet",
                         "description": "OpenAI model, e.g. openai/gpt-4o",
-                        "examples": ["anthropic/claude-3.5-haiku", "openai/gpt-4o"],
+                        "examples": ["anthropic/claude-3.7-sonnet", "openai/gpt-4o"],
                         "type": "string"
                       },
                       "tokenCountLimit": {

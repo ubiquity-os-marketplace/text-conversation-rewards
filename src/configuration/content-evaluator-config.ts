@@ -7,9 +7,9 @@ const openAiType = Type.Object(
      * AI model to use for comment evaluation.
      */
     model: Type.String({
-      default: "anthropic/claude-3.5-haiku",
+      default: "anthropic/claude-3.7-sonnet",
       description: "OpenAI model, e.g. openai/gpt-4o",
-      examples: ["anthropic/claude-3.5-haiku", "openai/gpt-4o"],
+      examples: ["anthropic/claude-3.7-sonnet", "openai/gpt-4o"],
     }),
     tokenCountLimit: Type.Integer({
       default: 124000,
