@@ -267,7 +267,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
   beforeAll(async () => {
     ctx.config.automaticTransferMode = autoTransferMode;
     paymentResult = { ...permitGenerationResults };
-    const payoutMode: PayoutMode = autoTransferMode ? "direct" : "permit";
+    const payoutMode: PayoutMode = autoTransferMode ? "transfer" : "permit";
 
     for (const username of Object.keys(paymentResult)) {
       if (!paymentResult[username]["permitUrl"] && !autoTransferMode) continue; // getWalletByUserId mock returns null here

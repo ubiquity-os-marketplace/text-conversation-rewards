@@ -7,7 +7,7 @@ import { stringify } from "yaml";
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import { GithubCommentConfiguration, githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
-import { GITHUB_COMMENT_PAYLOAD_LIMIT, PAYOUT_MODE_DIRECT, PAYOUT_MODE_PERMIT } from "../helpers/constants";
+import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
@@ -39,19 +39,16 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
-  _getPayoutInfo(result: Result): string {
+  _getPayoutMode(result: Result): string | undefined {
     const someReward = Object.values(result)[0];
-    if (!someReward.payoutMode) {
-      return "";
-    }
-    return someReward.payoutMode === "direct" ? PAYOUT_MODE_DIRECT : PAYOUT_MODE_PERMIT;
+    return someReward.payoutMode;
   }
 
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const keysToRemove: string[] = [];
     const bodyArray: (string | undefined)[] = [];
     const taskReward = getTaskReward(data.self);
-    const payoutInfo = this._getPayoutInfo(result);
+    const payoutMode = this._getPayoutMode(result);
 
     if (stripContent) {
       this.context.logger.info("Stripping content due to excessive length.");
@@ -66,7 +63,7 @@ export class GithubCommentModule extends BaseModule {
       bodyArray.push(
         createStructuredMetadata("GithubCommentModule", {
           workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-          payoutInfo,
+          payoutMode,
         })
       );
       return bodyArray.join("");
@@ -92,7 +89,6 @@ export class GithubCommentModule extends BaseModule {
       createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
         output: JSON.parse(JSON.stringify(metadataResult, typeReplacer, 2)),
-        payoutInfo,
       })
     );
 
@@ -102,7 +98,7 @@ export class GithubCommentModule extends BaseModule {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        payoutInfo,
+        payoutMode,
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {

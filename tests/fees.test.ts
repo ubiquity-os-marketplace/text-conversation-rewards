@@ -94,7 +94,6 @@ describe("GithubCommentModule Fee Tests", () => {
         '      "userId": 12345\n' +
         "    }\n" +
         "  },\n" +
-        '  "payoutInfo": "payoutMode:permit"\n' +
         "}\n" +
         "-->"
     );

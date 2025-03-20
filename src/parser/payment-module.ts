@@ -37,7 +37,6 @@ import {
 } from "../helpers/web3";
 import { BigNumber, ethers, utils } from "ethers";
 import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
-import { PAYOUT_MODE_DIRECT, PAYOUT_MODE_PERMIT } from "../helpers/constants";
 
 interface Payload {
   evmNetworkId: number;
@@ -126,7 +125,7 @@ export class PaymentModule extends BaseModule {
     }
 
     let directTransferError;
-    if (payoutMode === "direct") {
+    if (payoutMode === "transfer") {
       try {
         // Generate the batch transfer nonce
         const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
@@ -143,7 +142,7 @@ export class PaymentModule extends BaseModule {
           await Promise.all(
             beneficiaries.map(async (beneficiary, idx) => {
               result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
-              result[beneficiary.username].payoutMode = "direct";
+              result[beneficiary.username].payoutMode = "transfer";
               await this._savePermitsToDatabase(
                 result[beneficiary.username].userId,
                 { issueUrl: payload.issueUrl, issueId },
@@ -225,11 +224,11 @@ export class PaymentModule extends BaseModule {
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
     for (const comment of data.comments) {
       if (comment.body && comment.user?.type === "Bot") {
-        if (comment.body.indexOf(PAYOUT_MODE_DIRECT) != -1) return null;
-        else if (comment.body.indexOf(PAYOUT_MODE_PERMIT) != -1) return "permit";
+        if (comment.body.match(/"payoutMode":\s*"transfer"/)) return null;
+        else if (comment.body.match(/"payoutMode":\s*"permit"/)) return "permit";
       }
     }
-    return this._autoTransferMode ? "direct" : "permit";
+    return this._autoTransferMode ? "transfer" : "permit";
   }
 
   async _getNetworkExplorer(networkId: number): Promise<string> {

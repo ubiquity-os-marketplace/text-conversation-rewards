@@ -1,6 +1,6 @@
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 
-export type PayoutMode = "direct" | "permit";
+export type PayoutMode = "transfer" | "permit";
 export interface Result {
   [k: string]: {
     comments?: GithubCommentScore[];

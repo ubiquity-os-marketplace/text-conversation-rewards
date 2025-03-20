@@ -11,12 +11,12 @@ import cfg from "../__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { ERC20_ABI, isEthersError, PERMIT2_ABI } from "../../src/helpers/web3";
-import { PAYOUT_MODE_DIRECT, PAYOUT_MODE_PERMIT } from "../../src/helpers/constants";
 import { IssueActivity } from "../../src/issue-activity";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
-
+const PAYOUT_MODE_TRANSFER = '"payoutMode": "transfer"';
+const PAYOUT_MODE_PERMIT = '"payoutMode": "permit"';
 const ctx = {
   eventName: "issues.closed",
   payload: {
@@ -305,14 +305,14 @@ describe("payment-module.ts", () => {
       ctx.config.automaticTransferMode = false;
       let paymentModule = new PaymentModule(ctx);
       let payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: `...${PAYOUT_MODE_DIRECT}....`, user: { type: "Bot" } }],
+        comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual(null);
 
       ctx.config.automaticTransferMode = true;
       paymentModule = new PaymentModule(ctx);
       payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: `...${PAYOUT_MODE_DIRECT}....`, user: { type: "Bot" } }],
+        comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual(null);
     });
@@ -349,7 +349,7 @@ describe("payment-module.ts", () => {
       const payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: "", user: { type: "Bot" } }],
       } as unknown as IssueActivity);
-      expect(payoutMode).toEqual("direct");
+      expect(payoutMode).toEqual("transfer");
     });
   });
 
