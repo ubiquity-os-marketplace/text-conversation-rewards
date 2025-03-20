@@ -8,6 +8,7 @@ import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { areBaseUrlsEqual } from "../src/helpers/urls";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -223,5 +224,11 @@ describe("Payload truncate tests", () => {
       expect.anything(),
       expect.objectContaining({ node_ids: Array.from({ length: 50 }, (v, k) => k + 100) })
     );
+  });
+
+  it("Should compare urls and handle ill-formed strings", () => {
+    expect(areBaseUrlsEqual("https://localhost/home", "https://localhost/home#1234")).toBeTruthy();
+    expect(areBaseUrlsEqual("https://localhost/home", "https://localhost/page")).toBeFalsy();
+    expect(areBaseUrlsEqual("ubq.fi", "pay.ubq.fi")).toBeFalsy();
   });
 });
