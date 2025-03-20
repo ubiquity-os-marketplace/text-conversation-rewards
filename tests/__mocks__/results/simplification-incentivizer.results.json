@@ -1391,7 +1391,7 @@
     }
   },
   "0x4007": {
-    "total": 677.812,
+    "total": 673.748,
     "userId": 4975670,
     "comments": [
       {
@@ -1596,7 +1596,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036433646",
         "type": "ISSUE_COLLABORATOR",
         "score": {
-          "reward": 83.52,
+          "reward": 79.456,
           "formatting": {
             "content": {
               "p": {
@@ -1614,13 +1614,9 @@
               "pre": {
                 "score": 0,
                 "elementCount": 1
-              },
-              "a": {
-                "score": 1,
-                "elementCount": 1
               }
             },
-            "result": 11
+            "result": 10
           },
           "priority": 4,
           "words": {
