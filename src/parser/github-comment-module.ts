@@ -102,6 +102,7 @@ export class GithubCommentModule extends BaseModule {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutInfo,
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
