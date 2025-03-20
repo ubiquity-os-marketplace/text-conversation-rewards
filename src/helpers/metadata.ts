@@ -6,5 +6,5 @@ export function createStructuredMetadata(className: string, metadata: unknown) {
   const caller = stackLine.match(/at (\S+)/)?.[1] ?? "";
   const revision = context.sha;
 
-  return [`<!-- Ubiquity - ${className} - ${caller} - ${revision}`, jsonString, "-->"].join("\n");
+  return [`\n<!-- Ubiquity - ${className} - ${caller} - ${revision}`, jsonString, "-->"].join("\n");
 }
