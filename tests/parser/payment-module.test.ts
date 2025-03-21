@@ -42,7 +42,7 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
@@ -104,7 +104,7 @@ function getResultOriginal() {
           id: 57,
           content: "comment 3",
           url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-          type: CommentKind.ISSUE,
+          commentType: CommentKind.ISSUE,
           score: {
             reward: 10,
             multiplier: 1,
@@ -124,7 +124,7 @@ function getResultOriginal() {
           id: 57,
           content: "comment 3",
           url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-          type: CommentKind.ISSUE,
+          commentType: CommentKind.ISSUE,
           score: {
             reward: 1.12,
             multiplier: 1,

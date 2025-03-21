@@ -15,7 +15,7 @@ export class DataPurgeModule extends BaseModule {
 
   get enabled(): boolean {
     if (!this._configuration) {
-      this.context.logger.error("Invalid / missing configuration detected for DataPurgeModule, disabling.");
+      this.context.logger.warn("The configuration for the module DataPurgeModule is invalid or missing, disabling.");
       return false;
     }
     return true;
@@ -78,7 +78,7 @@ export class DataPurgeModule extends BaseModule {
               id: comment.id,
               content: newContent,
               url: comment.html_url,
-              type: comment.type,
+              commentType: comment.commentType,
               diffHunk: reviewComment?.pull_request_review_id ? reviewComment?.diff_hunk : undefined,
             },
           ];

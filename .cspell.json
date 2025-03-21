@@ -40,7 +40,8 @@
     "Kincaid",
     "flesch",
     "keccak",
-    "Numberish"
+    "Numberish",
+    "OPENROUTER"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

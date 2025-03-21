@@ -16,7 +16,6 @@ export interface Result {
     userId: number;
     reviewRewards?: {
       reviews?: ReviewScore[];
-      reviewBaseReward?: { reward: number };
       url: string;
     }[];
     events?: {
@@ -56,7 +55,7 @@ export interface GithubCommentScore {
   id: number;
   content: string;
   url: string;
-  type: CommentKind | CommentAssociation;
+  commentType: CommentKind | CommentAssociation;
   diffHunk?: string;
   score?: {
     formatting?: {

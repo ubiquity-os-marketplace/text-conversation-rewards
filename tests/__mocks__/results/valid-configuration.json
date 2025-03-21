@@ -19,7 +19,8 @@
       "openAi": {
         "endpoint": "https://api.openai.com/v1",
         "model": "gpt-4o",
-        "tokenCountLimit": 124000
+        "tokenCountLimit": 124000,
+        "maxRetries": 5
       }
     },
     "dataPurge": {},
@@ -334,8 +335,7 @@
       "redeemTask": true
     },
     "reviewIncentivizer": {
-      "baseRate": 100,
-      "conclusiveReviewCredit": 25
+      "baseRate": 100
     }
   }
 }

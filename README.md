@@ -222,7 +222,7 @@ with:
         model: "gpt-4" # Model identifier
         endpoint: "https://api.openrouter.ai/api/v1" # Configurable LLM endpoint
         tokenCountLimit: 124000 # Adjustable token limit
-        maxRetries: 3 # Number of retries for rate limits/errors
+        maxRetries: 5 # Number of retries for rate limits/errors
       multipliers:
         - role: [ISSUE_SPECIFICATION]
           relevance: 1
@@ -240,7 +240,6 @@ with:
       skipCommentsWhileAssigned: all
     reviewIncentivizer:
       baseRate: 100
-      conclusiveReviewCredit: 25
     formattingEvaluator:
       wordCountExponent: 0.85
       multipliers:
