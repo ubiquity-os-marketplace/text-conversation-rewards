@@ -410,7 +410,7 @@ export class ContentEvaluatorModule extends BaseModule {
     const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const userCommentsMap = userComments.map((value) => `${value.id}: "${value.comment}"`);
     return `
-      Evaluate the relevance of GitHub comments to an issue. Provide a JSON object with comment IDs and their relevance scores.
+      Evaluate the relevance of GitHub comments to an issue. Provide a raw JSON object with comment IDs and their relevance scores.
       Issue: ${issue}
 
       All comments:
@@ -439,6 +439,8 @@ export class ContentEvaluatorModule extends BaseModule {
       - Even minor details may be significant.
       - Comments may reference earlier comments.
       - The number of entries in the JSON response must equal ${userCommentsMap.length}.
+
+      IMPORTANT: Do not use markdown formatting. Do not include backticks or code blocks. Return just the plain JSON object text that can be directly parsed.
     `;
   }
 
@@ -457,9 +459,11 @@ export class ContentEvaluatorModule extends BaseModule {
     \`\`\`
     ${JSON.stringify({ specification: issue, comments: userComments })}
     \`\`\`\
-
+  
     To what degree are each of the comments valuable? 
-    Please reply with ONLY a JSON where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
-    The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.`;
+    Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
+    The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.
+    
+    IMPORTANT: Do not use markdown formatting. Do not include backticks or code blocks. Return just the plain JSON object text that can be directly parsed.`;
   }
 }
