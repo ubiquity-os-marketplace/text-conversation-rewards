@@ -288,16 +288,18 @@ export class GithubCommentModule extends BaseModule {
         <tr>
           <td>${filename}</td>
           <td>${value.reward}</td>
+          <td>${value.deletions}</td>
         </tr>`);
     }
 
     return `
-    <h6>Simplification details</h6>
+    <h6>Simplification Details</h6>
     <table>
       <thead>
         <tr>
           <th>Filename</th>
           <th>Reward</th>
+          <th>Deletions</th>
         </tr>
       </thead>
       <tbody>
