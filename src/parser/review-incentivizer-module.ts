@@ -53,8 +53,6 @@ export class ReviewIncentivizerModule extends BaseModule {
       for (const linkedPullReviews of data.linkedReviews) {
         if (linkedPullReviews.reviews && linkedPullReviews.self && username !== linkedPullReviews.self.user.login) {
           const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
-
-          const reviewBaseReward = { reward: 0 };
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
           const baseOwner = linkedPullReviews.self.base.repo.owner.login;
           const baseRepo = linkedPullReviews.self.base.repo.name;
@@ -66,7 +64,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             headOwnerRepo ?? "",
             reviewsByUser
           );
-          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url, reviewBaseReward });
+          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url });
         }
       }
     }
