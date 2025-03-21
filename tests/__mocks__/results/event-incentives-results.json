@@ -1215,9 +1215,6 @@
     },
     "reviewRewards": [
       {
-        "reviewBaseReward": {
-          "reward": 0
-        },
         "reviews": [
           {
             "effect": {
@@ -3160,9 +3157,6 @@
     },
     "reviewRewards": [
       {
-        "reviewBaseReward": {
-          "reward": 25
-        },
         "reviews": [
           {
             "effect": {
