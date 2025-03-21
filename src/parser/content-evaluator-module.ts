@@ -19,7 +19,6 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
-import { countTokens } from "@anthropic-ai/tokenizer";
 
 /**
  * Evaluates and rates comments.
@@ -197,9 +196,10 @@ export class ContentEvaluatorModule extends BaseModule {
   /**
    * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
    */
-  _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
-    const inputTokens = countTokens(prompt);
-    return Math.min(inputTokens, totalTokenLimit);
+  _calculateMaxTokens(prompt: string, totalTokenLimit: number = 200000) {
+    // Rough estimate: ~4 characters per token for English text
+    const promptTokenEstimate = Math.ceil(Math.ceil(prompt.length / 4) * 1.3);
+    return Math.min(promptTokenEstimate, totalTokenLimit);
   }
 
   _generateDummyResponse(comments: { id: number; comment: string }[]) {
