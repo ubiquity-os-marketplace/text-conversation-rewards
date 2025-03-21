@@ -23,12 +23,10 @@ export class ReviewIncentivizerModule extends BaseModule {
   private readonly _configuration: ReviewIncentivizerConfiguration | null =
     this.context.config.incentives.reviewIncentivizer;
   private readonly _baseRate: number;
-  private readonly _conclusiveReviewCredit: number;
 
   constructor(context: ContextPlugin) {
     super(context);
     this._baseRate = this._configuration?.baseRate ?? 100;
-    this._conclusiveReviewCredit = this._configuration?.conclusiveReviewCredit ?? 25;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
@@ -55,10 +53,6 @@ export class ReviewIncentivizerModule extends BaseModule {
       for (const linkedPullReviews of data.linkedReviews) {
         if (linkedPullReviews.reviews && linkedPullReviews.self && username !== linkedPullReviews.self.user.login) {
           const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
-
-          const reviewBaseReward = reviewsByUser.some((v) => v.state === "APPROVED" || v.state === "CHANGES_REQUESTED")
-            ? { reward: this._conclusiveReviewCredit }
-            : { reward: 0 };
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
           const baseOwner = linkedPullReviews.self.base.repo.owner.login;
           const baseRepo = linkedPullReviews.self.base.repo.name;
@@ -70,7 +64,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             headOwnerRepo ?? "",
             reviewsByUser
           );
-          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url, reviewBaseReward });
+          reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url });
         }
       }
     }
