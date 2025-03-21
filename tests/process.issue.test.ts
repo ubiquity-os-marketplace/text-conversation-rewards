@@ -79,7 +79,7 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
@@ -506,7 +506,7 @@ describe("Modules tests", () => {
 });
 
 describe("Retry", () => {
-  const openAi = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, maxRetries: 0 });
+  const openAi = new OpenAI({ apiKey: process.env.OPENROUTER_API_KEY, maxRetries: 0 });
 
   async function testFunction() {
     return openAi.chat.completions.create({

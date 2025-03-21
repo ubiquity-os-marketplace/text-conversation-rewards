@@ -27,7 +27,7 @@ import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 export class ContentEvaluatorModule extends BaseModule {
   readonly _configuration: ContentEvaluatorConfiguration | null = this.context.config.incentives.contentEvaluator;
   readonly _openAi = new OpenAI({
-    apiKey: this.context.env.OPENAI_API_KEY,
+    apiKey: this.context.env.OPENROUTER_API_KEY,
     ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
   });
   private readonly _fixedRelevances: { [k: string]: number } = {};
