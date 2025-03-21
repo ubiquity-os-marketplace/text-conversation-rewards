@@ -273,7 +273,7 @@ describe("Modules tests", () => {
     expect(result).toEqual(contentEvaluatorResults);
   });
 
-  it("Should throw on a failed openai evaluation", async () => {
+  it("Should throw on a failed LLM evaluation", async () => {
     jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
       return Promise.resolve({});
     });
@@ -287,9 +287,9 @@ describe("Modules tests", () => {
     ];
     await expect(processor.run(activity)).rejects.toMatchObject({
       logMessage: {
-        diff: "> [!CAUTION]\n> Relevance / Comment length mismatch!",
+        diff: "> [!CAUTION]\n> There was a mismatch between the relevance scores and amount of comments.",
         level: "error",
-        raw: "Relevance / Comment length mismatch!",
+        raw: "There was a mismatch between the relevance scores and amount of comments.",
         type: "error",
       },
     });

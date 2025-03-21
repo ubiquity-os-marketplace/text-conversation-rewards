@@ -481,7 +481,9 @@ export class PermitGenerationModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
-      this.context.logger.error("Invalid / missing configuration detected for PermitGenerationModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module PermitGenerationModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;

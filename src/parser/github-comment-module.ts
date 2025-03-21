@@ -126,7 +126,9 @@ export class GithubCommentModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
-      this.context.logger.error("Invalid / missing configuration detected for GithubCommentModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module GithubCommentModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;

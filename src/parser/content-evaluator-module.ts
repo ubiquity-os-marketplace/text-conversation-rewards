@@ -19,6 +19,7 @@ import {
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
+import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 
 /**
  * Evaluates and rates comments.
@@ -55,7 +56,9 @@ export class ContentEvaluatorModule extends BaseModule {
 
   get enabled(): boolean {
     if (!this._configuration) {
-      this.context.logger.error("Invalid / missing configuration detected for ContentEvaluatorModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module ContentEvaluatorModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;
@@ -113,22 +116,57 @@ export class ContentEvaluatorModule extends BaseModule {
     const commentsWithScore: GithubCommentScore[] = [...comments];
     const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
-    const relevancesByAi = await this._evaluateComments(
-      specificationBody,
-      commentsToEvaluate,
-      allComments,
-      prCommentsToEvaluate
-    );
+    const relevancesByAi = await retry(
+      async () => {
+        const relevances = await this._evaluateComments(
+          specificationBody,
+          commentsToEvaluate,
+          allComments,
+          prCommentsToEvaluate
+        );
 
-    if (Object.keys(relevancesByAi).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
-      throw this.context.logger.error("Relevance / Comment length mismatch!", {
-        expectedRelevances: commentsToEvaluate.length + prCommentsToEvaluate.length,
-        receivedRelevances: Object.keys(relevancesByAi).length,
-        relevancesByAi,
-        commentsToEvaluate,
-        prCommentsToEvaluate,
-      });
-    }
+        if (Object.keys(relevances).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
+          throw this.context.logger.error("There was a mismatch between the relevance scores and amount of comments.", {
+            expectedRelevances: commentsToEvaluate.length + prCommentsToEvaluate.length,
+            receivedRelevances: Object.keys(relevances).length,
+            relevances,
+            commentsToEvaluate,
+            prCommentsToEvaluate,
+          });
+        }
+
+        return relevances;
+      },
+      {
+        maxRetries: this._configuration?.openAi.maxRetries ?? 5,
+        onError: async (error) => {
+          if (this.context.config.incentives.githubComment?.post) {
+            await postComment(this.context, this.context.logger.ok("Results are being retried", { err: error }), {
+              updateComment: true,
+            });
+          }
+          this.context.logger.error(String(error), { err: error });
+        },
+        isErrorRetryable: (error) => {
+          if (error instanceof OpenAI.APIError && error.status) {
+            if ([500, 503].includes(error.status)) {
+              return true;
+            }
+            if (error.status === 429 && error.headers) {
+              const retryAfterTokens = error.headers["x-ratelimit-reset-tokens"];
+              const retryAfterRequests = error.headers["x-ratelimit-reset-requests"];
+              if (!retryAfterTokens || !retryAfterRequests) {
+                return true;
+              }
+              const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
+              return Number.isFinite(retryAfter) ? retryAfter : true;
+            }
+          }
+          // Retry if there is a SyntaxError caused by malformed JSON or TypeBoxError caused by incorrect JSON from OpenAI
+          return error instanceof SyntaxError || error instanceof TypeBoxError || error instanceof LogReturn;
+        },
+      }
+    );
 
     for (const currentComment of commentsWithScore) {
       let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
@@ -321,74 +359,47 @@ export class ContentEvaluatorModule extends BaseModule {
       }
     }
 
+    if (
+      userIssueComments.length !== Object.keys(commentRelevances).length ||
+      userPrComments.length !== Object.keys(prCommentRelevances).length
+    ) {
+      this.context.logger.warn(
+        `[_evaluateComments]: Result mismatch. Evaluated ${userIssueComments.length} user issue comments that gave ${Object.keys(commentRelevances).length} comment relevance, and ${userPrComments.length} that gave ${Object.keys(prCommentRelevances).length} pr comment relevance.`
+      );
+    }
     return { ...commentRelevances, ...prCommentRelevances };
   }
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     try {
-      const relevances = await retry(
-        async () => {
-          const res = await this._openAi.chat.completions.create({
-            model: this._configuration?.openAi.model ?? "gpt-4o-2024-08-06",
-            response_format: {
-              type: "json_object",
-            },
-            messages: [
-              {
-                role: "system",
-                content: prompt,
-              },
-            ],
-            max_tokens: maxTokens,
-            top_p: 1,
-            temperature: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-          });
-          const rawResponse = String(res.choices[0].message.content);
-          this.context.logger.info(`OpenAI raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
-
-          const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
-          this.context.logger.info(`Relevances by OpenAI: ${JSON.stringify(relevances)}`);
-
-          return relevances;
+      const res = await this._openAi.chat.completions.create({
+        model: this._configuration?.openAi.model ?? "gpt-4o-2024-08-06",
+        response_format: {
+          type: "json_object",
         },
-        {
-          maxRetries: this._configuration?.openAi.maxRetries ?? 3,
-          onError: async (error) => {
-            if (this.context.config.incentives.githubComment?.post) {
-              await postComment(this.context, this.context.logger.ok("Results are being retried", { err: error }), {
-                updateComment: true,
-              });
-            }
+        messages: [
+          {
+            role: "system",
+            content: prompt,
           },
-          isErrorRetryable: (error) => {
-            if (error instanceof OpenAI.APIError && error.status) {
-              if ([500, 503].includes(error.status)) {
-                return true;
-              }
-              if (error.status === 429 && error.headers) {
-                const retryAfterTokens = error.headers["x-ratelimit-reset-tokens"];
-                const retryAfterRequests = error.headers["x-ratelimit-reset-requests"];
-                if (!retryAfterTokens || !retryAfterRequests) {
-                  return true;
-                }
-                const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
-                return Number.isFinite(retryAfter) ? retryAfter : true;
-              }
-            }
-            // Retry if there is a SyntaxError caused by malformed JSON or TypeBoxError caused by incorrect JSON from OpenAI
-            return error instanceof SyntaxError || error instanceof TypeBoxError;
-          },
-        }
-      );
+        ],
+        max_tokens: maxTokens,
+        top_p: 1,
+        temperature: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+      });
+      const rawResponse = String(res.choices[0].message.content);
+      this.context.logger.info(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
+
+      const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
+      this.context.logger.info(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {
-      throw new Error(
-        this.context.logger.error(`Invalid response type received from openai while evaluating: \n\nError: ${e}`, {
-          error: e as Error,
-        }).logMessage.raw
-      );
+      this.context.logger.error(`Invalid response type received from the LLM while evaluating: \n\n${e}`, {
+        error: e as Error,
+      });
+      throw e;
     }
   }
 
