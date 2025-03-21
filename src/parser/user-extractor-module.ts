@@ -14,7 +14,9 @@ export class UserExtractorModule extends BaseModule {
 
   get enabled(): boolean {
     if (!this._configuration) {
-      this.context.logger.error("Invalid / missing configuration detected for UserExtractorModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module UserExtractorModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;
