@@ -73,7 +73,7 @@ const resultOriginal: Result = {
         id: 57,
         content: "comment 3",
         url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-        type: CommentKind.ISSUE,
+        commentType: CommentKind.ISSUE,
         score: {
           reward: 10,
           multiplier: 1,
@@ -93,7 +93,7 @@ const resultOriginal: Result = {
         id: 57,
         content: "comment 3",
         url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-        type: CommentKind.ISSUE,
+        commentType: CommentKind.ISSUE,
         score: {
           reward: 1.12,
           multiplier: 1,
