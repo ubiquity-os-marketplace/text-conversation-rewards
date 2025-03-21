@@ -3159,9 +3159,6 @@
     },
     "reviewRewards": [
       {
-        "reviewBaseReward": {
-          "reward": 25
-        },
         "reviews": [
           {
             "effect": {
@@ -3203,7 +3200,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12"
       }
     ],
-    "total": 74.168,
+    "total": 49.168,
     "userId": 139262667
   }
 }
