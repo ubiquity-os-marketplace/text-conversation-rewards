@@ -9,6 +9,7 @@ const openAiType = Type.Object(
     model: Type.String({
       default: "anthropic/claude-3.7-sonnet",
       description: "LLM model, e.g. anthropic/claude-3.7-sonnet, openai/gpt-4o",
+      /* cSpell:disable */
       examples: [
         "mistralai/mistral-small-3.1-24b-instruct:free",
         "mistralai/mistral-small-3.1-24b-instruct",
@@ -289,6 +290,7 @@ const openAiType = Type.Object(
         "openai/gpt-4-0314",
       ],
     }),
+    /* cSpell:enable */
     tokenCountLimit: Type.Integer({
       default: 124000,
       description:
