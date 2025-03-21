@@ -56,7 +56,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
   get enabled(): boolean {
     if (!this._configuration) {
-      this.context.logger.error("Invalid / missing configuration detected for ContentEvaluatorModule, disabling.");
+      this.context.logger.warn("Invalid / missing configuration detected for ContentEvaluatorModule, disabling.");
       return false;
     }
     return true;

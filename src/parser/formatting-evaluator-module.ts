@@ -173,7 +173,7 @@ export class FormattingEvaluatorModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(formattingEvaluatorConfigurationType, this._configuration)) {
-      this.context.logger.error("Invalid / missing configuration detected for FormattingEvaluatorModule, disabling.");
+      this.context.logger.warn("Invalid / missing configuration detected for FormattingEvaluatorModule, disabling.");
       return false;
     }
     return true;
