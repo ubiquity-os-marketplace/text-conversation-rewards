@@ -297,13 +297,13 @@ export class GithubCommentModule extends BaseModule {
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
-        if (curr.type & CommentKind.ISSUE) {
-          if (curr.type & CommentAssociation.SPECIFICATION) {
+        if (curr.commentType & CommentKind.ISSUE) {
+          if (curr.commentType & CommentAssociation.SPECIFICATION) {
             acc.issues.specification = curr;
           } else {
             acc.issues.comments.push(curr);
           }
-        } else if (curr.type & CommentKind.PULL) {
+        } else if (curr.commentType & CommentKind.PULL) {
           acc.reviews.push(curr);
         }
         return acc;

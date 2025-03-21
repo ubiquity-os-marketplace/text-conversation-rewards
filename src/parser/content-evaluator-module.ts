@@ -170,8 +170,8 @@ export class ContentEvaluatorModule extends BaseModule {
 
     for (const currentComment of commentsWithScore) {
       let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
-      if (this._fixedRelevances[currentComment.type]) {
-        currentRelevance = this._fixedRelevances[currentComment.type];
+      if (this._fixedRelevances[currentComment.commentType]) {
+        currentRelevance = this._fixedRelevances[currentComment.commentType];
       } else if (!isNaN(relevancesByAi[currentComment.id])) {
         currentRelevance = relevancesByAi[currentComment.id];
       }
@@ -179,7 +179,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const currentReward = new Decimal(currentComment.score?.reward ?? 0);
       const priority =
         // We do not apply priority multiplier on issue specification
-        currentComment.score?.priority && !(currentComment.type & CommentAssociation.SPECIFICATION)
+        currentComment.score?.priority && !(currentComment.commentType & CommentAssociation.SPECIFICATION)
           ? currentComment.score.priority
           : 1;
 
@@ -215,8 +215,8 @@ export class ContentEvaluatorModule extends BaseModule {
     const commentsToEvaluate: CommentToEvaluate[] = [];
     const prCommentsToEvaluate: PrCommentToEvaluate[] = [];
     for (const currentComment of commentsWithScore) {
-      if (!this._fixedRelevances[currentComment.type]) {
-        if (currentComment.type & CommentKind.PULL) {
+      if (!this._fixedRelevances[currentComment.commentType]) {
+        if (currentComment.commentType & CommentKind.PULL) {
           prCommentsToEvaluate.push({
             id: currentComment.id,
             comment: currentComment.content,

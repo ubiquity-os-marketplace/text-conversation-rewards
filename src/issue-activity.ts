@@ -116,13 +116,13 @@ export class IssueActivity {
           for (const review of value) {
             comments.push({
               ...review,
-              type: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
+              commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
             });
           }
         } else if (value) {
           comments.push({
             ...value,
-            type: this._getTypeFromComment(CommentKind.PULL, value, value),
+            commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
           });
         }
       }
@@ -133,16 +133,17 @@ export class IssueActivity {
   get allComments() {
     const comments: Array<
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & {
-        type: CommentKind | CommentAssociation;
+        commentType: CommentKind | CommentAssociation;
       }
     > = this.comments.map((comment) => ({
       ...comment,
-      type: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
+      commentType: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
     }));
     if (this.self) {
+      const c: GitHubIssue = this.self;
       comments.push({
-        ...this.self,
-        type: this._getTypeFromComment(CommentKind.ISSUE, this.self, this.self),
+        ...c,
+        commentType: this._getTypeFromComment(CommentKind.ISSUE, this.self, this.self),
       });
     }
     if (this.linkedReviews) {

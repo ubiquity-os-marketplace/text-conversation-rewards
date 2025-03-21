@@ -475,7 +475,7 @@ describe("Modules tests", () => {
             id: 1,
             content: "",
             url: "",
-            type: CommentAssociation.ASSIGNEE,
+            commentType: CommentAssociation.ASSIGNEE,
             score: {
               reward: 50000,
               multiplier: 3,
