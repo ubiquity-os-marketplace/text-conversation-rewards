@@ -30,12 +30,6 @@ import { RestEndpointMethodTypes } from "@octokit/rest";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
-jest.unstable_mockModule("../src/helpers/web3", () => ({
-  getErc20TokenSymbol() {
-    return "WXDAI";
-  },
-}));
-
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},
   context: {
@@ -169,12 +163,18 @@ const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
 const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
-beforeAll(() => server.listen());
+beforeAll(() => {
+  server.listen();
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
+    return Promise.resolve("https://rpc");
+  };
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -333,7 +333,7 @@ describe("Modules tests", () => {
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
       new EventIncentivesModule(ctx),
-      new PermitGenerationModule(ctx),
+      new PaymentModule(ctx),
     ];
     // This catches calls by getFastestRpc
     server.use(http.post("https://*", () => passthrough()));
@@ -351,7 +351,7 @@ describe("Modules tests", () => {
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
       new EventIncentivesModule(ctx),
-      new PermitGenerationModule(ctx),
+      new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
     // This catches calls by getFastestRpc

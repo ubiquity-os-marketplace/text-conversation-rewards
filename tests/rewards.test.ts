@@ -85,12 +85,6 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("../src/helpers/web3", () => ({
-  getErc20TokenSymbol() {
-    return "WXDAI";
-  },
-}));
-
 jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
@@ -117,7 +111,13 @@ jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
   ]),
 }));
 
-beforeAll(() => server.listen());
+beforeAll(() => {
+  server.listen();
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
+    return Promise.resolve("https://rpc");
+  };
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -126,7 +126,7 @@ const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
 const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
@@ -202,7 +202,7 @@ describe("Rewards tests", () => {
       new DataPurgeModule(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
-      new PermitGenerationModule(ctx),
+      new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
     server.use(http.post("https://*", () => passthrough()));
