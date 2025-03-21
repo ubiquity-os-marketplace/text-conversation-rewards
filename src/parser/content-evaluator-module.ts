@@ -56,7 +56,9 @@ export class ContentEvaluatorModule extends BaseModule {
 
   get enabled(): boolean {
     if (!this._configuration) {
-      this.context.logger.warn("Invalid / missing configuration detected for ContentEvaluatorModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module ContentEvaluatorModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;
@@ -388,13 +390,13 @@ export class ContentEvaluatorModule extends BaseModule {
         presence_penalty: 0,
       });
       const rawResponse = String(res.choices[0].message.content);
-      this.context.logger.info(`OpenAI raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
+      this.context.logger.info(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
       const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
-      this.context.logger.info(`Relevances by OpenAI: ${JSON.stringify(relevances)}`);
+      this.context.logger.info(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {
-      this.context.logger.error(`Invalid response type received from openai while evaluating: \n\n${e}`, {
+      this.context.logger.error(`Invalid response type received from the LLM while evaluating: \n\n${e}`, {
         error: e as Error,
       });
       throw e;

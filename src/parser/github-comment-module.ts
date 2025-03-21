@@ -126,7 +126,9 @@ export class GithubCommentModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
-      this.context.logger.warn("Invalid / missing configuration detected for GithubCommentModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module GithubCommentModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;
@@ -154,20 +156,6 @@ export class GithubCommentModule extends BaseModule {
     }
 
     if (result.reviewRewards) {
-      result.reviewRewards.forEach((reviewReward) => {
-        const reviewRewardPullNumber = reviewReward.url.split("/").slice(-1)[0];
-        if (reviewReward.reviewBaseReward?.reward) {
-          content.push(
-            buildContributionRow(
-              "Review",
-              `Base Review for&nbsp;<a href="${reviewReward.url}" target="_blank" rel="noopener">#${reviewRewardPullNumber}</a>`,
-              1,
-              reviewReward.reviewBaseReward?.reward
-            )
-          );
-        }
-      });
-
       const reviewCount = result.reviewRewards.reduce(
         (total, reviewReward) => total + (reviewReward.reviews?.length ?? 0),
         0

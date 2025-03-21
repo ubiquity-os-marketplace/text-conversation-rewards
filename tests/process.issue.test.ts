@@ -273,7 +273,7 @@ describe("Modules tests", () => {
     expect(result).toEqual(contentEvaluatorResults);
   });
 
-  it("Should throw on a failed openai evaluation", async () => {
+  it("Should throw on a failed LLM evaluation", async () => {
     jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
       return Promise.resolve({});
     });

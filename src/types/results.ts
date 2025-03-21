@@ -13,7 +13,6 @@ export interface Result {
     userId: number;
     reviewRewards?: {
       reviews?: ReviewScore[];
-      reviewBaseReward?: { reward: number };
       url: string;
     }[];
     events?: {
