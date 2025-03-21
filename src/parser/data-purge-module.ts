@@ -15,7 +15,7 @@ export class DataPurgeModule extends BaseModule {
 
   get enabled(): boolean {
     if (!this._configuration) {
-      this.context.logger.error("Invalid / missing configuration detected for DataPurgeModule, disabling.");
+      this.context.logger.warn("The configuration for the module DataPurgeModule is invalid or missing, disabling.");
       return false;
     }
     return true;
@@ -63,6 +63,8 @@ export class DataPurgeModule extends BaseModule {
           .replace(/<!--[\s\S]*?-->/g, "")
           // Remove the footnotes
           .replace(/^###### .*?\[\^\d+\^][\s\S]*$/gm, "")
+          .replace(/^\[\^[\w-]+\^?]:.*$/gm, "")
+          .replace(/\[\^[\w-]+\^?]/g, "")
           // Keep only one new line needed by markdown-it package to convert to html
           .replace(/\n\s*\n/g, "\n")
           .trim();

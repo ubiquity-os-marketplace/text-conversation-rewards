@@ -15,6 +15,7 @@ import { GithubCommentScore, ReadabilityScore, Result, WordResult } from "../typ
 import { typeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 import { parsePriorityLabel } from "../helpers/github";
+import { areBaseUrlsEqual } from "../helpers/urls";
 
 interface Multiplier {
   multiplier: number;
@@ -172,7 +173,9 @@ export class FormattingEvaluatorModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(formattingEvaluatorConfigurationType, this._configuration)) {
-      this.context.logger.error("Invalid / missing configuration detected for FormattingEvaluatorModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module FormattingEvaluatorModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;
@@ -184,7 +187,7 @@ export class FormattingEvaluatorModule extends BaseModule {
     this.context.logger.debug("Will analyze formatting for the current content:", { comment: comment.content, html });
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
-      const res = this._classifyTagsWithWordCount(temp.window.document.body, comment.type);
+      const res = this._classifyTagsWithWordCount(temp.window.document.body, comment);
       const readability = this._calculateFleschKincaid(temp.window.document.body.textContent ?? "");
       return { formatting: res.formatting, words: res.words, readability };
     } else {
@@ -215,10 +218,22 @@ export class FormattingEvaluatorModule extends BaseModule {
     }
   }
 
-  _classifyTagsWithWordCount(htmlElement: HTMLElement, commentType: GithubCommentScore["type"]) {
+  _createUniqueEntryForAnchor(element: Element, commentScore: GithubCommentScore) {
+    const url = element.getAttribute("href");
+    if (url) {
+      // We only want to add urls that do not point to self
+      if (!areBaseUrlsEqual(url, commentScore.url)) {
+        return url.split(/[#?]/)[0];
+      }
+    }
+    return null;
+  }
+
+  _classifyTagsWithWordCount(htmlElement: HTMLElement, commentScore: GithubCommentScore) {
     const formatting: Record<string, { score: number; elementCount: number }> = {};
     const elements = htmlElement.getElementsByTagName("*");
     const urlSet = new Set<string>();
+    const commentType = commentScore.type;
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();
@@ -237,9 +252,9 @@ export class FormattingEvaluatorModule extends BaseModule {
         continue;
       }
       if (tagName === "a") {
-        const url = element.getAttribute("href");
-        if (url) {
-          urlSet.add(url.split(/[#?]/)[0]);
+        const newUrl = this._createUniqueEntryForAnchor(element, commentScore);
+        if (newUrl) {
+          urlSet.add(newUrl);
         }
       } else {
         const bodyContent = element.textContent;

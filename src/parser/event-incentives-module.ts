@@ -19,7 +19,9 @@ export class EventIncentivesModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(eventIncentivesConfigurationType, this.context.config.incentives.eventIncentives)) {
-      this.context.logger.error("Invalid / missing configuration detected for EventIncentivesModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module EventIncentivesModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;
