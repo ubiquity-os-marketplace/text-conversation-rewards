@@ -8,7 +8,7 @@ const openAiType = Type.Object(
      */
     model: Type.String({
       default: "anthropic/claude-3.7-sonnet",
-      description: "OpenAI model, e.g. openai/gpt-4o",
+      description: "LLM model, e.g. openai/gpt-4o",
       examples: ["anthropic/claude-3.7-sonnet", "openai/gpt-4o"],
     }),
     tokenCountLimit: Type.Integer({
