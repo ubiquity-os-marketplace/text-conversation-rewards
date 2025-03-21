@@ -2,7 +2,6 @@ import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { postComment } from "@ubiquity-os/plugin-sdk";
 import Decimal from "decimal.js";
-import { encodingForModel } from "js-tiktoken";
 import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
@@ -20,6 +19,7 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
+import { countTokens } from "@anthropic-ai/tokenizer";
 
 /**
  * Evaluates and rates comments.
@@ -198,8 +198,7 @@ export class ContentEvaluatorModule extends BaseModule {
    * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
    */
   _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
-    const tokenizer = encodingForModel("gpt-4o-2024-08-06");
-    const inputTokens = tokenizer.encode(prompt).length;
+    const inputTokens = countTokens(prompt);
     return Math.min(inputTokens, totalTokenLimit);
   }
 
