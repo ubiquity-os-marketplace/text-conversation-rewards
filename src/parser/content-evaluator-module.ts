@@ -136,7 +136,7 @@ export class ContentEvaluatorModule extends BaseModule {
         return relevances;
       },
       {
-        maxRetries: this._configuration?.openAi.maxRetries ?? 3,
+        maxRetries: this._configuration?.openAi.maxRetries as number,
         onError: async (error) => {
           if (this.context.config.incentives.githubComment?.post) {
             await postComment(this.context, this.context.logger.ok("Results are being retried", { err: error }), {
