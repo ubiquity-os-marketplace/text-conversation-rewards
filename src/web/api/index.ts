@@ -8,20 +8,79 @@ import manifest from "../../../manifest.json";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
-import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
+import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
+import { mkdirSync } from "fs";
+import { existsSync } from "node:fs";
+
+function githubUrlToFileName(url: string): string {
+  const repoMatch = url.match(/github\.com\/([^/]+)\/([^/?#]+)/);
+
+  if (!repoMatch) {
+    throw new Error("Invalid GitHub URL");
+  }
+
+  const owner = repoMatch[1].toLowerCase();
+  const repo = repoMatch[2].toLowerCase();
+
+  const issueMatch = url.match(/\/issues\/(\d+)/);
+
+  if (issueMatch) {
+    const issueNumber = issueMatch[1];
+    return `results/${owner}_${repo}_${issueNumber}.json`;
+  }
+
+  return `results/${owner}_${repo}.json`;
+}
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
-    const { payload, config } = context;
-    const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivityCache(context, issue, "useCache" in config);
-    await activity.init();
-    const processor = new Processor(context);
-    await processor.run(activity);
-    const result = processor.dump();
-    return JSON.parse(result);
+    const { config, octokit, payload, logger } = context;
+    mkdirSync("results", { recursive: true });
+
+    const orgName = payload.organization?.login;
+
+    if (!orgName) {
+      throw logger.error("Unable to find organization name");
+    }
+
+    const repositories = await octokit.paginate(octokit.rest.repos.listForOrg, {
+      org: orgName,
+    });
+    for (const repo of repositories) {
+      console.log("> ", repo.html_url);
+      const issues = (
+        await octokit.paginate(octokit.rest.issues.listForRepo, {
+          owner: orgName,
+          repo: repo.name,
+          state: "closed",
+        })
+      ).filter((o) => !o.pull_request && o.state_reason === "completed");
+      if (!issues.length) {
+        console.log("No issues found, skipping.");
+      }
+      for (const issue of issues) {
+        console.log("--- ", issue.html_url);
+        const filePath = githubUrlToFileName(issue.html_url);
+        if (existsSync(filePath)) {
+          console.warn(`File ${filePath} already exists, skipping.`);
+        } else if (!issue.labels.some((label) => typeof label !== "string" && label.name?.startsWith("Price:"))) {
+          console.warn("No pricing label found, skipping.");
+        } else {
+          config.incentives.file = filePath;
+          context.payload.issue = issue as ContextPlugin["payload"]["issue"];
+          context.payload.repository = repo as ContextPlugin["payload"]["repository"];
+          const issueElem = parseGitHubUrl(issue.html_url);
+          const activity = new IssueActivityCache(context, issueElem, "useCache" in config);
+          await activity.init();
+          const processor = new Processor(context);
+          await processor.run(activity);
+          processor.dump();
+        }
+      }
+    }
+    return { output: { result: { evaluationCommentHtml: `<div>Done!</div>}` } } };
   },
   manifest as Manifest,
   {
@@ -37,11 +96,7 @@ baseApp.use("*", cors());
 
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
-    if (
-      request.method === "POST" &&
-      new URL(request.url).pathname === "/" &&
-      request.headers.get("referer")?.startsWith("http://localhost")
-    ) {
+    if (request.method === "POST" && new URL(request.url).pathname === "/") {
       try {
         const originalBody = await request.json();
         const modifiedBody = await getPayload(
