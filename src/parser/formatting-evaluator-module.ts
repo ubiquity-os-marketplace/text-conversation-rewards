@@ -12,7 +12,7 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, ReadabilityScore, Result, WordResult } from "../types/results";
-import { typeReplacer } from "../helpers/result-replacer";
+import { commentTypeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 import { parsePriorityLabel } from "../helpers/github";
 import { areBaseUrlsEqual } from "../helpers/urls";
@@ -80,7 +80,7 @@ export class FormattingEvaluatorModule extends BaseModule {
 
   private _calculateFleschKincaid(text: string): ReadabilityScore {
     const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length ?? 1;
-    const words = text.match(new RegExp(wordRegex, "g")) ?? [];
+    const words = RegExp(new RegExp(wordRegex, "g")).exec(text) ?? [];
     const wordCount = words.length ?? 1;
     const syllableCount = words.reduce((count, word) => count + this._countSyllables(word), 0);
     const wordsPerSentence = wordCount / Math.max(1, sentences);
@@ -246,7 +246,7 @@ export class FormattingEvaluatorModule extends BaseModule {
         }
       } else {
         this.context.logger.error(
-          `Could not find multiplier for element <${tagName}> with association <${typeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
+          `Could not find multiplier for element <${tagName}> with association <${commentTypeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
         );
         element.remove();
         continue;

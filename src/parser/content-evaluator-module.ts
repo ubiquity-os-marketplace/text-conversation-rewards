@@ -1,6 +1,5 @@
 import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { postComment } from "@ubiquity-os/plugin-sdk";
 import Decimal from "decimal.js";
 import ms, { StringValue } from "ms";
 import OpenAI from "openai";
@@ -141,9 +140,13 @@ export class ContentEvaluatorModule extends BaseModule {
         maxRetries: this._configuration?.openAi.maxRetries ?? 5,
         onError: async (error) => {
           if (this.context.config.incentives.githubComment?.post) {
-            await postComment(this.context, this.context.logger.ok("Results are being retried", { err: error }), {
-              updateComment: true,
-            });
+            await this.context.commentHandler.postComment(
+              this.context,
+              this.context.logger.ok("Results are being retried", { err: error }),
+              {
+                updateComment: true,
+              }
+            );
           }
           this.context.logger.error(String(error), { err: error });
         },

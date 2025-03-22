@@ -34,9 +34,15 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
+      - name: Install and run Anvil
+        run: |
+          bun add -g @foundry-rs/anvil
+          anvil --port 8545 &
+          sleep 3s
+
       - name: Jest With Coverage
         # we install with bun but test with Jest because bun doesn't support network mocking yet
-        run: bun install && yarn test
+        run: bun install && bun run test
 
       - name: Add Jest Report to Summary
         if: always()

@@ -52,7 +52,7 @@ export class PermitGenerationModule extends BaseModule {
       evmNetworkId: this.context.config.evmNetworkId,
       erc20RewardToken: this.context.config.erc20RewardToken,
     };
-    const issueId = Number(payload.issueUrl.match(/\d+$/)?.[0]);
+    const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
       node_id: this.context.payload.issue.node_id,
     };
