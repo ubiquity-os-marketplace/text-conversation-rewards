@@ -22,7 +22,6 @@ const cfg: Config = {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   setupFilesAfterEnv: ["dotenv/config"],
-  transformIgnorePatterns: ["/node_modules/(?!(@uniswap/permit2-sdk)/)"],
 };
 
 export default cfg;
