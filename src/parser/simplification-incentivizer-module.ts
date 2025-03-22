@@ -48,15 +48,19 @@ export class SimplificationIncentivizerModule extends BaseModule {
           !excludedFilePatterns?.length ||
           !excludedFilePatterns.some((pattern) => minimatch(file.filename, pattern))
         ) {
-          result[prAuthor].simplificationReward = result[prAuthor].simplificationReward ?? {};
+          result[prAuthor].simplificationReward = result[prAuthor].simplificationReward ?? {
+            files: [],
+            url: pull.html_url,
+          };
 
           const reward = Math.max((file.deletions - file.additions) / this._simplificationRate, 0);
           if (reward !== 0) {
-            result[prAuthor].simplificationReward[file.filename] = {
+            result[prAuthor].simplificationReward.files.push({
               additions: file.additions,
               deletions: file.deletions,
               reward: reward,
-            };
+              fileName: file.filename,
+            });
           }
         }
       }

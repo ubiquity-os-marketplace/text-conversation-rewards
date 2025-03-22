@@ -16,11 +16,13 @@ export interface Result {
       url: string;
     }[];
     simplificationReward?: {
-      [fileName: string]: {
+      url: string;
+      files: {
+        fileName: string;
         reward: number;
         additions: number;
         deletions: number;
-      };
+      }[];
     };
     events?: {
       [eventName: string]: {
