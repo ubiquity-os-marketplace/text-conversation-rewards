@@ -13,7 +13,6 @@ export interface Result {
     userId: number;
     reviewRewards?: {
       reviews?: ReviewScore[];
-      reviewBaseReward?: { reward: number };
       url: string;
     }[];
     simplificationReward?: {
@@ -60,7 +59,7 @@ export interface GithubCommentScore {
   id: number;
   content: string;
   url: string;
-  type: CommentKind | CommentAssociation;
+  commentType: CommentKind | CommentAssociation;
   diffHunk?: string;
   score?: {
     formatting?: {

@@ -2,7 +2,6 @@ import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { postComment } from "@ubiquity-os/plugin-sdk";
 import Decimal from "decimal.js";
-import { encodingForModel } from "js-tiktoken";
 import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
@@ -20,6 +19,7 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
+import { encodingForModel } from "js-tiktoken";
 
 /**
  * Evaluates and rates comments.
@@ -27,7 +27,7 @@ import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 export class ContentEvaluatorModule extends BaseModule {
   readonly _configuration: ContentEvaluatorConfiguration | null = this.context.config.incentives.contentEvaluator;
   readonly _openAi = new OpenAI({
-    apiKey: this.context.env.OPENAI_API_KEY,
+    apiKey: this.context.env.OPENROUTER_API_KEY,
     ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
   });
   private readonly _fixedRelevances: { [k: string]: number } = {};
@@ -170,8 +170,8 @@ export class ContentEvaluatorModule extends BaseModule {
 
     for (const currentComment of commentsWithScore) {
       let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
-      if (this._fixedRelevances[currentComment.type]) {
-        currentRelevance = this._fixedRelevances[currentComment.type];
+      if (this._fixedRelevances[currentComment.commentType]) {
+        currentRelevance = this._fixedRelevances[currentComment.commentType];
       } else if (!isNaN(relevancesByAi[currentComment.id])) {
         currentRelevance = relevancesByAi[currentComment.id];
       }
@@ -179,7 +179,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const currentReward = new Decimal(currentComment.score?.reward ?? 0);
       const priority =
         // We do not apply priority multiplier on issue specification
-        currentComment.score?.priority && !(currentComment.type & CommentAssociation.SPECIFICATION)
+        currentComment.score?.priority && !(currentComment.commentType & CommentAssociation.SPECIFICATION)
           ? currentComment.score.priority
           : 1;
 
@@ -198,8 +198,8 @@ export class ContentEvaluatorModule extends BaseModule {
    * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
    */
   _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
-    const tokenizer = encodingForModel("gpt-4o-2024-08-06");
-    const inputTokens = tokenizer.encode(prompt).length;
+    const tokenizer = encodingForModel("gpt-4o");
+    const inputTokens = tokenizer.encode(prompt).length * 2; // Safety margin
     return Math.min(inputTokens, totalTokenLimit);
   }
 
@@ -216,8 +216,8 @@ export class ContentEvaluatorModule extends BaseModule {
     const commentsToEvaluate: CommentToEvaluate[] = [];
     const prCommentsToEvaluate: PrCommentToEvaluate[] = [];
     for (const currentComment of commentsWithScore) {
-      if (!this._fixedRelevances[currentComment.type]) {
-        if (currentComment.type & CommentKind.PULL) {
+      if (!this._fixedRelevances[currentComment.commentType]) {
+        if (currentComment.commentType & CommentKind.PULL) {
           prCommentsToEvaluate.push({
             id: currentComment.id,
             comment: currentComment.content,
@@ -410,7 +410,7 @@ export class ContentEvaluatorModule extends BaseModule {
     const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const userCommentsMap = userComments.map((value) => `${value.id}: "${value.comment}"`);
     return `
-      Evaluate the relevance of GitHub comments to an issue. Provide a JSON object with comment IDs and their relevance scores.
+      Evaluate the relevance of GitHub comments to an issue. Provide a raw JSON object with comment IDs and their relevance scores.
       Issue: ${issue}
 
       All comments:
@@ -439,6 +439,8 @@ export class ContentEvaluatorModule extends BaseModule {
       - Even minor details may be significant.
       - Comments may reference earlier comments.
       - The number of entries in the JSON response must equal ${userCommentsMap.length}.
+
+      IMPORTANT: Do not use markdown formatting. Do not include backticks or code blocks. Return just the plain JSON object text that can be directly parsed.
     `;
   }
 
@@ -457,9 +459,11 @@ export class ContentEvaluatorModule extends BaseModule {
     \`\`\`
     ${JSON.stringify({ specification: issue, comments: userComments })}
     \`\`\`\
-
+  
     To what degree are each of the comments valuable? 
-    Please reply with ONLY a JSON where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
-    The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.`;
+    Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
+    The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.
+    
+    IMPORTANT: Do not use markdown formatting. Do not include backticks or code blocks. Return just the plain JSON object text that can be directly parsed.`;
   }
 }

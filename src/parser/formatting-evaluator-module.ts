@@ -112,7 +112,7 @@ export class FormattingEvaluatorModule extends BaseModule {
       const comments = currentElement.comments ?? [];
       for (const comment of comments) {
         const { formatting, words, readability } = this._getFormattingScore(comment);
-        const multiplierFactor = this._multipliers?.[comment.type] ?? { multiplier: 0 };
+        const multiplierFactor = this._multipliers?.[comment.commentType] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(
           formatting,
           words,
@@ -233,7 +233,7 @@ export class FormattingEvaluatorModule extends BaseModule {
     const formatting: Record<string, { score: number; elementCount: number }> = {};
     const elements = htmlElement.getElementsByTagName("*");
     const urlSet = new Set<string>();
-    const commentType = commentScore.type;
+    const commentType = commentScore.commentType;
 
     for (const element of elements) {
       const tagName = element.tagName.toLowerCase();

@@ -38,7 +38,8 @@
     "laeiouy",
     "Flesch",
     "Kincaid",
-    "flesch"
+    "flesch",
+    "OPENROUTER"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
