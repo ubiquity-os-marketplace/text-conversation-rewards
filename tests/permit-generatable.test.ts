@@ -5,7 +5,6 @@ import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { http, passthrough } from "msw";
-// import { EventIncentivesModule } from "../src/parser/event-incentives-module";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db as mockDb } from "./__mocks__/db";
