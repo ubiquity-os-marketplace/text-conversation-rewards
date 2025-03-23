@@ -88,7 +88,7 @@ export async function generatePermitUrlPayload(
   const privateKey = await getPrivateKey(context.config.evmPrivateEncrypted);
   const permit2Address = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
   const convertedAmount = utils.parseUnits(amount.toString(), 18);
-  const deadline = Date.now().toString();
+  const deadline = new Date(0).getTime().toString();
   const spenderWallet = new ethers.Wallet(privateKey);
   const { data: userData } = await context.octokit.rest.users.getByUsername({ username });
 
