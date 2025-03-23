@@ -126,7 +126,9 @@ export class GithubCommentModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(githubCommentConfigurationType, this._configuration)) {
-      this.context.logger.error("Invalid / missing configuration detected for GithubCommentModule, disabling.");
+      this.context.logger.warn(
+        "The configuration for the module GithubCommentModule is invalid or missing, disabling."
+      );
       return false;
     }
     return true;
@@ -154,20 +156,6 @@ export class GithubCommentModule extends BaseModule {
     }
 
     if (result.reviewRewards) {
-      result.reviewRewards.forEach((reviewReward) => {
-        const reviewRewardPullNumber = reviewReward.url.split("/").slice(-1)[0];
-        if (reviewReward.reviewBaseReward?.reward) {
-          content.push(
-            buildContributionRow(
-              "Review",
-              `Base Review for&nbsp;<a href="${reviewReward.url}" target="_blank" rel="noopener">#${reviewRewardPullNumber}</a>`,
-              1,
-              reviewReward.reviewBaseReward?.reward
-            )
-          );
-        }
-      });
-
       const reviewCount = result.reviewRewards.reduce(
         (total, reviewReward) => total + (reviewReward.reviews?.length ?? 0),
         0
@@ -309,13 +297,13 @@ export class GithubCommentModule extends BaseModule {
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
-        if (curr.type & CommentKind.ISSUE) {
-          if (curr.type & CommentAssociation.SPECIFICATION) {
+        if (curr.commentType & CommentKind.ISSUE) {
+          if (curr.commentType & CommentAssociation.SPECIFICATION) {
             acc.issues.specification = curr;
           } else {
             acc.issues.comments.push(curr);
           }
-        } else if (curr.type & CommentKind.PULL) {
+        } else if (curr.commentType & CommentKind.PULL) {
           acc.reviews.push(curr);
         }
         return acc;

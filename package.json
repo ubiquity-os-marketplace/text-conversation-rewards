@@ -39,7 +39,7 @@
     "@ubiquity-os/ubiquity-os-logger": "^1.4.0",
     "decimal.js": "10.4.3",
     "ethers": "^5.7.2",
-    "js-tiktoken": "1.0.15",
+    "js-tiktoken": "^1.0.19",
     "jsdom": "24.0.0",
     "markdown-it": "14.1.0",
     "minimatch": "^10.0.1",

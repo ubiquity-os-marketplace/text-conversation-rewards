@@ -79,7 +79,7 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
@@ -273,7 +273,7 @@ describe("Modules tests", () => {
     expect(result).toEqual(contentEvaluatorResults);
   });
 
-  it("Should throw on a failed openai evaluation", async () => {
+  it("Should throw on a failed LLM evaluation", async () => {
     jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
       return Promise.resolve({});
     });
@@ -287,9 +287,9 @@ describe("Modules tests", () => {
     ];
     await expect(processor.run(activity)).rejects.toMatchObject({
       logMessage: {
-        diff: "> [!CAUTION]\n> Relevance / Comment length mismatch!",
+        diff: "> [!CAUTION]\n> There was a mismatch between the relevance scores and amount of comments.",
         level: "error",
-        raw: "Relevance / Comment length mismatch!",
+        raw: "There was a mismatch between the relevance scores and amount of comments.",
         type: "error",
       },
     });
@@ -475,7 +475,7 @@ describe("Modules tests", () => {
             id: 1,
             content: "",
             url: "",
-            type: CommentAssociation.ASSIGNEE,
+            commentType: CommentAssociation.ASSIGNEE,
             score: {
               reward: 50000,
               multiplier: 3,
@@ -506,7 +506,7 @@ describe("Modules tests", () => {
 });
 
 describe("Retry", () => {
-  const openAi = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, maxRetries: 0 });
+  const openAi = new OpenAI({ apiKey: process.env.OPENROUTER_API_KEY, maxRetries: 0 });
 
   async function testFunction() {
     return openAi.chat.completions.create({
