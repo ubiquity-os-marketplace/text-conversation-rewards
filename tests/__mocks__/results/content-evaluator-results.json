@@ -26,13 +26,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": -47.21874999999997,
-            "score": 0,
+            "fleschKincaid": 54.50875000000002,
+            "score": 0.9450875000000002,
             "sentences": 4,
-            "syllables": 3
+            "syllables": 78
           },
           "relevance": 0.8,
-          "reward": 14.848,
+          "reward": 19.072,
           "words": {
             "result": 2.64,
             "wordCount": 47,
@@ -58,13 +58,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 75.12117647058825,
+            "score": 0.8487882352941175,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 23
           },
           "relevance": 0.8,
-          "reward": 8.768,
+          "reward": 8.48,
           "words": {
             "result": 1.11,
             "wordCount": 17,
@@ -102,13 +102,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.15041666666667,
-            "score": 1,
+            "fleschKincaid": 45.88453947368424,
+            "score": 0.8588453947368424,
             "sentences": 12,
-            "syllables": 1
+            "syllables": 461
           },
           "relevance": 0.8,
-          "reward": 100.704,
+          "reward": 97.44,
           "words": {
             "result": 12.21,
             "wordCount": 285,
@@ -142,13 +142,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.13350000000003,
-            "score": 1,
+            "fleschKincaid": 60.868714285714304,
+            "score": 0.991312857142857,
             "sentences": 10,
-            "syllables": 1
+            "syllables": 256
           },
           "relevance": 0.8,
-          "reward": 68.352,
+          "reward": 68.224,
           "words": {
             "result": 7.43,
             "wordCount": 159,
@@ -182,13 +182,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.09,
-            "score": 1,
+            "fleschKincaid": 47.78581395348837,
+            "score": 0.8778581395348837,
             "sentences": 7,
-            "syllables": 1
+            "syllables": 214
           },
           "relevance": 0.8,
-          "reward": 55.008,
+          "reward": 53.44,
           "words": {
             "result": 6.22,
             "wordCount": 129,
@@ -226,13 +226,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.16733333333335,
-            "score": 1,
+            "fleschKincaid": 49.64124922118381,
+            "score": 0.8964124922118382,
             "sentences": 15,
-            "syllables": 1
+            "syllables": 361
           },
           "relevance": 0.8,
-          "reward": 81.408,
+          "reward": 79.456,
           "words": {
             "result": 9.57,
             "wordCount": 214,
@@ -270,13 +270,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.06583333333336,
-            "score": 1,
+            "fleschKincaid": 60.76687074829937,
+            "score": 0.9923312925170064,
             "sentences": 6,
-            "syllables": 1
+            "syllables": 150
           },
           "relevance": 0.8,
-          "reward": 53.792,
+          "reward": 53.696,
           "words": {
             "result": 4.93,
             "wordCount": 98,
@@ -310,13 +310,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.06583333333336,
-            "score": 1,
+            "fleschKincaid": 59.60109106529211,
+            "score": 0.9960109106529211,
             "sentences": 6,
-            "syllables": 1
+            "syllables": 150
           },
           "relevance": 0.8,
-          "reward": 41.088,
+          "reward": 41.056,
           "words": {
             "result": 4.88,
             "wordCount": 97,
@@ -342,13 +342,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": -47.47249999999997,
-            "score": 0,
+            "fleschKincaid": 52.08991379310348,
+            "score": 0.9208991379310347,
             "sentences": 2,
-            "syllables": 3
+            "syllables": 48
           },
           "relevance": 0.8,
-          "reward": 8.8,
+          "reward": 11.232,
           "words": {
             "result": 1.75,
             "wordCount": 29,
@@ -374,13 +374,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 66.40000000000003,
+            "score": 0.9359999999999996,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 8
           },
           "relevance": 0.7,
-          "reward": 5.068,
+          "reward": 4.984,
           "words": {
             "result": 0.39,
             "wordCount": 5,
@@ -407,13 +407,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 36.62000000000003,
-            "score": 0.7662000000000003,
+            "fleschKincaid": 66.7871428571429,
+            "score": 0.9321285714285711,
             "sentences": 1,
-            "syllables": 2
+            "syllables": 11
           },
           "relevance": 0.7,
-          "reward": 5.236,
+          "reward": 5.46,
           "words": {
             "result": 0.52,
             "wordCount": 7,
@@ -440,13 +440,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.98125000000002,
-            "score": 1,
+            "fleschKincaid": 58.00533163265308,
+            "score": 0.9800533163265308,
             "sentences": 4,
-            "syllables": 1
+            "syllables": 79
           },
           "relevance": 0.7,
-          "reward": 13.58,
+          "reward": 13.524,
           "words": {
             "result": 2.73,
             "wordCount": 49,
@@ -473,13 +473,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 87.94500000000002,
+            "score": 0.7205499999999998,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 8
           },
           "relevance": 0.7,
-          "reward": 5.32,
+          "reward": 4.984,
           "words": {
             "result": 0.46,
             "wordCount": 6,
@@ -510,13 +510,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 78.70785714285716,
+            "score": 0.8129214285714284,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 17.108,
+          "reward": 16.38,
           "words": {
             "result": 1.7,
             "wordCount": 28,
@@ -547,13 +547,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 97.0014285714286,
+            "score": 0.6299857142857139,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 17
           },
           "relevance": 0.7,
-          "reward": 10.696,
+          "reward": 9.8,
           "words": {
             "result": 0.94,
             "wordCount": 14,
@@ -588,13 +588,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 37.127500000000026,
-            "score": 0.7712750000000003,
+            "fleschKincaid": 43.08000000000001,
+            "score": 0.8308000000000001,
             "sentences": 2,
-            "syllables": 2
+            "syllables": 43
           },
           "relevance": 0.7,
-          "reward": 12.04,
+          "reward": 12.208,
           "words": {
             "result": 1.49,
             "wordCount": 24,
@@ -621,10 +621,10 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
+            "fleschKincaid": 100.24000000000002,
             "score": 1,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 6
           },
           "relevance": 0.7,
           "reward": 5.068,
@@ -654,13 +654,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 71.81500000000001,
+            "score": 0.8818499999999999,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 12
           },
           "relevance": 0.7,
-          "reward": 5.796,
+          "reward": 5.628,
           "words": {
             "result": 0.59,
             "wordCount": 8,
@@ -695,13 +695,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.03200000000001,
-            "score": 1,
+            "fleschKincaid": 79.1046153846154,
+            "score": 0.808953846153846,
             "sentences": 5,
-            "syllables": 1
+            "syllables": 88
           },
           "relevance": 0.7,
-          "reward": 27.216,
+          "reward": 26.04,
           "words": {
             "result": 3.48,
             "wordCount": 65,
@@ -728,13 +728,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 77.45815217391308,
+            "score": 0.8254184782608692,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 32
           },
           "relevance": 0.7,
-          "reward": 8.876,
+          "reward": 8.512,
           "words": {
             "result": 1.44,
             "wordCount": 23,
@@ -761,13 +761,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 83.32000000000004,
+            "score": 0.7667999999999996,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 7
           },
           "relevance": 0.7,
-          "reward": 5.068,
+          "reward": 4.788,
           "words": {
             "result": 0.39,
             "wordCount": 5,
@@ -798,13 +798,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 84.63824561403509,
+            "score": 0.7536175438596492,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 26
           },
           "relevance": 0.7,
-          "reward": 15.372,
+          "reward": 14.476,
           "words": {
             "result": 1.22,
             "wordCount": 19,
@@ -831,13 +831,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.98125000000002,
-            "score": 1,
+            "fleschKincaid": 95.58725000000001,
+            "score": 0.6441274999999999,
             "sentences": 4,
-            "syllables": 1
+            "syllables": 31
           },
           "relevance": 0.7,
-          "reward": 9.24,
+          "reward": 8.484,
           "words": {
             "result": 1.54,
             "wordCount": 25,
@@ -864,13 +864,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 78.87285714285717,
+            "score": 0.8112714285714283,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 10
           },
           "relevance": 0.7,
-          "reward": 5.544,
+          "reward": 5.292,
           "words": {
             "result": 0.52,
             "wordCount": 7,
@@ -897,10 +897,10 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
+            "fleschKincaid": 120.20500000000001,
             "score": 1,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 2
           },
           "relevance": 0.7,
           "reward": 4.284,
@@ -930,13 +930,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 50.66500000000002,
+            "score": 0.9066500000000002,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 14
           },
           "relevance": 0.7,
-          "reward": 5.796,
+          "reward": 5.656,
           "words": {
             "result": 0.59,
             "wordCount": 8,
@@ -963,10 +963,10 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": -217.17999999999998,
+            "fleschKincaid": -48.994999999999976,
             "score": 0,
             "sentences": 1,
-            "syllables": 5
+            "syllables": 6
           },
           "relevance": 0.7,
           "reward": 3.304,
@@ -1000,13 +1000,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 78.24500000000002,
+            "score": 0.8175499999999998,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 42
           },
           "relevance": 0.7,
-          "reward": 17.472,
+          "reward": 16.744,
           "words": {
             "result": 1.8,
             "wordCount": 30,
@@ -1033,13 +1033,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 35.22487804878051,
+            "score": 0.7522487804878051,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 63
           },
           "relevance": 0.7,
-          "reward": 12.208,
+          "reward": 11.508,
           "words": {
             "result": 2.35,
             "wordCount": 41,
@@ -1066,13 +1066,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.03200000000001,
-            "score": 1,
+            "fleschKincaid": 66.55180198019805,
+            "score": 0.9344819801980195,
             "sentences": 5,
-            "syllables": 1
+            "syllables": 143
           },
           "relevance": 0.7,
-          "reward": 29.316,
+          "reward": 28.868,
           "words": {
             "result": 5.05,
             "wordCount": 101,
@@ -1099,13 +1099,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": -47.47249999999997,
-            "score": 0,
+            "fleschKincaid": 35.5107142857143,
+            "score": 0.755107142857143,
             "sentences": 2,
-            "syllables": 3
+            "syllables": 52
           },
           "relevance": 0.7,
-          "reward": 7.56,
+          "reward": 9.268,
           "words": {
             "result": 1.7,
             "wordCount": 28,
@@ -1131,13 +1131,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 66.5275,
+            "score": 0.9347249999999999,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 7.504,
+          "reward": 7.392,
           "words": {
             "result": 1.06,
             "wordCount": 16,
@@ -1147,7 +1147,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "total": 671.44,
+    "total": 664.748,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -1173,13 +1173,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.98125000000002,
-            "score": 1,
+            "fleschKincaid": 52.9251785714286,
+            "score": 0.929251785714286,
             "sentences": 4,
-            "syllables": 1
+            "syllables": 60
           },
           "relevance": 0.8,
-          "reward": 21.728,
+          "reward": 21.376,
           "words": {
             "result": 2.22,
             "wordCount": 17,
@@ -1217,13 +1217,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.03200000000001,
-            "score": 1,
+            "fleschKincaid": 60.83172972972976,
+            "score": 0.9916827027027024,
             "sentences": 5,
-            "syllables": 1
+            "syllables": 162
           },
           "relevance": 0.8,
-          "reward": 84.704,
+          "reward": 84.544,
           "words": {
             "result": 10.36,
             "wordCount": 104,
@@ -1257,13 +1257,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.98125000000002,
-            "score": 1,
+            "fleschKincaid": 45.23635869565217,
+            "score": 0.8523635869565217,
             "sentences": 4,
-            "syllables": 1
+            "syllables": 180
           },
           "relevance": 0.8,
-          "reward": 72.928,
+          "reward": 70.432,
           "words": {
             "result": 10.53,
             "wordCount": 106,
@@ -1293,13 +1293,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.06583333333336,
-            "score": 1,
+            "fleschKincaid": 53.47860696517415,
+            "score": 0.9347860696517415,
             "sentences": 6,
-            "syllables": 1
+            "syllables": 207
           },
           "relevance": 0.8,
-          "reward": 74.272,
+          "reward": 73.152,
           "words": {
             "result": 12.85,
             "wordCount": 134,
@@ -1325,13 +1325,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.13350000000003,
-            "score": 1,
+            "fleschKincaid": 66.72291509433965,
+            "score": 0.9327708490566035,
             "sentences": 10,
-            "syllables": 1
+            "syllables": 233
           },
           "relevance": 0.8,
-          "reward": 82.656,
+          "reward": 81.376,
           "words": {
             "result": 14.87,
             "wordCount": 159,
@@ -1357,13 +1357,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 49.715227272727276,
+            "score": 0.8971522727272727,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 84
           },
           "relevance": 0.8,
-          "reward": 29.248,
+          "reward": 28.544,
           "words": {
             "result": 6.03,
             "wordCount": 55,
@@ -1393,13 +1393,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": -47.21874999999997,
-            "score": 0,
+            "fleschKincaid": 61.84977941176473,
+            "score": 0.9815022058823527,
             "sentences": 4,
-            "syllables": 3
+            "syllables": 124
           },
           "relevance": 0.8,
-          "reward": 34.336,
+          "reward": 44.448,
           "words": {
             "result": 8.73,
             "wordCount": 85,
@@ -1429,13 +1429,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 58.853045977011504,
+            "score": 0.988530459770115,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 88
           },
           "relevance": 0.8,
-          "reward": 38.72,
+          "reward": 38.624,
           "words": {
             "result": 6.31,
             "wordCount": 58,
@@ -1473,13 +1473,13 @@
           "multiplier": 1,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 36.62000000000003,
-            "score": 0.7662000000000003,
+            "fleschKincaid": 23.558333333333337,
+            "score": 0.6355833333333334,
             "sentences": 1,
-            "syllables": 2
+            "syllables": 82
           },
           "relevance": 0.8,
-          "reward": 86.336,
+          "reward": 83.584,
           "words": {
             "result": 5.94,
             "wordCount": 54,
@@ -1517,13 +1517,13 @@
           "multiplier": 1,
           "priority": 1,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 35.555884353741504,
+            "score": 0.7555588435374151,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 160
           },
           "relevance": 1,
-          "reward": 20.09,
+          "reward": 18.95,
           "words": {
             "result": 4.45,
             "wordCount": 87,
@@ -1549,10 +1549,10 @@
           "multiplier": 0,
           "priority": 1,
           "readability": {
-            "fleschKincaid": 36.62000000000003,
-            "score": 0.7662000000000003,
+            "fleschKincaid": 67.32894736842107,
+            "score": 0.9267105263157893,
             "sentences": 1,
-            "syllables": 2
+            "syllables": 27
           },
           "relevance": 0.7,
           "reward": 0,
@@ -1586,13 +1586,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 70.91500000000003,
+            "score": 0.8908499999999997,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 82
           },
           "relevance": 0.7,
-          "reward": 90.916,
+          "reward": 88.648,
           "words": {
             "result": 6.49,
             "wordCount": 60,
@@ -1623,13 +1623,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 66.5275,
+            "score": 0.9347249999999999,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 29.932,
+          "reward": 29.484,
           "words": {
             "result": 2.11,
             "wordCount": 16,
@@ -1660,13 +1660,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.98125000000002,
-            "score": 1,
+            "fleschKincaid": 90.69796052631581,
+            "score": 0.6930203947368418,
             "sentences": 4,
-            "syllables": 1
+            "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 29.12,
+          "reward": 27.048,
           "words": {
             "result": 2,
             "wordCount": 15,
@@ -1697,13 +1697,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 83.32166666666669,
+            "score": 0.7667833333333332,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 52
           },
           "relevance": 0.7,
-          "reward": 55.328,
+          "reward": 52.36,
           "words": {
             "result": 4.6,
             "wordCount": 40,
@@ -1738,13 +1738,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 47.140000000000015,
+            "score": 0.8714000000000002,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 43
           },
           "relevance": 0.7,
-          "reward": 46.732,
+          "reward": 45.36,
           "words": {
             "result": 1.42,
             "wordCount": 10,
@@ -1775,13 +1775,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 37.127500000000026,
-            "score": 0.7712750000000003,
+            "fleschKincaid": 53.81250000000003,
+            "score": 0.9381250000000003,
             "sentences": 2,
-            "syllables": 2
+            "syllables": 73
           },
           "relevance": 0.7,
-          "reward": 55.244,
+          "reward": 57.484,
           "words": {
             "result": 4.01,
             "wordCount": 34,
@@ -1808,13 +1808,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 90.09200000000001,
+            "score": 0.6990799999999999,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 27
           },
           "relevance": 0.7,
-          "reward": 29.764,
+          "reward": 27.72,
           "words": {
             "result": 3.09,
             "wordCount": 25,
@@ -1849,13 +1849,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 37.29666666666668,
-            "score": 0.7729666666666668,
+            "fleschKincaid": 67.09504065040652,
+            "score": 0.9290495934959349,
             "sentences": 3,
-            "syllables": 2
+            "syllables": 61
           },
           "relevance": 0.7,
-          "reward": 53.116,
+          "reward": 55.132,
           "words": {
             "result": 4.7,
             "wordCount": 41,
@@ -1886,13 +1886,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.03200000000001,
-            "score": 1,
+            "fleschKincaid": 71.28075675675677,
+            "score": 0.8871924324324323,
             "sentences": 5,
-            "syllables": 1
+            "syllables": 56
           },
           "relevance": 0.7,
-          "reward": 46.592,
+          "reward": 45.388,
           "words": {
             "result": 3.4,
             "wordCount": 28,
@@ -1923,13 +1923,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 73.79573529411766,
+            "score": 0.8620426470588234,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 23.072,
+          "reward": 22.344,
           "words": {
             "result": 1.17,
             "wordCount": 8,
@@ -1964,13 +1964,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 122.06583333333336,
-            "score": 1,
+            "fleschKincaid": 91.35153100775194,
+            "score": 0.6864846899224806,
             "sentences": 6,
-            "syllables": 1
+            "syllables": 55
           },
           "relevance": 0.7,
-          "reward": 61.88,
+          "reward": 57.4,
           "words": {
             "result": 4.5,
             "wordCount": 39,
@@ -1997,13 +1997,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 88.905,
+            "score": 0.71095,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 15
           },
           "relevance": 0.7,
-          "reward": 19.292,
+          "reward": 18.004,
           "words": {
             "result": 1.65,
             "wordCount": 12,
@@ -2030,13 +2030,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 74.72386363636366,
+            "score": 0.8527613636363633,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 45
           },
           "relevance": 0.7,
-          "reward": 35.756,
+          "reward": 34.524,
           "words": {
             "result": 3.91,
             "wordCount": 33,
@@ -2067,13 +2067,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 57.86617647058826,
+            "score": 0.9786617647058826,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 92
           },
           "relevance": 0.7,
-          "reward": 67.116,
+          "reward": 66.78,
           "words": {
             "result": 7.22,
             "wordCount": 68,
@@ -2104,13 +2104,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 82.47550000000001,
+            "score": 0.7752449999999999,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 37.044,
+          "reward": 35.14,
           "words": {
             "result": 3.09,
             "wordCount": 25,
@@ -2137,13 +2137,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 23.850000000000023,
+            "score": 0.6385000000000002,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 45
           },
           "relevance": 0.7,
-          "reward": 28.98,
+          "reward": 26.544,
           "words": {
             "result": 2.98,
             "wordCount": 24,
@@ -2174,13 +2174,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 45.80302631578948,
+            "score": 0.8580302631578948,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 34
           },
           "relevance": 0.7,
-          "reward": 32.172,
+          "reward": 31.136,
           "words": {
             "result": 1.42,
             "wordCount": 10,
@@ -2219,13 +2219,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 36.46285714285716,
+            "score": 0.7646285714285717,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 74
           },
           "relevance": 0.7,
-          "reward": 92.456,
+          "reward": 87.444,
           "words": {
             "result": 3.7,
             "wordCount": 31,
@@ -2256,13 +2256,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 86.70500000000001,
+            "score": 0.7329499999999999,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 39
           },
           "relevance": 0.7,
-          "reward": 40.768,
+          "reward": 38.248,
           "words": {
             "result": 3.6,
             "wordCount": 30,
@@ -2293,13 +2293,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 52.08641025641026,
+            "score": 0.9208641025641026,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 102
           },
           "relevance": 0.7,
-          "reward": 159.796,
+          "reward": 156.884,
           "words": {
             "result": 6.95,
             "wordCount": 65,
@@ -2326,13 +2326,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 48.525000000000034,
+            "score": 0.8852500000000003,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 76
           },
           "relevance": 0.7,
-          "reward": 46.368,
+          "reward": 45.136,
           "words": {
             "result": 5.37,
             "wordCount": 48,
@@ -2367,13 +2367,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": -47.21874999999997,
-            "score": 0,
+            "fleschKincaid": 41.87956896551725,
+            "score": 0.8187956896551725,
             "sentences": 4,
-            "syllables": 3
+            "syllables": 103
           },
           "relevance": 0.7,
-          "reward": 91.168,
+          "reward": 113.568,
           "words": {
             "result": 5.28,
             "wordCount": 47,
@@ -2403,13 +2403,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": -47.47249999999997,
-            "score": 0,
+            "fleschKincaid": 40.09,
+            "score": 0.8009000000000001,
             "sentences": 2,
-            "syllables": 3
+            "syllables": 30
           },
           "relevance": 0.7,
-          "reward": 22.68,
+          "reward": 28.14,
           "words": {
             "result": 1.05,
             "wordCount": 7,
@@ -2435,13 +2435,13 @@
           "multiplier": 2,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 76.03,
+            "score": 0.8397,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 31.22,
+          "reward": 30.072,
           "words": {
             "result": 3.29,
             "wordCount": 27,
@@ -2455,7 +2455,7 @@
       "multiplier": 1,
       "reward": 400
     },
-    "total": 2171.53,
+    "total": 2165.018,
     "userId": 9807008
   },
   "whilefoo": {
@@ -2485,13 +2485,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.98125000000002,
-            "score": 1,
+            "fleschKincaid": 34.32468930635841,
+            "score": 0.743246893063584,
             "sentences": 4,
-            "syllables": 1
+            "syllables": 263
           },
           "relevance": 0.8,
-          "reward": 17.664,
+          "reward": 16.608,
           "words": {
             "result": 7.99,
             "wordCount": 173,
@@ -2526,13 +2526,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 36.62000000000003,
-            "score": 0.7662000000000003,
+            "fleschKincaid": 59.68214285714288,
+            "score": 0.9968214285714287,
             "sentences": 1,
-            "syllables": 2
+            "syllables": 22
           },
           "relevance": 0.7,
-          "reward": 2.52,
+          "reward": 2.66,
           "words": {
             "result": 0.94,
             "wordCount": 14,
@@ -2559,13 +2559,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 69.78800000000001,
+            "score": 0.9021199999999999,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 2.324,
+          "reward": 2.268,
           "words": {
             "result": 1.54,
             "wordCount": 25,
@@ -2592,13 +2592,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 91.78000000000003,
+            "score": 0.6821999999999997,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 13
           },
           "relevance": 0.7,
-          "reward": 1.568,
+          "reward": 1.428,
           "words": {
             "result": 0.71,
             "wordCount": 10,
@@ -2625,13 +2625,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 70.08365384615385,
+            "score": 0.8991634615384615,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 20
           },
           "relevance": 0.7,
-          "reward": 1.708,
+          "reward": 1.68,
           "words": {
             "result": 0.88,
             "wordCount": 13,
@@ -2658,10 +2658,10 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 60.70500000000001,
+            "score": 0.9929499999999999,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 38
           },
           "relevance": 0.7,
           "reward": 2.268,
@@ -2691,13 +2691,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 76.55500000000004,
+            "score": 0.8344499999999997,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 26
           },
           "relevance": 0.7,
-          "reward": 2.072,
+          "reward": 1.988,
           "words": {
             "result": 1.28,
             "wordCount": 20,
@@ -2724,13 +2724,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 36.62000000000003,
-            "score": 0.7662000000000003,
+            "fleschKincaid": 94.30000000000001,
+            "score": 0.6569999999999999,
             "sentences": 1,
-            "syllables": 2
+            "syllables": 11
           },
           "relevance": 0.7,
-          "reward": 1.428,
+          "reward": 1.372,
           "words": {
             "result": 0.65,
             "wordCount": 9,
@@ -2761,13 +2761,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.72750000000002,
-            "score": 1,
+            "fleschKincaid": 43.564500000000024,
+            "score": 0.8356450000000002,
             "sentences": 2,
-            "syllables": 1
+            "syllables": 111
           },
           "relevance": 0.7,
-          "reward": 6.72,
+          "reward": 6.468,
           "words": {
             "result": 3.38,
             "wordCount": 63,
@@ -2794,10 +2794,10 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
-            "score": 1,
+            "fleschKincaid": 60.19176470588238,
+            "score": 0.9980823529411762,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 26
           },
           "relevance": 0.7,
           "reward": 1.932,
@@ -2831,13 +2831,13 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.89666666666668,
-            "score": 1,
+            "fleschKincaid": 79.50500000000001,
+            "score": 0.8049499999999999,
             "sentences": 3,
-            "syllables": 1
+            "syllables": 49
           },
           "relevance": 0.7,
-          "reward": 5.544,
+          "reward": 5.292,
           "words": {
             "result": 2.1,
             "wordCount": 36,
@@ -2864,10 +2864,10 @@
           "multiplier": 0.25,
           "priority": 4,
           "readability": {
-            "fleschKincaid": 121.22000000000003,
+            "fleschKincaid": 118.17500000000001,
             "score": 1,
             "sentences": 1,
-            "syllables": 1
+            "syllables": 4
           },
           "relevance": 0.7,
           "reward": 1.204,
@@ -2880,7 +2880,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "total": 46.952,
+    "total": 45.168,
     "userId": 139262667
   }
 }
