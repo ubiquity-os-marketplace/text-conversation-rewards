@@ -8,12 +8,12 @@ import fs from "fs";
 import { http, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
-import { db, db as mockDb } from "./__mocks__/db";
+import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { customEncodePermits, generatePermitUrlPayload } from "./__mocks__/local-permits";
+import "./helpers/permit-mock";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -29,46 +29,6 @@ jest.unstable_mockModule("@actions/github", () => ({
     sha: "1234",
   },
 }));
-
-jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
-  const originalModule: object = jest.requireActual("@ubiquity-os/permit-generation");
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    generatePayoutPermit: (
-      context: ContextPlugin,
-      permitRequests: {
-        type: string;
-        username: string;
-        amount: number;
-        tokenAddress: string;
-      }[]
-    ) => generatePermitUrlPayload(context, permitRequests),
-    encodePermits: (obj: object) => customEncodePermits(obj),
-    createAdapters: jest.fn(() => {
-      return {
-        supabase: {
-          wallet: {
-            getWalletByUserId: jest.fn((userId: number) => {
-              const wallet = mockDb.wallets.findFirst({
-                where: {
-                  userId: {
-                    equals: userId,
-                  },
-                },
-              });
-              if (!wallet) {
-                return Promise.resolve(`[mock] Could not find wallet for user ${userId}`);
-              }
-              return Promise.resolve(wallet.address);
-            }),
-          },
-        },
-      };
-    }),
-  };
-});
 
 jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
