@@ -10,6 +10,7 @@ import { server } from "./__mocks__/node";
 import Mock = jest.Mock;
 import { drop } from "@mswjs/data";
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import "./helpers/permit-mock";
 
 const ctx = {
   eventName: "issues.closed",

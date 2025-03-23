@@ -27,6 +27,7 @@ import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-re
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import "./helpers/permit-mock";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 

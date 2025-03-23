@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import "./helpers/permit-mock";
 import { drop } from "@mswjs/data";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { GitHubIssueComment } from "../src/github-types";
@@ -68,6 +69,9 @@ const ctx = {
     OPENROUTER_API_KEY: "1234",
     SUPABASE_URL: "http://localhost:8080",
     SUPABASE_KEY: "1234",
+  },
+  commentHandler: {
+    postComment: jest.fn(),
   },
 } as unknown as ContextPlugin;
 
