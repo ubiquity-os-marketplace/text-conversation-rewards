@@ -84,6 +84,9 @@ const ctx = {
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
   },
+  commentHandler: {
+    postMessage: jest.fn(),
+  },
 } as unknown as ContextPlugin;
 
 jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {

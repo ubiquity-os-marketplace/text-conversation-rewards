@@ -1,12 +1,9 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
 import "./helpers/permit-mock";
 import { drop } from "@mswjs/data";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { GitHubIssueComment } from "../src/github-types";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
-import { DataPurgeModule } from "../src/parser/data-purge-module";
-import { Processor } from "../src/parser/processor";
-import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
@@ -14,7 +11,9 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import hiddenCommentPurged from "./__mocks__/results/hidden-comment-purged.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Octokit } from "@octokit/rest";
+import { UserExtractorModule } from "../src/parser/user-extractor-module";
+import { DataPurgeModule } from "../src/parser/data-purge-module";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
@@ -112,6 +111,8 @@ describe("Purging tests", () => {
   });
 
   it("Should purge collapsed comments", async () => {
+    const { Processor } = await import("../src/parser/processor");
+
     const processor = new Processor(ctx);
     processor["_transformers"] = [new UserExtractorModule(ctx), new DataPurgeModule(ctx)];
     await processor.run(activity);
