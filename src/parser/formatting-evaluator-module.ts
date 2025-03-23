@@ -80,7 +80,15 @@ export class FormattingEvaluatorModule extends BaseModule {
 
   private _calculateFleschKincaid(text: string): ReadabilityScore {
     const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length ?? 1;
-    const words = RegExp(new RegExp(wordRegex, "g")).exec(text) ?? [];
+    const wordMatches = [];
+    const wordRegexObj = new RegExp(wordRegex, "g");
+    let match;
+
+    while ((match = wordRegexObj.exec(text)) !== null) {
+      wordMatches.push(match[0]);
+    }
+
+    const words = wordMatches.length > 0 ? wordMatches : [];
     const wordCount = words.length ?? 1;
     const syllableCount = words.reduce((count, word) => count + this._countSyllables(word), 0);
     const wordsPerSentence = wordCount / Math.max(1, sentences);
