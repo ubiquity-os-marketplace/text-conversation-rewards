@@ -9,6 +9,7 @@ import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { isUserAllowedToGenerateRewards } from "../src/helpers/permissions";
+import "./helpers/permit-mock";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -117,6 +118,9 @@ describe("Pre-check tests", () => {
       config: cfg,
       logger: new Logs("debug"),
       octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+      commentHandler: {
+        postComment: jest.fn(),
+      },
     } as unknown as ContextPlugin);
     expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
     expect(patchMock).toHaveBeenCalled();
@@ -173,6 +177,9 @@ describe("Pre-check tests", () => {
       config: cfg,
       logger: new Logs("debug"),
       octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+      commentHandler: {
+        postComment: jest.fn(),
+      },
     } as unknown as ContextPlugin);
 
     expect(result).toEqual("You are not allowed to generate rewards.");
@@ -229,6 +236,9 @@ describe("Pre-check tests", () => {
           },
         },
       },
+      commentHandler: {
+        postComment: jest.fn(),
+      },
     } as unknown as ContextPlugin);
 
     expect(result).toEqual("Bots can not generate rewards.");
@@ -277,6 +287,9 @@ describe("Pre-check tests", () => {
             getCollaboratorPermissionLevel,
           },
         },
+      },
+      commentHandler: {
+        postComment: jest.fn(),
       },
     } as unknown as ContextPlugin;
 
