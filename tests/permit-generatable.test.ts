@@ -5,7 +5,7 @@ import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { http, passthrough } from "msw";
-import { EventIncentivesModule } from "../src/parser/event-incentives-module";
+// import { EventIncentivesModule } from "../src/parser/event-incentives-module";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db as mockDb } from "./__mocks__/db";
@@ -85,39 +85,9 @@ const ctx = {
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
   },
   commentHandler: {
-    postMessage: jest.fn(),
+    postComment: jest.fn(),
   },
 } as unknown as ContextPlugin;
-
-jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
-  const originalModule = jest.requireActual("@ubiquity-os/permit-generation") as object;
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    createAdapters: jest.fn(() => {
-      return {
-        supabase: {
-          wallet: {
-            getWalletByUserId: jest.fn((userId: number) => {
-              const wallet = mockDb.wallets.findFirst({
-                where: {
-                  userId: {
-                    equals: userId,
-                  },
-                },
-              });
-              if (!wallet) {
-                return Promise.resolve(null);
-              }
-              return Promise.resolve(wallet.address);
-            }),
-          },
-        },
-      };
-    }),
-  };
-});
 
 jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
@@ -175,6 +145,7 @@ const { PermitGenerationModule } = await import("../src/parser/permit-generation
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
+const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
 
 beforeAll(() => {
   server.listen();

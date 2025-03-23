@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { EnvConfig } from "../../src/types/env-type";
@@ -51,6 +51,9 @@ const ctx = {
     PERMIT_TREASURY_GITHUB_USERNAME: "ubiquity-os-treasury",
     // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
     PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: `${DOLLAR_ADDRESS}`,
+  },
+  commentHandler: {
+    postComment: jest.fn(),
   },
 } as unknown as ContextPlugin;
 
