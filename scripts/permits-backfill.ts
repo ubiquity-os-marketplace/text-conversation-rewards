@@ -94,7 +94,7 @@ async function backfillPermits() {
     }
 
     // parse out the GitHub issue details
-    const match = locationData.node_url.match(/https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/);
+    const match = RegExp(/https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/).exec(locationData.node_url);
     if (!match) {
       console.log(`Permit ${permit.id}: invalid location node_url: ${locationData.node_url}`);
       continue;
