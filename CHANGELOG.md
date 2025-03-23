@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.7.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.0...v1.7.1) (2025-03-23)
+
+
+### Bug Fixes
+
+* changed disabled message ([abbe60d](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/abbe60d0c8024daed3bb4c11b3349e69f30ba4fe))
+* changed token count with anthropic ([941c7c0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/941c7c0f89de6579d71d8ee8530bfae06295bd8e))
+* malformed urls do not crash the run anymore ([a6a12e4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a6a12e414c31f1b098f450c90aef602039850d99))
+* malformed urls do not crash the run anymore ([9f80d42](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/9f80d42b7e63d564edfd893f8dd02259a9af2737))
+* migrate to open router ([b4dad6e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/b4dad6e4b358751ae17e9bb4b06766cc2e66e451))
+* remove conclusive credits base rate ([54ef339](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/54ef3393887e7034fcc9f5ea018f38d77091f2a7))
+* removed base reward setting for reviews ([68c1bbd](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/68c1bbdcd739159f2171e4ce6dfa4b3029047112))
+* rename type to commentType ([21952f1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/21952f1dc10d5acfcc41443b27cefd864cfebc1d))
+* rename type to commentType ([865bf46](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/865bf4636c43ce4a62f6a3f23763a316b26cb423))
+* renamed openai to openrouter in the settings ([3d7cf98](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/3d7cf98424acf5652f6670cb6452b6aea6941965))
+* retry now also wraps the comment length to retry on mismatch ([8e40f8d](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8e40f8d922f6895b47a79da25df1acc92aa6350e))
+* self urls do not count towards credits, and footnotes are removed ([0216949](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/02169493d1e35068fa0aacc2b3c300fc99d7c201))
+* self urls do not count towards credits, and footnotes are removed ([8d0ca90](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8d0ca90ae35bd311d502367fd7ba18f748d5e61e))
+* updated prompt to try fixing Claude output ([40fdf54](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/40fdf54d57f8eaa53f1dcab69eeb77d95ab3f30a))
+
 ## [1.7.0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.6.1...v1.7.0) (2025-03-14)
 
 
