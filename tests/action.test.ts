@@ -5,6 +5,7 @@ import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import "./helpers/permit-mock";
 
 beforeAll(() => server.listen());
 beforeEach(() => {
@@ -81,6 +82,9 @@ describe("Action tests", () => {
         config: cfg,
         logger: new Logs("debug"),
         octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+        commentHandler: {
+          postComment: jest.fn(),
+        },
       } as unknown as ContextPlugin)
     ).resolves.toEqual("Issue was not closed as completed. Skipping.");
   });
@@ -124,6 +128,9 @@ describe("Action tests", () => {
         logger: new Logs("debug"),
         octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
         command: null,
+        commentHandler: {
+          postComment: jest.fn(),
+        },
       } as unknown as ContextPlugin)
     ).rejects.toEqual({
       logMessage: {
