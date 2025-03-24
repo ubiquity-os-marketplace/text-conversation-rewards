@@ -322,8 +322,8 @@ export class GithubCommentModule extends BaseModule {
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
       new Decimal(0);
     const isCapped = taskReward > 0 && rewardsSum.gt(taskReward);
-
-    return `
+    const hasWallet = result.permitUrl ? new URLSearchParams(new URL(result.permitUrl).search).get("claim") : false;
+    const fullSummary = `
     <details>
       <summary>
         <b>
@@ -380,5 +380,31 @@ export class GithubCommentModule extends BaseModule {
       .replace(/(\r?\n|\r)\s*/g, "") // Remove newlines and leading spaces/tabs after them
       .replace(/\s*(<\/?[^>]+>)\s*/g, "$1") // Trim spaces around HTML tags
       .trim();
+
+    return hasWallet
+      ? fullSummary
+      : `
+      <details style="display: flex;  align-items: center;">
+        <summary>
+          <b>
+            <h3>
+              &nbsp;
+                [ ${result.total} ${tokenSymbol} ]
+              &nbsp;
+            </h3>
+            <h6>
+              @${username}
+            </h6>
+          </b>
+        </summary>
+        <p>
+          > [!WARNING] <br/>
+          > Missing wallet for permit generation
+        </p>
+      </details>
+      `
+          .replace(/(\r?\n|\r)\s*/g, "") // Remove newlines and leading spaces/tabs after them
+          .replace(/\s*(<\/?[^>]+>)\s*/g, "$1") // Trim spaces around HTML tags
+          .trim();
   }
 }
