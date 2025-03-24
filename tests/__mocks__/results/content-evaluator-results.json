@@ -32,9 +32,9 @@
             "syllables": 78
           },
           "relevance": 0.8,
-          "reward": 19.072,
+          "reward": 17.792,
           "words": {
-            "result": 2.64,
+            "result": 2.33,
             "wordCount": 47,
             "wordValue": 0.1
           }
@@ -64,9 +64,9 @@
             "syllables": 23
           },
           "relevance": 0.8,
-          "reward": 8.48,
+          "reward": 9.312,
           "words": {
-            "result": 1.11,
+            "result": 1.32,
             "wordCount": 17,
             "wordValue": 0.1
           }
@@ -108,9 +108,9 @@
             "syllables": 461
           },
           "relevance": 0.8,
-          "reward": 97.44,
+          "reward": 52.32,
           "words": {
-            "result": 12.21,
+            "result": 1,
             "wordCount": 285,
             "wordValue": 0.1
           }
@@ -148,9 +148,9 @@
             "syllables": 256
           },
           "relevance": 0.8,
-          "reward": 68.224,
+          "reward": 46.24,
           "words": {
-            "result": 7.43,
+            "result": 2.14,
             "wordCount": 159,
             "wordValue": 0.1
           }
@@ -188,9 +188,9 @@
             "syllables": 214
           },
           "relevance": 0.8,
-          "reward": 53.44,
+          "reward": 38.08,
           "words": {
-            "result": 6.22,
+            "result": 2.42,
             "wordCount": 129,
             "wordValue": 0.1
           }
@@ -232,9 +232,9 @@
             "syllables": 361
           },
           "relevance": 0.8,
-          "reward": 79.456,
+          "reward": 47.072,
           "words": {
-            "result": 9.57,
+            "result": 1.59,
             "wordCount": 214,
             "wordValue": 0.1
           }
@@ -276,9 +276,9 @@
             "syllables": 150
           },
           "relevance": 0.8,
-          "reward": 53.696,
+          "reward": 44.064,
           "words": {
-            "result": 4.93,
+            "result": 2.61,
             "wordCount": 98,
             "wordValue": 0.1
           }
@@ -316,9 +316,9 @@
             "syllables": 150
           },
           "relevance": 0.8,
-          "reward": 41.056,
+          "reward": 31.68,
           "words": {
-            "result": 4.88,
+            "result": 2.62,
             "wordCount": 97,
             "wordValue": 0.1
           }
@@ -348,9 +348,9 @@
             "syllables": 48
           },
           "relevance": 0.8,
-          "reward": 11.232,
+          "reward": 11.648,
           "words": {
-            "result": 1.75,
+            "result": 1.85,
             "wordCount": 29,
             "wordValue": 0.1
           }
@@ -380,9 +380,9 @@
             "syllables": 8
           },
           "relevance": 0.7,
-          "reward": 4.984,
+          "reward": 5.488,
           "words": {
-            "result": 0.39,
+            "result": 0.53,
             "wordCount": 5,
             "wordValue": 0.1
           }
@@ -413,9 +413,9 @@
             "syllables": 11
           },
           "relevance": 0.7,
-          "reward": 5.46,
+          "reward": 6.048,
           "words": {
-            "result": 0.52,
+            "result": 0.69,
             "wordCount": 7,
             "wordValue": 0.1
           }
@@ -446,9 +446,9 @@
             "syllables": 79
           },
           "relevance": 0.7,
-          "reward": 13.524,
+          "reward": 12.208,
           "words": {
-            "result": 2.73,
+            "result": 2.37,
             "wordCount": 49,
             "wordValue": 0.1
           }
@@ -479,9 +479,9 @@
             "syllables": 8
           },
           "relevance": 0.7,
-          "reward": 4.984,
+          "reward": 5.488,
           "words": {
-            "result": 0.46,
+            "result": 0.61,
             "wordCount": 6,
             "wordValue": 0.1
           }
@@ -516,9 +516,9 @@
             "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 16.38,
+          "reward": 16.744,
           "words": {
-            "result": 1.7,
+            "result": 1.81,
             "wordCount": 28,
             "wordValue": 0.1
           }
@@ -553,9 +553,9 @@
             "syllables": 17
           },
           "relevance": 0.7,
-          "reward": 9.8,
+          "reward": 10.528,
           "words": {
-            "result": 0.94,
+            "result": 1.16,
             "wordCount": 14,
             "wordValue": 0.1
           }
@@ -594,9 +594,9 @@
             "syllables": 43
           },
           "relevance": 0.7,
-          "reward": 12.208,
+          "reward": 12.796,
           "words": {
-            "result": 1.49,
+            "result": 1.66,
             "wordCount": 24,
             "wordValue": 0.1
           }
@@ -627,9 +627,9 @@
             "syllables": 6
           },
           "relevance": 0.7,
-          "reward": 5.068,
+          "reward": 5.572,
           "words": {
-            "result": 0.39,
+            "result": 0.53,
             "wordCount": 5,
             "wordValue": 0.1
           }
@@ -660,9 +660,9 @@
             "syllables": 12
           },
           "relevance": 0.7,
-          "reward": 5.628,
+          "reward": 6.244,
           "words": {
-            "result": 0.59,
+            "result": 0.76,
             "wordCount": 8,
             "wordValue": 0.1
           }
@@ -701,9 +701,9 @@
             "syllables": 88
           },
           "relevance": 0.7,
-          "reward": 26.04,
+          "reward": 22.82,
           "words": {
-            "result": 3.48,
+            "result": 2.56,
             "wordCount": 65,
             "wordValue": 0.1
           }
@@ -734,9 +734,9 @@
             "syllables": 32
           },
           "relevance": 0.7,
-          "reward": 8.512,
+          "reward": 9.128,
           "words": {
-            "result": 1.44,
+            "result": 1.61,
             "wordCount": 23,
             "wordValue": 0.1
           }
@@ -767,9 +767,9 @@
             "syllables": 7
           },
           "relevance": 0.7,
-          "reward": 4.788,
+          "reward": 5.264,
           "words": {
-            "result": 0.39,
+            "result": 0.53,
             "wordCount": 5,
             "wordValue": 0.1
           }
@@ -804,9 +804,9 @@
             "syllables": 26
           },
           "relevance": 0.7,
-          "reward": 14.476,
+          "reward": 15.204,
           "words": {
-            "result": 1.22,
+            "result": 1.43,
             "wordCount": 19,
             "wordValue": 0.1
           }
@@ -837,9 +837,9 @@
             "syllables": 31
           },
           "relevance": 0.7,
-          "reward": 8.484,
+          "reward": 9.016,
           "words": {
-            "result": 1.54,
+            "result": 1.7,
             "wordCount": 25,
             "wordValue": 0.1
           }
@@ -870,9 +870,9 @@
             "syllables": 10
           },
           "relevance": 0.7,
-          "reward": 5.292,
+          "reward": 5.88,
           "words": {
-            "result": 0.52,
+            "result": 0.69,
             "wordCount": 7,
             "wordValue": 0.1
           }
@@ -903,9 +903,9 @@
             "syllables": 2
           },
           "relevance": 0.7,
-          "reward": 4.284,
+          "reward": 4.564,
           "words": {
-            "result": 0.18,
+            "result": 0.25,
             "wordCount": 2,
             "wordValue": 0.1
           }
@@ -936,9 +936,9 @@
             "syllables": 14
           },
           "relevance": 0.7,
-          "reward": 5.656,
+          "reward": 6.272,
           "words": {
-            "result": 0.59,
+            "result": 0.76,
             "wordCount": 8,
             "wordValue": 0.1
           }
@@ -969,9 +969,9 @@
             "syllables": 6
           },
           "relevance": 0.7,
-          "reward": 3.304,
+          "reward": 3.5,
           "words": {
-            "result": 0.18,
+            "result": 0.25,
             "wordCount": 2,
             "wordValue": 0.1
           }
@@ -1006,9 +1006,9 @@
             "syllables": 42
           },
           "relevance": 0.7,
-          "reward": 16.744,
+          "reward": 17.024,
           "words": {
-            "result": 1.8,
+            "result": 1.88,
             "wordCount": 30,
             "wordValue": 0.1
           }
@@ -1039,9 +1039,9 @@
             "syllables": 63
           },
           "relevance": 0.7,
-          "reward": 11.508,
+          "reward": 10.976,
           "words": {
-            "result": 2.35,
+            "result": 2.2,
             "wordCount": 41,
             "wordValue": 0.1
           }
@@ -1072,9 +1072,9 @@
             "syllables": 143
           },
           "relevance": 0.7,
-          "reward": 28.868,
+          "reward": 20.076,
           "words": {
-            "result": 5.05,
+            "result": 2.6,
             "wordCount": 101,
             "wordValue": 0.1
           }
@@ -1105,9 +1105,9 @@
             "syllables": 52
           },
           "relevance": 0.7,
-          "reward": 9.268,
+          "reward": 9.66,
           "words": {
-            "result": 1.7,
+            "result": 1.81,
             "wordCount": 28,
             "wordValue": 0.1
           }
@@ -1137,9 +1137,9 @@
             "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 7.392,
+          "reward": 8.148,
           "words": {
-            "result": 1.06,
+            "result": 1.27,
             "wordCount": 16,
             "wordValue": 0.1
           }
@@ -1147,7 +1147,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "total": 664.748,
+    "total": 526.856,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -1179,9 +1179,9 @@
             "syllables": 60
           },
           "relevance": 0.8,
-          "reward": 21.376,
+          "reward": 22.048,
           "words": {
-            "result": 2.22,
+            "result": 2.39,
             "wordCount": 17,
             "wordValue": 0.2
           }
@@ -1223,9 +1223,9 @@
             "syllables": 162
           },
           "relevance": 0.8,
-          "reward": 84.544,
+          "reward": 60.864,
           "words": {
-            "result": 10.36,
+            "result": 4.66,
             "wordCount": 104,
             "wordValue": 0.2
           }
@@ -1263,9 +1263,9 @@
             "syllables": 180
           },
           "relevance": 0.8,
-          "reward": 70.432,
+          "reward": 46.816,
           "words": {
-            "result": 10.53,
+            "result": 4.65,
             "wordCount": 106,
             "wordValue": 0.2
           }
@@ -1299,9 +1299,9 @@
             "syllables": 207
           },
           "relevance": 0.8,
-          "reward": 73.152,
+          "reward": 38.08,
           "words": {
-            "result": 12.85,
+            "result": 4.29,
             "wordCount": 134,
             "wordValue": 0.2
           }
@@ -1331,9 +1331,9 @@
             "syllables": 233
           },
           "relevance": 0.8,
-          "reward": 81.376,
+          "reward": 36.288,
           "words": {
-            "result": 14.87,
+            "result": 3.86,
             "wordCount": 159,
             "wordValue": 0.2
           }
@@ -1363,9 +1363,9 @@
             "syllables": 84
           },
           "relevance": 0.8,
-          "reward": 28.544,
+          "reward": 22.048,
           "words": {
-            "result": 6.03,
+            "result": 4.43,
             "wordCount": 55,
             "wordValue": 0.2
           }
@@ -1399,9 +1399,9 @@
             "syllables": 124
           },
           "relevance": 0.8,
-          "reward": 44.448,
+          "reward": 27.968,
           "words": {
-            "result": 8.73,
+            "result": 4.75,
             "wordCount": 85,
             "wordValue": 0.2
           }
@@ -1435,9 +1435,9 @@
             "syllables": 88
           },
           "relevance": 0.8,
-          "reward": 38.624,
+          "reward": 31.104,
           "words": {
-            "result": 6.31,
+            "result": 4.5,
             "wordCount": 58,
             "wordValue": 0.2
           }
@@ -1479,9 +1479,9 @@
             "syllables": 82
           },
           "relevance": 0.8,
-          "reward": 83.584,
+          "reward": 77.728,
           "words": {
-            "result": 5.94,
+            "result": 4.4,
             "wordCount": 54,
             "wordValue": 0.2
           }
@@ -1523,9 +1523,9 @@
             "syllables": 160
           },
           "relevance": 1,
-          "reward": 18.95,
+          "reward": 16.72,
           "words": {
-            "result": 4.45,
+            "result": 2.63,
             "wordCount": 87,
             "wordValue": 0.1
           }
@@ -1592,9 +1592,9 @@
             "syllables": 82
           },
           "relevance": 0.7,
-          "reward": 88.648,
+          "reward": 74.788,
           "words": {
-            "result": 6.49,
+            "result": 4.54,
             "wordCount": 60,
             "wordValue": 0.2
           }
@@ -1629,9 +1629,9 @@
             "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 29.484,
+          "reward": 30.772,
           "words": {
-            "result": 2.11,
+            "result": 2.29,
             "wordCount": 16,
             "wordValue": 0.2
           }
@@ -1666,9 +1666,9 @@
             "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 27.048,
+          "reward": 28.336,
           "words": {
-            "result": 2,
+            "result": 2.19,
             "wordCount": 15,
             "wordValue": 0.2
           }
@@ -1703,9 +1703,9 @@
             "syllables": 52
           },
           "relevance": 0.7,
-          "reward": 52.36,
+          "reward": 47.74,
           "words": {
-            "result": 4.6,
+            "result": 3.93,
             "wordCount": 40,
             "wordValue": 0.2
           }
@@ -1744,9 +1744,9 @@
             "syllables": 43
           },
           "relevance": 0.7,
-          "reward": 45.36,
+          "reward": 46.844,
           "words": {
-            "result": 1.42,
+            "result": 1.63,
             "wordCount": 10,
             "wordValue": 0.2
           }
@@ -1781,9 +1781,9 @@
             "syllables": 73
           },
           "relevance": 0.7,
-          "reward": 57.484,
+          "reward": 54.74,
           "words": {
-            "result": 4.01,
+            "result": 3.63,
             "wordCount": 34,
             "wordValue": 0.2
           }
@@ -1814,9 +1814,9 @@
             "syllables": 27
           },
           "relevance": 0.7,
-          "reward": 27.72,
+          "reward": 27.496,
           "words": {
-            "result": 3.09,
+            "result": 3.06,
             "wordCount": 25,
             "wordValue": 0.2
           }
@@ -1855,9 +1855,9 @@
             "syllables": 61
           },
           "relevance": 0.7,
-          "reward": 55.132,
+          "reward": 49.924,
           "words": {
-            "result": 4.7,
+            "result": 3.97,
             "wordCount": 41,
             "wordValue": 0.2
           }
@@ -1892,9 +1892,9 @@
             "syllables": 56
           },
           "relevance": 0.7,
-          "reward": 45.388,
+          "reward": 44.464,
           "words": {
-            "result": 3.4,
+            "result": 3.27,
             "wordCount": 28,
             "wordValue": 0.2
           }
@@ -1929,9 +1929,9 @@
             "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 22.344,
+          "reward": 23.828,
           "words": {
-            "result": 1.17,
+            "result": 1.38,
             "wordCount": 8,
             "wordValue": 0.2
           }
@@ -1970,9 +1970,9 @@
             "syllables": 55
           },
           "relevance": 0.7,
-          "reward": 57.4,
+          "reward": 53.228,
           "words": {
-            "result": 4.5,
+            "result": 3.88,
             "wordCount": 39,
             "wordValue": 0.2
           }
@@ -2003,9 +2003,9 @@
             "syllables": 15
           },
           "relevance": 0.7,
-          "reward": 18.004,
+          "reward": 19.488,
           "words": {
-            "result": 1.65,
+            "result": 1.87,
             "wordCount": 12,
             "wordValue": 0.2
           }
@@ -2036,9 +2036,9 @@
             "syllables": 45
           },
           "relevance": 0.7,
-          "reward": 34.524,
+          "reward": 32.2,
           "words": {
-            "result": 3.91,
+            "result": 3.58,
             "wordCount": 33,
             "wordValue": 0.2
           }
@@ -2073,9 +2073,9 @@
             "syllables": 92
           },
           "relevance": 0.7,
-          "reward": 66.78,
+          "reward": 48.244,
           "words": {
-            "result": 7.22,
+            "result": 4.66,
             "wordCount": 68,
             "wordValue": 0.2
           }
@@ -2110,9 +2110,9 @@
             "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 35.14,
+          "reward": 34.916,
           "words": {
-            "result": 3.09,
+            "result": 3.06,
             "wordCount": 25,
             "wordValue": 0.2
           }
@@ -2180,9 +2180,9 @@
             "syllables": 34
           },
           "relevance": 0.7,
-          "reward": 31.136,
+          "reward": 32.592,
           "words": {
-            "result": 1.42,
+            "result": 1.63,
             "wordCount": 10,
             "wordValue": 0.2
           }
@@ -2225,9 +2225,9 @@
             "syllables": 74
           },
           "relevance": 0.7,
-          "reward": 87.444,
+          "reward": 85.792,
           "words": {
-            "result": 3.7,
+            "result": 3.46,
             "wordCount": 31,
             "wordValue": 0.2
           }
@@ -2262,9 +2262,9 @@
             "syllables": 39
           },
           "relevance": 0.7,
-          "reward": 38.248,
+          "reward": 36.876,
           "words": {
-            "result": 3.6,
+            "result": 3.4,
             "wordCount": 30,
             "wordValue": 0.2
           }
@@ -2299,9 +2299,9 @@
             "syllables": 102
           },
           "relevance": 0.7,
-          "reward": 156.884,
+          "reward": 140.224,
           "words": {
-            "result": 6.95,
+            "result": 4.62,
             "wordCount": 65,
             "wordValue": 0.2
           }
@@ -2332,9 +2332,9 @@
             "syllables": 76
           },
           "relevance": 0.7,
-          "reward": 45.136,
+          "reward": 37.072,
           "words": {
-            "result": 5.37,
+            "result": 4.23,
             "wordCount": 48,
             "wordValue": 0.2
           }
@@ -2373,9 +2373,9 @@
             "syllables": 103
           },
           "relevance": 0.7,
-          "reward": 113.568,
+          "reward": 106.036,
           "words": {
-            "result": 5.28,
+            "result": 4.2,
             "wordCount": 47,
             "wordValue": 0.2
           }
@@ -2409,9 +2409,9 @@
             "syllables": 30
           },
           "relevance": 0.7,
-          "reward": 28.14,
+          "reward": 29.456,
           "words": {
-            "result": 1.05,
+            "result": 1.24,
             "wordCount": 7,
             "wordValue": 0.2
           }
@@ -2441,9 +2441,9 @@
             "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 30.072,
+          "reward": 29.456,
           "words": {
-            "result": 3.29,
+            "result": 3.2,
             "wordCount": 27,
             "wordValue": 0.2
           }
@@ -2455,7 +2455,7 @@
       "multiplier": 1,
       "reward": 400
     },
-    "total": 2165.018,
+    "total": 1920.72,
     "userId": 9807008
   },
   "whilefoo": {
@@ -2491,9 +2491,9 @@
             "syllables": 263
           },
           "relevance": 0.8,
-          "reward": 16.608,
+          "reward": 10.752,
           "words": {
-            "result": 7.99,
+            "result": 2,
             "wordCount": 173,
             "wordValue": 0.1
           }
@@ -2532,9 +2532,9 @@
             "syllables": 22
           },
           "relevance": 0.7,
-          "reward": 2.66,
+          "reward": 2.884,
           "words": {
-            "result": 0.94,
+            "result": 1.16,
             "wordCount": 14,
             "wordValue": 0.1
           }
@@ -2565,9 +2565,9 @@
             "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 2.268,
+          "reward": 2.408,
           "words": {
-            "result": 1.54,
+            "result": 1.7,
             "wordCount": 25,
             "wordValue": 0.1
           }
@@ -2598,9 +2598,9 @@
             "syllables": 13
           },
           "relevance": 0.7,
-          "reward": 1.428,
+          "reward": 1.596,
           "words": {
-            "result": 0.71,
+            "result": 0.9,
             "wordCount": 10,
             "wordValue": 0.1
           }
@@ -2631,9 +2631,9 @@
             "syllables": 20
           },
           "relevance": 0.7,
-          "reward": 1.68,
+          "reward": 1.876,
           "words": {
-            "result": 0.88,
+            "result": 1.1,
             "wordCount": 13,
             "wordValue": 0.1
           }
@@ -2664,9 +2664,9 @@
             "syllables": 38
           },
           "relevance": 0.7,
-          "reward": 2.268,
+          "reward": 2.408,
           "words": {
-            "result": 1.49,
+            "result": 1.66,
             "wordCount": 24,
             "wordValue": 0.1
           }
@@ -2697,9 +2697,9 @@
             "syllables": 26
           },
           "relevance": 0.7,
-          "reward": 1.988,
+          "reward": 2.184,
           "words": {
-            "result": 1.28,
+            "result": 1.48,
             "wordCount": 20,
             "wordValue": 0.1
           }
@@ -2730,9 +2730,9 @@
             "syllables": 11
           },
           "relevance": 0.7,
-          "reward": 1.372,
+          "reward": 1.54,
           "words": {
-            "result": 0.65,
+            "result": 0.84,
             "wordCount": 9,
             "wordValue": 0.1
           }
@@ -2767,9 +2767,9 @@
             "syllables": 111
           },
           "relevance": 0.7,
-          "reward": 6.468,
+          "reward": 5.74,
           "words": {
-            "result": 3.38,
+            "result": 2.55,
             "wordCount": 63,
             "wordValue": 0.1
           }
@@ -2800,9 +2800,9 @@
             "syllables": 26
           },
           "relevance": 0.7,
-          "reward": 1.932,
+          "reward": 2.1,
           "words": {
-            "result": 1.11,
+            "result": 1.32,
             "wordCount": 17,
             "wordValue": 0.1
           }
@@ -2837,9 +2837,9 @@
             "syllables": 49
           },
           "relevance": 0.7,
-          "reward": 5.292,
+          "reward": 5.264,
           "words": {
-            "result": 2.1,
+            "result": 2.07,
             "wordCount": 36,
             "wordValue": 0.1
           }
@@ -2870,9 +2870,9 @@
             "syllables": 4
           },
           "relevance": 0.7,
-          "reward": 1.204,
+          "reward": 1.316,
           "words": {
-            "result": 0.32,
+            "result": 0.44,
             "wordCount": 4,
             "wordValue": 0.1
           }
@@ -2880,7 +2880,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "total": 45.168,
+    "total": 40.068,
     "userId": 139262667
   }
 }
