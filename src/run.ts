@@ -9,13 +9,7 @@ import { Result } from "./types/results";
 import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 
 export async function run(context: ContextPlugin) {
-  const {
-    eventName,
-    payload,
-    logger,
-    config,
-    commentHandler: { postComment },
-  } = context;
+  const { eventName, payload, logger, config, commentHandler } = context;
   if (eventName !== "issues.closed") {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }
@@ -26,7 +20,7 @@ export async function run(context: ContextPlugin) {
 
   if (!(await preCheck(context))) {
     const result = logger.error("All linked pull requests must be closed to generate rewards.");
-    await postComment(context, result);
+    await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
 
@@ -35,14 +29,14 @@ export async function run(context: ContextPlugin) {
       payload.sender.type === "Bot"
         ? logger.warn("Bots can not generate rewards.")
         : logger.error("You are not allowed to generate rewards.");
-    await postComment(context, result);
+    await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
 
   logger.debug("Will use the following configuration:", { config });
 
   if (config.incentives.githubComment?.post) {
-    await postComment(context, logger.ok("Evaluating results. Please wait..."));
+    await commentHandler.postComment(context, logger.ok("Evaluating results. Please wait..."));
   }
 
   const issue = parseGitHubUrl(payload.issue.html_url);
@@ -50,7 +44,7 @@ export async function run(context: ContextPlugin) {
   await activity.init();
   if (config.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
     const result = logger.error("No price label has been set. Skipping permit generation.");
-    await postComment(context, result);
+    await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
   const processor = new Processor(context);
