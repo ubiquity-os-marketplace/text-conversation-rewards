@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
-import { typeReplacer } from "../helpers/result-replacer";
+import { commentTypeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
 import { Module } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
@@ -70,7 +70,7 @@ export class Processor {
 
   dump() {
     const { file } = this._configuration;
-    const result = JSON.stringify(this._result, typeReplacer, 2);
+    const result = JSON.stringify(this._result, commentTypeReplacer, 2);
     if (!file) {
       this._context.logger.verbose(result);
     } else {

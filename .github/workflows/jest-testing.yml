@@ -36,7 +36,7 @@ jobs:
 
       - name: Jest With Coverage
         # we install with bun but test with Jest because bun doesn't support network mocking yet
-        run: bun install && yarn test
+        run: bun install && bun run test
 
       - name: Add Jest Report to Summary
         if: always()

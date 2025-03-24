@@ -3,6 +3,7 @@ import { afterAll, afterEach, beforeAll, expect, it, jest } from "@jest/globals"
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import "./helpers/permit-mock";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -71,6 +72,9 @@ describe("Price tests", () => {
       config: cfg,
       logger: new Logs("debug"),
       octokit: new octokit({ auth: process.env.GITHUB_TOKEN }),
+      commentHandler: {
+        postComment: jest.fn(),
+      },
     } as unknown as ContextPlugin);
     expect(result).toEqual("No price label has been set. Skipping permit generation.");
   });

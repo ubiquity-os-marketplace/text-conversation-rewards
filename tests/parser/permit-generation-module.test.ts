@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { EnvConfig } from "../../src/types/env-type";
@@ -10,6 +10,7 @@ import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
+import "../helpers/permit-mock";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -51,6 +52,9 @@ const ctx = {
     // comma separated list of token addresses which should not incur any fees, ex: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d, 0x4ECaBa5870353805a9F068101A40E0f32ed605C6"
     PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: `${DOLLAR_ADDRESS}`,
   },
+  commentHandler: {
+    postComment: jest.fn(),
+  },
 } as unknown as ContextPlugin;
 
 jest.unstable_mockModule("@supabase/supabase-js", () => {
@@ -73,7 +77,7 @@ const resultOriginal: Result = {
         id: 57,
         content: "comment 3",
         url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-        type: CommentKind.ISSUE,
+        commentType: CommentKind.ISSUE,
         score: {
           reward: 10,
           multiplier: 1,
@@ -93,7 +97,7 @@ const resultOriginal: Result = {
         id: 57,
         content: "comment 3",
         url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-        type: CommentKind.ISSUE,
+        commentType: CommentKind.ISSUE,
         score: {
           reward: 1.12,
           multiplier: 1,
