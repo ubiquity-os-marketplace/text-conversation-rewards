@@ -384,27 +384,7 @@ export class GithubCommentModule extends BaseModule {
     return hasWallet
       ? fullSummary
       : `
-      <details style="display: flex;  align-items: center;">
-        <summary>
-          <b>
-            <h3>
-              &nbsp;
-                [ ${result.total} ${tokenSymbol} ]
-              &nbsp;
-            </h3>
-            <h6>
-              @${username}
-            </h6>
-          </b>
-        </summary>
-        <p>
-          > [!WARNING] <br/>
-          > Missing wallet for permit generation
-        </p>
-      </details>
-      `
-          .replace(/(\r?\n|\r)\s*/g, "") // Remove newlines and leading spaces/tabs after them
-          .replace(/\s*(<\/?[^>]+>)\s*/g, "$1") // Trim spaces around HTML tags
-          .trim();
+      > [!WARNING]\n> Missing wallet for permit generation for user @${username}
+      `.trim();
   }
 }
