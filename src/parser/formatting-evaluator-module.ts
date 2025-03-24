@@ -206,7 +206,12 @@ export class FormattingEvaluatorModule extends BaseModule {
   _countWordsFromRegex(text: string, wordValue = 0): WordResult {
     const match = text.trim().match(new RegExp(wordRegex, "g"));
     const wordCount = match?.length ?? 0;
-    const result = new Decimal(wordCount).pow(this._wordCountExponent).mul(wordValue).toDecimalPlaces(2).toNumber();
+    const result = new Decimal(wordCount)
+      .mul(wordValue)
+      .pow(this._wordCountExponent)
+      .mul(Decimal.exp(new Decimal(wordCount).div(100).neg()))
+      .toDecimalPlaces(2)
+      .toNumber();
     return {
       wordCount,
       wordValue,
