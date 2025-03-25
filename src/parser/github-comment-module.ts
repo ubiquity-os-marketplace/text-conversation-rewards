@@ -325,15 +325,21 @@ export class GithubCommentModule extends BaseModule {
       new Decimal(0);
     const isCapped = taskReward > 0 && rewardsSum.gt(taskReward);
 
+    function getPermitResultLink() {
+      const rewardValue = `[ ${result.total} ${tokenSymbol} ]`;
+      if (result.permitUrl) {
+        return `<a href="${result.permitUrl}" target="_blank" rel="noopener">${rewardValue}</a>`;
+      }
+      return rewardValue;
+    }
+
     return `
     <details>
       <summary>
         <b>
           <h3>
             &nbsp;
-            <a href="${result.permitUrl}" target="_blank" rel="noopener">
-              [ ${result.total} ${tokenSymbol} ]
-            </a>
+            ${getPermitResultLink()}
             &nbsp;
           </h3>
           <h6>
