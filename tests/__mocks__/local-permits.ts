@@ -75,17 +75,21 @@ async function getPrivateKey(evmPrivateEncrypted: string) {
 export async function generatePermitUrlPayload(
   context: ContextPlugin,
   permitRequests: {
-    type: string,
-    username: string,
-    amount: number
-    tokenAddress: string
+    type: string;
+    username: string;
+    amount: number;
+    tokenAddress: string;
   }[]
 ) {
-  const {amount, username} = permitRequests[0];
+  const { amount, username } = permitRequests[0];
   // @ts-ignore
-  const {config, adapters, payload} = context;
-  const chainId = config.evmNetworkId
-  const privateKey = await getPrivateKey(context.config.evmPrivateEncrypted);
+  const { config, adapters, payload } = context;
+  if (!config.permits) {
+    context.logger.info("No permit settings, won't generate permits.")
+    return []
+  }
+  const chainId = config.permits.evmNetworkId;
+  const privateKey = await getPrivateKey(config.permits.evmPrivateEncrypted);
   const permit2Address = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
   const convertedAmount = utils.parseUnits(amount.toString(), 18);
   const deadline = new Date(0).getTime().toString();
@@ -103,12 +107,11 @@ export async function generatePermitUrlPayload(
   }
 
   let nodeId = "";
-  if ('issue' in payload) {
-    nodeId = payload.issue.node_id
+  if ("issue" in payload) {
+    nodeId = payload.issue.node_id;
   }
   // Had to truncate the nonce to fit in an uint48
-  const nonce =
-    BigInt(utils.keccak256(utils.toUtf8Bytes(`${userData.id}-${nodeId}`))) % BigInt(2 ** 48);
+  const nonce = BigInt(utils.keccak256(utils.toUtf8Bytes(`${userData.id}-${nodeId}`))) % BigInt(2 ** 48);
   const walletAddress = await adapters.supabase.wallet.getWalletByUserId(userData.id);
   const permitSingle: PermitSingle = {
     details: {

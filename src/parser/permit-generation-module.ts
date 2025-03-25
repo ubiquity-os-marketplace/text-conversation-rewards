@@ -45,12 +45,16 @@ export class PermitGenerationModule extends BaseModule {
       this.context.logger.error("[PermitGenerationModule] Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
+    if (!this.context.config.permits) {
+      this.context.logger.info("No permit settings have been set, will not generate permits.");
+      return Promise.resolve(result);
+    }
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
-      evmPrivateEncrypted: this.context.config.evmPrivateEncrypted,
-      evmNetworkId: this.context.config.evmNetworkId,
-      erc20RewardToken: this.context.config.erc20RewardToken,
+      evmPrivateEncrypted: this.context.config.permits.evmPrivateEncrypted,
+      evmNetworkId: this.context.config.permits.evmNetworkId,
+      erc20RewardToken: this.context.config.permits.erc20RewardToken,
     };
     const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
