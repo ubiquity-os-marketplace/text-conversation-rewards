@@ -5,7 +5,6 @@ import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { http, passthrough } from "msw";
-import { EventIncentivesModule } from "../src/parser/event-incentives-module";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db as mockDb } from "./__mocks__/db";
@@ -17,6 +16,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { ERC20_ABI, isEthersError, PERMIT2_ABI } from "../src/helpers/web3";
 import { PayoutMode } from "../src/types/results";
+import "./helpers/permit-mock";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -112,37 +112,10 @@ const ctx = {
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
   },
+  commentHandler: {
+    postComment: jest.fn(),
+  },
 } as unknown as ContextPlugin;
-
-jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
-  const originalModule = jest.requireActual("@ubiquity-os/permit-generation") as object;
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    createAdapters: jest.fn(() => {
-      return {
-        supabase: {
-          wallet: {
-            getWalletByUserId: jest.fn((userId: number) => {
-              const wallet = mockDb.wallets.findFirst({
-                where: {
-                  userId: {
-                    equals: userId,
-                  },
-                },
-              });
-              if (!wallet) {
-                return Promise.resolve(null);
-              }
-              return Promise.resolve(wallet.address);
-            }),
-          },
-        },
-      };
-    }),
-  };
-});
 
 jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
@@ -220,6 +193,7 @@ const { PaymentModule } = await import("../src/parser/payment-module");
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
+const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
 
 const issue = parseGitHubUrl(issueUrl);
 const activity = new IssueActivity(ctx, issue);

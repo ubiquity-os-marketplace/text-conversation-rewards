@@ -75,7 +75,8 @@ export class PaymentModule extends BaseModule {
       evmNetworkId: this.context.config.evmNetworkId,
       erc20RewardToken: this.context.config.erc20RewardToken,
     };
-    const { issue_number: issueId } = parseGitHubUrl(payload.issueUrl);
+    // const { issue_number: issueId } = parseGitHubUrl(payload.issueUrl);
+    const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
       node_id: this.context.payload.issue.node_id,
     };
@@ -224,8 +225,8 @@ export class PaymentModule extends BaseModule {
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
     for (const comment of data.comments) {
       if (comment.body && comment.user?.type === "Bot") {
-        if (comment.body.match(/"payoutMode":\s*"transfer"/)) return null;
-        else if (comment.body.match(/"payoutMode":\s*"permit"/)) return "permit";
+        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) return null;
+        else if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
       }
     }
     return this._autoTransferMode ? "transfer" : "permit";
