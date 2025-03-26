@@ -45,13 +45,7 @@ export class Processor {
       return Infinity;
     }
     const priceTagReward = getTaskReward(issue);
-    return priceTagReward === 0 &&
-      issue?.labels?.some((label) => {
-        const labelName = typeof label === "string" ? label : label.name;
-        return labelName?.startsWith("Price: ") && parseFloat(labelName.replace("Price: ", "")) === 0;
-      })
-      ? 0
-      : priceTagReward || Infinity;
+    return priceTagReward ?? Infinity;
   }
 
   async run(data: Readonly<IssueActivity>) {

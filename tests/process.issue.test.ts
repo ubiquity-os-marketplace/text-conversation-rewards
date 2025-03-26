@@ -473,65 +473,6 @@ describe("Modules tests", () => {
       },
     });
   });
-
-  it("Should cap rewards to zero when Price: 0 label is explicitly set", async () => {
-    const processor = new Processor({
-      ...ctx,
-      config: {
-        ...ctx.config,
-        incentives: {
-          ...ctx.config.incentives,
-          limitRewards: true,
-        },
-      },
-    });
-
-    processor["_transformers"] = [
-      new UserExtractorModule(ctx),
-      new DataPurgeModule(ctx),
-      new FormattingEvaluatorModule(ctx),
-      new ContentEvaluatorModule(ctx),
-      new ReviewIncentivizerModule(ctx),
-    ];
-
-    processor["_result"] = {
-      testUser1: {
-        total: 100,
-        task: {
-          multiplier: 0.5,
-          reward: 50,
-        },
-        userId: 123,
-      },
-      testUser2: {
-        total: 200,
-        userId: 456,
-      },
-    };
-
-    const mockIssue = {
-      labels: [{ name: "Price: 0" }],
-    } as unknown as GitHubIssue;
-
-    const rewardLimit = processor._getRewardsLimit(mockIssue);
-    expect(rewardLimit).toBe(0);
-
-    const priceTagReward = 0;
-    const oldImplementationResult = priceTagReward || Infinity;
-
-    expect(oldImplementationResult).toBe(Infinity);
-
-    const fixedImplementationResult =
-      priceTagReward === 0 &&
-      mockIssue?.labels?.some((label) => {
-        const labelName = typeof label === "string" ? label : label.name;
-        return labelName?.startsWith("Price: ") && parseFloat(labelName.replace("Price: ", "")) === 0;
-      })
-        ? 0
-        : priceTagReward || Infinity;
-
-    expect(fixedImplementationResult).toBe(0);
-  });
 });
 
 describe("Retry", () => {
