@@ -25,7 +25,7 @@ jobs:
       PERMIT_TREASURY_GITHUB_USERNAME: ${{ secrets.PERMIT_TREASURY_GITHUB_USERNAME }}
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
       KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
-      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+      LOG_LEVEL: 'info'
 
     steps:
       - uses: actions/checkout@v4
