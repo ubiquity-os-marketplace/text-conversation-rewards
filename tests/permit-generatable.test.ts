@@ -145,6 +145,7 @@ const { ReviewIncentivizerModule } = await import("../src/parser/review-incentiv
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
+const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
 
 beforeAll(() => {
   server.listen();
