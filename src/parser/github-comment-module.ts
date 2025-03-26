@@ -1,5 +1,4 @@
 import { Value } from "@sinclair/typebox/value";
-import { postComment } from "@ubiquity-os/plugin-sdk";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { JSDOM } from "jsdom";
@@ -11,7 +10,7 @@ import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
-import { removeKeyFromObject, typeReplacer } from "../helpers/result-replacer";
+import { removeKeyFromObject, commentTypeReplacer } from "../helpers/result-replacer";
 import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
@@ -82,7 +81,7 @@ export class GithubCommentModule extends BaseModule {
     bodyArray.push(
       createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        output: JSON.parse(JSON.stringify(metadataResult, typeReplacer, 2)),
+        output: JSON.parse(JSON.stringify(metadataResult, commentTypeReplacer, 2)),
       })
     );
 
@@ -113,10 +112,13 @@ export class GithubCommentModule extends BaseModule {
     if (this._configuration?.post) {
       try {
         if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
-          await postComment(this.context, this.context.logger.info(body), { raw: true, updateComment: true });
+          await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
+            raw: true,
+            updateComment: true,
+          });
         } else {
           const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
-          await postComment(this.context, errorLog);
+          await this.context.commentHandler.postComment(this.context, errorLog);
         }
       } catch (e) {
         this.context.logger.error(`Could not post GitHub comment: ${e}`);
