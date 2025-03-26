@@ -268,7 +268,7 @@ export class ContentEvaluatorModule extends BaseModule {
     ) {
       chunks++;
     }
-    this.context.logger.info(`Splitting issue comments into ${chunks} chunks`);
+    this.context.logger.debug(`Splitting issue comments into ${chunks} chunks`);
 
     for (const commentSplit of this._splitArrayToChunks(allComments, chunks)) {
       const promptForComments = this._generatePromptForComments(specification, comments, commentSplit);
@@ -393,10 +393,10 @@ export class ContentEvaluatorModule extends BaseModule {
         presence_penalty: 0,
       });
       const rawResponse = String(res.choices[0].message.content);
-      this.context.logger.info(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
+      this.context.logger.debug(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
       const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
-      this.context.logger.info(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
+      this.context.logger.debug(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {
       this.context.logger.error(`Invalid response type received from the LLM while evaluating: \n\n${e}`, {
