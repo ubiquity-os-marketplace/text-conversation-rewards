@@ -1,5 +1,3 @@
-# ALIASES START
-
 zeroTrue: &zeroTrue
   score: 0
   countWords: true
@@ -40,88 +38,43 @@ tcrHtmlConfig: &tcrHtmlConfig
     score: 0.1
     countWords: true
 
-allRoles: &allRoles
-  - collaborator
-  - contributor
+incentives:
+  contentEvaluator:
+    openAi:
+      endpoint: https://openrouter.ai/api/v1
+  userExtractor:
+    redeemTask: true
+  dataPurge: {}
+  formattingEvaluator:
+    multipliers:
+      - role:
+          - ISSUE_AUTHOR
+          - ISSUE_COLLABORATOR
+          - ISSUE_SPECIFICATION
+          - PULL_COLLABORATOR
+          - PULL_SPECIFICATION
+        multiplier: 1
+        rewards:
+          wordValue: 0.1
+          html: *tcrHtmlConfig
 
-collaboratorOnly: &collaboratorOnly
-  - collaborator
+      - role:
+          - ISSUE_ASSIGNEE
+          - ISSUE_CONTRIBUTOR
+          - PULL_CONTRIBUTOR
+        multiplier: 0.25
+        rewards:
+          wordValue: 0.1
+          html: *tcrHtmlConfig
 
-teamMembersOnly: &teamMembersOnly
-  - COLLABORATOR
-  - OWNER
-  - MEMBER
-  - ADMIN
-
-timeLabels: &timeLabels
-  - name: "Time: <15 Minutes"
-  - name: "Time: <1 Hour"
-  - name: "Time: <2 Hours"
-  - name: "Time: <4 Hours"
-  - name: "Time: <1 Day"
-  - name: "Time: <1 Week"
-  - name: "Time: <2 Weeks"
-  - name: "Time: <1 Month"
-
-priorityLabels: &priorityLabels
-  - name: "Priority: 0 (Regression)"
-  - name: "Priority: 1 (Normal)"
-  - name: "Priority: 2 (Medium)"
-  - name: "Priority: 3 (High)"
-  - name: "Priority: 4 (Urgent)"
-  - name: "Priority: 5 (Emergency)"
-
-# ALIASES END
-
-  - skipBotEvents: false
-    uses:
-      - plugin: ubiquity-os-marketplace/text-conversation-rewards@main
-        with:
-          logLevel: debug
-          # evmNetworkId: 100
-          # evmPrivateEncrypted: bd5AFnSCO6c5jJyPifpOfr5Zys29RE7SyXkEU3akT13RtGmYDrqGIGuvJQyH53HA5dIba7PL5bXfll0JebmwXYe5gHIXSGX80WuGMDHh0cFfeGjHhmUXe8kkZ1OT2De9qRpqejJcEzdfi-8XNAvP7cQu2Vt-7RNnPw
-          incentives:
-            contentEvaluator:
-              enabled: true
-              openAi:
-                endpoint: https://openrouter.ai/api/v1
-            userExtractor:
-              enabled: true
-              redeemTask: true
-            dataPurge:
-              enabled: true
-            formattingEvaluator:
-              multipliers:
-
-                - role:
-                    - ISSUE_AUTHOR
-                    - ISSUE_COLLABORATOR
-                    - ISSUE_SPECIFICATION
-                    - PULL_COLLABORATOR
-                    - PULL_SPECIFICATION
-                  multiplier: 1
-                  rewards:
-                    wordValue: 0.1
-                    html: *tcrHtmlConfig
-
-                - role:
-                    - ISSUE_ASSIGNEE
-                    - ISSUE_CONTRIBUTOR
-                    - PULL_CONTRIBUTOR
-                  multiplier: 0.25
-                  rewards:
-                    wordValue: 0.1
-                    html: *tcrHtmlConfig
-
-                - role:
-                    - PULL_ASSIGNEE
-                    - PULL_AUTHOR
-                  multiplier: 0
-                  rewards:
-                    wordValue: 0
-                    html: *tcrHtmlConfig
-            permitGeneration: {}
-            reviewIncentivizer: {}
-            githubComment:
-              post: true
-              debug: false
+      - role:
+          - PULL_ASSIGNEE
+          - PULL_AUTHOR
+        multiplier: 0
+        rewards:
+          wordValue: 0
+          html: *tcrHtmlConfig
+  reviewIncentivizer: {}
+  githubComment:
+    post: false
+    debug: false
