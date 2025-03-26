@@ -313,10 +313,7 @@ export class GithubCommentModule extends BaseModule {
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
 
-    const tokenSymbol = await getErc20TokenSymbol(
-      this.context.config.evmNetworkId,
-      this.context.config.erc20RewardToken
-    );
+    const tokenSymbol = await getErc20TokenSymbol();
 
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
