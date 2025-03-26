@@ -16,6 +16,7 @@
       "evmPrivateEncrypted": {
         "description": "The encrypted key to use for permit generation",
         "examples": ["0x000..."],
+        "default": "0x00",
         "type": "string"
       },
       "erc20RewardToken": {
@@ -1930,7 +1931,6 @@
           }
         }
       }
-    },
-    "required": ["evmPrivateEncrypted"]
+    }
   }
 }
