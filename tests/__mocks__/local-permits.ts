@@ -26,7 +26,7 @@ const permit2Types = {
     { name: "token", type: "address" },
     { name: "amount", type: "uint160" },
     { name: "expiration", type: "uint48" },
-    { name: "nonce", type: "uint48" },
+    { name: "nonce", type: "uint256" },
   ],
 };
 
@@ -75,16 +75,16 @@ async function getPrivateKey(evmPrivateEncrypted: string) {
 export async function generatePermitUrlPayload(
   context: ContextPlugin,
   permitRequests: {
-    type: string,
-    username: string,
-    amount: number
-    tokenAddress: string
+    type: string;
+    username: string;
+    amount: number;
+    tokenAddress: string;
   }[]
 ) {
-  const {amount, username} = permitRequests[0];
-  // @ts-ignore
-  const {config, adapters, payload} = context;
-  const chainId = config.evmNetworkId
+  // @ts-expect-error adapters is not in the type
+  const { amount, adapters, username } = permitRequests[0];
+  const { config, payload } = context;
+  const chainId = config.evmNetworkId;
   const privateKey = await getPrivateKey(context.config.evmPrivateEncrypted);
   const permit2Address = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
   const convertedAmount = utils.parseUnits(amount.toString(), 18);
@@ -103,12 +103,11 @@ export async function generatePermitUrlPayload(
   }
 
   let nodeId = "";
-  if ('issue' in payload) {
-    nodeId = payload.issue.node_id
+  if ("issue" in payload) {
+    nodeId = payload.issue.node_id;
   }
   // Had to truncate the nonce to fit in an uint48
-  const nonce =
-    BigInt(utils.keccak256(utils.toUtf8Bytes(`${userData.id}-${nodeId}`))) % BigInt(2 ** 48);
+  const nonce = BigInt(utils.keccak256(utils.toUtf8Bytes(`${userData.id}-${nodeId}`)));
   const walletAddress = await adapters.supabase.wallet.getWalletByUserId(userData.id);
   const permitSingle: PermitSingle = {
     details: {
