@@ -81,9 +81,9 @@ export async function generatePermitUrlPayload(
     tokenAddress: string;
   }[]
 ) {
+  const { amount, username } = permitRequests[0];
   // @ts-expect-error adapters is not in the type
-  const { amount, adapters, username } = permitRequests[0];
-  const { config, payload } = context;
+  const { config, adapters, payload } = context;
   const chainId = config.evmNetworkId;
   const privateKey = await getPrivateKey(context.config.evmPrivateEncrypted);
   const permit2Address = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
