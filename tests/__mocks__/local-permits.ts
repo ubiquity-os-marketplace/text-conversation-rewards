@@ -106,7 +106,6 @@ export async function generatePermitUrlPayload(
   if ("issue" in payload) {
     nodeId = payload.issue.node_id;
   }
-  // Had to truncate the nonce to fit in an uint48
   const nonce = BigInt(utils.keccak256(utils.toUtf8Bytes(`${userData.id}-${nodeId}`)));
   const walletAddress = await adapters.supabase.wallet.getWalletByUserId(userData.id);
   const permitSingle: PermitSingle = {
