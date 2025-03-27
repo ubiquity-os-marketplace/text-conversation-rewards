@@ -47,6 +47,16 @@ export async function run(context: ContextPlugin) {
     await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
+
+  const sortedPriceLabels = getSortedPrices(activity.self?.labels);
+  if (sortedPriceLabels.length > 0 && sortedPriceLabels[0] === 0) {
+    const result = logger.error(
+      "No rewards have been distributed for this task as was explicitly marked with a Price: 0 label."
+    );
+    await commentHandler.postComment(context, result);
+    return result.logMessage.raw;
+  }
+
   const processor = new Processor(context);
   await processor.run(activity);
   let result = processor.dump();

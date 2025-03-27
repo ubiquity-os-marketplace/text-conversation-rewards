@@ -8,7 +8,7 @@ import { GithubCommentConfiguration, githubCommentConfigurationType } from "../c
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
-import { getTaskReward, getSortedPrices } from "../helpers/label-price-extractor";
+import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, commentTypeReplacer } from "../helpers/result-replacer";
 import { getErc20TokenSymbol } from "../helpers/web3";
@@ -38,21 +38,9 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
-  private _getZeroPriceWarningContent(): string {
-    const warningMessage = `# Rewards Summary\n\n> [!CAUTION]\n> No rewards have been distributed for this task because it was explicitly marked with a Price: 0 label.\n\n`;
-
-    const bodyArray: (string | undefined)[] = [];
-    bodyArray.push(warningMessage);
-    bodyArray.push(
-      createStructuredMetadata("GithubCommentModule", {
-        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        zeroPriceTask: true,
-      })
-    );
-
-    return bodyArray.join("");
-  }
-
+  /**
+   * Generates content when it needs to be stripped due to length limits
+   */
   private async _getStrippedContent(result: Result, taskReward: number): Promise<string> {
     const bodyArray: (string | undefined)[] = [];
 
@@ -78,13 +66,6 @@ export class GithubCommentModule extends BaseModule {
 
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const taskReward = getTaskReward(data.self);
-    const sortedPriceLabels = data.self ? getSortedPrices(data.self.labels) : [];
-    const hasExplicitZeroPrice = sortedPriceLabels.length > 0 && sortedPriceLabels[0] === 0;
-
-    if (hasExplicitZeroPrice) {
-      this.context.logger.warn("Price: 0 label detected. No rewards will be distributed.");
-      return this._getZeroPriceWarningContent();
-    }
 
     if (stripContent) {
       return this._getStrippedContent(result, taskReward);
