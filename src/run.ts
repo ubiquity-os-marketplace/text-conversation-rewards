@@ -50,11 +50,9 @@ export async function run(context: ContextPlugin) {
 
   const sortedPriceLabels = getSortedPrices(activity.self?.labels);
   if (sortedPriceLabels.length > 0 && sortedPriceLabels[0] === 0) {
-    const result = logger.warn(
-      "No rewards have been distributed for this task as was explicitly marked with a Price: 0 label."
+    throw logger.warn(
+      "No rewards have been distributed for this task because it was explicitly marked with a Price: 0 label."
     );
-    await commentHandler.postComment(context, result);
-    return result.logMessage.raw;
   }
 
   const processor = new Processor(context);
