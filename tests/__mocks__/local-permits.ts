@@ -84,8 +84,12 @@ export async function generatePermitUrlPayload(
   const { amount, username } = permitRequests[0];
   // @ts-expect-error adapters is not in the type
   const { config, adapters, payload } = context;
-  const chainId = config.evmNetworkId;
-  const privateKey = await getPrivateKey(context.config.evmPrivateEncrypted);
+  if (!config.permits) {
+    context.logger.info("No permit settings, won't generate permits.");
+    return [];
+  }
+  const chainId = config.permits.evmNetworkId;
+  const privateKey = await getPrivateKey(config.permits.evmPrivateEncrypted);
   const permit2Address = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
   const convertedAmount = utils.parseUnits(amount.toString(), 18);
   const deadline = new Date(0).getTime().toString();
