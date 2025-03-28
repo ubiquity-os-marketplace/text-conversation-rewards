@@ -272,7 +272,7 @@ export class GithubCommentModule extends BaseModule {
   }
 
   _createSimplificationRows(result: Result[0]) {
-    if (!result.simplificationReward || Object.keys(result.simplificationReward).length === 0) return;
+    if (!result.simplificationReward || Object.keys(result.simplificationReward).length === 0) return "";
     const rows: string[] = [];
     for (const file of result.simplificationReward.files) {
       rows.push(`
