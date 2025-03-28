@@ -3,6 +3,7 @@ import { IssueActivity } from "../src/issue-activity";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { ERC20_ABI } from "../src/helpers/web3";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -11,6 +12,7 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
     getSymbol = jest.fn().mockReturnValue("WXDAI");
   }
   return {
+    ERC20_ABI: ERC20_ABI,
     Erc20Wrapper: MockErc20Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
   };
