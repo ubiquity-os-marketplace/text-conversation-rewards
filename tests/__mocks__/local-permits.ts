@@ -26,7 +26,7 @@ const permit2Types = {
     { name: "token", type: "address" },
     { name: "amount", type: "uint160" },
     { name: "expiration", type: "uint48" },
-    { name: "nonce", type: "uint48" },
+    { name: "nonce", type: "uint256" },
   ],
 };
 
@@ -82,7 +82,7 @@ export async function generatePermitUrlPayload(
   }[]
 ) {
   const { amount, username } = permitRequests[0];
-  // @ts-ignore
+  // @ts-expect-error adapters is not in the type
   const { config, adapters, payload } = context;
   if (!config.permits) {
     context.logger.info("No permit settings, won't generate permits.")
@@ -110,8 +110,7 @@ export async function generatePermitUrlPayload(
   if ("issue" in payload) {
     nodeId = payload.issue.node_id;
   }
-  // Had to truncate the nonce to fit in an uint48
-  const nonce = BigInt(utils.keccak256(utils.toUtf8Bytes(`${userData.id}-${nodeId}`))) % BigInt(2 ** 48);
+  const nonce = BigInt(utils.keccak256(utils.toUtf8Bytes(`${userData.id}-${nodeId}`)));
   const walletAddress = await adapters.supabase.wallet.getWalletByUserId(userData.id);
   const permitSingle: PermitSingle = {
     details: {
