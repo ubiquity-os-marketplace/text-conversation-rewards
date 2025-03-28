@@ -6,6 +6,16 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
+jest.unstable_mockModule("../src/helpers/web3", () => {
+  class MockErc20Wrapper {
+    getSymbol = jest.fn().mockReturnValue("WXDAI");
+  }
+  return {
+    Erc20Wrapper: MockErc20Wrapper,
+    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
+  };
+});
+
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},
   context: {
