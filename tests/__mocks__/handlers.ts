@@ -137,16 +137,16 @@ export const handlers = [
     if (username === "0x4007") {
       return HttpResponse.json({
         data: {
-          role: "admin"
-        }
+          role: "admin",
+        },
       });
     } else if (username === "non-collaborator") {
       return HttpResponse.json({}, { status: 404 });
     }
     return HttpResponse.json({
       data: {
-        role: "member"
-      }
+        role: "member",
+      },
     });
   }),
   http.post("https://api.github.com/app/installations/48381972/access_tokens", () => {
@@ -214,7 +214,16 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/:owner/:repo/collaborators/:user/permission", () => {
     return HttpResponse.json({
-        role_name: "admin",
+      role_name: "admin",
+    });
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.gitattributes", () => {
+    return HttpResponse.json({
+      data: {
+        content: Buffer.from(
+          "dist/** linguist-generated\nbun.lockb linguist-generated\nbun.lock linguist-generated\ntest/__mocks__/ linguist-generated"
+        ).toString("base64"),
+      },
     });
   }),
 ];

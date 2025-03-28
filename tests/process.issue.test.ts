@@ -1,7 +1,7 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
@@ -9,7 +9,6 @@ import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
-import { EventIncentivesModule } from "../src/parser/event-incentives-module";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
@@ -26,7 +25,7 @@ import permitGenerationResults from "./__mocks__/results/permit-generation-resul
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { RestEndpointMethodTypes } from "@octokit/rest";
+import "./helpers/permit-mock";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -86,36 +85,6 @@ const ctx = {
   },
 } as unknown as ContextPlugin;
 
-jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
-  const originalModule = jest.requireActual("@ubiquity-os/permit-generation") as object;
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    createAdapters: jest.fn(() => {
-      return {
-        supabase: {
-          wallet: {
-            getWalletByUserId: jest.fn((userId: number) => {
-              const wallet = mockDb.wallets.findFirst({
-                where: {
-                  userId: {
-                    equals: userId,
-                  },
-                },
-              });
-              if (!wallet) {
-                return Promise.resolve(null);
-              }
-              return Promise.resolve(wallet.address);
-            }),
-          },
-        },
-      };
-    }),
-  };
-});
-
 jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
@@ -173,6 +142,7 @@ const { PermitGenerationModule } = await import("../src/parser/permit-generation
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
+const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -499,7 +469,7 @@ describe("Modules tests", () => {
         total: 400,
       },
       whilefoo: {
-        total: 45.168,
+        total: 40.068,
       },
     });
   });

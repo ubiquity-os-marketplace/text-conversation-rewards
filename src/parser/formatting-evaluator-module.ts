@@ -12,7 +12,7 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, ReadabilityScore, Result, WordResult } from "../types/results";
-import { typeReplacer } from "../helpers/result-replacer";
+import { commentTypeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 import { parsePriorityLabel } from "../helpers/github";
 import { areBaseUrlsEqual } from "../helpers/urls";
@@ -80,7 +80,15 @@ export class FormattingEvaluatorModule extends BaseModule {
 
   private _calculateFleschKincaid(text: string): ReadabilityScore {
     const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length ?? 1;
-    const words = text.match(new RegExp(wordRegex, "g")) ?? [];
+    const wordMatches = [];
+    const wordRegexObj = new RegExp(wordRegex, "g");
+    let match;
+
+    while ((match = wordRegexObj.exec(text)) !== null) {
+      wordMatches.push(match[0]);
+    }
+
+    const words = wordMatches.length > 0 ? wordMatches : [];
     const wordCount = words.length ?? 1;
     const syllableCount = words.reduce((count, word) => count + this._countSyllables(word), 0);
     const wordsPerSentence = wordCount / Math.max(1, sentences);
@@ -198,7 +206,12 @@ export class FormattingEvaluatorModule extends BaseModule {
   _countWordsFromRegex(text: string, wordValue = 0): WordResult {
     const match = text.trim().match(new RegExp(wordRegex, "g"));
     const wordCount = match?.length ?? 0;
-    const result = new Decimal(wordCount).pow(this._wordCountExponent).mul(wordValue).toDecimalPlaces(2).toNumber();
+    const result = new Decimal(wordCount)
+      .mul(wordValue)
+      .pow(this._wordCountExponent)
+      .mul(Decimal.exp(new Decimal(wordCount).div(100).neg()))
+      .toDecimalPlaces(2)
+      .toNumber();
     return {
       wordCount,
       wordValue,
@@ -246,7 +259,7 @@ export class FormattingEvaluatorModule extends BaseModule {
         }
       } else {
         this.context.logger.error(
-          `Could not find multiplier for element <${tagName}> with association <${typeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
+          `Could not find multiplier for element <${tagName}> with association <${commentTypeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
         );
         element.remove();
         continue;

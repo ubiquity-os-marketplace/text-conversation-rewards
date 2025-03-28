@@ -179,6 +179,9 @@ describe("Payload truncate tests", () => {
           requirePriceLabel: false,
         },
       },
+      commentHandler: {
+        postComment: jest.fn(),
+      },
     } as unknown as ContextPlugin);
     const expectedResult = {
       user: {
