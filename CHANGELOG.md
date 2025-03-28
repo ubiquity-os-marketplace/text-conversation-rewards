@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.1...v1.7.2) (2025-03-28)
+
+
+### Bug Fixes
+
+* commentHandler instance is used instead of destructuring ([981be76](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/981be763c86456e92c13e97cf06896948ea6fe6c))
+* fixed `_calculateFleschKincaid` regex match ([0532188](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0532188fbcfe2bfbaa0b4f19207bc7603698cb30))
+* permit mock ([2eeee9c](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2eeee9c0f59d67a369d87dd86ca9442b34db7a1f))
+* the local permit generation properly generates the `nonce` as `uint256` ([af1420e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/af1420e90ba217f3441ef1bcb6a14ff1afb6bb38))
+* word count calculation now uses exponential ([41c5050](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/41c505069c26edab9be616ed657af1c38ab0008c))
+* word count formula ([1a4a637](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1a4a6370032fc3b8b050e77cda1cc3eb6000c36d))
+
 ## [1.7.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.0...v1.7.1) (2025-03-23)
 
 
