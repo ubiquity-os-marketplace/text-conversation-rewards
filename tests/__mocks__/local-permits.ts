@@ -85,8 +85,8 @@ export async function generatePermitUrlPayload(
   // @ts-expect-error adapters is not in the type
   const { config, adapters, payload } = context;
   if (!config.permits) {
-    context.logger.info("No permit settings, won't generate permits.")
-    return []
+    context.logger.info("No permit settings, won't generate permits.");
+    return [];
   }
   const chainId = config.permits.evmNetworkId;
   const privateKey = await getPrivateKey(config.permits.evmPrivateEncrypted);
