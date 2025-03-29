@@ -364,7 +364,7 @@ describe("payment-module.ts", () => {
       jest.restoreAllMocks();
     });
 
-    it("Should return true when the funding wallet has enough reward tokens and gas", async () => {
+    it("Should return a transferInfo when the funding wallet has enough reward tokens and gas", async () => {
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
@@ -397,7 +397,7 @@ describe("payment-module.ts", () => {
       spyConsoleLog.mockReset();
     });
 
-    it("Should return false if the funding wallet has enough reward tokens but insufficient gas", async () => {
+    it("Should reject if the funding wallet has enough reward tokens but insufficient gas", async () => {
       const { getEvmWallet } = await import("../../src/helpers/web3");
 
       const mockedGetEvmWallet = getEvmWallet as jest.Mock;
@@ -406,28 +406,27 @@ describe("payment-module.ts", () => {
         getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
       }));
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(ctx.logger, "error");
-
-      const transferInfo = await paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0");
-      expect(transferInfo).toBeNull();
-
-      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
-      expect(logCallArgs[0]).toMatch(/.*The funding wallet lacks sufficient gas to perform direct transfers/);
-      const logCallMetadata = spyConsoleLog.mock.calls.map((call) => call[1])[0] as {
-        [key: string]: { [key: string]: string };
-      };
-      expect(logCallMetadata).not.toBeUndefined();
-
-      expect(logCallMetadata.gas.has).toEqual(parseUnits("0.004", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual(parseUnits("0.02", 18).toString());
-      expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("200", 18).toString());
-      expect(logCallMetadata.rewardToken.allowed).toEqual(parseUnits("200", 18).toString());
-      expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
-
-      spyConsoleLog.mockReset();
+      await expect(
+        paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0")
+      ).rejects.toMatchObject({
+        logMessage: {
+          raw: "The funding wallet lacks sufficient gas to perform direct transfers",
+        },
+        metadata: {
+          gas: {
+            has: "4000000000000000",
+            required: "20000000000000000",
+          },
+          rewardToken: {
+            allowed: "200000000000000000000",
+            has: "200000000000000000000",
+            required: "111110000000000000000",
+          },
+        },
+      });
     });
 
-    it("Should return false if the funding wallet has insufficient reward tokens", async () => {
+    it("Should reject if the funding wallet has insufficient reward tokens", async () => {
       const { getEvmWallet } = await import("../../src/helpers/web3");
 
       const mockedGetEvmWallet = getEvmWallet as jest.Mock;
@@ -438,25 +437,24 @@ describe("payment-module.ts", () => {
       mockRewardTokenBalance.mockReturnValueOnce(parseUnits("50", 18));
 
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(ctx.logger, "error");
-
-      const transferInfo = await paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0");
-      expect(transferInfo).toBeNull();
-
-      const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
-      expect(logCallArgs[0]).toMatch(/.*The funding wallet lacks sufficient reward tokens to perform direct transfers/);
-      const logCallMetadata = spyConsoleLog.mock.calls.map((call) => call[1])[0] as {
-        [key: string]: { [key: string]: string };
-      };
-      expect(logCallMetadata).not.toBeUndefined();
-
-      expect(logCallMetadata.gas.has).toEqual(parseUnits("0.004", 18).toString());
-      expect(logCallMetadata.gas.required).toEqual("Unavailable");
-      expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("50", 18).toString());
-      expect(logCallMetadata.rewardToken.allowed).toEqual(parseUnits("200", 18).toString());
-      expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
-
-      spyConsoleLog.mockReset();
+      await expect(
+        paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0")
+      ).rejects.toMatchObject({
+        logMessage: {
+          raw: "The funding wallet lacks sufficient reward tokens to perform direct transfers",
+        },
+        metadata: {
+          gas: {
+            has: "4000000000000000",
+            required: "Unavailable",
+          },
+          rewardToken: {
+            allowed: "200000000000000000000",
+            has: "50000000000000000000",
+            required: "111110000000000000000",
+          },
+        },
+      });
     });
   });
 

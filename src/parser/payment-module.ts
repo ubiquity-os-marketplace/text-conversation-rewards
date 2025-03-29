@@ -52,6 +52,12 @@ export interface Beneficiary {
   amount: BigNumber;
 }
 
+export interface DirectTransferInfo {
+  canTransferDirectly: boolean;
+  fundingWallet: ethers.Wallet;
+  beneficiaries: Beneficiary[];
+}
+
 export class PaymentModule extends BaseModule {
   readonly _configuration: PermitGenerationConfiguration | null = this.context.config.incentives.permitGeneration;
   readonly _autoTransferMode: boolean = this.context.config.automaticTransferMode;
@@ -252,79 +258,68 @@ export class PaymentModule extends BaseModule {
    * This method checks that the funding wallet has enough reward tokens for a direct transfer and sufficient funds to cover gas fees.
    * @param private key of the funding wallet
    * @param result Result object
-   * @returns [canTransferDirectly, erc20Wrapper, fundingWallet, beneficiaries]
+   * @returns DirectTransferInfo
    */
-  async _canTransferDirectly(
-    privateKey: string,
-    result: Result,
-    nonce: string
-  ): Promise<{ canTransferDirectly: boolean; fundingWallet: ethers.Wallet; beneficiaries: Beneficiary[] } | null> {
-    try {
-      // Initialize contracts and wallet
-      const { erc20Wrapper, fundingWallet, beneficiaries } = await this._initializeContractsAndWallet(
-        privateKey,
-        result
-      );
-      if (!beneficiaries) return null;
+  async _canTransferDirectly(privateKey: string, result: Result, nonce: string): Promise<DirectTransferInfo> {
+    // Initialize contracts and wallet
+    const { erc20Wrapper, fundingWallet, beneficiaries } = await this._initializeContractsAndWallet(privateKey, result);
 
-      // Fetch balances and allowances
-      const { rewardBalance, rewardAllowance, nativeBalance } = await this._fetchBalancesAndAllowances(
-        erc20Wrapper,
-        fundingWallet
-      );
+    if (!beneficiaries) {
+      throw this.context.logger.error("Beneficiaries list is empty");
+    }
 
-      // Calculate total reward and check if there are enough reward tokens
-      const totalReward = beneficiaries.reduce(
-        (accumulator, current) => accumulator.add(current.amount),
-        BigNumber.from(0)
-      );
-      const hasEnoughRewardToken = rewardBalance.gt(totalReward) && rewardAllowance.gt(totalReward);
+    // Fetch balances and allowances
+    const { rewardBalance, rewardAllowance, nativeBalance } = await this._fetchBalancesAndAllowances(
+      erc20Wrapper,
+      fundingWallet
+    );
 
-      // Log gas and reward info
-      const directTransferLog = {
-        gas: {
-          has: nativeBalance.toString(),
-          required: "Unavailable",
-        },
-        rewardToken: {
-          has: rewardBalance.toString(),
-          allowed: rewardAllowance.toString(),
-          required: totalReward.toString(),
-        },
-      };
+    // Calculate total reward and check if there are enough reward tokens
+    const totalReward = beneficiaries.reduce(
+      (accumulator, current) => accumulator.add(current.amount),
+      BigNumber.from(0)
+    );
+    const hasEnoughRewardToken = rewardBalance.gt(totalReward) && rewardAllowance.gt(totalReward);
 
-      if (!hasEnoughRewardToken) {
-        this.context.logger.error(
-          `The funding wallet lacks sufficient reward tokens to perform direct transfers`,
-          directTransferLog
-        );
-        return null;
-      }
+    // Log gas and reward info
+    const directTransferLog = {
+      gas: {
+        has: nativeBalance.toString(),
+        required: "Unavailable",
+      },
+      rewardToken: {
+        has: rewardBalance.toString(),
+        allowed: rewardAllowance.toString(),
+        required: totalReward.toString(),
+      },
+    };
 
-      // Check if there is enough gas for the transaction
-      const gasEstimation = await this._getGasEstimation(fundingWallet, beneficiaries, nonce);
-
-      if (!gasEstimation) {
-        return null;
-      }
-      directTransferLog.gas.required = gasEstimation.toString();
-      if (nativeBalance.lte(gasEstimation.mul(2))) {
-        this.context.logger.error(
-          `The funding wallet lacks sufficient gas to perform direct transfers`,
-          directTransferLog
-        );
-        return null;
-      }
-
-      this.context.logger.info(
-        `The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
+    if (!hasEnoughRewardToken) {
+      throw this.context.logger.error(
+        `The funding wallet lacks sufficient reward tokens to perform direct transfers`,
         directTransferLog
       );
-      return { canTransferDirectly: true, fundingWallet, beneficiaries };
-    } catch (e) {
-      this.context.logger.error(`Failed to fetch the funding wallet data: ${e}`, { e });
-      return null;
     }
+
+    // Check if there is enough gas for the transaction
+    const gasEstimation = await this._getGasEstimation(fundingWallet, beneficiaries, nonce);
+
+    if (!gasEstimation) {
+      throw this.context.logger.error("Can't estimate the transaction gas usage");
+    }
+    directTransferLog.gas.required = gasEstimation.toString();
+    if (nativeBalance.lte(gasEstimation.mul(2))) {
+      throw this.context.logger.error(
+        `The funding wallet lacks sufficient gas to perform direct transfers`,
+        directTransferLog
+      );
+    }
+
+    this.context.logger.info(
+      `The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
+      directTransferLog
+    );
+    return { canTransferDirectly: true, fundingWallet, beneficiaries };
   }
 
   // Helper function to initialize contracts and wallet
@@ -350,10 +345,9 @@ export class PaymentModule extends BaseModule {
     beneficiaries: Beneficiary[],
     nonce: string
   ): Promise<BigNumber | null> {
-    const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
-    const permit2Wrapper = new Permit2Wrapper(permit2Contract);
-
     try {
+      const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
+      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
       const batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
         fundingWallet,
         this._erc20RewardToken,

@@ -81,12 +81,7 @@ export async function getContract(
  * @returns the evm wallet
  */
 export async function getEvmWallet(privateKey: string, provider: ethers.providers.Provider) {
-  try {
-    return new ethers.Wallet(privateKey, provider);
-  } catch (error) {
-    const errorMessage = `Failed to instantiate wallet: ${error}`;
-    throw new Error(errorMessage);
-  }
+  return new ethers.Wallet(privateKey, provider);
 }
 
 export class Erc20Wrapper {
