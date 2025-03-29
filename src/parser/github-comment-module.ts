@@ -38,28 +38,41 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
-  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
-    const keysToRemove: string[] = [];
+  /**
+   * Generates content when it needs to be stripped due to length limits
+   */
+  private async _getStrippedContent(result: Result, taskReward: number): Promise<string> {
     const bodyArray: (string | undefined)[] = [];
+
+    this.context.logger.info("Stripping content due to excessive length.");
+    bodyArray.push("> [!NOTE]\n");
+    bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
+
+    for (const [key, value] of Object.entries(result)) {
+      // Remove result with 0 total from being displayed
+      if (result[key].total <= 0) continue;
+      result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
+      bodyArray.push(result[key].evaluationCommentHtml);
+    }
+
+    bodyArray.push(
+      createStructuredMetadata("GithubCommentModule", {
+        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+      })
+    );
+
+    return bodyArray.join("");
+  }
+
+  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const taskReward = getTaskReward(data.self);
 
     if (stripContent) {
-      this.context.logger.info("Stripping content due to excessive length.");
-      bodyArray.push("> [!NOTE]\n");
-      bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
-      for (const [key, value] of Object.entries(result)) {
-        // Remove result with 0 total from being displayed
-        if (result[key].total <= 0) continue;
-        result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
-        bodyArray.push(result[key].evaluationCommentHtml);
-      }
-      bodyArray.push(
-        createStructuredMetadata("GithubCommentModule", {
-          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        })
-      );
-      return bodyArray.join("");
+      return this._getStrippedContent(result, taskReward);
     }
+
+    const keysToRemove: string[] = [];
+    const bodyArray: (string | undefined)[] = [];
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
