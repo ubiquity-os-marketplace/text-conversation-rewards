@@ -21,13 +21,22 @@ export const pluginSettingsSchema = T.Object(
      * The encrypted key to use for permit generation
      */
     evmPrivateEncrypted: T.String({
-      description: "The encrypted key to use for permit generation",
+      description: "The encrypted Ethereum private key to use for funding rewards.",
       examples: ["0x000..."],
     }),
     /**
      * Reward token for ERC20 permits, default WXDAI for gnosis chain
      */
     erc20RewardToken: T.String({ default: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d" }),
+    /**
+     *  If set to false or if there are insufficient funds to settle the payment,
+     *  permits will be generated instead of processing direct payouts.
+     */
+    automaticTransferMode: T.Boolean({
+      default: true,
+      description:
+        "If set to false, or if there are insufficient funds to settle the payment, permits will be generated instead of immediately transferring rewards to the beneficiaries.",
+    }),
     incentives: T.Object(
       {
         /**
