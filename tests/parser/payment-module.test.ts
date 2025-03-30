@@ -275,13 +275,10 @@ describe("payment-module.ts", () => {
 
     it("Should return the correct total payable amount", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal(), 18);
+      const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
       expect(beneficiaries).not.toBeNull();
-      const totalPayable = beneficiaries?.reduce(
-        (accumulator, current) => accumulator.add(current.amount),
-        BigNumber.from(0)
-      );
-      expect(totalPayable).toEqual(parseUnits("111.11", 18));
+      const totalPayable = beneficiaries?.reduce((accumulator, current) => accumulator + current.amount, 0);
+      expect(totalPayable).toEqual(111.11);
     });
   });
 
@@ -368,16 +365,15 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
-      const transferInfo = await paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0");
-      expect(transferInfo).not.toBeNull();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const { fundingWallet, beneficiaries } = transferInfo!;
-      expect(fundingWallet).not.toBeNull();
-      if (beneficiaries) {
-        expect(beneficiaries.length).toEqual(2);
-      } else {
-        expect(beneficiaries).not.toBeNull();
-      }
+      const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
+      const { canTransferDirectly, directTransferInfo } = await paymentModule._canTransferDirectly(
+        beneficiaries,
+        fundingWalletPrivateKey,
+        "0"
+      );
+
+      expect(canTransferDirectly).toEqual(true);
+      expect(directTransferInfo).not.toBeNull();
 
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(
@@ -406,8 +402,9 @@ describe("payment-module.ts", () => {
         getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
       }));
       const paymentModule = new PaymentModule(ctx);
+      const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
       await expect(
-        paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0")
+        paymentModule._canTransferDirectly(beneficiaries, fundingWalletPrivateKey, "0")
       ).rejects.toMatchObject({
         logMessage: {
           raw: "The funding wallet lacks sufficient gas to perform direct transfers",
@@ -437,8 +434,9 @@ describe("payment-module.ts", () => {
       mockRewardTokenBalance.mockReturnValueOnce(parseUnits("50", 18));
 
       const paymentModule = new PaymentModule(ctx);
+      const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
       await expect(
-        paymentModule._canTransferDirectly(fundingWalletPrivateKey, getResultOriginal(), "0")
+        paymentModule._canTransferDirectly(beneficiaries, fundingWalletPrivateKey, "0")
       ).rejects.toMatchObject({
         logMessage: {
           raw: "The funding wallet lacks sufficient reward tokens to perform direct transfers",

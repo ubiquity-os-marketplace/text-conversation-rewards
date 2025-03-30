@@ -49,13 +49,15 @@ interface Payload {
 export interface Beneficiary {
   username: string;
   address: string;
-  amount: BigNumber;
+  amount: number;
 }
 
 export interface DirectTransferInfo {
-  canTransferDirectly: boolean;
   fundingWallet: ethers.Wallet;
   beneficiaries: Beneficiary[];
+  permit2Wrapper: Permit2Wrapper;
+  batchTransferPermit: BatchTransferPermit;
+  nonce: string;
 }
 
 export class PaymentModule extends BaseModule {
@@ -131,6 +133,9 @@ export class PaymentModule extends BaseModule {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
+    // get reward beneficiaries
+    const beneficiaries = await this._getBeneficiaries(result);
+
     let directTransferError;
     if (payoutMode === "transfer") {
       try {
@@ -138,23 +143,30 @@ export class PaymentModule extends BaseModule {
         const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
 
         // Check if funding wallet has enough reward token and gas to transfer rewards directly
-        const transferInfo = await this._canTransferDirectly(privateKey, result, nonce);
-        if (transferInfo) {
-          const { fundingWallet, beneficiaries } = transferInfo;
+        const { canTransferDirectly, directTransferInfo } = await this._canTransferDirectly(
+          beneficiaries,
+          privateKey,
+          nonce
+        );
+        if (canTransferDirectly) {
           this.context.logger.info(
             "AutoTransferMode is enabled, and the funding wallet has sufficient funds available."
           );
-          const [tx, permits] = await this._transferReward(fundingWallet, beneficiaries, nonce);
+          const [tx, permits] = await this._transferReward(directTransferInfo);
           this.context.logger.info("Rewards have been transferred.");
           await Promise.all(
             beneficiaries.map(async (beneficiary, idx) => {
               result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
               result[beneficiary.username].payoutMode = "transfer";
-              await this._savePermitsToDatabase(
-                result[beneficiary.username].userId,
-                { issueUrl: payload.issueUrl, issueId },
-                [permits[idx]]
-              );
+              try {
+                await this._savePermitsToDatabase(
+                  result[beneficiary.username].userId,
+                  { issueUrl: payload.issueUrl, issueId },
+                  [permits[idx]]
+                );
+              } catch (e) {
+                this.context.logger.error(`Failed to save permits to the database`, { e });
+              }
             })
           );
         }
@@ -254,29 +266,32 @@ export class PaymentModule extends BaseModule {
     return isCollaborative(data);
   }
 
-  /*
-   * This method checks that the funding wallet has enough reward tokens for a direct transfer and sufficient funds to cover gas fees.
-   * @param private key of the funding wallet
-   * @param result Result object
-   * @returns DirectTransferInfo
-   */
-  async _canTransferDirectly(privateKey: string, result: Result, nonce: string): Promise<DirectTransferInfo> {
+  // This method checks that the funding wallet has enough reward tokens for a direct transfer and sufficient funds to cover gas fees.
+  async _canTransferDirectly(
+    beneficiaries: Beneficiary[],
+    privateKey: string,
+    nonce: string,
+    maxRetries = 5,
+    initialDelayMs = 500
+  ): Promise<{ canTransferDirectly: boolean; directTransferInfo: DirectTransferInfo }> {
     // Initialize contracts and wallet
-    const { erc20Wrapper, fundingWallet, beneficiaries } = await this._initializeContractsAndWallet(privateKey, result);
-
-    if (!beneficiaries) {
-      throw this.context.logger.error("Beneficiaries list is empty");
-    }
+    const { rewardTokenWrapper, fundingWallet } = await this._initializeContractsAndWallet(
+      privateKey,
+      maxRetries,
+      initialDelayMs
+    );
 
     // Fetch balances and allowances
     const { rewardBalance, rewardAllowance, nativeBalance } = await this._fetchBalancesAndAllowances(
-      erc20Wrapper,
+      rewardTokenWrapper,
       fundingWallet
     );
 
     // Calculate total reward and check if there are enough reward tokens
+    const rewardTokenDecimals = await rewardTokenWrapper.getDecimals();
     const totalReward = beneficiaries.reduce(
-      (accumulator, current) => accumulator.add(current.amount),
+      (accumulator, current) =>
+        accumulator.add(ethers.utils.parseUnits(current.amount.toString(), rewardTokenDecimals)),
       BigNumber.from(0)
     );
     const hasEnoughRewardToken = rewardBalance.gt(totalReward) && rewardAllowance.gt(totalReward);
@@ -302,11 +317,21 @@ export class PaymentModule extends BaseModule {
     }
 
     // Check if there is enough gas for the transaction
-    const gasEstimation = await this._getGasEstimation(fundingWallet, beneficiaries, nonce);
+    const permit2Contract = await getContract(
+      this._evmNetworkId,
+      permit2Address(this._evmNetworkId),
+      PERMIT2_ABI,
+      maxRetries,
+      initialDelayMs
+    );
+    const permit2Wrapper = new Permit2Wrapper(permit2Contract);
+    const { gasEstimation, batchTransferPermit } = await this._getGasEstimation(
+      fundingWallet,
+      permit2Wrapper,
+      beneficiaries,
+      nonce
+    );
 
-    if (!gasEstimation) {
-      throw this.context.logger.error("Can't estimate the transaction gas usage");
-    }
     directTransferLog.gas.required = gasEstimation.toString();
     if (nativeBalance.lte(gasEstimation.mul(2))) {
       throw this.context.logger.error(
@@ -319,22 +344,40 @@ export class PaymentModule extends BaseModule {
       `The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
       directTransferLog
     );
-    return { canTransferDirectly: true, fundingWallet, beneficiaries };
+
+    return {
+      canTransferDirectly: true,
+      directTransferInfo: {
+        fundingWallet,
+        beneficiaries,
+        permit2Wrapper,
+        batchTransferPermit,
+        nonce,
+      },
+    };
   }
 
   // Helper function to initialize contracts and wallet
-  private async _initializeContractsAndWallet(privateKey: string, result: Result) {
-    const erc20Contract = await getContract(this._evmNetworkId, this._erc20RewardToken, ERC20_ABI);
+  private async _initializeContractsAndWallet(privateKey: string, maxRetries = 5, initialDelayMs = 500) {
+    const erc20Contract = await getContract(
+      this._evmNetworkId,
+      this._erc20RewardToken,
+      ERC20_ABI,
+      maxRetries,
+      initialDelayMs
+    );
     const fundingWallet = await getEvmWallet(privateKey, erc20Contract.provider);
-    const erc20Wrapper = new Erc20Wrapper(erc20Contract);
-    const beneficiaries = await this._getBeneficiaries(result, await erc20Wrapper.getDecimals());
-    return { erc20Wrapper, fundingWallet, beneficiaries };
+    const rewardTokenWrapper = new Erc20Wrapper(erc20Contract);
+    return { rewardTokenWrapper, fundingWallet };
   }
 
   // Helper function to fetch balances and allowances
-  private async _fetchBalancesAndAllowances(erc20Wrapper: Erc20Wrapper, fundingWallet: ethers.Wallet) {
-    const rewardBalance = await erc20Wrapper.getBalance(fundingWallet.address);
-    const rewardAllowance = await erc20Wrapper.getAllowance(fundingWallet.address, permit2Address(this._evmNetworkId));
+  private async _fetchBalancesAndAllowances(rewardTokenWrapper: Erc20Wrapper, fundingWallet: ethers.Wallet) {
+    const rewardBalance = await rewardTokenWrapper.getBalance(fundingWallet.address);
+    const rewardAllowance = await rewardTokenWrapper.getAllowance(
+      fundingWallet.address,
+      permit2Address(this._evmNetworkId)
+    );
     const nativeBalance = await fundingWallet.getBalance();
     return { rewardBalance, rewardAllowance, nativeBalance };
   }
@@ -342,41 +385,41 @@ export class PaymentModule extends BaseModule {
   // Helper function to get gas estimation
   private async _getGasEstimation(
     fundingWallet: ethers.Wallet,
+    permit2Wrapper: Permit2Wrapper,
     beneficiaries: Beneficiary[],
     nonce: string
-  ): Promise<BigNumber | null> {
+  ): Promise<{ gasEstimation: BigNumber; batchTransferPermit: BatchTransferPermit }> {
     try {
-      const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
-      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
       const batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
         fundingWallet,
         this._erc20RewardToken,
         beneficiaries,
         BigNumber.from(nonce)
       );
-      return await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
+      const gasEstimation = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
+      return { gasEstimation, batchTransferPermit };
     } catch (e) {
       if (isEthersError(e)) {
         if (e.message.includes("TRANSFER_FROM_FAILED")) {
-          this.context.logger.error("The gas limit could not be estimated because the transaction might fail", { e });
+          throw this.context.logger.error("The gas limit could not be estimated because the transaction might fail", {
+            e,
+          });
         } else if (e.reason === "InvalidNonce" || e.message.includes("InvalidNonce")) {
-          this.context.logger.error("The transaction is likely to be reverted due to an invalid nonce", { e });
+          throw this.context.logger.error("The transaction is likely to be reverted due to an invalid nonce", { e });
         }
-      } else {
-        this.context.logger.error("Failed to estimate the total gas limit", { e });
       }
-      return null;
+      throw this.context.logger.error("Failed to estimate the total gas limit", { e });
     }
   }
 
-  async _getBeneficiaries(result: Result, decimals: number): Promise<Beneficiary[] | null> {
+  async _getBeneficiaries(result: Result): Promise<Beneficiary[]> {
     const beneficiaries: Beneficiary[] = [];
     for (const [username, reward] of Object.entries(result)) {
       // Obtain the beneficiary wallet address from the github user name
       const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
       if (!userData) {
         this.context.logger.error(`GitHub user was not found for id ${username}`);
-        return null;
+        continue;
       }
       const userId = userData.id;
       const { data: walletData, error: err } = await this._supabase
@@ -386,46 +429,24 @@ export class PaymentModule extends BaseModule {
         .single();
       if (err || !walletData.wallets?.address) {
         this.context.logger.error("Failed to get wallet", { userId, err, walletData });
-        return null;
+        continue;
       }
       beneficiaries.push({
         username: username,
         address: walletData.wallets?.address,
-        amount: ethers.utils.parseUnits(reward.total.toString(), decimals),
+        amount: reward.total,
       });
     }
     return beneficiaries;
   }
 
-  async _transferReward(
-    fundingWallet: ethers.Wallet,
-    beneficiaries: Beneficiary[],
-    nonce: string,
-    maxRetries = 5,
-    initialDelayMs = 500
-  ): Promise<[ethers.providers.TransactionResponse, PermitReward[]]> {
-    let batchTransferPermit: BatchTransferPermit;
-
-    const permit2Contract = await getContract(
-      this._evmNetworkId,
-      permit2Address(this._evmNetworkId),
-      PERMIT2_ABI,
-      maxRetries,
-      initialDelayMs
-    );
-    const permit2Wrapper = new Permit2Wrapper(permit2Contract);
-
-    try {
-      batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
-        fundingWallet,
-        this._erc20RewardToken,
-        beneficiaries,
-        BigNumber.from(nonce)
-      );
-    } catch (e) {
-      throw this.context.logger.error("Failed to generate batch transfer permit", { e });
-    }
-
+  async _transferReward({
+    fundingWallet,
+    beneficiaries,
+    permit2Wrapper,
+    batchTransferPermit,
+    nonce,
+  }: DirectTransferInfo): Promise<[ethers.providers.TransactionResponse, PermitReward[]]> {
     // Executing permitTransferFrom immediately to process the reward transfers.
     try {
       // Perform the Permit2 batch transfer transaction.
