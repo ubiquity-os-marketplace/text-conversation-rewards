@@ -1,7 +1,6 @@
 import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/rpc-handler";
 import { ethers, Contract, Wallet, BigNumber, ContractInterface, BigNumberish } from "ethers";
 import { PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer, MaxUint256 } from "@uniswap/permit2-sdk";
-import { Beneficiary } from "../parser/payment-module";
 import permit2Abi from "../abi/permit2.json";
 
 type EthersErrorType = { reason: string; code: string; message: string };
@@ -19,6 +18,10 @@ export function isEthersError(error: unknown): error is EthersErrorType {
   );
 }
 
+export interface TransferRequest {
+  address: string;
+  amount: BigNumber;
+}
 export interface BatchTransferPermit {
   permitBatchTransferFromData: PermitBatchTransferFrom;
   signature: string;
@@ -135,18 +138,18 @@ export class Permit2Wrapper {
    * Returns Batch transfer permit
    * @param evmWallet Wallet to transfer ERC20 token from
    * @param tokenAddress ERC20 token address
-   * @param beneficiaries List of Beneficiary
+   * @param transferRequests List of requested transfers
    * @param nonce The nonce used for Permit2 SignatureTransform
    * @returns Batch transfer permit
    */
   async generateBatchTransferPermit(
     evmWallet: Wallet,
     tokenAddress: string,
-    beneficiaries: Beneficiary[],
+    transferRequests: TransferRequest[],
     nonce: BigNumber
   ): Promise<BatchTransferPermit> {
     const permitBatchTransferFromData: PermitBatchTransferFrom = {
-      permitted: beneficiaries.map((beneficiary) => ({ token: tokenAddress, amount: beneficiary.amount })),
+      permitted: transferRequests.map((request) => ({ token: tokenAddress, amount: request.amount })),
       spender: evmWallet.address,
       nonce,
       deadline: MaxUint256,
@@ -158,9 +161,9 @@ export class Permit2Wrapper {
       _network.chainId
     );
     const signature = await evmWallet._signTypedData(domain, types, values);
-    const transfers = beneficiaries.map((beneficiary) => ({
-      to: beneficiary.address,
-      requestedAmount: beneficiary.amount,
+    const transfers = transferRequests.map((request) => ({
+      to: request.address,
+      requestedAmount: request.amount,
     }));
     return { permitBatchTransferFromData, signature, transfers };
   }

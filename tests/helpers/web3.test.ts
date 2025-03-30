@@ -5,12 +5,12 @@ import {
   ERC20_ABI,
   Permit2Wrapper,
   BatchTransferPermit,
+  TransferRequest,
 } from "../../src/helpers/web3";
 import { Interface } from "ethers/lib/utils";
 import { BigNumber, ethers, utils } from "ethers";
 import { describe, expect, it, jest } from "@jest/globals";
 import { MaxUint256 } from "@uniswap/permit2-sdk";
-import { Beneficiary } from "../../src/parser/payment-module";
 
 class MockProvider extends ethers.providers.BaseProvider {
   async getNetwork(): Promise<ethers.providers.Network> {
@@ -75,16 +75,14 @@ describe("web3.ts", () => {
       tokenAddress,
       [
         {
-          username: "test1",
           address: "0x1",
           amount: utils.parseUnits("100", 18),
         },
         {
-          username: "test2",
           address: "0x2",
           amount: utils.parseUnits("200", 18),
         },
-      ] as Beneficiary[],
+      ] as TransferRequest[],
       BigNumber.from("0")
     );
     expect(permitBatchTransferFromData).toEqual({

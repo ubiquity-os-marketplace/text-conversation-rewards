@@ -34,6 +34,7 @@ import {
   PERMIT2_ABI,
   ERC20_ABI,
   isEthersError,
+  TransferRequest,
 } from "../helpers/web3";
 import { BigNumber, ethers, utils } from "ethers";
 import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
@@ -289,9 +290,15 @@ export class PaymentModule extends BaseModule {
 
     // Calculate total reward and check if there are enough reward tokens
     const rewardTokenDecimals = await rewardTokenWrapper.getDecimals();
-    const totalReward = beneficiaries.reduce(
-      (accumulator, current) =>
-        accumulator.add(ethers.utils.parseUnits(current.amount.toString(), rewardTokenDecimals)),
+    const transferRequests: TransferRequest[] = beneficiaries.map(
+      (beneficiary) =>
+        ({
+          address: beneficiary.address,
+          amount: ethers.utils.parseUnits(beneficiary.amount.toString(), rewardTokenDecimals),
+        }) as TransferRequest
+    );
+    const totalReward = transferRequests.reduce(
+      (accumulator, current) => accumulator.add(current.amount),
       BigNumber.from(0)
     );
     const hasEnoughRewardToken = rewardBalance.gt(totalReward) && rewardAllowance.gt(totalReward);
@@ -328,7 +335,7 @@ export class PaymentModule extends BaseModule {
     const { gasEstimation, batchTransferPermit } = await this._getGasEstimation(
       fundingWallet,
       permit2Wrapper,
-      beneficiaries,
+      transferRequests,
       nonce
     );
 
@@ -386,14 +393,14 @@ export class PaymentModule extends BaseModule {
   private async _getGasEstimation(
     fundingWallet: ethers.Wallet,
     permit2Wrapper: Permit2Wrapper,
-    beneficiaries: Beneficiary[],
+    transferRequests: TransferRequest[],
     nonce: string
   ): Promise<{ gasEstimation: BigNumber; batchTransferPermit: BatchTransferPermit }> {
     try {
       const batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
         fundingWallet,
         this._erc20RewardToken,
-        beneficiaries,
+        transferRequests,
         BigNumber.from(nonce)
       );
       const gasEstimation = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
