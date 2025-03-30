@@ -366,13 +366,12 @@ describe("payment-module.ts", () => {
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
-      const { canTransferDirectly, directTransferInfo } = await paymentModule._canTransferDirectly(
+      const directTransferInfo = await paymentModule._getDirectTransferInfo(
         beneficiaries,
         fundingWalletPrivateKey,
         "0"
       );
 
-      expect(canTransferDirectly).toEqual(true);
       expect(directTransferInfo).not.toBeNull();
 
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
@@ -404,7 +403,7 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
       await expect(
-        paymentModule._canTransferDirectly(beneficiaries, fundingWalletPrivateKey, "0")
+        paymentModule._getDirectTransferInfo(beneficiaries, fundingWalletPrivateKey, "0")
       ).rejects.toMatchObject({
         logMessage: {
           raw: "The funding wallet lacks sufficient gas to perform direct transfers",
@@ -436,7 +435,7 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
       await expect(
-        paymentModule._canTransferDirectly(beneficiaries, fundingWalletPrivateKey, "0")
+        paymentModule._getDirectTransferInfo(beneficiaries, fundingWalletPrivateKey, "0")
       ).rejects.toMatchObject({
         logMessage: {
           raw: "The funding wallet lacks sufficient reward tokens to perform direct transfers",

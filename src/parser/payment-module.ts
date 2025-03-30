@@ -140,37 +140,35 @@ export class PaymentModule extends BaseModule {
     let directTransferError;
     if (payoutMode === "transfer") {
       try {
+        // Avoid empty transactions and gas wasting, maybe we should move this logic
+        // before this block to avoid any extra works
+        if (beneficiaries.length === 0) {
+          throw this.context.logger.error("Beneficiary list is empty, skipping the direct transfer of rewards...");
+        }
+
         // Generate the batch transfer nonce
         const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
 
         // Check if funding wallet has enough reward token and gas to transfer rewards directly
-        const { canTransferDirectly, directTransferInfo } = await this._canTransferDirectly(
-          beneficiaries,
-          privateKey,
-          nonce
+        const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
+        this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
+        const [tx, permits] = await this._transferReward(directTransferInfo);
+        this.context.logger.info("Rewards have been transferred.");
+        await Promise.all(
+          beneficiaries.map(async (beneficiary, idx) => {
+            result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
+            result[beneficiary.username].payoutMode = "transfer";
+            try {
+              await this._savePermitsToDatabase(
+                result[beneficiary.username].userId,
+                { issueUrl: payload.issueUrl, issueId },
+                [permits[idx]]
+              );
+            } catch (e) {
+              this.context.logger.error(`Failed to save permits to the database`, { e });
+            }
+          })
         );
-        if (canTransferDirectly) {
-          this.context.logger.info(
-            "AutoTransferMode is enabled, and the funding wallet has sufficient funds available."
-          );
-          const [tx, permits] = await this._transferReward(directTransferInfo);
-          this.context.logger.info("Rewards have been transferred.");
-          await Promise.all(
-            beneficiaries.map(async (beneficiary, idx) => {
-              result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
-              result[beneficiary.username].payoutMode = "transfer";
-              try {
-                await this._savePermitsToDatabase(
-                  result[beneficiary.username].userId,
-                  { issueUrl: payload.issueUrl, issueId },
-                  [permits[idx]]
-                );
-              } catch (e) {
-                this.context.logger.error(`Failed to save permits to the database`, { e });
-              }
-            })
-          );
-        }
       } catch (e) {
         this.context.logger.error(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
@@ -268,13 +266,13 @@ export class PaymentModule extends BaseModule {
   }
 
   // This method checks that the funding wallet has enough reward tokens for a direct transfer and sufficient funds to cover gas fees.
-  async _canTransferDirectly(
+  async _getDirectTransferInfo(
     beneficiaries: Beneficiary[],
     privateKey: string,
     nonce: string,
     maxRetries = 5,
     initialDelayMs = 500
-  ): Promise<{ canTransferDirectly: boolean; directTransferInfo: DirectTransferInfo }> {
+  ): Promise<DirectTransferInfo> {
     // Initialize contracts and wallet
     const { rewardTokenWrapper, fundingWallet } = await this._initializeContractsAndWallet(
       privateKey,
@@ -353,14 +351,11 @@ export class PaymentModule extends BaseModule {
     );
 
     return {
-      canTransferDirectly: true,
-      directTransferInfo: {
-        fundingWallet,
-        beneficiaries,
-        permit2Wrapper,
-        batchTransferPermit,
-        nonce,
-      },
+      fundingWallet,
+      beneficiaries,
+      permit2Wrapper,
+      batchTransferPermit,
+      nonce,
     };
   }
 
