@@ -171,7 +171,7 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
     }
 
-    if (result.simplificationReward && Object.keys(result.simplificationReward).length !== 0) {
+    if (result.simplificationReward && Object.keys(result.simplificationReward.files).length !== 0) {
       content.push(
         buildContributionRow(
           "Issue",
@@ -285,7 +285,7 @@ export class GithubCommentModule extends BaseModule {
   }
 
   _createSimplificationRows(result: Result[0]) {
-    if (!result.simplificationReward || Object.keys(result.simplificationReward).length === 0) return "";
+    if (!result.simplificationReward || Object.keys(result.simplificationReward.files).length === 0) return "";
     const rows: string[] = [];
     for (const file of result.simplificationReward.files) {
       rows.push(`
