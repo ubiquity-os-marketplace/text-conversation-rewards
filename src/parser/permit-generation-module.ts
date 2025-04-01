@@ -462,6 +462,8 @@ export class PermitGenerationModule extends BaseModule {
 
       const locationId = await this._getOrCreateIssueLocation(issue);
 
+      const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
+
       const { data: existingXp, error: duplicateCheckError } = await this._supabase
         .from("permits")
         .select("id")
@@ -475,31 +477,36 @@ export class PermitGenerationModule extends BaseModule {
       }
 
       if (existingXp) {
-        this.context.logger.warn(
-          `Duplicate XP record found for userId ${userId} on issue ${issue.issueId}. Skipping insertion.`
+        this.context.logger.info(
+          `Existing XP record found for userId ${userId} on issue ${issue.issueId}. Updating amount.`
         );
-        return;
+        const { error: updateError } = await this._supabase
+          .from("permits")
+          .update({ amount: amountString })
+          .eq("id", existingXp.id);
+
+        if (updateError) {
+          throw this.context.logger.error("Failed to update XP record in database", { updateError });
+        }
+        this.context.logger.ok(`XP record updated successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+      } else {
+        const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
+          amount: amountString,
+          beneficiary_id: beneficiaryId,
+          location_id: locationId,
+          token_id: null,
+          nonce: "",
+          deadline: "",
+          signature: "",
+          partner_id: null,
+        };
+        const { error: insertError } = await this._supabase.from("permits").insert(insertData);
+
+        if (insertError) {
+          throw this.context.logger.error("Failed to insert XP record into database", { insertError });
+        }
+        this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
       }
-
-      const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
-
-      const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
-        amount: amountString,
-        beneficiary_id: beneficiaryId,
-        location_id: locationId,
-        token_id: null,
-        nonce: "",
-        deadline: "",
-        signature: "",
-        partner_id: null,
-      };
-      const { error: insertError } = await this._supabase.from("permits").insert(insertData);
-
-      if (insertError) {
-        throw this.context.logger.error("Failed to insert XP record into database", { insertError });
-      }
-
-      this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
     } catch (e) {
       this.context.logger.error("An error occurred in _saveXPRecord", { e });
       throw e;
