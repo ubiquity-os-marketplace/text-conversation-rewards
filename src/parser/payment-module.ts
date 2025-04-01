@@ -826,7 +826,7 @@ export class PaymentModule extends BaseModule {
   get enabled(): boolean {
     if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
       this.context.logger.warn(
-        "The configuration for the module PermitGenerationModule is invalid or missing, disabling."
+        "The configuration for the module PaymentModule is invalid or missing, disabling."
       );
       return false;
     }
