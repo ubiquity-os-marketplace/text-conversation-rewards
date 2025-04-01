@@ -4,13 +4,18 @@ on:
   workflow_dispatch:
     inputs:
       organization:
-        description: "Organization to parse (e.g. ubiquity-os-marketplace)"
-        required: true
+        description: "Organization to parse (e.g. ubiquity-os-marketplace). Leave empty to run for ubiquity organizations."
+        required: false
         type: string
+        default: ""
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        organization: ${{ fromJson(github.event.inputs.organization && format('["{0}"]', github.event.inputs.organization) || '["ubiquity", "ubiquity-os", "ubiquity-os-marketplace"]') }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PLUGIN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -25,7 +30,7 @@ jobs:
       PERMIT_TREASURY_GITHUB_USERNAME: ${{ secrets.PERMIT_TREASURY_GITHUB_USERNAME }}
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
       KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
-      LOG_LEVEL: 'info'
+      LOG_LEVEL: "info"
 
     steps:
       - uses: actions/checkout@v4
@@ -45,17 +50,19 @@ jobs:
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{
-              "ownerRepo": "${{ github.event.inputs.organization || '' }}",
+              "ownerRepo": "${{ matrix.organization }}",
               "useOpenAi": true,
               "useCache": true
             }' \
             http://localhost:4000
 
-      - name: Zip results folder
-        run: zip -r results.zip results/
+      - name: Zip results folder for ${{ matrix.organization }}
+        run: |
+          mkdir -p results
+          zip -r results-${{ matrix.organization }}.zip results/
 
-      - name: Upload results artifact
+      - name: Upload results artifact for ${{ matrix.organization }}
         uses: actions/upload-artifact@v4
         with:
-          name: results
-          path: results.zip
+          name: results-${{ matrix.organization }}
+          path: results-${{ matrix.organization }}.zip
