@@ -56,6 +56,12 @@ jobs:
             }' \
             http://localhost:4000
 
+      - name: Generate Rewards Summary
+        run: bun run scripts/generate-rewards-summary.ts
+
+      - name: Output Rewards Summary
+        run: echo "$(< rewards-summary.md)" >> $GITHUB_STEP_SUMMARY
+
       - name: Zip results folder for ${{ matrix.organization }}
         run: |
           mkdir -p results
