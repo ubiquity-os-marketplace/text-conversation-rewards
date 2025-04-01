@@ -17,7 +17,7 @@ export class SimplificationIncentivizerModule extends BaseModule {
 
   constructor(context: ContextPlugin) {
     super(context);
-    this._simplificationRate = this._configuration?.simplificationRate ?? 100;
+    this._simplificationRate = Number(this._configuration?.simplificationRate);
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
