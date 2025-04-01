@@ -1,12 +1,13 @@
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { getSortedPrices } from "./helpers/label-price-extractor";
+import { logInvalidIssue } from "./helpers/log-invalid-issue";
+import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 import { IssueActivity } from "./issue-activity";
 import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
-import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config, commentHandler } = context;
@@ -15,16 +16,19 @@ export async function run(context: ContextPlugin) {
   }
 
   if (payload.issue.state_reason !== "completed") {
+    await logInvalidIssue(logger, payload.issue.html_url);
     return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
   }
 
   if (!(await preCheck(context))) {
+    await logInvalidIssue(logger, payload.issue.html_url);
     const result = logger.error("All linked pull requests must be closed to generate rewards.");
     await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
 
   if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {
+    await logInvalidIssue(logger, payload.issue.html_url);
     const result =
       payload.sender.type === "Bot"
         ? logger.warn("Bots can not generate rewards.")
@@ -43,6 +47,7 @@ export async function run(context: ContextPlugin) {
   const activity = new IssueActivity(context, issue);
   await activity.init();
   if (config.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
+    await logInvalidIssue(logger, payload.issue.html_url);
     const result = logger.error("No price label has been set. Skipping permit generation.");
     await commentHandler.postComment(context, result);
     return result.logMessage.raw;

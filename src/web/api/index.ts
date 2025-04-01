@@ -1,18 +1,19 @@
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
+import { mkdirSync } from "fs";
 import { ExecutionContext } from "hono";
 import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
+import { existsSync } from "node:fs";
 import manifest from "../../../manifest.json";
+import { logInvalidIssue } from "../../helpers/log-invalid-issue";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
-import { mkdirSync } from "fs";
-import { existsSync } from "node:fs";
 
 function githubUrlToFileName(url: string): string {
   const repoMatch = url.match(/github\.com\/([^/]+)\/([^/?#]+)/);
@@ -67,6 +68,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           console.warn(`File ${filePath} already exists, skipping.`);
         } else if (!issue.labels.some((label) => typeof label !== "string" && label.name?.startsWith("Price:"))) {
           console.warn("No pricing label found, skipping.");
+          await logInvalidIssue(context.logger, issue.html_url);
         } else {
           config.incentives.file = filePath;
           context.payload.issue = issue as ContextPlugin["payload"]["issue"];
