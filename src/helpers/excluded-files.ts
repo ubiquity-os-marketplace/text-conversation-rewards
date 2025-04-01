@@ -35,16 +35,66 @@ async function parseGitAttributes(content: string): Promise<GitAttributes[]> {
 
 const DEFAULT_EXCLUDED_PATTERNS = ["dist/**", "*.lockb", "*.lock", "tests/__mocks__/"];
 
-export async function getExcludedFiles(context: ContextPlugin, owner: string, repo: string, ref?: string) {
-  const gitAttributesContent = await getFileContent(context, owner, repo, ".gitattributes", ref);
-  if (!gitAttributesContent) {
-    return DEFAULT_EXCLUDED_PATTERNS;
-  }
-  const gitAttributesLinguistGenerated = (await parseGitAttributes(gitAttributesContent))
-    .filter((v) => v.attributes["linguist-generated"])
-    .map((v) => v.pattern);
+function parsePrettierIgnore(content: string): string[] {
+  return content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"));
+}
 
-  return gitAttributesLinguistGenerated;
+function parseTsConfigExclude(content: string): string[] {
+  const patterns: string[] = [];
+  try {
+    const excludeRegex = /"exclude"\s*:\s*\[([^\]]*)\]/;
+    const match = RegExp(excludeRegex).exec(content);
+    if (match && match[1]) {
+      const excludeContent = match[1];
+      const stringLiteralRegex = /"([^"]*)"/g;
+      let stringMatch;
+      while ((stringMatch = stringLiteralRegex.exec(excludeContent)) !== null) {
+        if (stringMatch[1]) {
+          patterns.push(stringMatch[1]);
+        }
+      }
+    }
+  } catch {
+    // Silently ignore parsing errors, returning patterns found so far
+  }
+  return patterns;
+}
+
+export async function getExcludedFiles(
+  context: ContextPlugin,
+  owner: string,
+  repo: string,
+  ref?: string
+): Promise<string[]> {
+  const allPatterns = [...DEFAULT_EXCLUDED_PATTERNS];
+
+  const [gitAttributesContent, prettierIgnoreContent, tsConfigContent] = await Promise.all([
+    getFileContent(context, owner, repo, ".gitattributes", ref),
+    getFileContent(context, owner, repo, ".prettierignore", ref),
+    getFileContent(context, owner, repo, "tsconfig.json", ref),
+  ]);
+
+  if (gitAttributesContent) {
+    const gitAttributesLinguistGenerated = (await parseGitAttributes(gitAttributesContent))
+      .filter((v) => v.attributes["linguist-generated"])
+      .map((v) => v.pattern);
+    allPatterns.push(...gitAttributesLinguistGenerated);
+  }
+
+  if (prettierIgnoreContent) {
+    const prettierPatterns = parsePrettierIgnore(prettierIgnoreContent);
+    allPatterns.push(...prettierPatterns);
+  }
+
+  if (tsConfigContent) {
+    const tsConfigPatterns = parseTsConfigExclude(tsConfigContent);
+    allPatterns.push(...tsConfigPatterns);
+  }
+
+  return [...new Set(allPatterns)];
 }
 
 async function getFileContent(
