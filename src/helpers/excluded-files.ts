@@ -33,10 +33,12 @@ async function parseGitAttributes(content: string): Promise<GitAttributes[]> {
     .filter((item): item is GitAttributes => item !== null);
 }
 
+const DEFAULT_EXCLUDED_PATTERNS = ["dist/**", "*.lockb", "*.lock", "tests/__mocks__/"];
+
 export async function getExcludedFiles(context: ContextPlugin, owner: string, repo: string, ref?: string) {
   const gitAttributesContent = await getFileContent(context, owner, repo, ".gitattributes", ref);
   if (!gitAttributesContent) {
-    return null;
+    return DEFAULT_EXCLUDED_PATTERNS;
   }
   const gitAttributesLinguistGenerated = (await parseGitAttributes(gitAttributesContent))
     .filter((v) => v.attributes["linguist-generated"])
