@@ -43,24 +43,15 @@ function parsePrettierIgnore(content: string): string[] {
 }
 
 function parseTsConfigExclude(content: string): string[] {
-  const patterns: string[] = [];
   try {
-    const excludeRegex = /"exclude"\s*:\s*\[([^\]]*)\]/;
-    const match = RegExp(excludeRegex).exec(content);
-    if (match && match[1]) {
-      const excludeContent = match[1];
-      const stringLiteralRegex = /"([^"]*)"/g;
-      let stringMatch;
-      while ((stringMatch = stringLiteralRegex.exec(excludeContent)) !== null) {
-        if (stringMatch[1]) {
-          patterns.push(stringMatch[1]);
-        }
-      }
+    const tsConfig = JSON.parse(content) as { exclude: string[] };
+    if (tsConfig.exclude?.length) {
+      return tsConfig.exclude;
     }
+    return [];
   } catch {
-    // Silently ignore parsing errors, returning patterns found so far
+    return [];
   }
-  return patterns;
 }
 
 export async function getExcludedFiles(
