@@ -12,11 +12,11 @@ type MockGetContent = jest.Mock<
   ) => Promise<OctokitResponse<unknown>>
 >;
 
-const mockGetContentFunction: MockGetContent = jest.fn();
+const mockGetContent: MockGetContent = jest.fn();
 const mockOctokit = {
   rest: {
     repos: {
-      getContent: mockGetContentFunction,
+      getContent: mockGetContent,
     },
   },
 };
@@ -27,8 +27,6 @@ const ctx = {
   octokit: mockOctokit,
   payload: { repository: { owner: { login: "test-owner" }, name: "test-repo" } },
 } as unknown as ContextPlugin;
-
-const mockGetContent: MockGetContent = mockGetContentFunction;
 
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
@@ -76,7 +74,7 @@ function mockFileResponse(content: string): Promise<OctokitResponse<unknown>> {
 }
 
 function mockNotFoundError(): Promise<never> {
-  const error = new Error("Not Found") as Error & { status?: number }; // Add type assertion
+  const error = new Error("Not Found") as Error & { status?: number };
   error.status = 404;
   return Promise.reject(error);
 }
