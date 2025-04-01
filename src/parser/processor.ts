@@ -47,7 +47,7 @@ export class Processor {
       return Infinity;
     }
     const priceTagReward = getTaskReward(issue);
-    return priceTagReward || Infinity;
+    return priceTagReward ?? Infinity;
   }
 
   async run(data: Readonly<IssueActivity>) {
