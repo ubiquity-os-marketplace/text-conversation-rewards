@@ -59,6 +59,9 @@ jobs:
       - name: Generate Rewards Summary
         run: bun run scripts/generate-rewards-summary.ts
 
+      - name: Generate CSV Summary
+        run: bun run scripts/generate-csv-summary.ts
+
       - name: Output Rewards Summary
         run: echo "$(< rewards-summary.md)" >> $GITHUB_STEP_SUMMARY
 
@@ -74,3 +77,4 @@ jobs:
           path: |
             results-${{ matrix.organization }}.zip
             invalid-issues.json
+            results/rewards_summary.csv
