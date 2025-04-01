@@ -25,6 +25,7 @@ import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
+import { utils } from "ethers";
 
 interface Payload {
   evmNetworkId: number;
@@ -495,7 +496,7 @@ export class PermitGenerationModule extends BaseModule {
           beneficiary_id: beneficiaryId,
           location_id: locationId,
           token_id: null,
-          nonce: "",
+          nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
           deadline: "",
           signature: "",
           partner_id: null,
