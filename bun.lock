@@ -11,6 +11,7 @@
         "@sinclair/typebox": "0.34.30",
         "@supabase/supabase-js": "2.42.0",
         "@ubiquity-dao/rpc-handler": "1.3.0",
+        "@ubiquity-os/ethers-decode-error": "^1.1.0",
         "@ubiquity-os/permit-generation": "^2.0.6",
         "@ubiquity-os/plugin-sdk": "3.1.3",
         "@ubiquity-os/ubiquity-os-logger": "^1.4.0",
@@ -790,6 +791,8 @@
     "@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@8.28.0", "", { "dependencies": { "@typescript-eslint/types": "8.28.0", "eslint-visitor-keys": "^4.2.0" } }, "sha512-hbn8SZ8w4u2pRwgQ1GlUrPKE+t2XvcCW5tTRF7j6SMYIuYG37XuzIW44JCZPa36evi0Oy2SnM664BlIaAuQcvg=="],
 
     "@ubiquity-dao/rpc-handler": ["@ubiquity-dao/rpc-handler@1.3.0", "", { "dependencies": { "@ethersproject/providers": "5.7.2", "axios": "^1.7.1", "node-fetch": "^3.3.2" } }, "sha512-BoN3IENjJWaMHSk3tC2I48e0Bz8NbwmjymLQ9EamN3lMf9djTEdWbmD2baRr9pIZJ6Sh5HzgYdCN+i7I1lZbVw=="],
+
+    "@ubiquity-os/ethers-decode-error": ["@ubiquity-os/ethers-decode-error@1.1.0", "", { "peerDependencies": { "ethers": "^5.0.0" } }, "sha512-xSy1DTgDWZrLsjt/F8MpTJSst0ABzKrD/QZju6soGuqTnAWpN7X3DuYiEHWZ3KoIYdZCxs1iK73FiJdaVZHyKA=="],
 
     "@ubiquity-os/permit-generation": ["@ubiquity-os/permit-generation@2.0.6", "", { "dependencies": { "@actions/core": "^1.10.1", "@actions/github": "^6.0.0", "@octokit/rest": "^20.1.0", "@octokit/webhooks": "^13.3.0", "@sinclair/typebox": "^0.32.5", "@supabase/supabase-js": "2.42.0", "@ubiquity-dao/rpc-handler": "1.3.0", "@uniswap/permit2-sdk": "^1.2.0", "dotenv": "^16.4.4", "ethers": "^5.7.2", "libsodium-wrappers": "^0.7.13" } }, "sha512-NnBijxuwdM6vIS1oU6lZg2Ke1GGSaLtm+hqGgzbpyeO/IkzinWTWEuN7nMKIMvES98ZwUSz13NOOWexSUcN4MQ=="],
 
