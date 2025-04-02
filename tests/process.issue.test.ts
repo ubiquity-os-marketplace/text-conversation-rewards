@@ -394,6 +394,31 @@ describe("Modules tests", () => {
     });
   });
 
+  it("Should return 0 when priceTagReward is 0 (due to Price: 0 label)", () => {
+    const processor = new Processor({
+      ...ctx,
+      config: {
+        ...ctx.config,
+        incentives: {
+          ...ctx.config.incentives,
+          limitRewards: true,
+        },
+      },
+    });
+
+    const mockIssueWithZeroPrice = { labels: [{ name: "Price: 0 USD" }] } as unknown as GitHubIssue;
+
+    const rewardLimit = processor._getRewardsLimit(mockIssueWithZeroPrice);
+    expect(rewardLimit).toBe(0);
+
+    const priceTagReward = 0;
+    const oldImplementationResult = priceTagReward || Infinity;
+    expect(oldImplementationResult).toBe(Infinity);
+
+    const newImplementationResult = priceTagReward ?? Infinity;
+    expect(newImplementationResult).toBe(0);
+  });
+
   it("Should return the max corresponding to the label of the issue if enabled", async () => {
     const processor = new Processor({
       ...ctx,

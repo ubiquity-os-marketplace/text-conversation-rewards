@@ -43,30 +43,42 @@ export class GithubCommentModule extends BaseModule {
     return someReward.payoutMode;
   }
 
-  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
-    const keysToRemove: string[] = [];
+  /**
+   * Generates content when it needs to be stripped due to length limits
+   */
+  private async _getStrippedContent(result: Result, taskReward: number): Promise<string> {
     const bodyArray: (string | undefined)[] = [];
+
+    this.context.logger.info("Stripping content due to excessive length.");
+    bodyArray.push("> [!NOTE]\n");
+    bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
+
+    for (const [key, value] of Object.entries(result)) {
+      // Remove result with 0 total from being displayed
+      if (result[key].total <= 0) continue;
+      result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
+      bodyArray.push(result[key].evaluationCommentHtml);
+    }
+
+    bodyArray.push(
+      createStructuredMetadata("GithubCommentModule", {
+        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
+      })
+    );
+
+    return bodyArray.join("");
+  }
+
+  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const taskReward = getTaskReward(data.self);
-    const payoutMode = this._getPayoutMode(result);
 
     if (stripContent) {
-      this.context.logger.info("Stripping content due to excessive length.");
-      bodyArray.push("> [!NOTE]\n");
-      bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
-      for (const [key, value] of Object.entries(result)) {
-        // Remove result with 0 total from being displayed
-        if (result[key].total <= 0) continue;
-        result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
-        bodyArray.push(result[key].evaluationCommentHtml);
-      }
-      bodyArray.push(
-        createStructuredMetadata("GithubCommentModule", {
-          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-          payoutMode,
-        })
-      );
-      return bodyArray.join("");
+      return this._getStrippedContent(result, taskReward);
     }
+
+    const keysToRemove: string[] = [];
+    const bodyArray: (string | undefined)[] = [];
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
@@ -97,7 +109,7 @@ export class GithubCommentModule extends BaseModule {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        payoutMode,
+        payoutMode: this._getPayoutMode(result),
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
