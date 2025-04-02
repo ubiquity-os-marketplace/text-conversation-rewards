@@ -82,7 +82,7 @@ function mockNotFoundError(): Promise<never> {
 describe("getExcludedFiles tests", () => {
   const owner = "test-owner";
   const repo = "test-repo";
-  const defaults = ["dist/**", "*.lockb", "*.lock", "tests/__mocks__/"];
+  const defaults = ["dist/**", "*.lockb", "*.lock", "tests/__mocks__/", "bin/", "package-lock.json"];
 
   it("should return defaults if no files are found", async () => {
     mockGetContent.mockImplementation(mockNotFoundError);
@@ -143,7 +143,7 @@ describe("getExcludedFiles tests", () => {
       return mockNotFoundError();
     });
     const result = await getExcludedFiles(ctx, owner, repo);
-    expect(new Set(result)).toEqual(new Set([...defaults, "node_modules", "dist", "**/*.spec.ts"]));
+    expect(new Set(result)).toEqual(new Set([...defaults, "node_modules", "dist", "**/*.spec.ts", "bin/"]));
     expect(result).toHaveLength(defaults.length + 3);
   });
 
