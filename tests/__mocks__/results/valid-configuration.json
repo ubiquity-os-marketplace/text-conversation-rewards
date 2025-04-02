@@ -329,7 +329,9 @@
       "debug": true,
       "post": false
     },
-    "payment": {},
+    "payment": {
+      "automaticTransferMode": false
+    },
     "requirePriceLabel": true,
     "userExtractor": {
       "redeemTask": true

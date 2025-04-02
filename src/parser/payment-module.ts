@@ -60,7 +60,9 @@ export interface DirectTransferInfo {
 
 export class PaymentModule extends BaseModule {
   readonly _configuration: PaymentConfiguration | null = this.context.config.incentives.payment;
-  readonly _autoTransferMode: boolean | undefined = this.context.config.incentives.payment?.automaticTransferMode;
+  readonly _autoTransferMode = this.context.config.incentives.payment?.automaticTransferMode
+    ? this.context.config.incentives.payment?.automaticTransferMode
+    : true;
   readonly _evmPrivateEncrypted: string = this.context.config.evmPrivateEncrypted;
   readonly _evmNetworkId: number = this.context.config.evmNetworkId;
   readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
@@ -800,7 +802,9 @@ export class PaymentModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(paymentConfigurationType, this._configuration)) {
-      this.context.logger.warn("The configuration for the module PaymentModule is invalid or missing, disabling.");
+      this.context.logger.warn("The configuration for the module PaymentModule is invalid or missing, disabling.", {
+        cfg: this._configuration,
+      });
       return false;
     }
     return true;
