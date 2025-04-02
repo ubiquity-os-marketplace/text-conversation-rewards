@@ -60,9 +60,10 @@ export interface DirectTransferInfo {
 
 export class PaymentModule extends BaseModule {
   readonly _configuration: PaymentConfiguration | null = this.context.config.incentives.payment;
-  readonly _autoTransferMode = this.context.config.incentives.payment?.automaticTransferMode
-    ? this.context.config.incentives.payment?.automaticTransferMode
-    : true;
+  readonly _autoTransferMode =
+    this.context.config.incentives.payment?.automaticTransferMode == undefined
+      ? true
+      : this.context.config.incentives.payment?.automaticTransferMode;
   readonly _evmPrivateEncrypted: string = this.context.config.evmPrivateEncrypted;
   readonly _evmNetworkId: number = this.context.config.evmNetworkId;
   readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;

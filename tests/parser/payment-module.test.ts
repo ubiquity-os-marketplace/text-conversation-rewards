@@ -281,6 +281,38 @@ describe("payment-module.ts", () => {
     });
   });
 
+  describe("_automaticTransferMode", () => {
+    beforeEach(() => {
+      ctx.env.PERMIT_FEE_RATE = "";
+      drop(db);
+      for (const table of Object.keys(dbSeed)) {
+        const tableName = table as keyof typeof dbSeed;
+        for (const row of dbSeed[tableName]) {
+          db[tableName].create(row);
+        }
+      }
+    });
+    it("Should set correct value for _automaticTransferMode", async () => {
+      ctx.config.incentives.payment = { automaticTransferMode: false };
+      let paymentModule = new PaymentModule(ctx);
+      expect(paymentModule._autoTransferMode).toEqual(false);
+
+      ctx.config.incentives.payment = { automaticTransferMode: true };
+      paymentModule = new PaymentModule(ctx);
+      expect(paymentModule._autoTransferMode).toEqual(true);
+
+      ctx.config.incentives.payment = {};
+      paymentModule = new PaymentModule(ctx);
+      expect(paymentModule._autoTransferMode).toEqual(true);
+
+      ctx.config.incentives.payment = null;
+      paymentModule = new PaymentModule(ctx);
+      expect(paymentModule._autoTransferMode).toEqual(true);
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+  });
   describe("_getPayoutMode()", () => {
     beforeEach(() => {
       ctx.env.PERMIT_FEE_RATE = "";
@@ -300,6 +332,7 @@ describe("payment-module.ts", () => {
     it("Should return null if the `payoutMode` was already set to `direct`", async () => {
       ctx.config.incentives.payment = { automaticTransferMode: false };
       let paymentModule = new PaymentModule(ctx);
+
       let payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
@@ -330,6 +363,7 @@ describe("payment-module.ts", () => {
 
     it("Should return `permit` if the `payoutMode` was already set to `permit` even if `autoTransferMode` is set to `true`", async () => {
       ctx.config.incentives.payment = { automaticTransferMode: true };
+
       const paymentModule = new PaymentModule(ctx);
 
       const payoutMode = await paymentModule._getPayoutMode({
