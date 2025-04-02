@@ -22,11 +22,6 @@
         "default": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
         "type": "string"
       },
-      "automaticTransferMode": {
-        "default": true,
-        "description": "If set to false, or if there are insufficient funds to settle the payment, permits will be generated instead of immediately transferring rewards to the beneficiaries.",
-        "type": "boolean"
-      },
       "incentives": {
         "default": {},
         "type": "object",
@@ -1881,10 +1876,11 @@
             "default": null,
             "anyOf": [
               {
+                "default": {},
                 "type": "object",
                 "properties": {
                   "automaticTransferMode": {
-                    "default": false,
+                    "default": true,
                     "description": "If set to false, or if there are insufficient funds to settle the payment, permits will be generated instead of immediately transferring rewards to the beneficiaries.",
                     "type": "boolean"
                   }
