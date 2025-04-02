@@ -99,7 +99,7 @@ export class PermitGenerationModule extends BaseModule {
     const adapters = {} as ReturnType<typeof createAdapters>;
 
     this.context.logger.info("Will attempt to apply fees...");
-    // apply fees
+
     result = await this._applyFees(result, payload.erc20RewardToken);
 
     result = await this._handlePermitGeneration(
@@ -108,7 +108,7 @@ export class PermitGenerationModule extends BaseModule {
       this.context.payload,
       issueId,
       env,
-      eventName, // Pass eventName
+      eventName,
       octokit,
       permitLogger,
       adapters
@@ -119,9 +119,6 @@ export class PermitGenerationModule extends BaseModule {
     return result;
   }
 
-  /**
-   * Handles the loop for generating and saving permits when permit config is present.
-   */
   async _handlePermitGeneration(
     result: Result,
     permitPayload: Payload,
@@ -181,7 +178,6 @@ export class PermitGenerationModule extends BaseModule {
       }
     }
 
-    // remove treasury item from final result in order not to display permit fee in GitHub comments
     return result;
   }
 
@@ -460,9 +456,7 @@ export class PermitGenerationModule extends BaseModule {
         throw this.context.logger.error(`Failed to find user with ID ${userId} in database.`, { userError });
       }
       const beneficiaryId = userData.id;
-
       const locationId = await this._getOrCreateIssueLocation(issue);
-
       const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
 
       const { data: existingXp, error: duplicateCheckError } = await this._supabase
