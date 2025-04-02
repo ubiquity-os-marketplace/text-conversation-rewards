@@ -329,7 +329,7 @@
       "debug": true,
       "post": false
     },
-    "permitGeneration": {},
+    "payment": {},
     "requirePriceLabel": true,
     "userExtractor": {
       "redeemTask": true

@@ -16,7 +16,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
-import { PERMIT2_ABI, ERC20_ABI, isEthersError } from "../src/helpers/web3";
+import { PERMIT2_ABI, ERC20_ABI } from "../src/helpers/web3";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -40,7 +40,6 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
   return {
     PERMIT2_ABI: PERMIT2_ABI,
     ERC20_ABI: ERC20_ABI,
-    isEthersError: isEthersError,
     Erc20Wrapper: MockErc20Wrapper,
     Permit2Wrapper: MockPermit2Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),

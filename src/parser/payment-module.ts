@@ -15,16 +15,14 @@ import {
   TokenType,
 } from "@ubiquity-os/permit-generation";
 import Decimal from "decimal.js";
-import {
-  PermitGenerationConfiguration,
-  permitGenerationConfigurationType,
-} from "../configuration/permit-generation-configuration";
+import { PaymentConfiguration, paymentConfigurationType } from "../configuration/payment-configuration";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { PayoutMode, Result } from "../types/results";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
+import { decodeError } from "@ubiquity-os/ethers-decode-error";
 import {
   Erc20Wrapper,
   getContract,
@@ -33,7 +31,6 @@ import {
   BatchTransferPermit,
   PERMIT2_ABI,
   ERC20_ABI,
-  isEthersError,
   TransferRequest,
 } from "../helpers/web3";
 import { BigNumber, ethers, utils } from "ethers";
@@ -62,8 +59,8 @@ export interface DirectTransferInfo {
 }
 
 export class PaymentModule extends BaseModule {
-  readonly _configuration: PermitGenerationConfiguration | null = this.context.config.incentives.permitGeneration;
-  readonly _autoTransferMode: boolean = this.context.config.automaticTransferMode;
+  readonly _configuration: PaymentConfiguration | null = this.context.config.incentives.payment;
+  readonly _autoTransferMode: boolean | undefined = this.context.config.incentives.payment?.automaticTransferMode;
   readonly _evmPrivateEncrypted: string = this.context.config.evmPrivateEncrypted;
   readonly _evmNetworkId: number = this.context.config.evmNetworkId;
   readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
@@ -401,16 +398,8 @@ export class PaymentModule extends BaseModule {
       const gasEstimation = await permit2Wrapper.estimatePermitTransferFromGas(fundingWallet, batchTransferPermit);
       return { gasEstimation, batchTransferPermit };
     } catch (e) {
-      if (isEthersError(e)) {
-        if (e.message.includes("TRANSFER_FROM_FAILED")) {
-          throw this.context.logger.error("The gas limit could not be estimated because the transaction might fail", {
-            e,
-          });
-        } else if (e.reason === "InvalidNonce" || e.message.includes("InvalidNonce")) {
-          throw this.context.logger.error("The transaction is likely to be reverted due to an invalid nonce", { e });
-        }
-      }
-      throw this.context.logger.error("Failed to estimate the total gas limit", { e });
+      const { error } = decodeError(e);
+      throw this.context.logger.error("Gas estimation failed for direct transfer transaction", { error });
     }
   }
 
@@ -474,22 +463,8 @@ export class PaymentModule extends BaseModule {
       );
       return [tx, permits];
     } catch (e) {
-      if (isEthersError(e)) {
-        if (e.code === ethers.errors.INSUFFICIENT_FUNDS || e.message.includes(ethers.errors.INSUFFICIENT_FUNDS)) {
-          throw this.context.logger.error(`Insufficient funds to complete the transaction`, { e });
-        } else if (
-          e.code === ethers.errors.UNPREDICTABLE_GAS_LIMIT ||
-          e.message.includes("TRANSFER_FROM_FAILED") ||
-          e.message.includes(ethers.errors.UNPREDICTABLE_GAS_LIMIT)
-        ) {
-          const message = e.message.includes("TRANSFER_FROM_FAILED")
-            ? "The gas limit could not be estimated because the transaction might fail"
-            : "The gas limit could not be estimated";
-
-          throw this.context.logger.error(message, { e });
-        }
-      }
-      throw this.context.logger.error(`Transaction failed: ${e}`, { e });
+      const error = decodeError(e);
+      throw this.context.logger.error(`Direct reward transfer failed due to an EVM transaction error`, { error });
     }
   }
 
@@ -611,7 +586,7 @@ export class PaymentModule extends BaseModule {
         .select("id")
         .single();
       if (!newLocationData || error) {
-        console.error("Failed to create a new location", error);
+        this.context.logger.error("Failed to create a new location", error);
       } else {
         locationId = newLocationData.id;
       }
@@ -824,10 +799,8 @@ export class PaymentModule extends BaseModule {
   }
 
   get enabled(): boolean {
-    if (!Value.Check(permitGenerationConfigurationType, this._configuration)) {
-      this.context.logger.warn(
-        "The configuration for the module PaymentModule is invalid or missing, disabling."
-      );
+    if (!Value.Check(paymentConfigurationType, this._configuration)) {
+      this.context.logger.warn("The configuration for the module PaymentModule is invalid or missing, disabling.");
       return false;
     }
     return true;

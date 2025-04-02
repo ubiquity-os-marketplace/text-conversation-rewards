@@ -21,14 +21,14 @@ import eventIncentivesResults from "./__mocks__/results/event-incentives-results
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
-import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
+import paymentResults from "./__mocks__/results/permit-generation-results.json";
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
-import { PERMIT2_ABI, ERC20_ABI, isEthersError } from "../src/helpers/web3";
+import { PERMIT2_ABI, ERC20_ABI } from "../src/helpers/web3";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -52,7 +52,6 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
   return {
     PERMIT2_ABI: PERMIT2_ABI,
     ERC20_ABI: ERC20_ABI,
-    isEthersError: isEthersError,
     Erc20Wrapper: MockErc20Wrapper,
     Permit2Wrapper: MockPermit2Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
@@ -343,7 +342,7 @@ describe("Modules tests", () => {
     server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    expect(result).toEqual(permitGenerationResults);
+    expect(result).toEqual(paymentResults);
   });
 
   it("Should generate GitHub comment", async () => {

@@ -10,11 +10,11 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
-import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
+import originalpaymentResults from "./__mocks__/results/permit-generation-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-import { ERC20_ABI, isEthersError, PERMIT2_ABI } from "../src/helpers/web3";
+import { ERC20_ABI, PERMIT2_ABI } from "../src/helpers/web3";
 import { PayoutMode } from "../src/types/results";
 import "./helpers/permit-mock";
 
@@ -40,7 +40,6 @@ jest.unstable_mockModule("../src/helpers/web3", () => {
   return {
     PERMIT2_ABI: PERMIT2_ABI,
     ERC20_ABI: ERC20_ABI,
-    isEthersError: isEthersError,
     Erc20Wrapper: MockErc20Wrapper,
     Permit2Wrapper: MockPermit2Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
@@ -228,7 +227,7 @@ afterAll(() => {
 });
 
 // Run the test twice to cover both auto-transfer and permit-generation modes.
-const autoTransferModeVector = [false, true];
+const automaticTransferModeVector = [false, true];
 interface UserData {
   [key: string]: unknown;
 }
@@ -236,21 +235,21 @@ interface UserData {
 interface JsonData {
   [key: string]: UserData;
 }
-let paymentResult: JsonData = {};
-describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode) => {
+let paymentResults: JsonData = {};
+describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTransferMode) => {
   beforeAll(async () => {
-    ctx.config.automaticTransferMode = autoTransferMode;
-    paymentResult = { ...permitGenerationResults };
-    const payoutMode: PayoutMode = autoTransferMode ? "transfer" : "permit";
+    ctx.config.incentives.payment = { automaticTransferMode: automaticTransferMode };
+    paymentResults = { ...originalpaymentResults };
+    const payoutMode: PayoutMode = automaticTransferMode ? "transfer" : "permit";
 
-    for (const username of Object.keys(paymentResult)) {
-      if (!paymentResult[username]["permitUrl"] && !autoTransferMode) continue; // getWalletByUserId mock returns null here
+    for (const username of Object.keys(paymentResults)) {
+      if (!paymentResults[username]["permitUrl"] && !automaticTransferMode) continue; // getWalletByUserId mock returns null here
 
-      if (autoTransferMode) {
-        delete paymentResult[username]["permitUrl"];
-        paymentResult[username].explorerUrl = "https://rpc/tx/0xSent";
+      if (automaticTransferMode) {
+        delete paymentResults[username]["permitUrl"];
+        paymentResults[username].explorerUrl = "https://rpc/tx/0xSent";
       }
-      paymentResult[username].payoutMode = payoutMode;
+      paymentResults[username].payoutMode = payoutMode;
     }
   });
 
@@ -285,7 +284,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
     });
   });
 
-  describe(`Admin User Tests (autoTransferMode : ${autoTransferMode})`, () => {
+  describe(`Admin User Tests (automaticTransferMode : ${automaticTransferMode})`, () => {
     beforeEach(() => {
       isAdminMocked.mockImplementation(() => Promise.resolve(true));
     });
@@ -308,7 +307,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
-      expect(result).toEqual(paymentResult);
+      expect(result).toEqual(paymentResults);
     });
 
     it(`should pay for non - collaborative issue`, async () => {
@@ -329,11 +328,11 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
-      expect(result).toEqual(paymentResult);
+      expect(result).toEqual(paymentResults);
     });
   });
 
-  describe(`Non - Admin User Tests(autoTransferMode : ${autoTransferMode})`, () => {
+  describe(`Non - Admin User Tests(automaticTransferMode : ${automaticTransferMode})`, () => {
     beforeEach(() => {
       isAdminMocked.mockImplementation(() => Promise.resolve(false));
     });
@@ -356,7 +355,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
-      expect(result).toEqual(paymentResult);
+      expect(result).toEqual(paymentResults);
     });
 
     it(`should not pay for non - collaborative issue`, async () => {
@@ -377,7 +376,7 @@ describe.each(autoTransferModeVector)("Payment Module Tests", (autoTransferMode)
       await processor.run(activity);
 
       const result = JSON.parse(processor.dump());
-      expect(result).not.toEqual(paymentResult);
+      expect(result).not.toEqual(paymentResults);
     });
   });
 });

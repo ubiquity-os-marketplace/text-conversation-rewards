@@ -1877,12 +1877,18 @@
               }
             ]
           },
-          "permitGeneration": {
+          "payment": {
             "default": null,
             "anyOf": [
               {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "automaticTransferMode": {
+                    "default": false,
+                    "description": "If set to false, or if there are insufficient funds to settle the payment, permits will be generated instead of immediately transferring rewards to the beneficiaries.",
+                    "type": "boolean"
+                  }
+                }
               },
               {
                 "type": "null"

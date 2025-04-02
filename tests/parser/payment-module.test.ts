@@ -10,7 +10,7 @@ import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-import { ERC20_ABI, isEthersError, PERMIT2_ABI } from "../../src/helpers/web3";
+import { ERC20_ABI, PERMIT2_ABI } from "../../src/helpers/web3";
 import { IssueActivity } from "../../src/issue-activity";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
@@ -78,7 +78,6 @@ jest.unstable_mockModule("../../src/helpers/web3", () => {
   return {
     PERMIT2_ABI: PERMIT2_ABI,
     ERC20_ABI: ERC20_ABI,
-    isEthersError: isEthersError,
     Erc20Wrapper: MockErc20Wrapper,
     Permit2Wrapper: MockPermit2Wrapper,
     getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
@@ -299,14 +298,14 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return null if the `payoutMode` was already set to `direct`", async () => {
-      ctx.config.automaticTransferMode = false;
+      ctx.config.incentives.payment = { automaticTransferMode: false };
       let paymentModule = new PaymentModule(ctx);
       let payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual(null);
 
-      ctx.config.automaticTransferMode = true;
+      ctx.config.incentives.payment = { automaticTransferMode: true };
       paymentModule = new PaymentModule(ctx);
       payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
@@ -315,7 +314,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return `permit` if the `payoutMode` was already set to `permit` or `autoTransferMode` is set to `false`", async () => {
-      ctx.config.automaticTransferMode = false;
+      ctx.config.incentives.payment = { automaticTransferMode: false };
       const paymentModule = new PaymentModule(ctx);
 
       let payoutMode = await paymentModule._getPayoutMode({
@@ -330,7 +329,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return `permit` if the `payoutMode` was already set to `permit` even if `autoTransferMode` is set to `true`", async () => {
-      ctx.config.automaticTransferMode = true;
+      ctx.config.incentives.payment = { automaticTransferMode: true };
       const paymentModule = new PaymentModule(ctx);
 
       const payoutMode = await paymentModule._getPayoutMode({
@@ -340,7 +339,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return `direct` if the `payoutMode` was not set and `autoTransferMode` is set to `true`", async () => {
-      ctx.config.automaticTransferMode = true;
+      ctx.config.incentives.payment = { automaticTransferMode: true };
       const paymentModule = new PaymentModule(ctx);
 
       const payoutMode = await paymentModule._getPayoutMode({
