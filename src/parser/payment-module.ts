@@ -399,7 +399,7 @@ export class PaymentModule extends BaseModule {
       return { gasEstimation, batchTransferPermit };
     } catch (e) {
       const { error } = decodeError(e);
-      throw this.context.logger.error("Gas estimation failed for direct transfer transaction", { error });
+      throw this.context.logger.error("Gas estimation failed for direct transfer transaction", { err: error });
     }
   }
 
@@ -464,7 +464,7 @@ export class PaymentModule extends BaseModule {
       return [tx, permits];
     } catch (e) {
       const error = decodeError(e);
-      throw this.context.logger.error(`Direct reward transfer failed due to an EVM transaction error`, { error });
+      throw this.context.logger.error(`Direct reward transfer failed due to an EVM transaction error`, { err: error });
     }
   }
 

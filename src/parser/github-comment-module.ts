@@ -40,7 +40,7 @@ export class GithubCommentModule extends BaseModule {
 
   _getPayoutMode(result: Result): string | undefined {
     const someReward = Object.values(result)[0];
-    return someReward.payoutMode;
+    return someReward?.payoutMode;
   }
 
   /**
