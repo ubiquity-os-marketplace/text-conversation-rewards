@@ -5,7 +5,7 @@ export const paymentConfigurationType = Type.Object(
     /**
      *  If set to false or if there are insufficient funds to settle the payment,
      *  permits will be generated instead of processing direct payouts.
-     *  Also, if this config was missing the default behaviour is to consider it true.
+     *  Also, if this config was missing the default behavior is to consider it true.
      */
     automaticTransferMode: Type.Optional(
       Type.Boolean({
