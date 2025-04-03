@@ -489,7 +489,7 @@ export class PermitGenerationModule extends BaseModule {
 
     for (const [key, value] of Object.entries(result)) {
       if (key === this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
-        this.context.logger.debug("Skipping XP recording for treasury user.");
+        this.context.logger.info(`Skipping XP recording for treasury user ${key}.`);
         continue;
       }
       if (!value.userId) {
