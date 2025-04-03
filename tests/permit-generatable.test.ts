@@ -145,6 +145,7 @@ const { ReviewIncentivizerModule } = await import("../src/parser/review-incentiv
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
+const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
 
 beforeAll(() => {
   server.listen();
@@ -223,6 +224,7 @@ describe("Permit Generation Module Tests", () => {
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -244,6 +246,7 @@ describe("Permit Generation Module Tests", () => {
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -271,6 +274,7 @@ describe("Permit Generation Module Tests", () => {
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
@@ -292,6 +296,7 @@ describe("Permit Generation Module Tests", () => {
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PermitGenerationModule(ctx),
       ];
 
