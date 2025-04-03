@@ -52,7 +52,6 @@ export class PermitGenerationModule extends BaseModule {
       return this._handleXpRecording(result);
     }
 
-    this.context.logger.info("Permit settings found, proceeding with permit generation.");
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
@@ -99,55 +98,21 @@ export class PermitGenerationModule extends BaseModule {
     const adapters = {} as ReturnType<typeof createAdapters>;
 
     this.context.logger.info("Will attempt to apply fees...");
-
     result = await this._applyFees(result, payload.erc20RewardToken);
 
-    result = await this._handlePermitGeneration(
-      result,
-      payload,
-      this.context.payload,
-      issueId,
-      env,
-      eventName,
-      octokit,
-      permitLogger,
-      adapters
-    );
-
-    if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
-
-    return result;
-  }
-
-  async _handlePermitGeneration(
-    result: Result,
-    permitPayload: Payload,
-    contextPayload: Context["payload"],
-    issueId: number,
-    env: EnvConfig,
-    eventName: SupportedEvents,
-    octokit: Context["octokit"],
-    permitLogger: Context["logger"],
-    adapters: ReturnType<typeof createAdapters>
-  ): Promise<Result> {
     for (const [key, value] of Object.entries(result)) {
       this.context.logger.debug(`Updating result for user ${key}`);
       try {
-        if (!value.userId) {
-          this.context.logger.error(`[PermitGenerationModule] Missing userId for user ${key}, cannot generate permit.`);
-          continue;
-        }
-
         const config: Context["config"] = {
-          evmNetworkId: permitPayload.evmNetworkId,
-          evmPrivateEncrypted: permitPayload.evmPrivateEncrypted,
+          evmNetworkId: payload.evmNetworkId,
+          evmPrivateEncrypted: payload.evmPrivateEncrypted,
           permitRequests: [
             {
               amount: value.total,
               username: key,
               contributionType: "",
               type: TokenType.ERC20,
-              tokenAddress: permitPayload.erc20RewardToken,
+              tokenAddress: payload.erc20RewardToken,
             },
           ],
         };
@@ -156,14 +121,14 @@ export class PermitGenerationModule extends BaseModule {
             env,
             eventName,
             logger: permitLogger,
-            payload: contextPayload,
+            payload,
             adapters: createAdapters(this._supabase, {
               env,
               eventName,
               octokit,
               config,
               logger: permitLogger,
-              payload: contextPayload,
+              payload,
               adapters,
             }),
             octokit,
@@ -172,11 +137,14 @@ export class PermitGenerationModule extends BaseModule {
           config.permitRequests
         );
         result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-        await this._savePermitsToDatabase(value.userId, { issueUrl: permitPayload.issueUrl, issueId }, permits);
+        await this._savePermitsToDatabase(result[key].userId, { issueUrl: payload.issueUrl, issueId }, permits);
       } catch (e) {
         this.context.logger.error(`[PermitGenerationModule] Failed to generate permits for user ${key}`, { e });
       }
     }
+
+    // remove treasury item from final result in order not to display permit fee in GitHub comments
+    if (env.PERMIT_TREASURY_GITHUB_USERNAME) delete result[env.PERMIT_TREASURY_GITHUB_USERNAME];
 
     return result;
   }
