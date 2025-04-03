@@ -71,7 +71,7 @@ export class SimplificationIncentivizerModule extends BaseModule {
 
   get enabled(): boolean {
     if (!Value.Check(simplificationIncentivizerConfigurationType, this._configuration)) {
-      this.context.logger.error(
+      this.context.logger.warn(
         "Invalid / missing configuration detected for SimplificationIncentivizerModule, disabling."
       );
       return false;
