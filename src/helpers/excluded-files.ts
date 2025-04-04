@@ -33,16 +33,68 @@ async function parseGitAttributes(content: string): Promise<GitAttributes[]> {
     .filter((item): item is GitAttributes => item !== null);
 }
 
-export async function getExcludedFiles(context: ContextPlugin, owner: string, repo: string, ref?: string) {
-  const gitAttributesContent = await getFileContent(context, owner, repo, ".gitattributes", ref);
-  if (!gitAttributesContent) {
-    return null;
-  }
-  const gitAttributesLinguistGenerated = (await parseGitAttributes(gitAttributesContent))
-    .filter((v) => v.attributes["linguist-generated"])
-    .map((v) => v.pattern);
+const DEFAULT_EXCLUDED_PATTERNS = ["dist/**", "*.lockb", "*.lock", "tests/__mocks__/", "bin/", "package-lock.json"];
 
-  return gitAttributesLinguistGenerated;
+function parsePrettierIgnore(content: string): string[] {
+  return content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"));
+}
+
+function parseTsConfigExclude(content: string): string[] {
+  const patterns: string[] = [];
+  try {
+    const excludeRegex = /"exclude"\s*:\s*\[([^\]]*)\]/;
+    const match = RegExp(excludeRegex).exec(content);
+    if (match && match[1]) {
+      const excludeContent = match[1];
+      const stringLiteralRegex = /"([^"]*)"/g;
+      let stringMatch;
+      while ((stringMatch = stringLiteralRegex.exec(excludeContent)) !== null) {
+        if (stringMatch[1]) {
+          patterns.push(stringMatch[1]);
+        }
+      }
+    }
+  } catch {
+    // Silently ignore parsing errors, returning patterns found so far
+  }
+  return patterns;
+}
+
+export async function getExcludedFiles(
+  context: ContextPlugin,
+  owner: string,
+  repo: string,
+  ref?: string
+): Promise<string[]> {
+  const allPatterns = [...DEFAULT_EXCLUDED_PATTERNS];
+
+  const [gitAttributesContent, prettierIgnoreContent, tsConfigContent] = await Promise.all([
+    getFileContent(context, owner, repo, ".gitattributes", ref),
+    getFileContent(context, owner, repo, ".prettierignore", ref),
+    getFileContent(context, owner, repo, "tsconfig.json", ref),
+  ]);
+
+  if (gitAttributesContent) {
+    const gitAttributesLinguistGenerated = (await parseGitAttributes(gitAttributesContent))
+      .filter((v) => v.attributes["linguist-generated"])
+      .map((v) => v.pattern);
+    allPatterns.push(...gitAttributesLinguistGenerated);
+  }
+
+  if (prettierIgnoreContent) {
+    const prettierPatterns = parsePrettierIgnore(prettierIgnoreContent);
+    allPatterns.push(...prettierPatterns);
+  }
+
+  if (tsConfigContent) {
+    const tsConfigPatterns = parseTsConfigExclude(tsConfigContent);
+    allPatterns.push(...tsConfigPatterns);
+  }
+
+  return [...new Set(allPatterns)];
 }
 
 async function getFileContent(
@@ -67,11 +119,11 @@ async function getFileContent(
     return null;
   } catch (err) {
     if (err instanceof Error && "status" in err && err.status === 404) {
-      context.logger.info(
-        `.gitattributes was not found for ${context.payload.repository.owner.login}/${context.payload.repository.name}`
-      );
+      context.logger.info(`[${path}] was not found for ${owner}/${repo}`, { err });
       return null;
     }
-    throw context.logger.error(`Error fetching files to be excluded ${err}`);
+    throw context.logger.error(`Could not fetch the list of files to be excluded.`, {
+      err,
+    });
   }
 }
