@@ -39,7 +39,8 @@
     "Flesch",
     "Kincaid",
     "flesch",
-    "OPENROUTER"
+    "OPENROUTER",
+    "keccak"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

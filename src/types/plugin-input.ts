@@ -13,21 +13,29 @@ import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
   {
-    /**
-     * Network ID to run in, default to 100
-     */
-    evmNetworkId: T.Number({ default: 100, description: "Network ID to run in, default to 100", examples: ["100"] }),
-    /**
-     * The encrypted key to use for permit generation
-     */
-    evmPrivateEncrypted: T.String({
-      description: "The encrypted key to use for permit generation",
-      examples: ["0x000..."],
-    }),
-    /**
-     * Reward token for ERC20 permits, default WXDAI for gnosis chain
-     */
-    erc20RewardToken: T.String({ default: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d" }),
+    permits: T.Optional(
+      T.Object({
+        /**
+         * Network ID to run in, default to 100
+         */
+        evmNetworkId: T.Number({
+          default: 100,
+          description: "Network ID to run in, default to 100",
+          examples: ["100"],
+        }),
+        /**
+         * The encrypted key to use for permit generation
+         */
+        evmPrivateEncrypted: T.String({
+          description: "The encrypted key to use for permit generation",
+          examples: ["0x000..."],
+        }),
+        /**
+         * Reward token for ERC20 permits, default WXDAI for gnosis chain
+         */
+        erc20RewardToken: T.String({ default: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d" }),
+      })
+    ),
     incentives: T.Object(
       {
         /**

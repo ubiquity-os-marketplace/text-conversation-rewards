@@ -19,12 +19,13 @@ import {
   PermitGenerationConfiguration,
   permitGenerationConfigurationType,
 } from "../configuration/permit-generation-configuration";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
-import { isAdmin, isCollaborative } from "../helpers/checkers";
+import { utils } from "ethers";
 
 interface Payload {
   evmNetworkId: number;
@@ -45,12 +46,18 @@ export class PermitGenerationModule extends BaseModule {
       this.context.logger.error("[PermitGenerationModule] Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
+
+    if (!this.context.config.permits) {
+      this.context.logger.info("No permit settings found, switching to XP recording mode.");
+      return this._handleXpRecording(result);
+    }
+
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
-      evmPrivateEncrypted: this.context.config.evmPrivateEncrypted,
-      evmNetworkId: this.context.config.evmNetworkId,
-      erc20RewardToken: this.context.config.erc20RewardToken,
+      evmPrivateEncrypted: this.context.config.permits.evmPrivateEncrypted,
+      evmNetworkId: this.context.config.permits.evmNetworkId,
+      erc20RewardToken: this.context.config.permits.erc20RewardToken,
     };
     const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
@@ -91,7 +98,6 @@ export class PermitGenerationModule extends BaseModule {
     const adapters = {} as ReturnType<typeof createAdapters>;
 
     this.context.logger.info("Will attempt to apply fees...");
-    // apply fees
     result = await this._applyFees(result, payload.erc20RewardToken);
 
     for (const [key, value] of Object.entries(result)) {
@@ -402,6 +408,108 @@ export class PermitGenerationModule extends BaseModule {
         this.context.logger.error("Failed to save permits to the database", { e });
       }
     }
+  }
+
+  async _saveXPRecord(userId: number, issue: { issueId: number; issueUrl: string }, numericAmount: number) {
+    this.context.logger.info(
+      `Attempting to save XP for userId: ${userId}, issueId: ${issue.issueId}, amount: ${numericAmount}`
+    );
+    try {
+      const { data: userData, error: userError } = await this._supabase
+        .from("users")
+        .select("id")
+        .eq("id", userId)
+        .single();
+      if (userError || !userData) {
+        throw this.context.logger.error(`Failed to find user with ID ${userId} in database.`, { userError });
+      }
+      const beneficiaryId = userData.id;
+      const locationId = await this._getOrCreateIssueLocation(issue);
+      const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
+
+      const { data: existingXp, error: duplicateCheckError } = await this._supabase
+        .from("permits")
+        .select("id")
+        .eq("beneficiary_id", beneficiaryId)
+        .eq("location_id", locationId)
+        .is("token_id", null)
+        .maybeSingle();
+
+      if (duplicateCheckError) {
+        throw this.context.logger.error("Error checking for duplicate XP records", { duplicateCheckError });
+      }
+
+      if (existingXp) {
+        this.context.logger.info(
+          `Existing XP record found for userId ${userId} on issue ${issue.issueId}. Updating amount.`
+        );
+        const { error: updateError } = await this._supabase
+          .from("permits")
+          .update({ amount: amountString })
+          .eq("id", existingXp.id);
+
+        if (updateError) {
+          throw this.context.logger.error("Failed to update XP record in database", { updateError });
+        }
+        this.context.logger.ok(`XP record updated successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+      } else {
+        const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
+          amount: amountString,
+          beneficiary_id: beneficiaryId,
+          location_id: locationId,
+          token_id: null,
+          nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
+          deadline: "",
+          signature: "",
+          partner_id: null,
+        };
+        const { error: insertError } = await this._supabase.from("permits").insert(insertData);
+
+        if (insertError) {
+          throw this.context.logger.error("Failed to insert XP record into database", { insertError });
+        }
+        this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+      }
+    } catch (e) {
+      this.context.logger.error("An error occurred in _saveXPRecord", { e });
+      throw e;
+    }
+  }
+
+  async _handleXpRecording(result: Result): Promise<Result> {
+    const issueUrl = this.context.payload.issue.html_url;
+    const { issue_number: issueId } = parseGitHubUrl(issueUrl);
+    if (!issueId) {
+      this.context.logger.error("[PermitGenerationModule] Could not extract issue ID from URL for XP recording.", {
+        issueUrl,
+      });
+      return result;
+    }
+    const issueDetails = { issueUrl, issueId };
+
+    for (const [key, value] of Object.entries(result)) {
+      if (key === this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
+        this.context.logger.info(`Skipping XP recording for treasury user ${key}.`);
+        continue;
+      }
+      if (!value.userId) {
+        this.context.logger.error(`[PermitGenerationModule] Missing userId for user ${key}, cannot record XP.`);
+        continue;
+      }
+
+      try {
+        await this._saveXPRecord(value.userId, issueDetails, value.total);
+        this.context.logger.ok(`Successfully recorded XP for user ${key} (ID: ${value.userId})`);
+      } catch (e) {
+        this.context.logger.error(`[PermitGenerationModule] Failed to record XP for user ${key}`, { e });
+      }
+    }
+
+    if (this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
+      delete result[this.context.env.PERMIT_TREASURY_GITHUB_USERNAME];
+    }
+
+    return result;
   }
 
   /**
