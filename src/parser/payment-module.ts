@@ -73,7 +73,7 @@ export class PaymentModule extends BaseModule {
     const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
     if (!canMakePayment) {
-      this.context.logger.error("Non collaborative issue detected, skipping.");
+      this.context.logger.warn("Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
 
@@ -84,14 +84,12 @@ export class PaymentModule extends BaseModule {
       evmNetworkId: this.context.config.evmNetworkId,
       erc20RewardToken: this.context.config.erc20RewardToken,
     };
-    // const { issue_number: issueId } = parseGitHubUrl(payload.issueUrl);
     const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
       node_id: this.context.payload.issue.node_id,
     };
     const env = this.context.env;
 
-    // Decrypt the private key object
     const privateKeyParsed = await this._parsePrivateKey(this._evmPrivateEncrypted);
     const [isPrivateKeyAllowed, privateKey] = await this._isPrivateKeyAllowed(
       privateKeyParsed,
@@ -143,7 +141,7 @@ export class PaymentModule extends BaseModule {
         // Avoid empty transactions and gas wasting, maybe we should move this logic
         // before this block to avoid any extra works
         if (beneficiaries.length === 0) {
-          throw this.context.logger.error("Beneficiary list is empty, skipping the direct transfer of rewards...");
+          throw this.context.logger.warn("Beneficiary list is empty, skipping the direct transfer of rewards...");
         }
 
         // Generate the batch transfer nonce
@@ -165,12 +163,12 @@ export class PaymentModule extends BaseModule {
                 [permits[idx]]
               );
             } catch (e) {
-              this.context.logger.error(`Failed to save permits to the database`, { e });
+              this.context.logger.warn(`Failed to save permits to the database`, { e });
             }
           })
         );
       } catch (e) {
-        this.context.logger.error(`Failed to auto transfer rewards via batch permit transfer`, { e });
+        this.context.logger.warn(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
       }
     }
@@ -218,7 +216,7 @@ export class PaymentModule extends BaseModule {
           await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
           // remove treasury item from final result in order not to display permit fee in GitHub comments
         } catch (e) {
-          this.context.logger.error(`Failed to generate permits for user ${username}`, { e });
+          this.context.logger.warn(`Failed to generate permits for user ${username}`, { e });
         }
       }
     }
@@ -315,7 +313,7 @@ export class PaymentModule extends BaseModule {
     };
 
     if (!hasEnoughRewardToken) {
-      throw this.context.logger.error(
+      throw this.context.logger.warn(
         `The funding wallet lacks sufficient reward tokens to perform direct transfers`,
         directTransferLog
       );
@@ -339,7 +337,7 @@ export class PaymentModule extends BaseModule {
 
     directTransferLog.gas.required = gasEstimation.toString();
     if (nativeBalance.lte(gasEstimation.mul(2))) {
-      throw this.context.logger.error(
+      throw this.context.logger.warn(
         `The funding wallet lacks sufficient gas to perform direct transfers`,
         directTransferLog
       );
@@ -402,7 +400,7 @@ export class PaymentModule extends BaseModule {
       return { gasEstimation, batchTransferPermit };
     } catch (e) {
       const { error } = decodeError(e);
-      throw this.context.logger.error("Gas estimation failed for direct transfer transaction", { err: error });
+      throw this.context.logger.warn("Gas estimation failed for direct transfer transaction", { err: error });
     }
   }
 
@@ -412,7 +410,7 @@ export class PaymentModule extends BaseModule {
       // Obtain the beneficiary wallet address from the github user name
       const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
       if (!userData) {
-        this.context.logger.error(`GitHub user was not found for id ${username}`);
+        this.context.logger.warn(`GitHub user was not found for id ${username}`);
         continue;
       }
       const userId = userData.id;
@@ -422,7 +420,7 @@ export class PaymentModule extends BaseModule {
         .eq("id", userId)
         .single();
       if (err || !walletData.wallets?.address) {
-        this.context.logger.error("Failed to get wallet", { userId, err, walletData });
+        this.context.logger.warn("Failed to get wallet", { userId, err, walletData });
         continue;
       }
       beneficiaries.push({
@@ -467,7 +465,7 @@ export class PaymentModule extends BaseModule {
       return [tx, permits];
     } catch (e) {
       const error = decodeError(e);
-      throw this.context.logger.error(`Direct reward transfer failed due to an EVM transaction error`, { err: error });
+      throw this.context.logger.warn(`Direct reward transfer failed due to an EVM transaction error`, { err: error });
     }
   }
 
