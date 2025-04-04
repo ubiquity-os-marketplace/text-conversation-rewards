@@ -144,9 +144,7 @@ export class PaymentModule extends BaseModule {
           throw this.context.logger.warn("Beneficiary list is empty, skipping the direct transfer of rewards...");
         }
 
-        // Generate the batch transfer nonce
         const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
-
         // Check if funding wallet has enough reward token and gas to transfer rewards directly
         const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
         this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
@@ -214,7 +212,6 @@ export class PaymentModule extends BaseModule {
           result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
           result[username].payoutMode = "permit";
           await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
-          // remove treasury item from final result in order not to display permit fee in GitHub comments
         } catch (e) {
           this.context.logger.warn(`Failed to generate permits for user ${username}`, { e });
         }
@@ -271,19 +268,15 @@ export class PaymentModule extends BaseModule {
     maxRetries = 5,
     initialDelayMs = 500
   ): Promise<DirectTransferInfo> {
-    // Initialize contracts and wallet
     const { rewardTokenWrapper, fundingWallet } = await this._initializeContractsAndWallet(
       privateKey,
       maxRetries,
       initialDelayMs
     );
-
-    // Fetch balances and allowances
     const { rewardBalance, rewardAllowance, nativeBalance } = await this._fetchBalancesAndAllowances(
       rewardTokenWrapper,
       fundingWallet
     );
-
     // Calculate total reward and check if there are enough reward tokens
     const rewardTokenDecimals = await rewardTokenWrapper.getDecimals();
     const transferRequests: TransferRequest[] = beneficiaries.map(
@@ -298,8 +291,6 @@ export class PaymentModule extends BaseModule {
       BigNumber.from(0)
     );
     const hasEnoughRewardToken = rewardBalance.gt(totalReward) && rewardAllowance.gt(totalReward);
-
-    // Log gas and reward info
     const directTransferLog = {
       gas: {
         has: nativeBalance.toString(),
@@ -311,15 +302,12 @@ export class PaymentModule extends BaseModule {
         required: totalReward.toString(),
       },
     };
-
     if (!hasEnoughRewardToken) {
       throw this.context.logger.warn(
         `The funding wallet lacks sufficient reward tokens to perform direct transfers`,
         directTransferLog
       );
     }
-
-    // Check if there is enough gas for the transaction
     const permit2Contract = await getContract(
       this._evmNetworkId,
       permit2Address(this._evmNetworkId),
@@ -334,7 +322,6 @@ export class PaymentModule extends BaseModule {
       transferRequests,
       nonce
     );
-
     directTransferLog.gas.required = gasEstimation.toString();
     if (nativeBalance.lte(gasEstimation.mul(2))) {
       throw this.context.logger.warn(
@@ -342,12 +329,10 @@ export class PaymentModule extends BaseModule {
         directTransferLog
       );
     }
-
     this.context.logger.info(
       `The funding wallet has sufficient gas and reward tokens to perform direct transfers`,
       directTransferLog
     );
-
     return {
       fundingWallet,
       beneficiaries,
@@ -357,7 +342,6 @@ export class PaymentModule extends BaseModule {
     };
   }
 
-  // Helper function to initialize contracts and wallet
   private async _initializeContractsAndWallet(privateKey: string, maxRetries = 5, initialDelayMs = 500) {
     const erc20Contract = await getContract(
       this._evmNetworkId,
@@ -371,7 +355,6 @@ export class PaymentModule extends BaseModule {
     return { rewardTokenWrapper, fundingWallet };
   }
 
-  // Helper function to fetch balances and allowances
   private async _fetchBalancesAndAllowances(rewardTokenWrapper: Erc20Wrapper, fundingWallet: ethers.Wallet) {
     const rewardBalance = await rewardTokenWrapper.getBalance(fundingWallet.address);
     const rewardAllowance = await rewardTokenWrapper.getAllowance(
@@ -382,7 +365,6 @@ export class PaymentModule extends BaseModule {
     return { rewardBalance, rewardAllowance, nativeBalance };
   }
 
-  // Helper function to get gas estimation
   private async _getGasEstimation(
     fundingWallet: ethers.Wallet,
     permit2Wrapper: Permit2Wrapper,
@@ -439,13 +421,10 @@ export class PaymentModule extends BaseModule {
     batchTransferPermit,
     nonce,
   }: DirectTransferInfo): Promise<[ethers.providers.TransactionResponse, PermitReward[]]> {
-    // Executing permitTransferFrom immediately to process the reward transfers.
     try {
-      // Perform the Permit2 batch transfer transaction.
       const tx = await permit2Wrapper.sendPermitTransferFrom(fundingWallet, batchTransferPermit);
       this.context.logger.info(`Executed permitTransferFrom contract call, transaction hash: ${tx.hash}`);
 
-      // Wait for the transaction to be confirmed
       const receipt = await tx.wait();
       this.context.logger.info(`Transaction confirmed in block: ${receipt.blockNumber}`);
       const permits = beneficiaries.map(
@@ -794,7 +773,6 @@ export class PaymentModule extends BaseModule {
       return [true, privateKeyParsed.privateKey];
     }
 
-    // otherwise invalid private key format
     this.context.logger.error("Invalid private key format");
     return [false, null];
   }

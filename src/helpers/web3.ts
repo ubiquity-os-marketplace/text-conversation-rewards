@@ -171,9 +171,7 @@ export class Permit2Wrapper {
       batchTransferPermit.signature
     );
 
-    // Get the current gas price
     const gasPrice = await this._permit2.provider.getGasPrice();
-    // Calculate the transaction gas usage estimation
     return gasPrice.mul(gasLimit);
   }
   /**
