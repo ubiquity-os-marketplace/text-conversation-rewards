@@ -91,7 +91,7 @@ export class GithubCommentModule extends BaseModule {
 
     if (usersWithoutPermits.length > 0) {
       const userNames = usersWithoutPermits.map((u) => `@${u}`).join(", ");
-      const warningMessage = `> [!WARNING]\n> No reward permits were generated for ${userNames}. Is your wallet registered correctly?\n\n`;
+      const warningMessage = `<h6>⚠️ No reward permits were generated for ${userNames}. Is your wallet registered correctly?</h6>`;
       bodyArray.push(warningMessage);
     }
 
