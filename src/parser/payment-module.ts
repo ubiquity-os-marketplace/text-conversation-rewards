@@ -232,7 +232,7 @@ export class PaymentModule extends BaseModule {
   /* This method returns the transfer mode based on the following conditions:
    - null: Indicates that the payout was previously transferred directly, meaning no further payout is required.
    - permit: Applies if autoTransferMode is set to false or if rewards were previously generated using the permit method.
-   - direct: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
+   - transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
   */
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
     for (const comment of data.comments) {
