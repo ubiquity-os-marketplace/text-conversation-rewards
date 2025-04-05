@@ -10,7 +10,7 @@ import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
-import { removeKeyFromObject, commentTypeReplacer } from "../helpers/result-replacer";
+import { commentTypeReplacer, removeKeyFromObject } from "../helpers/result-replacer";
 import { getErc20TokenSymbol } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
@@ -72,21 +72,33 @@ export class GithubCommentModule extends BaseModule {
     }
 
     const keysToRemove: string[] = [];
+    const usersWithoutPermits: string[] = [];
     const bodyArray: (string | undefined)[] = [];
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
-      if (result[key].total <= 0) {
+      if (value.total <= 0) {
         keysToRemove.push(key);
         continue;
       }
-      result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward);
-      bodyArray.push(result[key].evaluationCommentHtml);
+      if (value.permitUrl) {
+        result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward);
+        bodyArray.push(result[key].evaluationCommentHtml);
+      } else {
+        usersWithoutPermits.push(key);
+      }
     }
+
+    if (usersWithoutPermits.length > 0) {
+      const userNames = usersWithoutPermits.map((u) => `@${u}`).join(", ");
+      const warningMessage = `> [!WARNING]\n> No reward permits were generated for ${userNames}. Is your wallet registered correctly?\n\n`;
+      bodyArray.push(warningMessage);
+    }
+
     // Remove evaluationCommentHtml because it is superfluous
     let metadataResult = removeKeyFromObject(result, "evaluationCommentHtml");
-    // Remove user with 0 result from metadataResult
-    for (const key of keysToRemove) {
+    // Remove user with 0 result or no permit from metadataResult
+    for (const key of [...keysToRemove, ...usersWithoutPermits]) {
       metadataResult = removeKeyFromObject(metadataResult, key);
     }
     // Add the workflow run url and the metadata in the GitHub's comment
