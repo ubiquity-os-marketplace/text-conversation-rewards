@@ -382,7 +382,7 @@
       ],
       "wordCountExponent": 0.85
     },
-    "permitGeneration": {
+    "payment": {
       "enabled": true
     },
     "githubComment": {

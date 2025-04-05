@@ -20,6 +20,7 @@ const cfg: Config = {
   extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^@uniswap/permit2-sdk$": "<rootDir>/node_modules/@uniswap/permit2-sdk/dist/cjs/src/index.js",
   },
   setupFilesAfterEnv: ["dotenv/config"],
 };

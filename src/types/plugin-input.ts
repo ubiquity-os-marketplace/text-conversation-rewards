@@ -6,7 +6,7 @@ import { dataPurgeConfigurationType } from "../configuration/data-purge-config";
 import { eventIncentivesConfigurationType } from "../configuration/event-incentives-config";
 import { formattingEvaluatorConfigurationType } from "../configuration/formatting-evaluator-config";
 import { githubCommentConfigurationType } from "../configuration/github-comment-config";
-import { permitGenerationConfigurationType } from "../configuration/permit-generation-configuration";
+import { paymentConfigurationType } from "../configuration/payment-configuration";
 import { reviewIncentivizerConfigurationType } from "../configuration/review-incentivizer-config";
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { EnvConfig } from "./env-type";
@@ -21,7 +21,7 @@ export const pluginSettingsSchema = T.Object(
      * The encrypted key to use for permit generation
      */
     evmPrivateEncrypted: T.String({
-      description: "The encrypted key to use for permit generation",
+      description: "The encrypted Ethereum private key to use for funding rewards.",
       examples: ["0x000..."],
     }),
     /**
@@ -58,7 +58,7 @@ export const pluginSettingsSchema = T.Object(
         reviewIncentivizer: T.Union([reviewIncentivizerConfigurationType, T.Null()], { default: null }),
         eventIncentives: T.Union([eventIncentivesConfigurationType, T.Null()], { default: null }),
         formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()], { default: null }),
-        permitGeneration: T.Union([permitGenerationConfigurationType, T.Null()], { default: null }),
+        payment: T.Union([paymentConfigurationType, T.Null()], { default: null }),
         githubComment: T.Union([githubCommentConfigurationType, T.Null()], { default: null }),
       },
       { default: {} }
