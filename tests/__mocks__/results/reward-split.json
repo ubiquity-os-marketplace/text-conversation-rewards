@@ -213,7 +213,8 @@
       "reward": 25
     },
     "total": 54.922,
-    "userId": 4975670
+    "userId": 4975670,
+    "walletAddress": "0x1"
   },
   "gentlementlegen": {
     "comments": [
@@ -325,6 +326,7 @@
       "reward": 25
     },
     "total": 33.62,
-    "userId": 9807008
+    "userId": 9807008,
+    "walletAddress": "0x1"
   }
 }

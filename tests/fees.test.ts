@@ -73,6 +73,7 @@ describe("GithubCommentModule Fee Tests", () => {
         permitUrl: "https://pay.ubq.fi", // Example URL
         userId: 12345, // Example user ID
         evaluationCommentHtml: "",
+        walletAddress: "0x1",
       },
     };
 
@@ -95,7 +96,8 @@ describe("GithubCommentModule Fee Tests", () => {
         "      },\n" +
         '      "feeRate": 0.2,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +
-        '      "userId": 12345\n' +
+        '      "userId": 12345,\n' +
+        '      "walletAddress": "0x1"\n' +
         "    }\n" +
         "  }\n" +
         "}\n" +

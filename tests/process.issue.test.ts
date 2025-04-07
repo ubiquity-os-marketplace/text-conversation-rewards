@@ -74,6 +74,13 @@ const ctx = {
       },
     },
   },
+  adapters: {
+    supabase: {
+      wallet: {
+        getWalletByUserId: jest.fn(async () => "0x1"),
+      },
+    },
+  },
   config: cfg,
   logger: new Logs("debug"),
   octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
@@ -498,6 +505,70 @@ describe("Modules tests", () => {
       },
     });
   });
+
+  it("It should warn the user if wallet is not set", async () => {
+    const context = {
+      ...ctx,
+      adapters: {
+        ...ctx.adapters,
+        supabase: {
+          wallet: {
+            getWalletByUserId: jest.fn(async (userId: number) => {
+              if (userId === githubCommentResults["whilefoo"].userId) {
+                return null;
+              }
+              return "0x1";
+            }),
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+    const processor = new Processor(context);
+    processor["_transformers"] = [
+      new UserExtractorModule(context),
+      new DataPurgeModule(context),
+      new FormattingEvaluatorModule(context),
+      new PermitGenerationModule(context),
+      new GithubCommentModule(context),
+    ];
+    // This catches calls by getFastestRpc
+    server.use(http.post("https://*", () => passthrough()));
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result["whilefoo"].evaluationCommentHtml).toContain("Wallet address is not set");
+  }, 120000);
+
+  it("It should warn the user if wallet could not be fetched", async () => {
+    const context = {
+      ...ctx,
+      adapters: {
+        ...ctx.adapters,
+        supabase: {
+          wallet: {
+            getWalletByUserId: jest.fn(async (userId: number) => {
+              if (userId === githubCommentResults["whilefoo"].userId) {
+                throw new Error("Connection error");
+              }
+              return "0x1";
+            }),
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+    const processor = new Processor(context);
+    processor["_transformers"] = [
+      new UserExtractorModule(context),
+      new DataPurgeModule(context),
+      new FormattingEvaluatorModule(context),
+      new PermitGenerationModule(context),
+      new GithubCommentModule(context),
+    ];
+    // This catches calls by getFastestRpc
+    server.use(http.post("https://*", () => passthrough()));
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result["whilefoo"].evaluationCommentHtml).toContain("Error fetching wallet");
+  }, 120000);
 });
 
 describe("Retry", () => {

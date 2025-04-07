@@ -19,12 +19,12 @@ import {
   PermitGenerationConfiguration,
   permitGenerationConfigurationType,
 } from "../configuration/permit-generation-configuration";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { EnvConfig } from "../types/env-type";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
-import { isAdmin, isCollaborative } from "../helpers/checkers";
 
 interface Payload {
   evmNetworkId: number;
@@ -95,6 +95,9 @@ export class PermitGenerationModule extends BaseModule {
     result = await this._applyFees(result, payload.erc20RewardToken);
 
     for (const [key, value] of Object.entries(result)) {
+      value.walletAddress = await this.context.adapters.supabase.wallet
+        .getWalletByUserId(value.userId)
+        .catch(() => undefined);
       this.context.logger.debug(`Updating result for user ${key}`);
       try {
         const config: Context["config"] = {

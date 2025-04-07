@@ -1,3 +1,4 @@
+import { SupabaseClient } from "@supabase/supabase-js";
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
@@ -5,20 +6,25 @@ import { ExecutionContext } from "hono";
 import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
 import manifest from "../../../manifest.json";
+import { createAdapters } from "../../adapters";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
-import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
+import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
     const { payload, config } = context;
+    const supabaseClient = new SupabaseClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY);
+    const adapters = createAdapters(supabaseClient, context as ContextPlugin);
+    const pluginContext = { ...context, adapters };
+
     const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivityCache(context, issue, "useCache" in config);
+    const activity = new IssueActivityCache(pluginContext, issue, "useCache" in config);
     await activity.init();
-    const processor = new Processor(context);
+    const processor = new Processor(pluginContext);
     await processor.run(activity);
     const result = processor.dump();
     return JSON.parse(result);

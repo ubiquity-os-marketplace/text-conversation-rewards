@@ -1304,7 +1304,8 @@
       }
     ],
     "total": 535.856,
-    "userId": 4975670
+    "userId": 4975670,
+    "walletAddress": "0x1"
   },
   "gentlementlegen": {
     "comments": [
@@ -2697,7 +2698,8 @@
       "reward": 400
     },
     "total": 1920.72,
-    "userId": 9807008
+    "userId": 9807008,
+    "walletAddress": "0x1"
   },
   "whilefoo": {
     "comments": [
@@ -3205,6 +3207,7 @@
       }
     ],
     "total": 44.068,
-    "userId": 139262667
+    "userId": 139262667,
+    "walletAddress": "0x1"
   }
 }

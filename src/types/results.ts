@@ -11,6 +11,7 @@ export interface Result {
     feeRate?: number;
     permitUrl?: string;
     userId: number;
+    walletAddress?: string | null;
     reviewRewards?: {
       reviews?: ReviewScore[];
       url: string;

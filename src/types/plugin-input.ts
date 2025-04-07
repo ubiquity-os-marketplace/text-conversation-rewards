@@ -1,5 +1,6 @@
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { Context } from "@ubiquity-os/plugin-sdk";
+import { createAdapters } from "../adapters";
 import { contentEvaluatorConfigurationType } from "../configuration/content-evaluator-config";
 import { dataCollectionConfigurationType } from "../configuration/data-collection-config";
 import { dataPurgeConfigurationType } from "../configuration/data-purge-config";
@@ -71,4 +72,6 @@ export const pluginSettingsSchema = T.Object(
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
 export type SupportedEvents = "issues.closed";
-export type ContextPlugin = Context<PluginSettings, EnvConfig, null, SupportedEvents>;
+export type ContextPlugin = Context<PluginSettings, EnvConfig, null, SupportedEvents> & {
+  adapters: ReturnType<typeof createAdapters>;
+};
