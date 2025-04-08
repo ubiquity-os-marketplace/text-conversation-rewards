@@ -30,6 +30,7 @@ export class Processor {
       .add(new ContentEvaluatorModule(context))
       .add(new ReviewIncentivizerModule(context))
       .add(new EventIncentivesModule(context))
+      .add(new SimplificationIncentivizerModule(context))
       .add(new PaymentModule(context))
       .add(new GithubCommentModule(context));
     this._context = context;

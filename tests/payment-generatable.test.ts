@@ -301,6 +301,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PaymentModule(ctx),
       ];
 
@@ -322,6 +323,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PaymentModule(ctx),
       ];
 
@@ -349,6 +351,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PaymentModule(ctx),
       ];
 
@@ -370,6 +373,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PaymentModule(ctx),
       ];
 
