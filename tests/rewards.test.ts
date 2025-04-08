@@ -14,8 +14,41 @@ import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
+import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
+import { PERMIT2_ABI, ERC20_ABI } from "../src/helpers/web3";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
+
+const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("20000", 18) as BigNumber);
+jest.unstable_mockModule("../src/helpers/web3", () => {
+  class MockErc20Wrapper {
+    getBalance = mockRewardTokenBalance;
+    getSymbol = jest.fn().mockReturnValue("WXDAI");
+    getDecimals = jest.fn().mockReturnValue(18);
+    getAllowance = mockRewardTokenBalance;
+  }
+  class MockPermit2Wrapper {
+    generateBatchTransferPermit = jest.fn().mockReturnValue({
+      signature: "signature",
+    });
+    sendPermitTransferFrom = jest
+      .fn()
+      .mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({ blockNumber: 1 }) });
+    estimatePermitTransferFromGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
+  }
+  return {
+    PERMIT2_ABI: PERMIT2_ABI,
+    ERC20_ABI: ERC20_ABI,
+    Erc20Wrapper: MockErc20Wrapper,
+    Permit2Wrapper: MockPermit2Wrapper,
+    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
+    getEvmWallet: jest.fn(() => ({
+      address: "0xAddress",
+      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
+    })),
+  };
+});
 
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},
@@ -56,12 +89,6 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("../src/helpers/web3", () => ({
-  getErc20TokenSymbol() {
-    return "WXDAI";
-  },
-}));
-
 jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
@@ -88,7 +115,13 @@ jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
   ]),
 }));
 
-beforeAll(() => server.listen());
+beforeAll(() => {
+  server.listen();
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
+    return Promise.resolve("https://rpc");
+  };
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -97,7 +130,7 @@ const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
 const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
@@ -173,7 +206,7 @@ describe("Rewards tests", () => {
       new DataPurgeModule(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
-      new PermitGenerationModule(ctx),
+      new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
     server.use(http.post("https://*", () => passthrough()));

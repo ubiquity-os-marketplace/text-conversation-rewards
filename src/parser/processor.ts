@@ -9,7 +9,7 @@ import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { GithubCommentModule } from "./github-comment-module";
-import { PermitGenerationModule } from "./permit-generation-module";
+import { PaymentModule } from "./payment-module";
 import { UserExtractorModule } from "./user-extractor-module";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { GitHubIssue } from "../github-types";
@@ -29,7 +29,7 @@ export class Processor {
       .add(new ContentEvaluatorModule(context))
       .add(new ReviewIncentivizerModule(context))
       .add(new EventIncentivesModule(context))
-      .add(new PermitGenerationModule(context))
+      .add(new PaymentModule(context))
       .add(new GithubCommentModule(context));
     this._context = context;
     this._configuration = this._context.config.incentives;

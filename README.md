@@ -187,6 +187,7 @@ interface PermitRecord {
     },
     "feeRate": 0.1,
     "permitUrl": "https://example.com/permit",
+    "payoutMode": "permit",
     "userId": 123,
     "evaluationCommentHtml": "<p>Evaluation comment</p>"
   }
@@ -492,7 +493,8 @@ with:
               pre: { score: 0, countWords: false }
               ol: { score: 1, countWords: true }
             wordValue: 0.1
-      permitGeneration: {}
+      payment:
+        autmaticTransferMode: false
       githubComment:
         post: true
         debug: false
