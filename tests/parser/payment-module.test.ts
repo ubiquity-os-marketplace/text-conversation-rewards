@@ -2,16 +2,16 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest 
 import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
 import { CommentKind } from "../../src/configuration/comment-types";
+import { ERC20_ABI, PERMIT2_ABI } from "../../src/helpers/web3";
+import { IssueActivity } from "../../src/issue-activity";
 import { ContextPlugin } from "../../src/types/plugin-input";
 import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
-import { parseUnits } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
-import { ERC20_ABI, PERMIT2_ABI } from "../../src/helpers/web3";
-import { IssueActivity } from "../../src/issue-activity";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -98,6 +98,7 @@ function getResultOriginal() {
         multiplier: 1,
       },
       userId: 1,
+      walletAddress: "0x1",
       comments: [
         {
           id: 57,
@@ -118,6 +119,7 @@ function getResultOriginal() {
         multiplier: 1,
       },
       userId: 2,
+      walletAddress: "0x1",
       comments: [
         {
           id: 57,

@@ -132,12 +132,16 @@ export class PaymentModule extends BaseModule {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
-    // get reward beneficiaries
-    const beneficiaries = await this._getBeneficiaries(result);
+    for (const reward of Object.values(result)) {
+      reward.walletAddress = await this.context.adapters.supabase.wallet
+        .getWalletByUserId(reward.userId)
+        .catch(() => undefined);
+    }
 
     let directTransferError;
     if (payoutMode === "transfer") {
       try {
+        const beneficiaries = await this._getBeneficiaries(result);
         // Avoid empty transactions and gas wasting, maybe we should move this logic
         // before this block to avoid any extra works
         if (beneficiaries.length === 0) {
@@ -175,9 +179,6 @@ export class PaymentModule extends BaseModule {
       this.context.logger.info("Transitioning to permit generation.");
       for (const [username, reward] of Object.entries(result)) {
         this.context.logger.debug(`Updating result for user ${username}`);
-        reward.walletAddress = await this.context.adapters.supabase.wallet
-          .getWalletByUserId(reward.userId)
-          .catch(() => undefined);
         const config: Context["config"] = {
           evmNetworkId: payload.evmNetworkId,
           evmPrivateEncrypted: payload.evmPrivateEncrypted,
@@ -390,31 +391,18 @@ export class PaymentModule extends BaseModule {
   }
 
   async _getBeneficiaries(result: Result): Promise<Beneficiary[]> {
-    const beneficiaries: Beneficiary[] = [];
-    for (const [username, reward] of Object.entries(result)) {
-      // Obtain the beneficiary wallet address from the github user name
-      const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
-      if (!userData) {
-        this.context.logger.warn(`GitHub user was not found for id ${username}`);
-        continue;
-      }
-      const userId = userData.id;
-      const { data: walletData, error: err } = await this._supabase
-        .from("users")
-        .select("wallets(*)")
-        .eq("id", userId)
-        .single();
-      if (err || !walletData.wallets?.address) {
-        this.context.logger.warn("Failed to get wallet", { userId, err, walletData });
-        continue;
-      }
-      beneficiaries.push({
-        username: username,
-        address: walletData.wallets?.address,
-        amount: reward.total,
-      });
-    }
-    return beneficiaries;
+    return Object.entries(result)
+      .map(([username, reward]) => {
+        if (!reward.walletAddress) {
+          return null;
+        }
+        return {
+          username,
+          address: reward.walletAddress,
+          amount: reward.total,
+        };
+      })
+      .filter((beneficiary) => beneficiary !== null);
   }
 
   async _transferReward({
