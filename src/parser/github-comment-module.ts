@@ -11,7 +11,7 @@ import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { commentTypeReplacer, removeKeyFromObject } from "../helpers/result-replacer";
-import { getErc20TokenSymbol } from "../helpers/web3";
+import { ERC20_ABI, Erc20Wrapper, getContract } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
@@ -38,6 +38,11 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
+  _getPayoutMode(result: Result): string | undefined {
+    const someReward = Object.values(result)[0];
+    return someReward?.payoutMode;
+  }
+
   /**
    * Generates content when it needs to be stripped due to length limits
    */
@@ -58,6 +63,7 @@ export class GithubCommentModule extends BaseModule {
     bodyArray.push(
       createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
       })
     );
 
@@ -103,6 +109,7 @@ export class GithubCommentModule extends BaseModule {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
@@ -123,7 +130,7 @@ export class GithubCommentModule extends BaseModule {
     }
     if (this._configuration?.post) {
       try {
-        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
+        if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
           await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
             raw: true,
             updateComment: true,
@@ -320,8 +327,8 @@ export class GithubCommentModule extends BaseModule {
   }
 
   _createRewardLink(result: Result[0], tokenSymbol: string) {
-    if (result.permitUrl) {
-      return `<a href="${result.permitUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
+    if (result.permitUrl || result.explorerUrl) {
+      return `<a href="${result.permitUrl || result.explorerUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
     }
     return `[ ${result.total} ${tokenSymbol} ]`;
   }
@@ -342,11 +349,12 @@ export class GithubCommentModule extends BaseModule {
       },
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
-
-    const tokenSymbol = await getErc20TokenSymbol(
+    const tokenContract = await getContract(
       this.context.config.evmNetworkId,
-      this.context.config.erc20RewardToken
+      this.context.config.erc20RewardToken,
+      ERC20_ABI
     );
+    const tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
 
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??

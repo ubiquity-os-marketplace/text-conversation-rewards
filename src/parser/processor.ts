@@ -12,7 +12,7 @@ import { DataPurgeModule } from "./data-purge-module";
 import { EventIncentivesModule } from "./event-incentives-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { GithubCommentModule } from "./github-comment-module";
-import { PermitGenerationModule } from "./permit-generation-module";
+import { PaymentModule } from "./payment-module";
 import { ReviewIncentivizerModule } from "./review-incentivizer-module";
 import { UserExtractorModule } from "./user-extractor-module";
 
@@ -29,7 +29,7 @@ export class Processor {
       .add(new ContentEvaluatorModule(context))
       .add(new ReviewIncentivizerModule(context))
       .add(new EventIncentivesModule(context))
-      .add(new PermitGenerationModule(context))
+      .add(new PaymentModule(context))
       .add(new GithubCommentModule(context));
     this._context = context;
     this._configuration = this._context.config.incentives;
