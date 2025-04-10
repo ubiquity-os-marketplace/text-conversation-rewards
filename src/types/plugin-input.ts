@@ -9,6 +9,7 @@ import { githubCommentConfigurationType } from "../configuration/github-comment-
 import { paymentConfigurationType } from "../configuration/payment-configuration";
 import { reviewIncentivizerConfigurationType } from "../configuration/review-incentivizer-config";
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
+import { simplificationIncentivizerConfigurationType } from "../configuration/simplification-incentivizer-config";
 import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
@@ -57,6 +58,7 @@ export const pluginSettingsSchema = T.Object(
         dataPurge: T.Union([dataPurgeConfigurationType, T.Null()], { default: null }),
         reviewIncentivizer: T.Union([reviewIncentivizerConfigurationType, T.Null()], { default: null }),
         eventIncentives: T.Union([eventIncentivesConfigurationType, T.Null()], { default: null }),
+        simplificationIncentivizer: T.Union([simplificationIncentivizerConfigurationType, T.Null()], { default: null }),
         formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()], { default: null }),
         payment: T.Union([paymentConfigurationType, T.Null()], { default: null }),
         githubComment: T.Union([githubCommentConfigurationType, T.Null()], { default: null }),

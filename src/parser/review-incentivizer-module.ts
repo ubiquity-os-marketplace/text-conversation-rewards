@@ -40,11 +40,7 @@ export class ReviewIncentivizerModule extends BaseModule {
       return result;
     }
 
-    const message =
-      prNumbers.length === 1
-        ? `Pull request ${prNumbers[0]} is linked to this issue`
-        : `Pull requests ${prNumbers} are linked to this issue`;
-    this.context.logger.info(message);
+    this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
 
     for (const username of Object.keys(result)) {
       const reward = result[username];

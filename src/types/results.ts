@@ -18,6 +18,15 @@ export interface Result {
       reviews?: ReviewScore[];
       url: string;
     }[];
+    simplificationReward?: {
+      url: string;
+      files: {
+        fileName: string;
+        reward: number;
+        additions: number;
+        deletions: number;
+      }[];
+    };
     events?: {
       [eventName: string]: {
         count: number;
