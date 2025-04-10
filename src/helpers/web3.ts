@@ -1,6 +1,6 @@
-import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/rpc-handler";
-import { ethers, Contract, Wallet, BigNumber, ContractInterface, BigNumberish } from "ethers";
-import { PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer, MaxUint256 } from "@uniswap/permit2-sdk";
+import { HandlerConstructorConfig, NetworkId, RPCHandler } from "@ubiquity-dao/rpc-handler";
+import { MaxUint256, PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer } from "@uniswap/permit2-sdk";
+import { BigNumber, BigNumberish, Contract, ContractInterface, ethers, Wallet } from "ethers";
 import permit2Abi from "../abi/permit2.json";
 
 export interface TransferRequest {
@@ -194,5 +194,24 @@ export class Permit2Wrapper {
       evmWallet.address,
       batchTransferPermit.signature
     );
+  }
+
+  async isNonceClaimed(ownerAddress: string, nonce: BigNumberish): Promise<boolean> {
+    const { wordPos, bitPos } = this.nonceBitmap(nonce);
+
+    const bitmap = await this._permit2.nonceBitmap(ownerAddress, wordPos);
+    const bit = BigNumber.from(1).shl(bitPos);
+    const flipped = BigNumber.from(bitmap).xor(bit);
+    const isClaimed = bit.and(flipped).eq(0);
+
+    return isClaimed;
+  }
+
+  nonceBitmap(nonce: BigNumberish): { wordPos: BigNumber; bitPos: number } {
+    // wordPos is the first 248 bits of the nonce
+    const wordPos = BigNumber.from(nonce).shr(8);
+    // bitPos is the last 8 bits of the nonce
+    const bitPos = BigNumber.from(nonce).and(255).toNumber();
+    return { wordPos, bitPos };
   }
 }
