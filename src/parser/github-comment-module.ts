@@ -15,6 +15,7 @@ import { ERC20_ABI, Erc20Wrapper, getContract } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
+import { createHash } from "crypto";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -177,6 +178,17 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
     }
 
+    if (result.simplificationReward && Object.keys(result.simplificationReward.files).length !== 0) {
+      content.push(
+        buildContributionRow(
+          "Issue",
+          "Task Simplification",
+          1,
+          Object.values(result.simplificationReward.files).reduce((sum, { reward }) => sum + reward, 0)
+        )
+      );
+    }
+
     if (result.reviewRewards) {
       const reviewCount = result.reviewRewards.reduce(
         (total, reviewReward) => total + (reviewReward.reviews?.length ?? 0),
@@ -277,6 +289,34 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildIncentiveRow(reviewComment));
     }
     return content.join("");
+  }
+
+  _createSimplificationRows(result: Result[0]) {
+    if (!result.simplificationReward || Object.keys(result.simplificationReward.files).length === 0) return "";
+    const rows: string[] = [];
+    for (const file of result.simplificationReward.files) {
+      rows.push(`
+        <tr>
+          <td><a href="${result.simplificationReward.url}/files#diff-${createHash("sha256").update(file.fileName).digest("hex")}" target="_blank" rel="noopener">${file.fileName}</a></td>
+          <td>${file.reward}</td>
+          <td>${file.deletions}</td>
+        </tr>`);
+    }
+
+    return `
+    <h6>Simplification Details for&nbsp;<a href="${result.simplificationReward.url}" target="_blank" rel="noopener">#${result.simplificationReward.url.split("/").slice(-1)[0]}</a></h6>
+    <table>
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Reward</th>
+          <th>Deletions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.join()}
+      </tbody>
+    </table>`;
   }
 
   _createReviewRows(result: Result[0]) {
@@ -392,6 +432,7 @@ export class GithubCommentModule extends BaseModule {
           ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
+      ${!stripComments ? this._createSimplificationRows(result) : ""}
       ${!stripComments ? this._createReviewRows(result) : ""}
       ${
         !stripComments

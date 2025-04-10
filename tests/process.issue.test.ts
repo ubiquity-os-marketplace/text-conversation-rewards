@@ -21,6 +21,7 @@ import { server } from "./__mocks__/node";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import eventIncentivesResults from "./__mocks__/results/event-incentives-results.json";
+import simplificationIncentivizerResults from "./__mocks__/results/simplification-incentivizer.results.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
@@ -177,6 +178,7 @@ const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
+const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
 
 beforeAll(() => {
   server.listen();
@@ -332,6 +334,22 @@ describe("Modules tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(eventIncentivesResults);
+  });
+
+  it("Should incentivize simplifications", async () => {
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
+      new EventIncentivesModule(ctx),
+      new SimplificationIncentivizerModule(ctx),
+    ];
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(simplificationIncentivizerResults);
   });
 
   it("Should generate permits", async () => {

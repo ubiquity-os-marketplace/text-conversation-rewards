@@ -200,6 +200,7 @@ const { ReviewIncentivizerModule } = await import("../src/parser/review-incentiv
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
+const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
 
 const issue = parseGitHubUrl(issueUrl);
 const activity = new IssueActivity(ctx, issue);
@@ -307,6 +308,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PaymentModule(ctx),
       ];
 
@@ -328,6 +330,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PaymentModule(ctx),
       ];
 
@@ -355,6 +358,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PaymentModule(ctx),
       ];
 
@@ -376,6 +380,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
         new ContentEvaluatorModule(ctx),
         new ReviewIncentivizerModule(ctx),
         new EventIncentivesModule(ctx),
+        new SimplificationIncentivizerModule(ctx),
         new PaymentModule(ctx),
       ];
 

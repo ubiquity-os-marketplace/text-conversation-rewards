@@ -14,6 +14,7 @@ import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { GithubCommentModule } from "./github-comment-module";
 import { PaymentModule } from "./payment-module";
 import { ReviewIncentivizerModule } from "./review-incentivizer-module";
+import { SimplificationIncentivizerModule } from "./simplification-incentivizer-module";
 import { UserExtractorModule } from "./user-extractor-module";
 
 export class Processor {
@@ -29,6 +30,7 @@ export class Processor {
       .add(new ContentEvaluatorModule(context))
       .add(new ReviewIncentivizerModule(context))
       .add(new EventIncentivesModule(context))
+      .add(new SimplificationIncentivizerModule(context))
       .add(new PaymentModule(context))
       .add(new GithubCommentModule(context));
     this._context = context;
