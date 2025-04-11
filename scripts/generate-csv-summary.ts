@@ -60,106 +60,112 @@ interface CsvRecord {
   CommentType: string | null;
 }
 
+type BaseCsvRecordData = Omit<CsvRecord, "ItemType" | "ItemID" | "ItemURL" | "Reward" | "CommentType">;
+
 const resultsDir = path.join(process.cwd(), "results");
 const outputCsvPath = path.join(resultsDir, "rewards_summary.csv");
+const invalidIssuesFilename = "invalid-issues.json";
 
-async function generateCsvSummary() {
-  const records: CsvRecord[] = [];
-  let files: string[];
-
+async function readResultsDirectory(dirPath: string): Promise<string[]> {
   try {
-    files = await fs.readdir(resultsDir);
+    const files = await fs.readdir(dirPath);
+    return files.filter((file) => file.endsWith(".json") && file !== invalidIssuesFilename);
   } catch (error) {
-    console.error(`Error reading results directory ${resultsDir}:`, error);
+    console.error(`Error reading results directory ${dirPath}:`, error);
     process.exit(1);
   }
+}
 
-  const jsonFiles = files.filter((file) => file.endsWith(".json") && file !== "invalid-issues.json");
+function parseFilename(filename: string): { organization: string; repository: string; issueNumber: string } | null {
+  const filenameWithoutExt = filename.replace(".json", "");
+  const parts = filenameWithoutExt.split("_");
 
-  for (const file of jsonFiles) {
-    const filePath = path.join(resultsDir, file);
-    const filenameParts = file.replace(".json", "").split("_");
+  if (parts.length < 3) {
+    console.warn(`Skipping file with unexpected name format: ${filename}`);
+    return null;
+  }
 
-    if (filenameParts.length < 3) {
-      console.warn(`Skipping file with unexpected name format: ${file}`);
-      continue;
-    }
+  const issueNumber = parts.pop() ?? "";
+  const repository = parts.pop() ?? "";
+  const organization = parts.join("_");
 
-    const issueNumber = filenameParts.pop() || "";
-    const repository = filenameParts.pop() || "";
-    const organization = filenameParts.join("_"); // Handle org names with underscores
+  if (!organization || !repository || !issueNumber) {
+    console.warn(`Skipping file with incomplete name parts: ${filename}`);
+    return null;
+  }
 
-    let fileContent: string;
-    let data: ResultData;
+  return { organization, repository, issueNumber };
+}
 
-    try {
-      fileContent = await fs.readFile(filePath, "utf-8");
-      data = JSON.parse(fileContent);
-    } catch (error) {
-      console.error(`Error reading or parsing JSON file ${file}:`, error);
-      continue;
-    }
+async function readAndParseJsonFile(filePath: string): Promise<ResultData | null> {
+  try {
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(fileContent) as ResultData;
+  } catch (error) {
+    console.error(`Error reading or parsing JSON file ${path.basename(filePath)}:`, error);
+    return null;
+  }
+}
 
-    for (const username of Object.keys(data)) {
-      const userData = data[username];
-      const baseRecord = {
-        Organization: organization,
-        Repository: repository,
-        IssueNumber: issueNumber,
-        Username: username,
-        UserID: userData.userId,
-      };
+function extractTaskRecord(userData: UserData, baseRecord: BaseCsvRecordData): CsvRecord | null {
+  if (!userData.task) {
+    return null;
+  }
+  return {
+    ...baseRecord,
+    ItemType: "Task",
+    ItemID: null,
+    ItemURL: null,
+    Reward: userData.task.reward,
+    CommentType: null,
+  };
+}
 
-      if (userData.task) {
-        records.push({
+function extractCommentRecords(userData: UserData, baseRecord: BaseCsvRecordData): CsvRecord[] {
+  if (!userData.comments) {
+    return [];
+  }
+  return userData.comments.map((comment) => ({
+    ...baseRecord,
+    ItemType: "Comment",
+    ItemID: comment.id,
+    ItemURL: comment.url,
+    Reward: comment.score?.reward ?? 0,
+    CommentType: comment.commentType,
+  }));
+}
+
+function extractReviewRecords(userData: UserData, baseRecord: BaseCsvRecordData): CsvRecord[] {
+  const reviewRecords: CsvRecord[] = [];
+  if (!userData.reviewRewards) {
+    return reviewRecords;
+  }
+
+  for (const reviewReward of userData.reviewRewards) {
+    if (reviewReward.reviews) {
+      for (const review of reviewReward.reviews) {
+        reviewRecords.push({
           ...baseRecord,
-          ItemType: "Task",
-          ItemID: null,
-          ItemURL: null, // Task URL isn't directly in this structure
-          Reward: userData.task.reward,
+          ItemType: "Review",
+          ItemID: review.reviewId,
+          ItemURL: reviewReward.url,
+          Reward: review.reward,
           CommentType: null,
         });
       }
-
-      if (userData.comments) {
-        for (const comment of userData.comments) {
-          records.push({
-            ...baseRecord,
-            ItemType: "Comment",
-            ItemID: comment.id,
-            ItemURL: comment.url,
-            Reward: comment.score?.reward ?? 0,
-            CommentType: comment.commentType,
-          });
-        }
-      }
-
-      if (userData.reviewRewards) {
-        for (const reviewReward of userData.reviewRewards) {
-          if (reviewReward.reviews) {
-            for (const review of reviewReward.reviews) {
-              records.push({
-                ...baseRecord,
-                ItemType: "Review",
-                ItemID: review.reviewId,
-                ItemURL: reviewReward.url, // URL is on the parent object
-                Reward: review.reward,
-                CommentType: null,
-              });
-            }
-          }
-        }
-      }
     }
   }
+  return reviewRecords;
+}
 
+async function writeCsvOutput(filePath: string, records: CsvRecord[]): Promise<void> {
   if (records.length === 0) {
     console.log("No data found to write to CSV.");
     return;
   }
 
   const csvWriter = createObjectCsvWriter({
-    path: outputCsvPath,
+    path: filePath,
     header: [
       { id: "Organization", title: "Organization" },
       { id: "Repository", title: "Repository" },
@@ -176,11 +182,53 @@ async function generateCsvSummary() {
 
   try {
     await csvWriter.writeRecords(records);
-    console.log(`CSV summary successfully generated at ${outputCsvPath}`);
+    console.log(`CSV summary successfully generated at ${filePath}`);
   } catch (error) {
     console.error("Error writing CSV file:", error);
     process.exit(1);
   }
+}
+
+async function generateCsvSummary() {
+  const allRecords: CsvRecord[] = [];
+  const jsonFiles = await readResultsDirectory(resultsDir);
+
+  for (const file of jsonFiles) {
+    const fileMetadata = parseFilename(file);
+    if (!fileMetadata) {
+      continue;
+    }
+
+    const filePath = path.join(resultsDir, file);
+    const data = await readAndParseJsonFile(filePath);
+    if (!data) {
+      continue;
+    }
+
+    for (const username of Object.keys(data)) {
+      const userData = data[username];
+      const baseRecord = {
+        Organization: fileMetadata.organization,
+        Repository: fileMetadata.repository,
+        IssueNumber: fileMetadata.issueNumber,
+        Username: username,
+        UserID: userData.userId,
+      };
+
+      const taskRecord = extractTaskRecord(userData, baseRecord);
+      if (taskRecord) {
+        allRecords.push(taskRecord);
+      }
+
+      const commentRecords = extractCommentRecords(userData, baseRecord);
+      allRecords.push(...commentRecords);
+
+      const reviewRecords = extractReviewRecords(userData, baseRecord);
+      allRecords.push(...reviewRecords);
+    }
+  }
+
+  await writeCsvOutput(outputCsvPath, allRecords);
 }
 
 generateCsvSummary().catch(console.error);
