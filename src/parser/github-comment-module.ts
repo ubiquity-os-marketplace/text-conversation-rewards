@@ -11,10 +11,11 @@ import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { removeKeyFromObject, commentTypeReplacer } from "../helpers/result-replacer";
-import { getErc20TokenSymbol } from "../helpers/web3";
+import { getContract, Erc20Wrapper, ERC20_ABI } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
+import { createHash } from "crypto";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -38,6 +39,11 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
+  _getPayoutMode(result: Result): string | undefined {
+    const someReward = Object.values(result)[0];
+    return someReward?.payoutMode;
+  }
+
   /**
    * Generates content when it needs to be stripped due to length limits
    */
@@ -58,6 +64,7 @@ export class GithubCommentModule extends BaseModule {
     bodyArray.push(
       createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
       })
     );
 
@@ -103,6 +110,7 @@ export class GithubCommentModule extends BaseModule {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
@@ -123,7 +131,7 @@ export class GithubCommentModule extends BaseModule {
     }
     if (this._configuration?.post) {
       try {
-        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
+        if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
           await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
             raw: true,
             updateComment: true,
@@ -168,6 +176,17 @@ export class GithubCommentModule extends BaseModule {
 
     if (result.task?.reward) {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
+    }
+
+    if (result.simplificationReward && Object.keys(result.simplificationReward.files).length !== 0) {
+      content.push(
+        buildContributionRow(
+          "Issue",
+          "Task Simplification",
+          1,
+          Object.values(result.simplificationReward.files).reduce((sum, { reward }) => sum + reward, 0)
+        )
+      );
     }
 
     if (result.reviewRewards) {
@@ -272,6 +291,34 @@ export class GithubCommentModule extends BaseModule {
     return content.join("");
   }
 
+  _createSimplificationRows(result: Result[0]) {
+    if (!result.simplificationReward || Object.keys(result.simplificationReward.files).length === 0) return "";
+    const rows: string[] = [];
+    for (const file of result.simplificationReward.files) {
+      rows.push(`
+        <tr>
+          <td><a href="${result.simplificationReward.url}/files#diff-${createHash("sha256").update(file.fileName).digest("hex")}" target="_blank" rel="noopener">${file.fileName}</a></td>
+          <td>${file.reward}</td>
+          <td>${file.deletions}</td>
+        </tr>`);
+    }
+
+    return `
+    <h6>Simplification Details for&nbsp;<a href="${result.simplificationReward.url}" target="_blank" rel="noopener">#${result.simplificationReward.url.split("/").slice(-1)[0]}</a></h6>
+    <table>
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Reward</th>
+          <th>Deletions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.join()}
+      </tbody>
+    </table>`;
+  }
+
   _createReviewRows(result: Result[0]) {
     if (result.reviewRewards?.every((reviewReward) => reviewReward.reviews?.length === 0) || !result.reviewRewards) {
       return "";
@@ -325,8 +372,12 @@ export class GithubCommentModule extends BaseModule {
       },
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
-
-    const tokenSymbol = await getErc20TokenSymbol();
+    const tokenContract = await getContract(
+      this.context.config.evmNetworkId,
+      this.context.config.erc20RewardToken,
+      ERC20_ABI
+    );
+    const tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
 
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
@@ -339,7 +390,7 @@ export class GithubCommentModule extends BaseModule {
         <b>
           <h3>
             &nbsp;
-            <a href="${result.permitUrl}" target="_blank" rel="noopener">
+            <a href="${result.permitUrl ?? result.explorerUrl}" target="_blank" rel="noopener">
               [ ${result.total} ${tokenSymbol} ]
             </a>
             &nbsp;
@@ -365,6 +416,7 @@ export class GithubCommentModule extends BaseModule {
           ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
+      ${!stripComments ? this._createSimplificationRows(result) : ""}
       ${!stripComments ? this._createReviewRows(result) : ""}
       ${
         !stripComments
