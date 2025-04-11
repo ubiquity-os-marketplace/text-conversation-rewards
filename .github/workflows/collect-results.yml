@@ -65,16 +65,12 @@ jobs:
       - name: Output Rewards Summary
         run: echo "$(< rewards-summary.md)" >> $GITHUB_STEP_SUMMARY
 
-      - name: Zip results folder for ${{ matrix.organization }}
-        run: |
-          mkdir -p results
-          zip -r results-${{ matrix.organization }}.zip results/
 
       - name: Upload results artifact for ${{ matrix.organization }}
         uses: actions/upload-artifact@v4
         with:
           name: results-${{ matrix.organization }}
           path: |
-            results-${{ matrix.organization }}.zip
             invalid-issues.json
-            results/rewards_summary.csv
+            rewards_summary.csv
+            results/
