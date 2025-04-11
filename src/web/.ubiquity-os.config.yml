@@ -75,7 +75,6 @@ incentives:
         rewards:
           wordValue: 0
           html: *tcrHtmlConfig
-  payment: {}
   reviewIncentivizer: {}
   simplificationIncentivizer: {}
   githubComment:
