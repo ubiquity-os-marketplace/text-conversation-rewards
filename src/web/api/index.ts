@@ -16,7 +16,7 @@ import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 
 function githubUrlToFileName(url: string): string {
-  const repoMatch = url.match(/github\.com\/([^/]+)\/([^/?#]+)/);
+  const repoMatch = RegExp(/github\.com\/([^/]+)\/([^/?#]+)/).exec(url);
 
   if (!repoMatch) {
     throw new Error("Invalid GitHub URL");
@@ -25,7 +25,7 @@ function githubUrlToFileName(url: string): string {
   const owner = repoMatch[1].toLowerCase();
   const repo = repoMatch[2].toLowerCase();
 
-  const issueMatch = url.match(/\/issues\/(\d+)/);
+  const issueMatch = RegExp(/\/issues\/(\d+)/).exec(url);
 
   if (issueMatch) {
     const issueNumber = issueMatch[1];

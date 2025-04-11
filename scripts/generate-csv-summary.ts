@@ -4,7 +4,7 @@ import path from "path";
 
 interface CommentScore {
   reward: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface Comment {
@@ -13,25 +13,25 @@ interface Comment {
   url: string;
   commentType: string;
   score: CommentScore;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface Review {
   reviewId: number;
   reward: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface ReviewReward {
   reviews?: Review[];
   url: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface Task {
   reward: number;
   multiplier: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface UserData {
@@ -40,7 +40,7 @@ interface UserData {
   task?: Task;
   comments?: Comment[];
   reviewRewards?: ReviewReward[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface ResultData {
@@ -100,7 +100,7 @@ async function generateCsvSummary() {
       continue;
     }
 
-    for (const username in data) {
+    for (const username of Object.keys(data)) {
       const userData = data[username];
       const baseRecord = {
         Organization: organization,
@@ -183,4 +183,4 @@ async function generateCsvSummary() {
   }
 }
 
-generateCsvSummary();
+generateCsvSummary().catch(console.error);
