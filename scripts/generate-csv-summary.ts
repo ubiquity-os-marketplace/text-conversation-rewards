@@ -1,51 +1,10 @@
 import { createObjectCsvWriter } from "csv-writer";
 import fs from "fs/promises";
 import path from "path";
+import { commentEnum } from "../src/configuration/comment-types";
+import { GithubCommentScore, Result, ReviewScore } from "../src/types/results";
 
-interface CommentScore {
-  reward: number;
-  [key: string]: unknown;
-}
-
-interface Comment {
-  id: number;
-  content: string;
-  url: string;
-  commentType: string;
-  score: CommentScore;
-  [key: string]: unknown;
-}
-
-interface Review {
-  reviewId: number;
-  reward: number;
-  [key: string]: unknown;
-}
-
-interface ReviewReward {
-  reviews?: Review[];
-  url: string;
-  [key: string]: unknown;
-}
-
-interface Task {
-  reward: number;
-  multiplier: number;
-  [key: string]: unknown;
-}
-
-interface UserData {
-  userId: number;
-  total: number;
-  task?: Task;
-  comments?: Comment[];
-  reviewRewards?: ReviewReward[];
-  [key: string]: unknown;
-}
-
-interface ResultData {
-  [username: string]: UserData;
-}
+type UserResultData = Result[string];
 
 interface CsvRecord {
   Organization: string;
@@ -97,17 +56,17 @@ function parseFilename(filename: string): { organization: string; repository: st
   return { organization, repository, issueNumber };
 }
 
-async function readAndParseJsonFile(filePath: string): Promise<ResultData | null> {
+async function readAndParseJsonFile(filePath: string): Promise<Result | null> {
   try {
     const fileContent = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(fileContent) as ResultData;
+    return JSON.parse(fileContent) as Result;
   } catch (error) {
     console.error(`Error reading or parsing JSON file ${path.basename(filePath)}:`, error);
     return null;
   }
 }
 
-function extractTaskRecord(userData: UserData, baseRecord: BaseCsvRecordData): CsvRecord | null {
+function extractTaskRecord(userData: UserResultData, baseRecord: BaseCsvRecordData): CsvRecord | null {
   if (!userData.task) {
     return null;
   }
@@ -121,21 +80,21 @@ function extractTaskRecord(userData: UserData, baseRecord: BaseCsvRecordData): C
   };
 }
 
-function extractCommentRecords(userData: UserData, baseRecord: BaseCsvRecordData): CsvRecord[] {
+function extractCommentRecords(userData: UserResultData, baseRecord: BaseCsvRecordData): CsvRecord[] {
   if (!userData.comments) {
     return [];
   }
-  return userData.comments.map((comment) => ({
+  return userData.comments.map((comment: GithubCommentScore) => ({
     ...baseRecord,
     ItemType: "Comment",
     ItemID: comment.id,
     ItemURL: comment.url,
     Reward: comment.score?.reward ?? 0,
-    CommentType: comment.commentType,
+    CommentType: commentEnum[comment.commentType] ?? null,
   }));
 }
 
-function extractReviewRecords(userData: UserData, baseRecord: BaseCsvRecordData): CsvRecord[] {
+function extractReviewRecords(userData: UserResultData, baseRecord: BaseCsvRecordData): CsvRecord[] {
   const reviewRecords: CsvRecord[] = [];
   if (!userData.reviewRewards) {
     return reviewRecords;
@@ -143,7 +102,7 @@ function extractReviewRecords(userData: UserData, baseRecord: BaseCsvRecordData)
 
   for (const reviewReward of userData.reviewRewards) {
     if (reviewReward.reviews) {
-      for (const review of reviewReward.reviews) {
+      for (const review of reviewReward.reviews as ReviewScore[]) {
         reviewRecords.push({
           ...baseRecord,
           ItemType: "Review",
@@ -200,13 +159,13 @@ async function generateCsvSummary() {
     }
 
     const filePath = path.join(resultsDir, file);
-    const data = await readAndParseJsonFile(filePath);
+    const data: Result | null = await readAndParseJsonFile(filePath);
     if (!data) {
       continue;
     }
 
     for (const username of Object.keys(data)) {
-      const userData = data[username];
+      const userData: UserResultData = data[username];
       const baseRecord = {
         Organization: fileMetadata.organization,
         Repository: fileMetadata.repository,
