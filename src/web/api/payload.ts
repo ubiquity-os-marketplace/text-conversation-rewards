@@ -18,17 +18,10 @@ export async function getPayload(owner: string, repo: string, issueId: number, u
   const octokit = new customOctokit({ auth: process.env.GITHUB_TOKEN });
 
   let eventPayload;
-  if (repo && issueId) {
+  if (repo) {
     const organization = (
       await octokit.rest.orgs.get({
         org: owner,
-      })
-    ).data;
-    const issue = (
-      await octokit.rest.issues.get({
-        owner,
-        repo,
-        issue_number: issueId,
       })
     ).data;
     const repository = (
@@ -37,7 +30,17 @@ export async function getPayload(owner: string, repo: string, issueId: number, u
         repo,
       })
     ).data;
-    eventPayload = { issue, repository, organization };
+    eventPayload = { repository, organization };
+    if (issueId) {
+      const issue = (
+        await octokit.rest.issues.get({
+          owner,
+          repo,
+          issue_number: issueId,
+        })
+      ).data;
+      eventPayload = { issue, repository, organization };
+    }
   } else {
     const { data: organization } = await octokit.rest.orgs.get({
       org: owner,
