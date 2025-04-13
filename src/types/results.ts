@@ -64,6 +64,7 @@ export interface GithubCommentScore {
   id: number;
   content: string;
   url: string;
+  timestamp: string;
   commentType: CommentKind | CommentAssociation;
   diffHunk?: string;
   score?: {

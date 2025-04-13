@@ -78,6 +78,7 @@ export class DataPurgeModule extends BaseModule {
               id: comment.id,
               content: newContent,
               url: comment.html_url,
+              timestamp: comment.created_at,
               commentType: comment.commentType,
               diffHunk: reviewComment?.pull_request_review_id ? reviewComment?.diff_hunk : undefined,
             },
