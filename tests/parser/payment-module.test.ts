@@ -103,6 +103,7 @@ function getResultOriginal() {
           id: 57,
           content: "comment 3",
           url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
+          timestamp: "",
           commentType: CommentKind.ISSUE,
           score: {
             reward: 10,
@@ -123,6 +124,7 @@ function getResultOriginal() {
           id: 57,
           content: "comment 3",
           url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
+          timestamp: "",
           commentType: CommentKind.ISSUE,
           score: {
             reward: 1.12,
