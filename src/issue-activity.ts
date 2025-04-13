@@ -112,32 +112,36 @@ export class IssueActivity {
     return ret;
   }
 
-  _getLinkedReviewComments() {
+  private _addAnchorToUrl(item: { html_url?: string; id?: number }) {
+    if (item.html_url && item.id && !urlHasAnchor(item.html_url)) {
+      item.html_url += `#issue-${item.id}`;
+    }
+  }
+
+  private _processSingleLinkedReview(linkedReview: Review) {
     const comments = [];
-    for (const linkedReview of this.linkedReviews) {
-      for (const value of Object.values(linkedReview)) {
-        if (Array.isArray(value)) {
-          for (const review of value) {
-            if ("html_url" in review && !urlHasAnchor(review.html_url)) {
-              review.html_url += `#issue-${review.id}`;
-            }
-            comments.push({
-              ...review,
-              commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
-            });
-          }
-        } else if (value) {
-          if ("html_url" in value && !urlHasAnchor(value.html_url)) {
-            value.html_url += `#issue-${value.id}`;
-          }
+    for (const value of Object.values(linkedReview)) {
+      if (Array.isArray(value)) {
+        for (const review of value) {
+          this._addAnchorToUrl(review);
           comments.push({
-            ...value,
-            commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
+            ...review,
+            commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
           });
         }
+      } else if (value) {
+        this._addAnchorToUrl(value);
+        comments.push({
+          ...value,
+          commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
+        });
       }
     }
     return comments;
+  }
+
+  _getLinkedReviewComments() {
+    return this.linkedReviews.flatMap((linkedReview) => this._processSingleLinkedReview(linkedReview));
   }
 
   get allComments() {
