@@ -3,11 +3,10 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 
-export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: boolean, useCache: boolean) {
+export async function getPayload(owner: string, repo: string, issueId: number, useOpenAi: boolean, useCache: boolean) {
   const filePath = path.resolve(__dirname, "../.ubiquity-os.config.yml");
   const fileContent = await fs.readFile(filePath, "utf8");
   const cfgFile = YAML.parse(fileContent);
-  const [owner] = ownerRepo.split("/");
 
   if (!useOpenAi) {
     cfgFile.incentives.contentEvaluator.openAi = {
@@ -17,9 +16,34 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
   }
 
   const octokit = new customOctokit({ auth: process.env.GITHUB_TOKEN });
-  const { data: organization } = await octokit.rest.orgs.get({
-    org: owner,
-  });
+
+  let eventPayload;
+  if (repo && issueId) {
+    const organization = (
+      await octokit.rest.orgs.get({
+        org: owner,
+      })
+    ).data;
+    const issue = (
+      await octokit.rest.issues.get({
+        owner,
+        repo,
+        issue_number: issueId,
+      })
+    ).data;
+    const repository = (
+      await octokit.rest.repos.get({
+        owner,
+        repo,
+      })
+    ).data;
+    eventPayload = { issue, repository, organization };
+  } else {
+    const { data: organization } = await octokit.rest.orgs.get({
+      org: owner,
+    });
+    eventPayload = { organization };
+  }
 
   return {
     ref: "http://localhost",
@@ -36,7 +60,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
     }),
     authToken: process.env.GITHUB_TOKEN,
     eventPayload: JSON.stringify({
-      organization,
+      ...eventPayload,
       sender: {
         login: "ubiquity-os",
         id: 159901852,

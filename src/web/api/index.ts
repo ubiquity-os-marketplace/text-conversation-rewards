@@ -14,6 +14,7 @@ import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 
 function githubUrlToFileName(url: string): string {
   const repoMatch = RegExp(/github\.com\/([^/]+)\/([^/?#]+)/).exec(url);
@@ -35,6 +36,8 @@ function githubUrlToFileName(url: string): string {
   return `results/${owner}_${repo}.json`;
 }
 
+type Repository = RestEndpointMethodTypes["repos"]["listForOrg"]["response"]["data"][0];
+
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
     const { config, octokit, payload, logger } = context;
@@ -46,9 +49,19 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
       throw logger.error("Unable to find organization name");
     }
 
-    const repositories = await octokit.paginate(octokit.rest.repos.listForOrg, {
-      org: orgName,
-    });
+    let repositories: Repository[];
+    if (!payload.repository) {
+      repositories = await octokit.paginate(octokit.rest.repos.listForOrg, {
+        org: orgName,
+      });
+    } else {
+      const repository = await octokit.rest.repos.get({
+        org: orgName,
+        repo: payload.repository.name,
+        owner: payload.repository.owner.login,
+      });
+      repositories = [repository.data as Repository];
+    }
     for (const repo of repositories) {
       console.log("> ", repo.html_url);
       const issues = (
@@ -57,7 +70,12 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           repo: repo.name,
           state: "closed",
         })
-      ).filter((o) => !o.pull_request && o.state_reason === "completed");
+      ).filter((o) => {
+        if (payload.issue && o.id !== payload.issue.id) {
+          return false;
+        }
+        return !o.pull_request && o.state_reason === "completed";
+      });
       if (!issues.length) {
         console.log("No issues found, skipping.");
       }
@@ -102,7 +120,8 @@ const app = {
       try {
         const originalBody = await request.json();
         const modifiedBody = await getPayload(
-          originalBody.ownerRepo,
+          originalBody.owner,
+          originalBody.repo,
           originalBody.issueId,
           originalBody.useOpenAi,
           originalBody.useCache

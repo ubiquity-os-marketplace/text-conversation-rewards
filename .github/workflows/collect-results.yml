@@ -48,6 +48,8 @@ jobs:
         run: bun install
 
       - name: Start server
+        env:
+          NODE_ENV: local
         run: |
           bun run server &
           sleep 3s
