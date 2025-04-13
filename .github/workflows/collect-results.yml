@@ -92,7 +92,27 @@ jobs:
 
       - name: Aggregate JSON results
         run: |
-          jq 'input_filename | split("/")[-1] | sub(".json$"; "") | split("_") as $parts | { org: $parts[0], repo: $parts[1], issueId: $parts[2], metadata: . }' downloaded-artifacts/*/results/*.json | jq -s '.' > aggregated_results.json
+          echo '[' > temp_aggregated_results.json
+          first_item=true
+          find downloaded-artifacts/*/results/ -name '*.json' -print0 | while IFS= read -r -d $'\0' file; do
+            filename=$(basename "$file")
+            base_filename="${filename%.json}"
+            org="${base_filename%%_*}"
+            repo_issue="${base_filename#*_}"
+            repo="${repo_issue%_*}"
+            issueId="${repo_issue##*_}"
+
+            if [ "$first_item" = true ]; then
+              first_item=false
+            else
+              echo ',' >> temp_aggregated_results.json
+            fi
+
+            jq --arg org "$org" --arg repo "$repo" --arg issueId "$issueId" -c '{ org: $org, repo: $repo, issueId: $issueId, metadata: . }' "$file" >> temp_aggregated_results.json
+          done
+          echo ']' >> temp_aggregated_results.json
+
+          mv temp_aggregated_results.json aggregated_results.json
           echo "Aggregated results created in aggregated_results.json"
 
       - name: Upload aggregated results artifact
