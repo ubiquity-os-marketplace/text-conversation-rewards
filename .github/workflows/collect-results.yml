@@ -92,7 +92,7 @@ jobs:
 
       - name: Aggregate JSON results
         run: |
-          jq -s 'map({(input_filename | split("/")[-1] | sub(".json$"; "")): .}) | add' downloaded-artifacts/*/results/*.json > aggregated_results.json
+          jq -s 'map(input_filename | split("/")[-1] | sub(".json$"; "") | split("_") as $parts | { org: $parts[0], repo: $parts[1], issueId: $parts[2], data: . })' downloaded-artifacts/*/results/*.json > aggregated_results.json
           echo "Aggregated results created in aggregated_results.json"
 
       - name: Upload aggregated results artifact
