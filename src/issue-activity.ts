@@ -21,6 +21,10 @@ import {
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 
+function urlHasAnchor(url: string) {
+  return url.includes("#");
+}
+
 export class IssueActivity {
   protected readonly _context: ContextPlugin;
   readonly _configuration: DataCollectionConfiguration;
@@ -114,12 +118,18 @@ export class IssueActivity {
       for (const value of Object.values(linkedReview)) {
         if (Array.isArray(value)) {
           for (const review of value) {
+            if ("html_url" in review && !urlHasAnchor(review.html_url)) {
+              review.html_url += `#issue-${review.id}`;
+            }
             comments.push({
               ...review,
               commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
             });
           }
         } else if (value) {
+          if ("html_url" in value && !urlHasAnchor(value.html_url)) {
+            value.html_url += `#issue-${value.id}`;
+          }
           comments.push({
             ...value,
             commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
@@ -135,12 +145,20 @@ export class IssueActivity {
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & {
         commentType: CommentKind | CommentAssociation;
       }
-    > = this.comments.map((comment) => ({
-      ...comment,
-      commentType: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
-    }));
+    > = this.comments.map((comment) => {
+      if (!urlHasAnchor(comment.html_url)) {
+        comment.html_url += `#issue-${comment.id}`;
+      }
+      return {
+        ...comment,
+        commentType: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
+      };
+    });
     if (this.self) {
       const c: GitHubIssue = this.self;
+      if (!urlHasAnchor(c.html_url)) {
+        c.html_url += `#issue-${c.id}`;
+      }
       comments.push({
         ...c,
         commentType: this._getTypeFromComment(CommentKind.ISSUE, this.self, this.self),
