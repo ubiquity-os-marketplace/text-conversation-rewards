@@ -1,15 +1,23 @@
 // @ts-check
-import tsEslint from "typescript-eslint";
 import eslint from "@eslint/js";
-import sonarjs from "eslint-plugin-sonarjs";
 import checkFile from "eslint-plugin-check-file";
+import sonarjs from "eslint-plugin-sonarjs";
+import tsEslint from "typescript-eslint";
 
 export default tsEslint.config({
   plugins: {
     "@typescript-eslint": tsEslint.plugin,
     "check-file": checkFile,
   },
-  ignores: [".github/knip.ts", "dist/", "tests/__mocks__/**", "coverage/**", "dist/**", "src/web/dist/**"],
+  ignores: [
+    ".github/knip.ts",
+    "dist/",
+    "tests/__mocks__/**",
+    "coverage/**",
+    "dist/**",
+    "src/web/dist/**",
+    "src/adapters/supabase/types/database.ts",
+  ],
   extends: [eslint.configs.recommended, ...tsEslint.configs.recommended, sonarjs.configs.recommended],
   languageOptions: {
     parser: tsEslint.parser,

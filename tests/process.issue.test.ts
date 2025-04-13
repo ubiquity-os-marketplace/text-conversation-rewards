@@ -3,12 +3,15 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
 import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
+import { ERC20_ABI, PERMIT2_ABI } from "../src/helpers/web3";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
@@ -27,9 +30,6 @@ import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-re
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
-import { BigNumber } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
-import { PERMIT2_ABI, ERC20_ABI } from "../src/helpers/web3";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
@@ -99,6 +99,13 @@ const ctx = {
       owner: {
         login: "ubiquity-os",
         id: 76412717, // https://github.com/ubiquity
+      },
+    },
+  },
+  adapters: {
+    supabase: {
+      wallet: {
+        getWalletByUserId: jest.fn(async () => "0x1"),
       },
     },
   },
@@ -549,6 +556,70 @@ describe("Modules tests", () => {
       },
     });
   });
+
+  it("It should warn the user if wallet is not set", async () => {
+    const context = {
+      ...ctx,
+      adapters: {
+        ...ctx.adapters,
+        supabase: {
+          wallet: {
+            getWalletByUserId: jest.fn(async (userId: number) => {
+              if (userId === githubCommentResults["whilefoo"].userId) {
+                return null;
+              }
+              return "0x1";
+            }),
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+    const processor = new Processor(context);
+    processor["_transformers"] = [
+      new UserExtractorModule(context),
+      new DataPurgeModule(context),
+      new FormattingEvaluatorModule(context),
+      new PaymentModule(context),
+      new GithubCommentModule(context),
+    ];
+    // This catches calls by getFastestRpc
+    server.use(http.post("https://*", () => passthrough()));
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result["whilefoo"].evaluationCommentHtml).toContain("Wallet address is not set");
+  }, 120000);
+
+  it("It should warn the user if wallet could not be fetched", async () => {
+    const context = {
+      ...ctx,
+      adapters: {
+        ...ctx.adapters,
+        supabase: {
+          wallet: {
+            getWalletByUserId: jest.fn(async (userId: number) => {
+              if (userId === githubCommentResults["whilefoo"].userId) {
+                throw new Error("Connection error");
+              }
+              return "0x1";
+            }),
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+    const processor = new Processor(context);
+    processor["_transformers"] = [
+      new UserExtractorModule(context),
+      new DataPurgeModule(context),
+      new FormattingEvaluatorModule(context),
+      new PaymentModule(context),
+      new GithubCommentModule(context),
+    ];
+    // This catches calls by getFastestRpc
+    server.use(http.post("https://*", () => passthrough()));
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result["whilefoo"].evaluationCommentHtml).toContain("Error fetching wallet");
+  }, 120000);
 });
 
 describe("Retry", () => {

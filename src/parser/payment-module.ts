@@ -2,6 +2,8 @@ import { context } from "@actions/github";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
 import { createClient } from "@supabase/supabase-js";
+import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
+import { decodeError } from "@ubiquity-os/ethers-decode-error";
 import {
   Context,
   createAdapters,
@@ -14,27 +16,25 @@ import {
   SupportedEvents,
   TokenType,
 } from "@ubiquity-os/permit-generation";
+import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
 import Decimal from "decimal.js";
+import { BigNumber, ethers, utils } from "ethers";
 import { PaymentConfiguration, paymentConfigurationType } from "../configuration/payment-configuration";
+import { isAdmin, isCollaborative } from "../helpers/checkers";
+import {
+  BatchTransferPermit,
+  ERC20_ABI,
+  Erc20Wrapper,
+  getContract,
+  getEvmWallet,
+  PERMIT2_ABI,
+  Permit2Wrapper,
+  TransferRequest,
+} from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { PayoutMode, Result } from "../types/results";
-import { isAdmin, isCollaborative } from "../helpers/checkers";
-import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
-import { decodeError } from "@ubiquity-os/ethers-decode-error";
-import {
-  Erc20Wrapper,
-  getContract,
-  getEvmWallet,
-  Permit2Wrapper,
-  BatchTransferPermit,
-  PERMIT2_ABI,
-  ERC20_ABI,
-  TransferRequest,
-} from "../helpers/web3";
-import { BigNumber, ethers, utils } from "ethers";
-import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
 
 interface Payload {
   evmNetworkId: number;
@@ -132,12 +132,16 @@ export class PaymentModule extends BaseModule {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
-    // get reward beneficiaries
-    const beneficiaries = await this._getBeneficiaries(result);
+    for (const reward of Object.values(result)) {
+      reward.walletAddress = await this.context.adapters.supabase.wallet
+        .getWalletByUserId(reward.userId)
+        .catch(() => undefined);
+    }
 
     let directTransferError;
     if (payoutMode === "transfer") {
       try {
+        const beneficiaries = await this._getBeneficiaries(result);
         // Avoid empty transactions and gas wasting, maybe we should move this logic
         // before this block to avoid any extra works
         if (beneficiaries.length === 0) {
@@ -387,31 +391,18 @@ export class PaymentModule extends BaseModule {
   }
 
   async _getBeneficiaries(result: Result): Promise<Beneficiary[]> {
-    const beneficiaries: Beneficiary[] = [];
-    for (const [username, reward] of Object.entries(result)) {
-      // Obtain the beneficiary wallet address from the github user name
-      const { data: userData } = await this.context.octokit.rest.users.getByUsername({ username });
-      if (!userData) {
-        this.context.logger.warn(`GitHub user was not found for id ${username}`);
-        continue;
-      }
-      const userId = userData.id;
-      const { data: walletData, error: err } = await this._supabase
-        .from("users")
-        .select("wallets(*)")
-        .eq("id", userId)
-        .single();
-      if (err || !walletData.wallets?.address) {
-        this.context.logger.warn("Failed to get wallet", { userId, err, walletData });
-        continue;
-      }
-      beneficiaries.push({
-        username: username,
-        address: walletData.wallets?.address,
-        amount: reward.total,
-      });
-    }
-    return beneficiaries;
+    return Object.entries(result)
+      .map(([username, reward]) => {
+        if (!reward.walletAddress) {
+          return null;
+        }
+        return {
+          username,
+          address: reward.walletAddress,
+          amount: reward.total,
+        };
+      })
+      .filter((beneficiary) => beneficiary !== null);
   }
 
   async _transferReward({

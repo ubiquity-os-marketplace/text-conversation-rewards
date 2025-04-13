@@ -102,6 +102,13 @@ const ctx = {
       },
     },
   },
+  adapters: {
+    supabase: {
+      wallet: {
+        getWalletByUserId: jest.fn(async () => "0x1"),
+      },
+    },
+  },
   config: cfg,
   logger: new Logs("debug"),
   octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
