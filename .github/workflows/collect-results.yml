@@ -56,7 +56,7 @@ jobs:
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{
-              "ownerRepo": "${{ matrix.organization }}",
+              "owner": "${{ matrix.organization }}",
               "useOpenAi": true,
               "useCache": true
             }' \
