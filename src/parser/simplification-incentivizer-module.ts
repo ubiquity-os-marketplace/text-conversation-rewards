@@ -37,32 +37,41 @@ export class SimplificationIncentivizerModule extends BaseModule {
         pull.head.repo.name
       );
       const prAuthor = pull.user.login;
-      const files = await this.context.octokit.rest.pulls.listFiles({
-        owner: pull.head.repo.owner.login,
-        repo: pull.head.repo.name,
-        pull_number: pull.number,
-      });
+      try {
+        const files = await this.context.octokit.rest.pulls.listFiles({
+          owner: pull.head.repo.owner.login,
+          repo: pull.head.repo.name,
+          pull_number: pull.number,
+        });
+        for (const file of files.data) {
+          if (
+            !excludedFilePatterns?.length ||
+            !excludedFilePatterns.some((pattern) => minimatch(file.filename, pattern))
+          ) {
+            result[prAuthor].simplificationReward = result[prAuthor].simplificationReward ?? {
+              files: [],
+              url: pull.html_url,
+            };
 
-      for (const file of files.data) {
-        if (
-          !excludedFilePatterns?.length ||
-          !excludedFilePatterns.some((pattern) => minimatch(file.filename, pattern))
-        ) {
-          result[prAuthor].simplificationReward = result[prAuthor].simplificationReward ?? {
-            files: [],
-            url: pull.html_url,
-          };
-
-          const reward = Math.max((file.deletions - file.additions) / this._simplificationRate, 0);
-          if (reward !== 0) {
-            result[prAuthor].simplificationReward.files.push({
-              additions: file.additions,
-              deletions: file.deletions,
-              reward: reward,
-              fileName: file.filename,
-            });
+            const reward = Math.max((file.deletions - file.additions) / this._simplificationRate, 0);
+            if (reward !== 0) {
+              result[prAuthor].simplificationReward.files.push({
+                additions: file.additions,
+                deletions: file.deletions,
+                reward: reward,
+                fileName: file.filename,
+              });
+            }
           }
         }
+      } catch (e) {
+        if (e && typeof e === "object" && "status" in e && e.status === 404) {
+          this.context.logger.warn("No file was found in the pull-request, skipping", {
+            url: pull.html_url,
+          });
+          return result;
+        }
+        throw e;
       }
     }
 
