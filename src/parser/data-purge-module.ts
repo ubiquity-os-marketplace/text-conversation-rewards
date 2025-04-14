@@ -78,7 +78,11 @@ export class DataPurgeModule extends BaseModule {
               id: comment.id,
               content: newContent,
               url: comment.html_url,
-              timestamp: comment.created_at,
+              timestamp:
+                // submitted_at applies only for review comments
+                "submitted_at" in comment && typeof comment.submitted_at === "string"
+                  ? comment.submitted_at
+                  : comment.created_at,
               commentType: comment.commentType,
               diffHunk: reviewComment?.pull_request_review_id ? reviewComment?.diff_hunk : undefined,
             },

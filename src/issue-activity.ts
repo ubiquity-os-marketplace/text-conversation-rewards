@@ -126,6 +126,7 @@ export class IssueActivity {
           this._addAnchorToUrl(review);
           comments.push({
             ...review,
+            timestamp: review.submitted_at ?? review.created_at,
             commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
           });
         }
@@ -133,6 +134,7 @@ export class IssueActivity {
         this._addAnchorToUrl(value);
         comments.push({
           ...value,
+          timestamp: value.submitted_at ?? value.created_at,
           commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
         });
       }
@@ -148,6 +150,7 @@ export class IssueActivity {
     const comments: Array<
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & {
         commentType: CommentKind | CommentAssociation;
+        timestamp: string;
       }
     > = this.comments.map((comment) => {
       if (!urlHasAnchor(comment.html_url)) {
@@ -155,6 +158,7 @@ export class IssueActivity {
       }
       return {
         ...comment,
+        timestamp: comment.created_at,
         commentType: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
       };
     });
@@ -165,6 +169,7 @@ export class IssueActivity {
       }
       comments.push({
         ...c,
+        timestamp: c.created_at,
         commentType: this._getTypeFromComment(CommentKind.ISSUE, this.self, this.self),
       });
     }
