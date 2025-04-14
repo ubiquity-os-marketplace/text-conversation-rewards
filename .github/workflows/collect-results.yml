@@ -42,38 +42,13 @@ jobs:
       KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
       LOG_LEVEL: "info"
     steps:
-      - name: Log all inputs
+      - name: Save workflow inputs
         run: |
-          {
-            echo "Workflow Inputs:"
-            echo "  Organization: ${{ github.event.inputs.organization }}"
-            echo "  Repository: ${{ github.event.inputs.repo }}"
-            echo "  Notification Email: ${{ github.event.inputs.notification_email }}"
-            echo "  Additional Parameters:"
-            if [ -n "${{ github.event.inputs.additional_params }}" ]; then
-              echo "${{ github.event.inputs.additional_params }}" | while IFS= read -r line; do
-                echo "    $line"
-              done
-            else
-              echo "    None"
-            fi
-          } > workflow-inputs.log
-
-          # Also store in env for artifact
-          {
-            echo "WORKFLOW_INPUTS<<EOF"
-            echo "{"
-            echo "  \"organization\": \"${{ github.event.inputs.organization }}\","
-            echo "  \"repo\": \"${{ github.event.inputs.repo }}\","
-            echo "  \"notification_email\": \"${{ github.event.inputs.notification_email }}\""
-            echo "}"
-            echo "EOF"
-          } >> $GITHUB_ENV
-
-      - name: Save workflow inputs artifact
-        run: |
-          echo "${{ env.WORKFLOW_INPUTS }}" > workflow-inputs.json
-          cat workflow-inputs.log >> workflow-inputs.json
+          jq -n \
+            --arg org "${{ github.event.inputs.organization }}" \
+            --arg repo "${{ github.event.inputs.repo }}" \
+            --arg email "${{ github.event.inputs.notification_email }}" \
+            '{"organization": $org, "repo": $repo, "notification_email": $email}' > workflow-inputs.json
 
       - name: Upload workflow inputs artifact
         uses: actions/upload-artifact@v4
