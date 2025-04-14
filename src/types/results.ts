@@ -8,6 +8,7 @@ export interface Result {
     task?: {
       reward: number;
       multiplier: number;
+      timestamp: string;
     };
     feeRate?: number;
     permitUrl?: string;

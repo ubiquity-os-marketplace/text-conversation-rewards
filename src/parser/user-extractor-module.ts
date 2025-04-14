@@ -49,12 +49,22 @@ export class UserExtractorModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const closedEvents = data.events?.filter((event) => event.event === "closed") ?? [];
+    let taskTimestamp: string;
+    if (closedEvents.length > 0) {
+      closedEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      taskTimestamp = closedEvents[0].created_at;
+    } else {
+      taskTimestamp = new Date().toISOString();
+    }
+
     // First, try to add all assignees as they didn't necessarily add a comment but should receive a reward
     data.self?.assignees?.forEach((assignee) => {
       const task = data.self
         ? {
             reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getTaskMultiplier(data.self)).toNumber(),
             multiplier: this._getTaskMultiplier(data.self).toNumber(),
+            timestamp: taskTimestamp,
           }
         : undefined;
       result[assignee.login] = {
