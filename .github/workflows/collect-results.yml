@@ -1,4 +1,4 @@
-name: Bun GitHub Action
+name: XP Calculations
 
 on:
   workflow_dispatch:
@@ -44,8 +44,13 @@ jobs:
     steps:
       - name: Save workflow inputs
         run: |
+          if [ -z "${{ github.event.inputs.organization }}" ]; then
+            org='["ubiquity", "ubiquity-os", "ubiquity-os-marketplace"]'
+          else
+            org=$(echo "[\"${{ github.event.inputs.organization }}\"]")
+          fi
           jq -n \
-            --arg org "${{ github.event.inputs.organization }}" \
+            --argjson org "$org" \
             --arg repo "${{ github.event.inputs.repo }}" \
             --arg email "${{ github.event.inputs.notification_email }}" \
             '{"organization": $org, "repo": $repo, "notification_email": $email}' > workflow-inputs.json
