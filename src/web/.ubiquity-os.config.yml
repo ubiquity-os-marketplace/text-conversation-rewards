@@ -42,7 +42,7 @@ incentives:
   contentEvaluator:
     openAi:
       endpoint: https://openrouter.ai/api/v1
-      model: google/gemini-2.5-pro-exp-03-25:free
+      model: deepseek/deepseek-chat-v3-0324:free
   userExtractor:
     redeemTask: true
   dataPurge: {}
