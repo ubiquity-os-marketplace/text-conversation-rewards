@@ -461,6 +461,7 @@ describe("Modules tests", () => {
         task: {
           multiplier: 0.5,
           reward: 18.5,
+          timestamp: "",
         },
         userId: 0,
       },

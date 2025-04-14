@@ -96,6 +96,7 @@ function getResultOriginal() {
       task: {
         reward: 90,
         multiplier: 1,
+        timestamp: "",
       },
       userId: 1,
       comments: [
@@ -117,6 +118,7 @@ function getResultOriginal() {
       task: {
         reward: 9.99,
         multiplier: 1,
+        timestamp: "",
       },
       userId: 2,
       comments: [
