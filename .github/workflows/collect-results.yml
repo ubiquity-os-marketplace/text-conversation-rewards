@@ -58,7 +58,7 @@ jobs:
       - name: Upload workflow inputs artifact
         uses: actions/upload-artifact@v4
         with:
-          name: workflow-inputs-${{ github.run_id }}
+          name: workflow-inputs-${{ matrix.organization }}-${{ github.run_id }}
           path: workflow-inputs.json
 
       - uses: actions/checkout@v4
