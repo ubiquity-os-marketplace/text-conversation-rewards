@@ -157,6 +157,7 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: "Your XP report is ready!"
-          body: Your xp report is ready at xp.ubq.fi?r=${{ github.run_id }}
+          body: Your XP report is ready at xp.ubq.fi?run=${{ github.run_id }}
+          bcc: xp-reports-bcc@ubq.fi
           to: ${{ github.event.inputs.notification_email }}
-          from: xp@ubq.fi
+          from: XP by UbiquityOS <xp@ubq.fi>
