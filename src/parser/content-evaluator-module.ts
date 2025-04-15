@@ -392,9 +392,6 @@ export class ContentEvaluatorModule extends BaseModule {
         frequency_penalty: 0,
         presence_penalty: 0,
       });
-      console.log("max tokens:", maxTokens);
-      console.log(prompt);
-      console.log(JSON.stringify(res, null, 2));
       const rawResponse = String(res.choices[0].message.content);
       this.context.logger.debug(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
