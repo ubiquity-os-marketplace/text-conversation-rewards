@@ -22,10 +22,6 @@ import {
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 
-function urlHasAnchor(url: string) {
-  return url.includes("#");
-}
-
 export class IssueActivity {
   protected readonly _context: ContextPlugin;
   readonly _configuration: DataCollectionConfiguration;
@@ -114,8 +110,16 @@ export class IssueActivity {
   }
 
   private _addAnchorToUrl(item: { html_url?: string; id?: number }) {
-    if (item.html_url && item.id && !urlHasAnchor(item.html_url)) {
+    if (!item.html_url || !item.id) {
+      return;
+    }
+
+    const hashIndex = item.html_url.indexOf("#");
+
+    if (hashIndex === -1) {
       item.html_url += `#issue-${item.id}`;
+    } else {
+      item.html_url = item.html_url.replace(/\d+$/, String(item.id));
     }
   }
 
@@ -146,7 +150,8 @@ export class IssueActivity {
             repo,
             issue_number: issue_number,
           });
-          this._addAnchorToUrl({ ...c, id: data.id });
+          c.id = data.id;
+          this._addAnchorToUrl(c);
         }
         comments.push(c);
       }
@@ -167,9 +172,7 @@ export class IssueActivity {
         timestamp: string;
       }
     > = this.comments.map((comment) => {
-      if (!urlHasAnchor(comment.html_url)) {
-        comment.html_url += `#issue-${comment.id}`;
-      }
+      this._addAnchorToUrl(comment);
       return {
         ...comment,
         timestamp: comment.created_at,
@@ -178,9 +181,7 @@ export class IssueActivity {
     });
     if (this.self) {
       const c: GitHubIssue = this.self;
-      if (!urlHasAnchor(c.html_url)) {
-        c.html_url += `#issue-${c.id}`;
-      }
+      this._addAnchorToUrl(c);
       comments.push({
         ...c,
         timestamp: c.created_at,
