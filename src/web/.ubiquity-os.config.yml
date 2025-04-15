@@ -41,8 +41,8 @@ tcrHtmlConfig: &tcrHtmlConfig
 incentives:
   contentEvaluator:
     openAi:
-      endpoint: null
-      model: null
+      endpoint: https://openrouter.ai/api/v1
+      model: deepseek/deepseek-chat-v3-0324
   userExtractor:
     redeemTask: true
   dataPurge:
