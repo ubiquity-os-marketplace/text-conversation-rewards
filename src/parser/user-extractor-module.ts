@@ -25,7 +25,7 @@ export class UserExtractorModule extends BaseModule {
   /**
    * Checks if the comment is made by a human user, not empty, and not a command.
    */
-  _checkEntryValidity(comment: (typeof IssueActivity.prototype.allComments)[0]) {
+  _checkEntryValidity(comment: Awaited<ReturnType<IssueActivity["getAllComments"]>>[0]) {
     return comment.body && comment.user?.type === "User" && !comment.body.trim().startsWith("/");
   }
 
@@ -74,7 +74,8 @@ export class UserExtractorModule extends BaseModule {
         task,
       };
     });
-    for (const comment of data.allComments) {
+    const allComments = await data.getAllComments();
+    for (const comment of allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
         result[comment.user.login] = {
           ...result[comment.user.login],

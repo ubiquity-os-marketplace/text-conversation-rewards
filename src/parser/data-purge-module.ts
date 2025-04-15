@@ -21,7 +21,7 @@ export class DataPurgeModule extends BaseModule {
     return true;
   }
 
-  async _shouldSkipComment(comment: IssueActivity["allComments"][0]) {
+  async _shouldSkipComment(comment: Awaited<ReturnType<IssueActivity["getAllComments"]>>[0]) {
     if ("isMinimized" in comment && comment.isMinimized) {
       this.context.logger.debug("Skipping hidden comment", { comment });
       return true;
@@ -49,7 +49,8 @@ export class DataPurgeModule extends BaseModule {
       this.context.octokit,
       parseGitHubUrl(this.context.payload.issue.html_url)
     );
-    for (const comment of data.allComments) {
+    const allComments = await data.getAllComments();
+    for (const comment of allComments) {
       if (await this._shouldSkipComment(comment)) {
         continue;
       }

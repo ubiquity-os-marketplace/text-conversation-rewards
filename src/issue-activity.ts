@@ -17,6 +17,7 @@ import {
   getPullRequestReviewComments,
   getPullRequestReviews,
   IssueParams,
+  parseGitHubUrl,
   PullParams,
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
@@ -118,7 +119,7 @@ export class IssueActivity {
     }
   }
 
-  private _processSingleLinkedReview(linkedReview: Review) {
+  private async _processSingleLinkedReview(linkedReview: Review) {
     const comments = [];
     for (const value of Object.values(linkedReview)) {
       if (Array.isArray(value)) {
@@ -132,21 +133,34 @@ export class IssueActivity {
         }
       } else if (value) {
         this._addAnchorToUrl(value);
-        comments.push({
+        const c = {
           ...value,
           timestamp: value.submitted_at ?? value.created_at,
           commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
-        });
+        };
+        // Special case for anchoring with pull-request bodies, that have to be retrieved differently
+        if (c.commentType & CommentAssociation.SPECIFICATION && c.html_url) {
+          const { owner, repo, issue_number } = parseGitHubUrl(c.html_url);
+          const { data } = await this._context.octokit.rest.issues.get({
+            owner,
+            repo,
+            issue_number: issue_number,
+          });
+          this._addAnchorToUrl({ ...c, id: data.id });
+        }
+        comments.push(c);
       }
     }
     return comments;
   }
 
-  _getLinkedReviewComments() {
-    return this.linkedReviews.flatMap((linkedReview) => this._processSingleLinkedReview(linkedReview));
+  async _getLinkedReviewComments() {
+    const commentPromises = this.linkedReviews.map((linkedReview) => this._processSingleLinkedReview(linkedReview));
+    const commentsArrays = await Promise.all(commentPromises);
+    return commentsArrays.flat();
   }
 
-  get allComments() {
+  async getAllComments() {
     const comments: Array<
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & {
         commentType: CommentKind | CommentAssociation;
@@ -174,7 +188,8 @@ export class IssueActivity {
       });
     }
     if (this.linkedReviews) {
-      comments.push(...this._getLinkedReviewComments());
+      const linkedComments = await this._getLinkedReviewComments();
+      comments.push(...linkedComments);
     }
     return comments;
   }
