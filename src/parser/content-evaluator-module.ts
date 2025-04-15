@@ -386,12 +386,13 @@ export class ContentEvaluatorModule extends BaseModule {
             content: prompt,
           },
         ],
-        max_tokens: maxTokens,
+        max_tokens: maxTokens + 100,
         top_p: 1,
         temperature: 0.5,
         frequency_penalty: 0,
         presence_penalty: 0,
       });
+      console.log("max tokens:", maxTokens);
       console.log(prompt);
       console.log(JSON.stringify(res, null, 2));
       const rawResponse = String(res.choices[0].message.content);
