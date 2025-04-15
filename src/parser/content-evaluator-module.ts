@@ -383,7 +383,7 @@ export class ContentEvaluatorModule extends BaseModule {
         messages: [
           {
             role: "system",
-            content: prompt,
+            content: "What is the capital of France?",
           },
         ],
         max_tokens: maxTokens + 100,
