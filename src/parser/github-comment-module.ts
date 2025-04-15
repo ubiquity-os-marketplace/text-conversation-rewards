@@ -58,7 +58,7 @@ export class GithubCommentModule extends BaseModule {
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
-      if (result[key].total <= 0) continue;
+      if (result[key].total <= 0 || (await this.isRewardClaimed(value))) continue;
       result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
