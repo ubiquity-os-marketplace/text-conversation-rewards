@@ -77,7 +77,7 @@ jobs:
         run: |
           bun run server &
           sleep 3s
-          curl -X POST \
+          curl -s -X POST \
             -H "Content-Type: application/json" \
             -d '{
               "owner": "${{ matrix.organization }}",
