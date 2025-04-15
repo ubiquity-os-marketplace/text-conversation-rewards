@@ -11,7 +11,7 @@ export class Wallet extends Super {
   async getWalletByUserId(userId: number) {
     const { data, error } = await this.supabase.from("users").select("wallets(*)").eq("id", userId).maybeSingle();
     if (error) {
-      this.context.logger.error("Failed to get wallet", { userId, error: error instanceof Error ? error : undefined });
+      this.context.logger.error("Failed to get wallet", { userId, err: error });
       throw error;
     }
 
