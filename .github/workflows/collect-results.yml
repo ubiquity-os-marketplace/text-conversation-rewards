@@ -135,7 +135,7 @@ jobs:
               echo ',' >> temp_aggregated_results.json
             fi
 
-            jq --arg org "$org" --arg repo "$repo" --arg issueId "$issueId" -c '{ org: $org, repo: $repo, issueId: $issueId, metadata: . }' "$file" >> temp_aggregated_results.json
+            jq --arg org "$org" --arg repo "$repo" --arg issueId "$issueId" -c 'del(.. | .evaluationCommentHtml?) | { org: $org, repo: $repo, issueId: $issueId, metadata: . }' "$file" >> temp_aggregated_results.json
           done
           echo ']' >> temp_aggregated_results.json
 

@@ -41,12 +41,12 @@ export class SimplificationIncentivizerModule extends BaseModule {
   }
 
   private async _processPullRequest(pull: GitHubPullRequest, result: Result) {
-    const excludedFilePatterns = await getExcludedFiles(this.context, pull.head.repo.owner.login, pull.head.repo.name);
+    const excludedFilePatterns = await getExcludedFiles(this.context, pull.base.repo.owner.login, pull.base.repo.name);
     const prAuthor = pull.user.login;
     try {
       const files = await this.context.octokit.rest.pulls.listFiles({
-        owner: pull.head.repo.owner.login,
-        repo: pull.head.repo.name,
+        owner: pull.base.repo.owner.login,
+        repo: pull.base.repo.name,
         pull_number: pull.number,
       });
       for (const file of files.data) {
@@ -56,6 +56,10 @@ export class SimplificationIncentivizerModule extends BaseModule {
       if (e && typeof e === "object" && "status" in e && e.status === 404) {
         this.context.logger.warn("No file was found in the pull-request, skipping", {
           url: pull.html_url,
+          owner: pull.base.repo.owner.login,
+          repo: pull.base.repo.name,
+          pull_number: pull.number,
+          err: e,
         });
         return result;
       }
