@@ -7,48 +7,18 @@ import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { http, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
+import { PayoutMode } from "../src/types/results";
 import { db as mockDb } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import originalpaymentResults from "./__mocks__/results/permit-generation-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { parseUnits } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
-import { ERC20_ABI, PERMIT2_ABI } from "../src/helpers/web3";
-import { PayoutMode } from "../src/types/results";
 import "./helpers/permit-mock";
+import { mockWeb3Module } from "./helpers/web3-mocks";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
-const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("20000", 18) as BigNumber);
-jest.unstable_mockModule("../src/helpers/web3", () => {
-  class MockErc20Wrapper {
-    getBalance = mockRewardTokenBalance;
-    getSymbol = jest.fn().mockReturnValue("WXDAI");
-    getDecimals = jest.fn().mockReturnValue(18);
-    getAllowance = mockRewardTokenBalance;
-  }
-  class MockPermit2Wrapper {
-    generateBatchTransferPermit = jest.fn().mockReturnValue({
-      signature: "signature",
-    });
-    sendPermitTransferFrom = jest
-      .fn()
-      .mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({ blockNumber: 1 }) });
-    estimatePermitTransferFromGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
-  }
-  return {
-    PERMIT2_ABI: PERMIT2_ABI,
-    ERC20_ABI: ERC20_ABI,
-    Erc20Wrapper: MockErc20Wrapper,
-    Permit2Wrapper: MockPermit2Wrapper,
-    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
-    getEvmWallet: jest.fn(() => ({
-      address: "0xAddress",
-      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
-    })),
-  };
-});
+mockWeb3Module();
 
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},

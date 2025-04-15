@@ -2,16 +2,15 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest 
 import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { CommentKind } from "../../src/configuration/comment-types";
-import { ERC20_ABI, PERMIT2_ABI } from "../../src/helpers/web3";
 import { IssueActivity } from "../../src/issue-activity";
 import { ContextPlugin } from "../../src/types/plugin-input";
 import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
+import { mockWeb3Module } from "../helpers/web3-mocks";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -62,31 +61,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("200", 18) as BigNumber);
-jest.unstable_mockModule("../../src/helpers/web3", () => {
-  class MockErc20Wrapper {
-    getBalance = mockRewardTokenBalance;
-    getSymbol = jest.fn().mockReturnValue("WXDAI");
-    getDecimals = jest.fn().mockReturnValue(18);
-    getAllowance = mockRewardTokenBalance;
-  }
-  class MockPermit2Wrapper {
-    generateBatchTransferPermit = jest.fn();
-    sendPermitTransferFrom = jest.fn().mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({}) });
-    estimatePermitTransferFromGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
-  }
-  return {
-    PERMIT2_ABI: PERMIT2_ABI,
-    ERC20_ABI: ERC20_ABI,
-    Erc20Wrapper: MockErc20Wrapper,
-    Permit2Wrapper: MockPermit2Wrapper,
-    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
-    getEvmWallet: jest.fn(() => ({
-      address: "0xAddress",
-      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
-    })),
-  };
-});
+const web3Mocks = mockWeb3Module("../../src/helpers/web3");
 
 // original rewards object before fees are applied
 function getResultOriginal() {
@@ -420,8 +395,8 @@ describe("payment-module.ts", () => {
 
       expect(logCallMetadata.gas.has).toEqual(parseUnits("1", 18).toString());
       expect(logCallMetadata.gas.required).toEqual(parseUnits("0.02", 18).toString());
-      expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("200", 18).toString());
-      expect(logCallMetadata.rewardToken.allowed).toEqual(parseUnits("200", 18).toString());
+      expect(logCallMetadata.rewardToken.has).toEqual(parseUnits("20000", 18).toString());
+      expect(logCallMetadata.rewardToken.allowed).toEqual(parseUnits("20000", 18).toString());
       expect(logCallMetadata.rewardToken.required).toEqual(parseUnits("111.11", 18).toString());
 
       spyConsoleLog.mockReset();
@@ -449,8 +424,8 @@ describe("payment-module.ts", () => {
             required: "20000000000000000",
           },
           rewardToken: {
-            allowed: "200000000000000000000",
-            has: "200000000000000000000",
+            allowed: "20000000000000000000000",
+            has: "20000000000000000000000",
             required: "111110000000000000000",
           },
         },
@@ -458,14 +433,11 @@ describe("payment-module.ts", () => {
     });
 
     it("Should reject if the funding wallet has insufficient reward tokens", async () => {
-      const { getEvmWallet } = await import("../../src/helpers/web3");
-
-      const mockedGetEvmWallet = getEvmWallet as jest.Mock;
-      mockedGetEvmWallet.mockImplementationOnce(() => ({
+      web3Mocks.getEvmWallet.mockImplementationOnce(() => ({
         address: "0xOverriddenAddress",
         getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
       }));
-      mockRewardTokenBalance.mockReturnValueOnce(parseUnits("50", 18));
+      web3Mocks.Erc20Wrapper.getBalance.mockReturnValueOnce(parseUnits("50", 18));
 
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
@@ -481,7 +453,7 @@ describe("payment-module.ts", () => {
             required: "Unavailable",
           },
           rewardToken: {
-            allowed: "200000000000000000000",
+            allowed: "20000000000000000000000",
             has: "50000000000000000000",
             required: "111110000000000000000",
           },
