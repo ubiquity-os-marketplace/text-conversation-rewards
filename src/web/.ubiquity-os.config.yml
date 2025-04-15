@@ -45,7 +45,8 @@ incentives:
       model: google/gemini-2.5-pro-preview-03-25
   userExtractor:
     redeemTask: true
-  dataPurge: {}
+  dataPurge:
+    skipCommentsWhileAssigned: none
   formattingEvaluator:
     multipliers:
       - role:
