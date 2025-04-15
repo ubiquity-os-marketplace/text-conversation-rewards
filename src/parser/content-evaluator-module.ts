@@ -377,16 +377,16 @@ export class ContentEvaluatorModule extends BaseModule {
     try {
       const res = await this._openAi.chat.completions.create({
         model: this._configuration?.openAi.model ?? "gpt-4o-2024-08-06",
-        // response_format: {
-        //   type: "json_object",
-        // },
+        response_format: {
+          type: "json_object",
+        },
         messages: [
           {
             role: "system",
-            content: "What is the capital of France?",
+            content: prompt,
           },
         ],
-        max_tokens: maxTokens + 100,
+        max_tokens: maxTokens,
         top_p: 1,
         temperature: 0.5,
         frequency_penalty: 0,
