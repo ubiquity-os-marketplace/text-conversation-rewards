@@ -1,13 +1,9 @@
-import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
-import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
-import { retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -115,6 +111,7 @@ export class ContentEvaluatorModule extends BaseModule {
     const commentsWithScore: GithubCommentScore[] = [...comments];
     const { commentsToEvaluate, prCommentsToEvaluate } = this._splitCommentsByPrompt(commentsWithScore);
 
+    /*
     const relevancesByAi = await retry(
       async () => {
         const relevances = await this._evaluateComments(
@@ -170,6 +167,17 @@ export class ContentEvaluatorModule extends BaseModule {
         },
       }
     );
+    */
+
+    // Assign a hardcoded value instead
+    // You need to generate an object mapping comment IDs to scores.
+    // Example: Hardcode 0.5 for all comments that would have been evaluated.
+    const allCommentIdsToEvaluate = [...commentsToEvaluate, ...prCommentsToEvaluate].map(c => c.id);
+    const relevancesByAi: Relevances = allCommentIdsToEvaluate.reduce((acc, id) => {
+      acc[id] = 0.5; // <-- HARDCODED VALUE (0.5)
+      return acc;
+    }, {} as Relevances);
+
 
     for (const currentComment of commentsWithScore) {
       let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
@@ -453,23 +461,23 @@ export class ContentEvaluatorModule extends BaseModule {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
-    return `I need to evaluate the value of a GitHub contributor's comments in a pull request. 
-    Some of these comments are code review comments, and some are general suggestions or a part of the discussion. 
-    I'm interested in how much each comment helps to solve the GitHub issue and improve code quality. 
-    Please provide a float between 0 and 1 to represent the value of each comment. 
-    A score of 1 indicates that the comment is very valuable and significantly improves the submitted solution and code quality, whereas a score of 0 indicates a negative or zero impact. 
-    A stringified JSON is given below that contains the specification of the GitHub issue, and comments by different contributors. 
-    The property "diffHunk" presents the chunk of code being addressed for a possible change in a code review comment. 
-    
+    return `I need to evaluate the value of a GitHub contributor's comments in a pull request.
+    Some of these comments are code review comments, and some are general suggestions or a part of the discussion.
+    I'm interested in how much each comment helps to solve the GitHub issue and improve code quality.
+    Please provide a float between 0 and 1 to represent the value of each comment.
+    A score of 1 indicates that the comment is very valuable and significantly improves the submitted solution and code quality, whereas a score of 0 indicates a negative or zero impact.
+    A stringified JSON is given below that contains the specification of the GitHub issue, and comments by different contributors.
+    The property "diffHunk" presents the chunk of code being addressed for a possible change in a code review comment.
+
     \`\`\`
     ${JSON.stringify({ specification: issue, comments: userComments })}
     \`\`\`\
-  
-    To what degree are each of the comments valuable? 
-    Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
+
+    To what degree are each of the comments valuable?
+    Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment.
     The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.
     Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
-    
+
     IMPORTANT: Your response MUST be ONLY the raw JSON object, suitable for direct parsing by a program. Do not include any explanatory text, markdown formatting, backticks, or code blocks.`;
   }
 }
