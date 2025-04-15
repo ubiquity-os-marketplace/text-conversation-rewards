@@ -1,6 +1,8 @@
 import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
+import { encodingForModel } from "js-tiktoken";
 import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
@@ -17,8 +19,6 @@ import {
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
-import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
-import { encodingForModel } from "js-tiktoken";
 
 /**
  * Evaluates and rates comments.
@@ -392,6 +392,8 @@ export class ContentEvaluatorModule extends BaseModule {
         frequency_penalty: 0,
         presence_penalty: 0,
       });
+      console.log(prompt);
+      console.log(JSON.stringify(res, null, 2));
       const rawResponse = String(res.choices[0].message.content);
       this.context.logger.debug(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
@@ -436,14 +438,16 @@ export class ContentEvaluatorModule extends BaseModule {
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object: {ID: score}
+      6. Return only a JSON object like this example: {"123": 0.8, "456": 0.2, "789": 1.0}
 
       Notes:
       - Even minor details may be significant.
       - Comments may reference earlier comments.
       - The number of entries in the JSON response must equal ${userCommentsMap.length}.
 
-      IMPORTANT: Do not use markdown formatting. Do not include backticks or code blocks. Return just the plain JSON object text that can be directly parsed.
+      Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
+
+      IMPORTANT: Your response MUST be ONLY the raw JSON object, suitable for direct parsing by a program. Do not include any explanatory text, markdown formatting, backticks, or code blocks.
     `;
   }
 
@@ -466,7 +470,8 @@ export class ContentEvaluatorModule extends BaseModule {
     To what degree are each of the comments valuable? 
     Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
     The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.
+    Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
     
-    IMPORTANT: Do not use markdown formatting. Do not include backticks or code blocks. Return just the plain JSON object text that can be directly parsed.`;
+    IMPORTANT: Your response MUST be ONLY the raw JSON object, suitable for direct parsing by a program. Do not include any explanatory text, markdown formatting, backticks, or code blocks.`;
   }
 }
