@@ -48,6 +48,20 @@ export class UserExtractorModule extends BaseModule {
     return new Decimal(1).div(issue.assignees?.length ?? 1);
   }
 
+  _addEventAnchorToHtmlUrl(url: string, id: string) {
+    if (url.includes("#")) {
+      const anchorIndex = url.lastIndexOf("-");
+      if (anchorIndex !== -1) {
+        return url.substring(0, anchorIndex + 1) + id;
+      } else {
+        const hashIndex = url.lastIndexOf("#");
+        return url.substring(0, hashIndex + 1) + "event-" + id;
+      }
+    } else {
+      return url + "#event-" + id;
+    }
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const closedEvents = data.events?.filter((event) => event.event === "closed") ?? [];
     let taskTimestamp: string;
@@ -55,7 +69,7 @@ export class UserExtractorModule extends BaseModule {
     if (closedEvents.length > 0) {
       closedEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       taskTimestamp = closedEvents[0].created_at;
-      taskUrl = closedEvents[0].url;
+      taskUrl = this._addEventAnchorToHtmlUrl(`${data.self?.html_url}`, closedEvents[0].id.toString());
     } else {
       taskTimestamp = new Date().toISOString();
       taskUrl = `${data.self?.html_url}`;
