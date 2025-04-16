@@ -75,6 +75,7 @@ describe("GithubCommentModule Fee Tests", () => {
           reward: 50, // Example value
           multiplier: 1.5, // Example value
           timestamp: "",
+          url: "",
         },
         feeRate: 0.2, // This implies a 5% fee
         permitUrl: "https://pay.ubq.fi", // Example URL

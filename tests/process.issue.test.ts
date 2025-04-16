@@ -462,6 +462,7 @@ describe("Modules tests", () => {
           multiplier: 0.5,
           reward: 18.5,
           timestamp: "",
+          url: "",
         },
         userId: 0,
       },
@@ -517,6 +518,7 @@ describe("Modules tests", () => {
           multiplier: 0.5,
           reward: 18.5,
           timestamp: "",
+          url: "",
         },
         comments: [
           {

@@ -9,6 +9,7 @@ export interface Result {
       reward: number;
       multiplier: number;
       timestamp: string;
+      url: string;
     };
     feeRate?: number;
     permitUrl?: string;

@@ -97,6 +97,7 @@ function getResultOriginal() {
         reward: 90,
         multiplier: 1,
         timestamp: "",
+        url: "",
       },
       userId: 1,
       comments: [
@@ -119,6 +120,7 @@ function getResultOriginal() {
         reward: 9.99,
         multiplier: 1,
         timestamp: "",
+        url: "",
       },
       userId: 2,
       comments: [
