@@ -11,7 +11,7 @@ import { logInvalidIssue } from "../../helpers/log-invalid-issue";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
-import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
+import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 import { RestEndpointMethodTypes } from "@octokit/rest";
@@ -72,6 +72,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
         })
       ).filter((o) => {
         if (payload.issue && o.id !== payload.issue.id) {
+          console.log(`Skipping issue ${o.id} because matching issue should be ${payload.issue.html_url}`);
           return false;
         }
         return !o.pull_request && o.state_reason === "completed";
@@ -89,12 +90,11 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           await logInvalidIssue(context.logger, issue.html_url);
         } else {
           config.incentives.file = filePath;
-          context.payload.issue = issue as ContextPlugin["payload"]["issue"];
-          context.payload.repository = repo as ContextPlugin["payload"]["repository"];
+          const ctx = { ...context, payload: { ...context.payload, issue, repository: repo } } as typeof context;
           const issueElem = parseGitHubUrl(issue.html_url);
-          const activity = new IssueActivityCache(context, issueElem, "useCache" in config);
+          const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
           await activity.init();
-          const processor = new Processor(context);
+          const processor = new Processor(ctx);
           await processor.run(activity);
           processor.dump();
         }
