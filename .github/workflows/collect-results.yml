@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: ""
+      useLlm:
+        description: "Whether to use LLMs for evaluations."
+        required: false
+        type: boolean
+        default: true
       notification_email:
         description: "Optional email address to notify upon completion."
         required: false
@@ -81,8 +86,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "owner": "${{ matrix.organization }}",
-              "useOpenAi": true,
-              "useCache": true
+              "useOpenAi": ${{ github.event.inputs.useLlm }},
+              "useCache": false
               ${{ github.event.inputs.repo != '' && format(',"repo": "{0}"', github.event.inputs.repo) || '' }}
             }' \
             http://localhost:4000
