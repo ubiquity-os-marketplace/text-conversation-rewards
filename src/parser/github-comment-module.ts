@@ -85,10 +85,15 @@ export class GithubCommentModule extends BaseModule {
     if (!permits.length) {
       return false;
     }
-    const { owner, nonce, networkId } = permits[0];
-    const permit2Contract = await getContract(networkId, permit2Address(networkId), PERMIT2_ABI, 5, 1000);
-    const permit2Wrapper = new Permit2Wrapper(permit2Contract);
-    return permit2Wrapper.isNonceClaimed(owner, nonce);
+    for (const permit of permits) {
+      const { owner, nonce, networkId } = permit;
+      const permit2Contract = await getContract(networkId, permit2Address(networkId), PERMIT2_ABI, 5, 1000);
+      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
+      if (!(await permit2Wrapper.isNonceClaimed(owner, nonce))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
