@@ -38,7 +38,7 @@ tcrHtmlConfig: &tcrHtmlConfig
     score: 0.1
     countWords: true
 
-evmPrivateEncrypted: '0x00'
+evmPrivateEncrypted: "0x00"
 incentives:
   contentEvaluator:
     openAi:
