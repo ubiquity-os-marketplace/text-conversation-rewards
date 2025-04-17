@@ -101,7 +101,9 @@ describe("GithubCommentModule Fee Tests", () => {
         '      "total": 100,\n' +
         '      "task": {\n' +
         '        "reward": 50,\n' +
-        '        "multiplier": 1.5\n' +
+        '        "multiplier": 1.5,\n' +
+        '        "timestamp": "",\n' +
+        '        "url": ""\n' +
         "      },\n" +
         '      "feeRate": 0.2,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +

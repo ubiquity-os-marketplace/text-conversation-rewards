@@ -1,6 +1,14 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { ContextPlugin } from "../types/plugin-input";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+// These are required so that Jest doesn't crash
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const __filename = fileURLToPath(import.meta.url);
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const __dirname = dirname(__filename);
 
 const INVALID_ISSUES_PATH = path.resolve(__dirname, "../../invalid-issues.json");
 
