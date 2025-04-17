@@ -49,7 +49,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
 
     mkdirSync("results", { recursive: true });
 
-    const orgName = payload.organization?.login;
+    const orgName = payload.organization?.login.trim();
 
     if (!orgName) {
       throw logger.error("Unable to find organization name");
@@ -69,7 +69,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
       repositories = [repository.data as Repository];
     }
     for (const repo of repositories) {
-      console.log("> ", repo.html_url);
+      logger.info(repo.html_url);
       const issues = (
         await octokit.paginate(octokit.rest.issues.listForRepo, {
           owner: orgName,
@@ -78,21 +78,21 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
         })
       ).filter((o) => {
         if (payload.issue && o.id !== payload.issue.id) {
-          console.log(`Skipping issue ${o.id} because matching issue should be ${payload.issue.html_url}`);
+          logger.warn(`Skipping issue ${o.id} because matching issue should be ${payload.issue.html_url}`);
           return false;
         }
         return !o.pull_request && o.state_reason === "completed";
       });
       if (!issues.length) {
-        console.log("No issues found, skipping.");
+        logger.warn("No issues found, skipping.");
       }
       for (const issue of issues) {
-        console.log("--- ", issue.html_url);
+        logger.info(issue.html_url);
         const filePath = githubUrlToFileName(issue.html_url);
         if (existsSync(filePath)) {
-          console.warn(`File ${filePath} already exists, skipping.`);
+          logger.warn(`File ${filePath} already exists, skipping.`);
         } else if (!issue.labels.some((label) => typeof label !== "string" && label.name?.startsWith("Price:"))) {
-          console.warn("No pricing label found, skipping.");
+          logger.warn("No pricing label found, skipping.");
           await logInvalidIssue(context.logger, issue.html_url);
         } else {
           config.incentives.file = filePath;
