@@ -1,3 +1,4 @@
+import { SupabaseClient } from "@supabase/supabase-js";
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
@@ -7,11 +8,12 @@ import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
 import { existsSync } from "node:fs";
 import manifest from "../../../manifest.json";
+import { createAdapters } from "../../adapters";
 import { logInvalidIssue } from "../../helpers/log-invalid-issue";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
-import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
+import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 import { RestEndpointMethodTypes } from "@octokit/rest";
@@ -40,7 +42,11 @@ type Repository = RestEndpointMethodTypes["repos"]["listForOrg"]["response"]["da
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
-    const { config, octokit, payload, logger } = context;
+    const { payload, config, octokit, logger } = context;
+    const supabaseClient = new SupabaseClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY);
+    const adapters = createAdapters(supabaseClient, context as ContextPlugin);
+    const pluginContext = { ...context, adapters };
+
     mkdirSync("results", { recursive: true });
 
     const orgName = payload.organization?.login;
@@ -90,7 +96,10 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           await logInvalidIssue(context.logger, issue.html_url);
         } else {
           config.incentives.file = filePath;
-          const ctx = { ...context, payload: { ...context.payload, issue, repository: repo } } as typeof context;
+          const ctx = {
+            ...pluginContext,
+            payload: { ...context.payload, issue, repository: repo },
+          } as typeof pluginContext;
           const issueElem = parseGitHubUrl(issue.html_url);
           const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
           await activity.init();

@@ -16,6 +16,7 @@ export interface Result {
     explorerUrl?: string;
     payoutMode?: PayoutMode;
     userId: number;
+    walletAddress?: string | null;
     reviewRewards?: {
       reviews?: ReviewScore[];
       url: string;

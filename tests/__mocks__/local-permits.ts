@@ -82,7 +82,6 @@ export async function generatePermitUrlPayload(
   }[]
 ) {
   const { amount, username } = permitRequests[0];
-  // @ts-expect-error adapters is not in the type
   const { config, adapters, payload } = context;
   const chainId = config.evmNetworkId;
   const privateKey = await getPrivateKey(context.config.evmPrivateEncrypted);

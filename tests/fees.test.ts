@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { ERC20_ABI } from "../src/helpers/web3";
 import { IssueActivity } from "../src/issue-activity";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { ERC20_ABI } from "../src/helpers/web3";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -82,6 +82,7 @@ describe("GithubCommentModule Fee Tests", () => {
         payoutMode: "permit",
         userId: 12345, // Example user ID
         evaluationCommentHtml: "",
+        walletAddress: "0x1",
       },
     };
 
@@ -105,7 +106,8 @@ describe("GithubCommentModule Fee Tests", () => {
         '      "feeRate": 0.2,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +
         '      "payoutMode": "permit",\n' +
-        '      "userId": 12345\n' +
+        '      "userId": 12345,\n' +
+        '      "walletAddress": "0x1"\n' +
         "    }\n" +
         "  }\n" +
         "}\n" +

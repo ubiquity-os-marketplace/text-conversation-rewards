@@ -10,8 +10,8 @@ import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
-import { removeKeyFromObject, commentTypeReplacer } from "../helpers/result-replacer";
-import { getContract, Erc20Wrapper, ERC20_ABI } from "../helpers/web3";
+import { commentTypeReplacer, removeKeyFromObject } from "../helpers/result-replacer";
+import { ERC20_ABI, Erc20Wrapper, getContract } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
@@ -356,6 +356,23 @@ export class GithubCommentModule extends BaseModule {
 
     return reviewTables;
   }
+
+  _createWalletWarning(walletAddress: string | null | undefined) {
+    if (walletAddress === null) {
+      return `<h6>⚠️ Wallet address is not set</h6>`;
+    } else if (walletAddress === undefined) {
+      return `<h6>⚠️ Error fetching wallet</h6>`;
+    }
+    return "";
+  }
+
+  _createRewardLink(result: Result[0], tokenSymbol: string) {
+    if (result.permitUrl || result.explorerUrl) {
+      return `<a href="${result.permitUrl || result.explorerUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
+    }
+    return `[ ${result.total} ${tokenSymbol} ]`;
+  }
+
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
@@ -395,9 +412,7 @@ export class GithubCommentModule extends BaseModule {
         <b>
           <h3>
             &nbsp;
-            <a href="${result.permitUrl ?? result.explorerUrl}" target="_blank" rel="noopener">
-              [ ${result.total} ${tokenSymbol} ]
-            </a>
+            ${this._createRewardLink(result, tokenSymbol)}
             &nbsp;
           </h3>
           <h6>
@@ -405,6 +420,7 @@ export class GithubCommentModule extends BaseModule {
           </h6>
         </b>
       </summary>
+      ${this._createWalletWarning(result.walletAddress)}
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       ${isCapped ? `<h6>⚠️ Your rewards have been limited to the task price of ${taskReward} ${tokenSymbol}.</h6>` : ""}
       <h6>Contributions Overview</h6>
