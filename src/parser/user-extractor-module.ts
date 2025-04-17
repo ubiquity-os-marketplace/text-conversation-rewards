@@ -48,18 +48,10 @@ export class UserExtractorModule extends BaseModule {
     return new Decimal(1).div(issue.assignees?.length ?? 1);
   }
 
-  _addEventAnchorToHtmlUrl(url: string, id: string) {
-    if (url.includes("#")) {
-      const anchorIndex = url.lastIndexOf("-");
-      if (anchorIndex !== -1) {
-        return url.substring(0, anchorIndex + 1) + id;
-      } else {
-        const hashIndex = url.lastIndexOf("#");
-        return url.substring(0, hashIndex + 1) + "event-" + id;
-      }
-    } else {
-      return url + "#event-" + id;
-    }
+  _addEventAnchorToHtmlUrl(url: string, id: string): string {
+    const hashIndex = url.indexOf("#");
+    const baseUrl = hashIndex >= 0 ? url.substring(0, hashIndex) : url;
+    return `${baseUrl}#event-${id}`;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
