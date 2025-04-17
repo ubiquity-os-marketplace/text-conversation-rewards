@@ -42,7 +42,7 @@ incentives:
   contentEvaluator:
     openAi:
       endpoint: https://openrouter.ai/api/v1
-      model: anthropic/claude-3.7-sonnet
+      model: deepseek/deepseek-chat-v3-0324
   userExtractor:
     redeemTask: true
   dataPurge:
