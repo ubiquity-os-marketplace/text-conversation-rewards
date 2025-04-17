@@ -25,7 +25,6 @@ export const pluginSettingsSchema = T.Object(
     evmPrivateEncrypted: T.String({
       description: "The encrypted Ethereum private key to use for funding rewards.",
       examples: ["0x000..."],
-      default: "0x00",
     }),
     /**
      * Reward token for ERC20 permits, default WXDAI for gnosis chain

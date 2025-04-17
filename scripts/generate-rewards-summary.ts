@@ -41,7 +41,6 @@ function generateMarkdownTable(userTotals: UserTotals): string {
   markdownContent += "| User | Total Reward |\n";
   markdownContent += "|------|--------------|\n";
 
-  // Sort users by total reward in descending order
   const sortedUsers = Object.keys(userTotals).sort((a, b) => userTotals[b] - userTotals[a]);
 
   if (sortedUsers.length === 0) {
