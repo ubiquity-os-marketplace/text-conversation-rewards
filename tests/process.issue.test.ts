@@ -3,12 +3,15 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
 import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
+import { ERC20_ABI, PERMIT2_ABI } from "../src/helpers/web3";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
@@ -18,10 +21,11 @@ import { server } from "./__mocks__/node";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import eventIncentivesResults from "./__mocks__/results/event-incentives-results.json";
+import simplificationIncentivizerResults from "./__mocks__/results/simplification-incentivizer.results.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
-import permitGenerationResults from "./__mocks__/results/permit-generation-results.json";
+import paymentResults from "./__mocks__/results/permit-generation-results.json";
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
@@ -29,11 +33,35 @@ import "./helpers/permit-mock";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
-jest.unstable_mockModule("../src/helpers/web3", () => ({
-  getErc20TokenSymbol() {
-    return "WXDAI";
-  },
-}));
+const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("20000", 18) as BigNumber);
+jest.unstable_mockModule("../src/helpers/web3", () => {
+  class MockErc20Wrapper {
+    getBalance = mockRewardTokenBalance;
+    getSymbol = jest.fn().mockReturnValue("WXDAI");
+    getDecimals = jest.fn().mockReturnValue(18);
+    getAllowance = mockRewardTokenBalance;
+  }
+  class MockPermit2Wrapper {
+    generateBatchTransferPermit = jest.fn().mockReturnValue({
+      signature: "signature",
+    });
+    sendPermitTransferFrom = jest
+      .fn()
+      .mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({ blockNumber: 1 }) });
+    estimatePermitTransferFromGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
+  }
+  return {
+    PERMIT2_ABI: PERMIT2_ABI,
+    ERC20_ABI: ERC20_ABI,
+    Erc20Wrapper: MockErc20Wrapper,
+    Permit2Wrapper: MockPermit2Wrapper,
+    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
+    getEvmWallet: jest.fn(() => ({
+      address: "0xAddress",
+      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
+    })),
+  };
+});
 
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},
@@ -71,6 +99,13 @@ const ctx = {
       owner: {
         login: "ubiquity-os",
         id: 76412717, // https://github.com/ubiquity
+      },
+    },
+  },
+  adapters: {
+    supabase: {
+      wallet: {
+        getWalletByUserId: jest.fn(async () => "0x1"),
       },
     },
   },
@@ -138,13 +173,20 @@ const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
 const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PermitGenerationModule } = await import("../src/parser/permit-generation-module");
+const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
+const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
 
-beforeAll(() => server.listen());
+beforeAll(() => {
+  server.listen();
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
+    return Promise.resolve("https://rpc");
+  };
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -294,6 +336,22 @@ describe("Modules tests", () => {
     expect(result).toEqual(eventIncentivesResults);
   });
 
+  it("Should incentivize simplifications", async () => {
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new ReviewIncentivizerModule(ctx),
+      new EventIncentivesModule(ctx),
+      new SimplificationIncentivizerModule(ctx),
+    ];
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(simplificationIncentivizerResults);
+  });
+
   it("Should generate permits", async () => {
     const processor = new Processor(ctx);
     processor["_transformers"] = [
@@ -303,13 +361,13 @@ describe("Modules tests", () => {
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
       new EventIncentivesModule(ctx),
-      new PermitGenerationModule(ctx),
+      new PaymentModule(ctx),
     ];
     // This catches calls by getFastestRpc
     server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    expect(result).toEqual(permitGenerationResults);
+    expect(result).toEqual(paymentResults);
   });
 
   it("Should generate GitHub comment", async () => {
@@ -321,7 +379,7 @@ describe("Modules tests", () => {
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
       new EventIncentivesModule(ctx),
-      new PermitGenerationModule(ctx),
+      new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
     // This catches calls by getFastestRpc
@@ -498,6 +556,70 @@ describe("Modules tests", () => {
       },
     });
   });
+
+  it("It should warn the user if wallet is not set", async () => {
+    const context = {
+      ...ctx,
+      adapters: {
+        ...ctx.adapters,
+        supabase: {
+          wallet: {
+            getWalletByUserId: jest.fn(async (userId: number) => {
+              if (userId === githubCommentResults["whilefoo"].userId) {
+                return null;
+              }
+              return "0x1";
+            }),
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+    const processor = new Processor(context);
+    processor["_transformers"] = [
+      new UserExtractorModule(context),
+      new DataPurgeModule(context),
+      new FormattingEvaluatorModule(context),
+      new PaymentModule(context),
+      new GithubCommentModule(context),
+    ];
+    // This catches calls by getFastestRpc
+    server.use(http.post("https://*", () => passthrough()));
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result["whilefoo"].evaluationCommentHtml).toContain("Wallet address is not set");
+  }, 120000);
+
+  it("It should warn the user if wallet could not be fetched", async () => {
+    const context = {
+      ...ctx,
+      adapters: {
+        ...ctx.adapters,
+        supabase: {
+          wallet: {
+            getWalletByUserId: jest.fn(async (userId: number) => {
+              if (userId === githubCommentResults["whilefoo"].userId) {
+                throw new Error("Connection error");
+              }
+              return "0x1";
+            }),
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+    const processor = new Processor(context);
+    processor["_transformers"] = [
+      new UserExtractorModule(context),
+      new DataPurgeModule(context),
+      new FormattingEvaluatorModule(context),
+      new PaymentModule(context),
+      new GithubCommentModule(context),
+    ];
+    // This catches calls by getFastestRpc
+    server.use(http.post("https://*", () => passthrough()));
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result["whilefoo"].evaluationCommentHtml).toContain("Error fetching wallet");
+  }, 120000);
 });
 
 describe("Retry", () => {

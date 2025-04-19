@@ -15,7 +15,7 @@ Content-Type: application/json
       "dataPurge": {},
       "formattingEvaluator": {},
       "contentEvaluator": {},
-      "permitGeneration": {},
+      "payment": {},
       "githubComment": {
         "post": false,
         "debug": true

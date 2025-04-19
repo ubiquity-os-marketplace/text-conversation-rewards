@@ -5,8 +5,9 @@ incentives:
   userExtractor: {}
   dataPurge: {}
   formattingEvaluator: {}
-  permitGeneration: {}
+  payment: {}
   reviewIncentivizer: {}
+  simplificationIncentivizer: {}
   githubComment:
     post: false
     debug: false

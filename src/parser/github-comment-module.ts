@@ -10,11 +10,12 @@ import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
-import { removeKeyFromObject, commentTypeReplacer } from "../helpers/result-replacer";
-import { getErc20TokenSymbol } from "../helpers/web3";
+import { commentTypeReplacer, removeKeyFromObject } from "../helpers/result-replacer";
+import { ERC20_ABI, Erc20Wrapper, getContract } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
+import { createHash } from "crypto";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -38,6 +39,11 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
+  _getPayoutMode(result: Result): string | undefined {
+    const someReward = Object.values(result)[0];
+    return someReward?.payoutMode;
+  }
+
   /**
    * Generates content when it needs to be stripped due to length limits
    */
@@ -58,6 +64,7 @@ export class GithubCommentModule extends BaseModule {
     bodyArray.push(
       createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
       })
     );
 
@@ -103,6 +110,7 @@ export class GithubCommentModule extends BaseModule {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
@@ -123,7 +131,7 @@ export class GithubCommentModule extends BaseModule {
     }
     if (this._configuration?.post) {
       try {
-        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
+        if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
           await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
             raw: true,
             updateComment: true,
@@ -168,6 +176,17 @@ export class GithubCommentModule extends BaseModule {
 
     if (result.task?.reward) {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
+    }
+
+    if (result.simplificationReward && Object.keys(result.simplificationReward.files).length !== 0) {
+      content.push(
+        buildContributionRow(
+          "Issue",
+          "Task Simplification",
+          1,
+          Object.values(result.simplificationReward.files).reduce((sum, { reward }) => sum + reward, 0)
+        )
+      );
     }
 
     if (result.reviewRewards) {
@@ -272,6 +291,34 @@ export class GithubCommentModule extends BaseModule {
     return content.join("");
   }
 
+  _createSimplificationRows(result: Result[0]) {
+    if (!result.simplificationReward || Object.keys(result.simplificationReward.files).length === 0) return "";
+    const rows: string[] = [];
+    for (const file of result.simplificationReward.files) {
+      rows.push(`
+        <tr>
+          <td><a href="${result.simplificationReward.url}/files#diff-${createHash("sha256").update(file.fileName).digest("hex")}" target="_blank" rel="noopener">${file.fileName}</a></td>
+          <td>${file.reward}</td>
+          <td>${file.deletions}</td>
+        </tr>`);
+    }
+
+    return `
+    <h6>Simplification Details for&nbsp;<a href="${result.simplificationReward.url}" target="_blank" rel="noopener">#${result.simplificationReward.url.split("/").slice(-1)[0]}</a></h6>
+    <table>
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Reward</th>
+          <th>Deletions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.join()}
+      </tbody>
+    </table>`;
+  }
+
   _createReviewRows(result: Result[0]) {
     if (result.reviewRewards?.every((reviewReward) => reviewReward.reviews?.length === 0) || !result.reviewRewards) {
       return "";
@@ -309,6 +356,23 @@ export class GithubCommentModule extends BaseModule {
 
     return reviewTables;
   }
+
+  _createWalletWarning(walletAddress: string | null | undefined) {
+    if (walletAddress === null) {
+      return `<h6>⚠️ Wallet address is not set</h6>`;
+    } else if (walletAddress === undefined) {
+      return `<h6>⚠️ Error fetching wallet</h6>`;
+    }
+    return "";
+  }
+
+  _createRewardLink(result: Result[0], tokenSymbol: string) {
+    if (result.permitUrl || result.explorerUrl) {
+      return `<a href="${result.permitUrl || result.explorerUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
+    }
+    return `[ ${result.total} ${tokenSymbol} ]`;
+  }
+
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
@@ -325,13 +389,13 @@ export class GithubCommentModule extends BaseModule {
       },
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
-
-    const tokenSymbol = this.context.config.permits
-      ? await getErc20TokenSymbol(
+    const tokenContract = this.context.config.permits
+      ? await getContract(
           this.context.config.permits.evmNetworkId,
-          this.context.config.permits.erc20RewardToken
-        )
-      : "XP";
+          this.context.config.permits.erc20RewardToken,
+        ERC20_ABI
+    ) : "XP";
+    const tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
 
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
@@ -352,7 +416,7 @@ export class GithubCommentModule extends BaseModule {
         <b>
           <h3>
             &nbsp;
-            ${getPermitResultLink()}
+            ${this._createRewardLink(result, tokenSymbol)}
             &nbsp;
           </h3>
           <h6>
@@ -360,6 +424,7 @@ export class GithubCommentModule extends BaseModule {
           </h6>
         </b>
       </summary>
+      ${this._createWalletWarning(result.walletAddress)}
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       ${isCapped ? `<h6>⚠️ Your rewards have been limited to the task price of ${taskReward} ${tokenSymbol}.</h6>` : ""}
       <h6>Contributions Overview</h6>
@@ -376,6 +441,7 @@ export class GithubCommentModule extends BaseModule {
           ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
+      ${!stripComments ? this._createSimplificationRows(result) : ""}
       ${!stripComments ? this._createReviewRows(result) : ""}
       ${
         !stripComments

@@ -1,5 +1,7 @@
 import Decimal from "decimal.js";
 import * as fs from "fs";
+import { GitHubIssue } from "../github-types";
+import { getTaskReward } from "../helpers/label-price-extractor";
 import { commentTypeReplacer } from "../helpers/result-replacer";
 import { IssueActivity } from "../issue-activity";
 import { Module } from "../types/module";
@@ -7,14 +9,13 @@ import { ContextPlugin } from "../types/plugin-input";
 import { Result } from "../types/results";
 import { ContentEvaluatorModule } from "./content-evaluator-module";
 import { DataPurgeModule } from "./data-purge-module";
+import { EventIncentivesModule } from "./event-incentives-module";
 import { FormattingEvaluatorModule } from "./formatting-evaluator-module";
 import { GithubCommentModule } from "./github-comment-module";
-import { PermitGenerationModule } from "./permit-generation-module";
-import { UserExtractorModule } from "./user-extractor-module";
-import { getTaskReward } from "../helpers/label-price-extractor";
-import { GitHubIssue } from "../github-types";
+import { PaymentModule } from "./payment-module";
 import { ReviewIncentivizerModule } from "./review-incentivizer-module";
-import { EventIncentivesModule } from "./event-incentives-module";
+import { SimplificationIncentivizerModule } from "./simplification-incentivizer-module";
+import { UserExtractorModule } from "./user-extractor-module";
 
 export class Processor {
   private _transformers: Module[] = [];
@@ -29,7 +30,8 @@ export class Processor {
       .add(new ContentEvaluatorModule(context))
       .add(new ReviewIncentivizerModule(context))
       .add(new EventIncentivesModule(context))
-      .add(new PermitGenerationModule(context))
+      .add(new SimplificationIncentivizerModule(context))
+      .add(new PaymentModule(context))
       .add(new GithubCommentModule(context));
     this._context = context;
     this._configuration = this._context.config.incentives;
@@ -81,6 +83,9 @@ export class Processor {
 
   _sumRewards(obj: Record<string, unknown>, taskRewardLimit = Infinity) {
     let totalReward = new Decimal(0);
+    if (!obj) {
+      return 0;
+    }
     for (const [key, value] of Object.entries(obj)) {
       if (key === "reward" && typeof value === "number") {
         totalReward = totalReward.add(Math.min(value, taskRewardLimit));
