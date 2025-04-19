@@ -389,26 +389,20 @@ export class GithubCommentModule extends BaseModule {
       },
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
-    const tokenContract = this.context.config.permits
-      ? await getContract(
-          this.context.config.permits.evmNetworkId,
-          this.context.config.permits.erc20RewardToken,
+    let tokenSymbol = "XP";
+    if (this.context.config.permits) {
+      const tokenContract = await getContract(
+        this.context.config.permits.evmNetworkId,
+        this.context.config.permits.erc20RewardToken,
         ERC20_ABI
-    ) : "XP";
-    const tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
+      );
+      tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    }
 
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
       new Decimal(0);
     const isCapped = taskReward > 0 && rewardsSum.gt(taskReward);
-
-    function getPermitResultLink() {
-      const rewardValue = `[ ${result.total} ${tokenSymbol} ]`;
-      if (result.permitUrl) {
-        return `<a href="${result.permitUrl}" target="_blank" rel="noopener">${rewardValue}</a>`;
-      }
-      return rewardValue;
-    }
 
     return `
     <details>

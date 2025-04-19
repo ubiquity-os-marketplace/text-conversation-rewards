@@ -31,13 +31,10 @@ import {
   Permit2Wrapper,
   TransferRequest,
 } from "../helpers/web3";
-import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { PayoutMode, Result } from "../types/results";
-import { Result } from "../types/results";
-import { utils } from "ethers";
 
 interface Payload {
   evmNetworkId: number;
@@ -67,9 +64,9 @@ export class PaymentModule extends BaseModule {
     this.context.config.incentives.payment?.automaticTransferMode == undefined
       ? true
       : this.context.config.incentives.payment?.automaticTransferMode;
-  readonly _evmPrivateEncrypted: string = this.context.config.evmPrivateEncrypted;
-  readonly _evmNetworkId: number = this.context.config.evmNetworkId;
-  readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
+  readonly _evmPrivateEncrypted: string = `${this.context.config.permits?.evmPrivateEncrypted}`;
+  readonly _evmNetworkId: number = Number(this.context.config.permits?.evmNetworkId);
+  readonly _erc20RewardToken: string = `${this.context.config.permits?.erc20RewardToken}`;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
