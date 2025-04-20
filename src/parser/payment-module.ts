@@ -136,11 +136,7 @@ export class PaymentModule extends BaseModule {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
-    for (const reward of Object.values(result)) {
-      reward.walletAddress = await this.context.adapters.supabase.wallet
-        .getWalletByUserId(reward.userId)
-        .catch(() => undefined);
-    }
+    await this._addWalletAddressesToResult(result);
 
     let directTransferError;
     if (payoutMode === "transfer") {
@@ -497,6 +493,14 @@ export class PaymentModule extends BaseModule {
     }
 
     return this._deductFeeFromReward(result, treasuryGithubData);
+  }
+
+  async _addWalletAddressesToResult(result: Result) {
+    for (const reward of Object.values(result)) {
+      reward.walletAddress = await this.context.adapters.supabase.wallet
+        .getWalletByUserId(reward.userId)
+        .catch(() => undefined);
+    }
   }
 
   _deductFeeFromReward(
