@@ -467,7 +467,7 @@ export class ContentEvaluatorModule extends BaseModule {
   
     To what degree are each of the comments valuable? 
     Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
-    The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.
+    The float number should represent the value of the comment for improving the issue solution and code quality. The number of entries in the JSON response must equal ${userComments.length}.
     Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
     
     IMPORTANT: Your response MUST be ONLY the raw JSON object, suitable for direct parsing by a program. Do not include any explanatory text, markdown formatting, backticks, or code blocks.`;

@@ -172,15 +172,16 @@ app.use(
 // Fakes OpenAi routes
 app.post("/openai/*", async (c) => {
   const text = await c.req.json();
-  const regex =
-    /(The total number of properties in your JSON response should equal exactly|The number of entries in the JSON response must equal) (\d+)/g;
+  const regex = /The number of entries in the JSON response must equal (\d+)/g;
 
   const comments: { id: string; comment: string; author: string }[] = [];
 
   if ("messages" in text) {
-    const matches = [...text.messages[0].content.matchAll(regex)];
+    const allMatches = [...text.messages[0].content.matchAll(regex)];
 
-    const length = matches.reduce((sum, match) => sum + parseInt(match[2], 10), 0);
+    const lastMatch = allMatches.length > 0 ? allMatches[allMatches.length - 1] : null;
+
+    const length = lastMatch ? parseInt(lastMatch[1], 10) : 0;
     comments.push(
       ...Array.from({ length }, () => ({
         id: crypto.randomUUID(),
