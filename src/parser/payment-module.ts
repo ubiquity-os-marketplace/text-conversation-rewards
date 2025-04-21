@@ -766,7 +766,7 @@ export class PaymentModule extends BaseModule {
         this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
       }
     } catch (e) {
-      this.context.logger.error("An error occurred in _saveXPRecord", { e });
+      this.context.logger.error("The user XP record could not be saved.", { e });
       throw e;
     }
   }
