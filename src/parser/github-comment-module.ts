@@ -1,4 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
+import { decodePermits } from "@ubiquity-os/permit-generation";
+import { permit2Address } from "@uniswap/permit2-sdk";
+import { createHash } from "crypto";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { JSDOM } from "jsdom";
@@ -11,11 +14,10 @@ import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
 import { commentTypeReplacer, removeKeyFromObject } from "../helpers/result-replacer";
-import { ERC20_ABI, Erc20Wrapper, getContract } from "../helpers/web3";
+import { ERC20_ABI, Erc20Wrapper, getContract, PERMIT2_ABI, Permit2Wrapper } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
-import { createHash } from "crypto";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
@@ -56,7 +58,7 @@ export class GithubCommentModule extends BaseModule {
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
-      if (result[key].total <= 0) continue;
+      if (result[key].total <= 0 || (await this.isRewardClaimed(value))) continue;
       result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
@@ -71,6 +73,29 @@ export class GithubCommentModule extends BaseModule {
     return bodyArray.join("");
   }
 
+  async isRewardClaimed(reward: Result[0]) {
+    if (!reward.permitUrl) {
+      return false;
+    }
+    const permitBase64 = new URL(reward.permitUrl).searchParams.get("claim");
+    if (!permitBase64) {
+      return false;
+    }
+    const permits = decodePermits(permitBase64);
+    if (!permits.length) {
+      return false;
+    }
+    for (const permit of permits) {
+      const { owner, nonce, networkId } = permit;
+      const permit2Contract = await getContract(networkId, permit2Address(networkId), PERMIT2_ABI, 5, 1000);
+      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
+      if (!(await permit2Wrapper.isNonceClaimed(owner, nonce))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
     const taskReward = getTaskReward(data.self);
 
@@ -83,7 +108,7 @@ export class GithubCommentModule extends BaseModule {
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
-      if (result[key].total <= 0) {
+      if (result[key].total <= 0 || (await this.isRewardClaimed(value))) {
         keysToRemove.push(key);
         continue;
       }
