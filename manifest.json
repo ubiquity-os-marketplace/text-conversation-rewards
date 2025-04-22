@@ -22,7 +22,7 @@
             "type": "string"
           },
           "erc20RewardToken": {
-            "default": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
+            "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
             "type": "string"
           }
         },
