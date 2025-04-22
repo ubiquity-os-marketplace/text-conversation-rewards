@@ -149,7 +149,7 @@ export class PaymentModule extends BaseModule {
         }
 
         const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
-        // Check if funding wallet has enough reward token and gas to transfer rewards directly
+        // Check if a funding wallet has enough reward tokens and gas to transfer rewards directly
         const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
         this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
         const [tx, permits] = await this._transferReward(directTransferInfo);
@@ -281,7 +281,7 @@ export class PaymentModule extends BaseModule {
       rewardTokenWrapper,
       fundingWallet
     );
-    // Calculate total reward and check if there are enough reward tokens
+    // Calculate the total reward and check if there are enough reward tokens
     const rewardTokenDecimals = await rewardTokenWrapper.getDecimals();
     const transferRequests: TransferRequest[] = beneficiaries.map(
       (beneficiary) =>
@@ -700,12 +700,12 @@ export class PaymentModule extends BaseModule {
     }
   }
 
-  async _parsePrivateKey(evmPrivateEncrypted: string) {
+  private async _parsePrivateKey(evmPrivateEncrypted: string) {
     const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
     return parseDecryptedPrivateKey(privateKeyDecrypted);
   }
 
-  async _saveXPRecord(userId: number, issue: { issueId: number; issueUrl: string }, numericAmount: number) {
+  private async _saveXpRecord(userId: number, issue: { issueId: number; issueUrl: string }, numericAmount: number) {
     this.context.logger.info(
       `Attempting to save XP for userId: ${userId}, issueId: ${issue.issueId}, amount: ${numericAmount}`
     );
@@ -793,7 +793,7 @@ export class PaymentModule extends BaseModule {
       }
 
       try {
-        await this._saveXPRecord(value.userId, issueDetails, value.total);
+        await this._saveXpRecord(value.userId, issueDetails, value.total);
         this.context.logger.ok(`Successfully recorded XP for user ${key} (ID: ${value.userId})`);
       } catch (e) {
         this.context.logger.error(`[PermitGenerationModule] Failed to record XP for user ${key}`, { e });
