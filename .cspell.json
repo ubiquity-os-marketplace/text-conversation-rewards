@@ -42,7 +42,9 @@
     "flesch",
     "keccak",
     "Numberish",
-    "OPENROUTER"
+    "OPENROUTER",
+    "keccak",
+    "UUSD"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

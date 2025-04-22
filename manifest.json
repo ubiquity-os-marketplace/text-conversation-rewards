@@ -7,20 +7,26 @@
     "default": {},
     "type": "object",
     "properties": {
-      "evmNetworkId": {
-        "default": 100,
-        "description": "Network ID to run in, default to 100",
-        "examples": ["100"],
-        "type": "number"
-      },
-      "evmPrivateEncrypted": {
-        "description": "The encrypted Ethereum private key to use for funding rewards.",
-        "examples": ["0x000..."],
-        "type": "string"
-      },
-      "erc20RewardToken": {
-        "default": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
-        "type": "string"
+      "permits": {
+        "type": "object",
+        "properties": {
+          "evmNetworkId": {
+            "default": 100,
+            "description": "Network ID to run in, default to 100",
+            "examples": ["100"],
+            "type": "number"
+          },
+          "evmPrivateEncrypted": {
+            "description": "The encrypted Ethereum private key to use for funding rewards.",
+            "examples": ["0x000..."],
+            "type": "string"
+          },
+          "erc20RewardToken": {
+            "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
+            "type": "string"
+          }
+        },
+        "required": ["evmPrivateEncrypted"]
       },
       "incentives": {
         "default": {},
@@ -1958,7 +1964,6 @@
           }
         }
       }
-    },
-    "required": ["evmPrivateEncrypted"]
+    }
   }
 }

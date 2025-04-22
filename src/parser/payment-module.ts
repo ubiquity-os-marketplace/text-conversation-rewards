@@ -64,9 +64,9 @@ export class PaymentModule extends BaseModule {
     this.context.config.incentives.payment?.automaticTransferMode == undefined
       ? true
       : this.context.config.incentives.payment?.automaticTransferMode;
-  readonly _evmPrivateEncrypted: string = this.context.config.evmPrivateEncrypted;
-  readonly _evmNetworkId: number = this.context.config.evmNetworkId;
-  readonly _erc20RewardToken: string = this.context.config.erc20RewardToken;
+  readonly _evmPrivateEncrypted: string = `${this.context.config.permits?.evmPrivateEncrypted}`;
+  readonly _evmNetworkId: number = Number(this.context.config.permits?.evmNetworkId);
+  readonly _erc20RewardToken: string = `${this.context.config.permits?.erc20RewardToken}`;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -77,12 +77,17 @@ export class PaymentModule extends BaseModule {
       return Promise.resolve(result);
     }
 
+    if (!this.context.config.permits) {
+      this.context.logger.info("No permit settings found, switching to XP recording mode.");
+      return this._handleXpRecording(result);
+    }
+
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
-      evmPrivateEncrypted: this.context.config.evmPrivateEncrypted,
-      evmNetworkId: this.context.config.evmNetworkId,
-      erc20RewardToken: this.context.config.erc20RewardToken,
+      evmPrivateEncrypted: this.context.config.permits.evmPrivateEncrypted,
+      evmNetworkId: this.context.config.permits.evmNetworkId,
+      erc20RewardToken: this.context.config.permits.erc20RewardToken,
     };
     const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
@@ -123,7 +128,6 @@ export class PaymentModule extends BaseModule {
     const adapters = {} as ReturnType<typeof createAdapters>;
 
     this.context.logger.info("Will attempt to apply fees...");
-    // apply fees
     result = await this._applyFees(result, payload.erc20RewardToken);
 
     // get the payout mode
@@ -132,11 +136,7 @@ export class PaymentModule extends BaseModule {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
-    for (const reward of Object.values(result)) {
-      reward.walletAddress = await this.context.adapters.supabase.wallet
-        .getWalletByUserId(reward.userId)
-        .catch(() => undefined);
-    }
+    await this._addWalletAddressesToResult(result);
 
     let directTransferError;
     if (payoutMode === "transfer") {
@@ -149,7 +149,7 @@ export class PaymentModule extends BaseModule {
         }
 
         const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
-        // Check if funding wallet has enough reward token and gas to transfer rewards directly
+        // Check if a funding wallet has enough reward tokens and gas to transfer rewards directly
         const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
         this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
         const [tx, permits] = await this._transferReward(directTransferInfo);
@@ -222,7 +222,7 @@ export class PaymentModule extends BaseModule {
       }
     }
 
-    // remove treasury item from final result in order not to display permit fee in GitHub comments
+    // remove treasury item from the final result in order not to display the permit fee in GitHub comments
     this._removeTreasuryItem(result);
     return result;
   }
@@ -235,8 +235,8 @@ export class PaymentModule extends BaseModule {
 
   /* This method returns the transfer mode based on the following conditions:
    - null: Indicates that the payout was previously transferred directly, meaning no further payout is required.
-   - permit: Applies if autoTransferMode is set to false or if rewards were previously generated using the permit method.
-   - transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
+   - Permit: Applies if autoTransferMode is set to false or if rewards were previously generated using the permit method.
+   - Transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
   */
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
     for (const comment of data.comments) {
@@ -281,7 +281,7 @@ export class PaymentModule extends BaseModule {
       rewardTokenWrapper,
       fundingWallet
     );
-    // Calculate total reward and check if there are enough reward tokens
+    // Calculate the total reward and check if there are enough reward tokens
     const rewardTokenDecimals = await rewardTokenWrapper.getDecimals();
     const transferRequests: TransferRequest[] = beneficiaries.map(
       (beneficiary) =>
@@ -495,6 +495,14 @@ export class PaymentModule extends BaseModule {
     return this._deductFeeFromReward(result, treasuryGithubData);
   }
 
+  async _addWalletAddressesToResult(result: Result) {
+    for (const reward of Object.values(result)) {
+      reward.walletAddress = await this.context.adapters.supabase.wallet
+        .getWalletByUserId(reward.userId)
+        .catch(() => undefined);
+    }
+  }
+
   _deductFeeFromReward(
     result: Result,
     treasuryGithubData: RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"]
@@ -695,6 +703,108 @@ export class PaymentModule extends BaseModule {
   async _parsePrivateKey(evmPrivateEncrypted: string) {
     const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
     return parseDecryptedPrivateKey(privateKeyDecrypted);
+  }
+
+  private async _saveXpRecord(userId: number, issue: { issueId: number; issueUrl: string }, numericAmount: number) {
+    this.context.logger.info(
+      `Attempting to save XP for userId: ${userId}, issueId: ${issue.issueId}, amount: ${numericAmount}`
+    );
+    try {
+      const { data: userData, error: userError } = await this._supabase
+        .from("users")
+        .select("id")
+        .eq("id", userId)
+        .single();
+      if (userError || !userData) {
+        throw this.context.logger.error(`Failed to find user with ID ${userId} in database.`, { userError });
+      }
+      const beneficiaryId = userData.id;
+      const locationId = await this._getOrCreateIssueLocation(issue);
+      const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
+
+      const { data: existingXp, error: duplicateCheckError } = await this._supabase
+        .from("permits")
+        .select("id")
+        .eq("beneficiary_id", beneficiaryId)
+        .eq("location_id", locationId)
+        .is("token_id", null)
+        .maybeSingle();
+
+      if (duplicateCheckError) {
+        throw this.context.logger.error("Error checking for duplicate XP records", { duplicateCheckError });
+      }
+
+      if (existingXp) {
+        this.context.logger.info(
+          `Existing XP record found for userId ${userId} on issue ${issue.issueId}. Updating amount.`
+        );
+        const { error: updateError } = await this._supabase
+          .from("permits")
+          .update({ amount: amountString })
+          .eq("id", existingXp.id);
+
+        if (updateError) {
+          throw this.context.logger.error("Failed to update XP record in database", { updateError });
+        }
+        this.context.logger.ok(`XP record updated successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+      } else {
+        const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
+          amount: amountString,
+          beneficiary_id: beneficiaryId,
+          location_id: locationId,
+          token_id: null,
+          nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
+          deadline: "",
+          signature: "",
+          partner_id: null,
+        };
+        const { error: insertError } = await this._supabase.from("permits").insert(insertData);
+
+        if (insertError) {
+          throw this.context.logger.error("Failed to insert XP record into database", { insertError });
+        }
+        this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+      }
+    } catch (e) {
+      this.context.logger.error("The user XP record could not be saved.", { e });
+      throw e;
+    }
+  }
+
+  async _handleXpRecording(result: Result): Promise<Result> {
+    const issueUrl = this.context.payload.issue.html_url;
+    const { issue_number: issueId } = parseGitHubUrl(issueUrl);
+    if (!issueId) {
+      this.context.logger.error("[PermitGenerationModule] Could not extract issue ID from URL for XP recording.", {
+        issueUrl,
+      });
+      return result;
+    }
+    const issueDetails = { issueUrl, issueId };
+
+    for (const [key, value] of Object.entries(result)) {
+      if (key === this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
+        this.context.logger.info(`Skipping XP recording for treasury user ${key}.`);
+        continue;
+      }
+      if (!value.userId) {
+        this.context.logger.error(`[PermitGenerationModule] Missing userId for user ${key}, cannot record XP.`);
+        continue;
+      }
+
+      try {
+        await this._saveXpRecord(value.userId, issueDetails, value.total);
+        this.context.logger.ok(`Successfully recorded XP for user ${key} (ID: ${value.userId})`);
+      } catch (e) {
+        this.context.logger.error(`[PermitGenerationModule] Failed to record XP for user ${key}`, { e });
+      }
+    }
+
+    if (this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
+      delete result[this.context.env.PERMIT_TREASURY_GITHUB_USERNAME];
+    }
+
+    return result;
   }
 
   /**
