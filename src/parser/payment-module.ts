@@ -700,7 +700,7 @@ export class PaymentModule extends BaseModule {
     }
   }
 
-  private async _parsePrivateKey(evmPrivateEncrypted: string) {
+  async _parsePrivateKey(evmPrivateEncrypted: string) {
     const privateKeyDecrypted = await decrypt(evmPrivateEncrypted, String(process.env.X25519_PRIVATE_KEY));
     return parseDecryptedPrivateKey(privateKeyDecrypted);
   }
