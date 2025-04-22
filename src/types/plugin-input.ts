@@ -33,9 +33,9 @@ export const pluginSettingsSchema = T.Object(
           examples: ["0x000..."],
         }),
         /**
-         * Reward token for ERC20 permits, default WXDAI for gnosis chain
+         * Reward token for ERC20 permits, default UUSD for gnosis chain
          */
-        erc20RewardToken: T.String({ default: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d" }),
+        erc20RewardToken: T.String({ default: "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068" }),
       })
     ),
     incentives: T.Object(
