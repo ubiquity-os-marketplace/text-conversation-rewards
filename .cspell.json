@@ -43,7 +43,8 @@
     "keccak",
     "Numberish",
     "OPENROUTER",
-    "keccak"
+    "keccak",
+    "UUSD"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
