@@ -14,41 +14,11 @@ import { server } from "./__mocks__/node";
 import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
-import { BigNumber } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
-import { PERMIT2_ABI, ERC20_ABI } from "../src/helpers/web3";
+import { mockWeb3Module } from "./helpers/web3-mocks";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("20000", 18) as BigNumber);
-jest.unstable_mockModule("../src/helpers/web3", () => {
-  class MockErc20Wrapper {
-    getBalance = mockRewardTokenBalance;
-    getSymbol = jest.fn().mockReturnValue("WXDAI");
-    getDecimals = jest.fn().mockReturnValue(18);
-    getAllowance = mockRewardTokenBalance;
-  }
-  class MockPermit2Wrapper {
-    generateBatchTransferPermit = jest.fn().mockReturnValue({
-      signature: "signature",
-    });
-    sendPermitTransferFrom = jest
-      .fn()
-      .mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({ blockNumber: 1 }) });
-    estimatePermitTransferFromGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
-  }
-  return {
-    PERMIT2_ABI: PERMIT2_ABI,
-    ERC20_ABI: ERC20_ABI,
-    Erc20Wrapper: MockErc20Wrapper,
-    Permit2Wrapper: MockPermit2Wrapper,
-    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
-    getEvmWallet: jest.fn(() => ({
-      address: "0xAddress",
-      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
-    })),
-  };
-});
+mockWeb3Module();
 
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},

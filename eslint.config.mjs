@@ -117,12 +117,6 @@ export default tsEslint.config({
       },
       {
         selector: "variable",
-        format: ["strictCamelCase"],
-        leadingUnderscore: "allow",
-        trailingUnderscore: "allow",
-      },
-      {
-        selector: "variable",
         modifiers: ["destructured"],
         format: null,
       },
@@ -139,6 +133,14 @@ export default tsEslint.config({
       {
         selector: ["function", "variable"],
         format: ["strictCamelCase"],
+        leadingUnderscore: "allow",
+      },
+      {
+        selector: ["memberLike"],
+        format: ["strictCamelCase"],
+        types: ["function"],
+        modifiers: ["private"],
+        leadingUnderscore: "allow",
       },
     ],
   },

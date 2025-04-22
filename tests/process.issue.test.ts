@@ -3,15 +3,12 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { BigNumber } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
 import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
-import { ERC20_ABI, PERMIT2_ABI } from "../src/helpers/web3";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
@@ -21,47 +18,19 @@ import { server } from "./__mocks__/node";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import eventIncentivesResults from "./__mocks__/results/event-incentives-results.json";
-import simplificationIncentivizerResults from "./__mocks__/results/simplification-incentivizer.results.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
 import paymentResults from "./__mocks__/results/permit-generation-results.json";
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
+import simplificationIncentivizerResults from "./__mocks__/results/simplification-incentivizer.results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
+import { mockWeb3Module } from "./helpers/web3-mocks";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
-
-const mockRewardTokenBalance = jest.fn().mockReturnValue(parseUnits("20000", 18) as BigNumber);
-jest.unstable_mockModule("../src/helpers/web3", () => {
-  class MockErc20Wrapper {
-    getBalance = mockRewardTokenBalance;
-    getSymbol = jest.fn().mockReturnValue("WXDAI");
-    getDecimals = jest.fn().mockReturnValue(18);
-    getAllowance = mockRewardTokenBalance;
-  }
-  class MockPermit2Wrapper {
-    generateBatchTransferPermit = jest.fn().mockReturnValue({
-      signature: "signature",
-    });
-    sendPermitTransferFrom = jest
-      .fn()
-      .mockReturnValue({ hash: `0xSent`, wait: async () => Promise.resolve({ blockNumber: 1 }) });
-    estimatePermitTransferFromGas = jest.fn().mockReturnValue(parseUnits("0.02", 18));
-  }
-  return {
-    PERMIT2_ABI: PERMIT2_ABI,
-    ERC20_ABI: ERC20_ABI,
-    Erc20Wrapper: MockErc20Wrapper,
-    Permit2Wrapper: MockPermit2Wrapper,
-    getContract: jest.fn().mockReturnValue({ provider: "dummy" }),
-    getEvmWallet: jest.fn(() => ({
-      address: "0xAddress",
-      getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
-    })),
-  };
-});
+const web3Mocks = mockWeb3Module();
 
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},
@@ -400,6 +369,25 @@ describe("Modules tests", () => {
       githubCommentAltResults as unknown as Result
     );
     expect(postBody).not.toContain("whilefoo");
+  });
+
+  it("Should generate GitHub comment skipping claimed permits", async () => {
+    web3Mocks.Permit2Wrapper.isNonceClaimed
+      .mockImplementationOnce(async () => true)
+      .mockImplementationOnce(async () => false)
+      .mockImplementationOnce(async () => false);
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new PaymentModule(ctx),
+      new GithubCommentModule(ctx),
+    ];
+    server.use(http.post("https://*", () => passthrough()));
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result["gentlementlegen"].evaluationCommentHtml).toEqual(undefined);
   });
 
   describe("Reward limits", () => {
