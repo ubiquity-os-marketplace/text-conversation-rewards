@@ -40,6 +40,7 @@ tcrHtmlConfig: &tcrHtmlConfig
 
 evmPrivateEncrypted: "0x00"
 incentives:
+  requirePriceLabel: 'auto'
   contentEvaluator:
     openAi:
       endpoint: https://openrouter.ai/api/v1

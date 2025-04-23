@@ -9,7 +9,6 @@ import { cors } from "hono/cors";
 import { existsSync } from "node:fs";
 import manifest from "../../../manifest.json";
 import { createAdapters } from "../../adapters";
-import { logInvalidIssue } from "../../helpers/log-invalid-issue";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
@@ -17,6 +16,8 @@ import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } 
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import { getSortedPrices } from "../../helpers/label-price-extractor";
+import { logInvalidIssue } from "../../helpers/log-invalid-issue";
 
 function githubUrlToFileName(url: string): string {
   const repoMatch = RegExp(/github\.com\/([^/]+)\/([^/?#]+)/).exec(url);
@@ -91,9 +92,6 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
         const filePath = githubUrlToFileName(issue.html_url);
         if (existsSync(filePath)) {
           logger.warn(`File ${filePath} already exists, skipping.`);
-        } else if (!issue.labels.some((label) => typeof label !== "string" && label.name?.startsWith("Price:"))) {
-          logger.warn("No pricing label found, skipping.");
-          await logInvalidIssue(context.logger, issue.html_url);
         } else {
           config.incentives.file = filePath;
           const ctx = {
@@ -103,6 +101,69 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           const issueElem = parseGitHubUrl(issue.html_url);
           const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
           await activity.init();
+          if (config.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
+            if (config.incentives.requirePriceLabel === "auto") {
+              logger.info("No price label found, attempting to fetch price automatically...");
+              const issueTitle = activity.self?.title;
+              const issueDescription = activity.self?.body;
+
+              if (!issueTitle || !issueDescription) {
+                logger.warn("Issue title or description is missing, cannot fetch price automatically.");
+              } else {
+                try {
+                  const response = await fetch("https://ubiquity-os-daemon-pricing.sshivaditya.workers.dev/time", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      issue_title: issueTitle,
+                      issue_description: issueDescription,
+                    }),
+                  });
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.price) {
+                      const price = data.price;
+                      const priceLabelName = `Price: ${price} USD`;
+                      logger.info(`Automatic price fetched: ${price}. Adding label locally: ${priceLabelName}`);
+
+                      const fakeLabel = {
+                        id: 0,
+                        node_id: "",
+                        url: "",
+                        name: priceLabelName,
+                        color: "ededed",
+                        default: false,
+                        description: null,
+                      };
+
+                      if (activity.self?.labels) {
+                        activity.self.labels.push(fakeLabel);
+                      } else if (activity.self) {
+                        activity.self.labels = [fakeLabel];
+                      }
+                    } else {
+                      logger.warn("Automatic price fetching failed: API response did not contain a valid price.", {
+                        data,
+                      });
+                    }
+                  } else {
+                    logger.warn(`Automatic price fetching failed: API request failed with status ${response.status}.`, {
+                      status: response.status,
+                      statusText: response.statusText,
+                    });
+                  }
+                } catch (err) {
+                  logger.error("An error occurred during automatic price fetching:", { err });
+                }
+              }
+            } else {
+              await logInvalidIssue(logger, payload.issue.html_url);
+              const result = logger.error("No price label has been set. Skipping permit generation.");
+              return result.logMessage.raw;
+            }
+          }
+
           const processor = new Processor(ctx);
           await processor.run(activity);
           processor.dump();
