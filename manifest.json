@@ -39,8 +39,16 @@
           },
           "requirePriceLabel": {
             "default": true,
-            "description": "If set to false, the plugin runs even if the price label is missing, and will evaluate comments.",
-            "type": "boolean"
+            "description": "If set to false, the plugin runs even if the price label is missing. If set to 'auto', it will attempt to fetch the price from an external API if no price label is found. If set to true (default), the plugin requires a price label to be present.",
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "const": "auto",
+                "type": "string"
+              }
+            ]
           },
           "limitRewards": {
             "default": true,
