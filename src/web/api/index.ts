@@ -40,6 +40,25 @@ function githubUrlToFileName(url: string): string {
 
 type Repository = RestEndpointMethodTypes["repos"]["listForOrg"]["response"]["data"][0];
 
+async function getRepositoryList(context: ContextPlugin, orgName: string) {
+  const { payload, octokit } = context;
+  let repositories: Repository[];
+  if (!payload.repository) {
+    repositories = await octokit.paginate(octokit.rest.repos.listForOrg, {
+      org: orgName,
+    });
+  } else {
+    const repository = await octokit.rest.repos.get({
+      org: orgName,
+      repo: payload.repository.name,
+      owner: payload.repository.owner.login,
+    });
+    repositories = [repository.data as Repository];
+  }
+
+  return repositories;
+}
+
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
     const { payload, config, octokit, logger } = context;
@@ -55,19 +74,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
       throw logger.error("Unable to find organization name");
     }
 
-    let repositories: Repository[];
-    if (!payload.repository) {
-      repositories = await octokit.paginate(octokit.rest.repos.listForOrg, {
-        org: orgName,
-      });
-    } else {
-      const repository = await octokit.rest.repos.get({
-        org: orgName,
-        repo: payload.repository.name,
-        owner: payload.repository.owner.login,
-      });
-      repositories = [repository.data as Repository];
-    }
+    const repositories = await getRepositoryList(pluginContext, orgName);
     for (const repo of repositories) {
       logger.info(repo.html_url);
       const issues = (
