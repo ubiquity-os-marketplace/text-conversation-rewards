@@ -709,65 +709,60 @@ export class PaymentModule extends BaseModule {
     this.context.logger.info(
       `Attempting to save XP for userId: ${userId}, issueId: ${issue.issueId}, amount: ${numericAmount}`
     );
-    try {
-      const { data: userData, error: userError } = await this._supabase
-        .from("users")
-        .select("id")
-        .eq("id", userId)
-        .single();
-      if (userError || !userData) {
-        throw this.context.logger.error(`Failed to find user with ID ${userId} in database.`, { userError });
-      }
-      const beneficiaryId = userData.id;
-      const locationId = await this._getOrCreateIssueLocation(issue);
-      const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
+    const { data: userData, error: userError } = await this._supabase
+      .from("users")
+      .select("id")
+      .eq("id", userId)
+      .single();
+    if (userError || !userData) {
+      throw this.context.logger.error(`Failed to find user with ID ${userId} in database.`, { userError });
+    }
+    const beneficiaryId = userData.id;
+    const locationId = await this._getOrCreateIssueLocation(issue);
+    const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
 
-      const { data: existingXp, error: duplicateCheckError } = await this._supabase
+    const { data: existingXp, error: duplicateCheckError } = await this._supabase
+      .from("permits")
+      .select("id")
+      .eq("beneficiary_id", beneficiaryId)
+      .eq("location_id", locationId)
+      .is("token_id", null)
+      .maybeSingle();
+
+    if (duplicateCheckError) {
+      throw this.context.logger.error("Error checking for duplicate XP records", { duplicateCheckError });
+    }
+
+    if (existingXp) {
+      this.context.logger.info(
+        `Existing XP record found for userId ${userId} on issue ${issue.issueId}. Updating amount.`
+      );
+      const { error: updateError } = await this._supabase
         .from("permits")
-        .select("id")
-        .eq("beneficiary_id", beneficiaryId)
-        .eq("location_id", locationId)
-        .is("token_id", null)
-        .maybeSingle();
+        .update({ amount: amountString })
+        .eq("id", existingXp.id);
 
-      if (duplicateCheckError) {
-        throw this.context.logger.error("Error checking for duplicate XP records", { duplicateCheckError });
+      if (updateError) {
+        throw this.context.logger.error("Failed to update XP record in database", { updateError });
       }
+      this.context.logger.ok(`XP record updated successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+    } else {
+      const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
+        amount: amountString,
+        beneficiary_id: beneficiaryId,
+        location_id: locationId,
+        token_id: null,
+        nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
+        deadline: "",
+        signature: "",
+        partner_id: null,
+      };
+      const { error: insertError } = await this._supabase.from("permits").insert(insertData);
 
-      if (existingXp) {
-        this.context.logger.info(
-          `Existing XP record found for userId ${userId} on issue ${issue.issueId}. Updating amount.`
-        );
-        const { error: updateError } = await this._supabase
-          .from("permits")
-          .update({ amount: amountString })
-          .eq("id", existingXp.id);
-
-        if (updateError) {
-          throw this.context.logger.error("Failed to update XP record in database", { updateError });
-        }
-        this.context.logger.ok(`XP record updated successfully for userId: ${userId}, issueId: ${issue.issueId}`);
-      } else {
-        const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
-          amount: amountString,
-          beneficiary_id: beneficiaryId,
-          location_id: locationId,
-          token_id: null,
-          nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
-          deadline: "",
-          signature: "",
-          partner_id: null,
-        };
-        const { error: insertError } = await this._supabase.from("permits").insert(insertData);
-
-        if (insertError) {
-          throw this.context.logger.error("Failed to insert XP record into database", { insertError });
-        }
-        this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+      if (insertError) {
+        throw this.context.logger.error("Failed to insert XP record into database", { insertError });
       }
-    } catch (e) {
-      this.context.logger.error("The user XP record could not be saved.", { e });
-      throw e;
+      this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
     }
   }
 
