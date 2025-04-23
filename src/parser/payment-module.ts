@@ -775,7 +775,7 @@ export class PaymentModule extends BaseModule {
     const issueUrl = this.context.payload.issue.html_url;
     const { issue_number: issueId } = parseGitHubUrl(issueUrl);
     if (!issueId) {
-      this.context.logger.error("[PermitGenerationModule] Could not extract issue ID from URL for XP recording.", {
+      this.context.logger.error("[PaymentModule] Could not extract issue ID from URL for XP recording.", {
         issueUrl,
       });
       return result;
@@ -788,7 +788,7 @@ export class PaymentModule extends BaseModule {
         continue;
       }
       if (!value.userId) {
-        this.context.logger.error(`[PermitGenerationModule] Missing userId for user ${key}, cannot record XP.`);
+        this.context.logger.error(`[PaymentModule] Missing userId for user ${key}, cannot record XP.`);
         continue;
       }
 
@@ -796,7 +796,7 @@ export class PaymentModule extends BaseModule {
         await this._saveXpRecord(value.userId, issueDetails, value.total);
         this.context.logger.ok(`Successfully recorded XP for user ${key} (ID: ${value.userId})`);
       } catch (e) {
-        this.context.logger.error(`[PermitGenerationModule] Failed to record XP for user ${key}`, { e });
+        this.context.logger.error(`[PaymentModule] Failed to record XP for user ${key}`, { e });
       }
     }
 
