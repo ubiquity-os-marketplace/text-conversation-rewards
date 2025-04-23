@@ -9,8 +9,8 @@ import { formattingEvaluatorConfigurationType } from "../configuration/formattin
 import { githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { paymentConfigurationType } from "../configuration/payment-configuration";
 import { reviewIncentivizerConfigurationType } from "../configuration/review-incentivizer-config";
-import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { simplificationIncentivizerConfigurationType } from "../configuration/simplification-incentivizer-config";
+import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
@@ -47,12 +47,14 @@ export const pluginSettingsSchema = T.Object(
           T.String({ description: "Specify a file to write the results in", examples: ["./result.json"] })
         ),
         /**
-         * If set to false, the plugin runs even if the price label is missing, and will evaluate comments.
+         * If set to false, the plugin runs even if the price label is missing.
+         * If set to 'auto', it will attempt to fetch the price from an external API if no price label is found.
+         * If set to true (default), the plugin requires a price label to be present.
          */
-        requirePriceLabel: T.Boolean({
+        requirePriceLabel: T.Union([T.Boolean(), T.Literal("auto")], {
           default: true,
           description:
-            "If set to false, the plugin runs even if the price label is missing, and will evaluate comments.",
+            "If set to false, the plugin runs even if the price label is missing. If set to 'auto', it will attempt to fetch the price from an external API if no price label is found. If set to true (default), the plugin requires a price label to be present.",
         }),
         limitRewards: T.Boolean({
           default: true,
