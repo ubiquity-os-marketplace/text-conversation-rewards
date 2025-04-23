@@ -64,9 +64,9 @@ export class PaymentModule extends BaseModule {
     this.context.config.incentives.payment?.automaticTransferMode == undefined
       ? true
       : this.context.config.incentives.payment?.automaticTransferMode;
-  readonly _evmPrivateEncrypted: string = `${this.context.config.permits?.evmPrivateEncrypted}`;
-  readonly _evmNetworkId: number = Number(this.context.config.permits?.evmNetworkId);
-  readonly _erc20RewardToken: string = `${this.context.config.permits?.erc20RewardToken}`;
+  readonly _evmPrivateEncrypted: string = `${this.context.config.rewards?.evmPrivateEncrypted}`;
+  readonly _evmNetworkId: number = Number(this.context.config.rewards?.evmNetworkId);
+  readonly _erc20RewardToken: string = `${this.context.config.rewards?.erc20RewardToken}`;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -77,7 +77,7 @@ export class PaymentModule extends BaseModule {
       return Promise.resolve(result);
     }
 
-    if (!this.context.config.permits) {
+    if (!this.context.config.rewards) {
       this.context.logger.info("No permit settings found, switching to XP recording mode.");
       return this._handleXpRecording(result);
     }
@@ -85,9 +85,9 @@ export class PaymentModule extends BaseModule {
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
-      evmPrivateEncrypted: this.context.config.permits.evmPrivateEncrypted,
-      evmNetworkId: this.context.config.permits.evmNetworkId,
-      erc20RewardToken: this.context.config.permits.erc20RewardToken,
+      evmPrivateEncrypted: this.context.config.rewards.evmPrivateEncrypted,
+      evmNetworkId: this.context.config.rewards.evmNetworkId,
+      erc20RewardToken: this.context.config.rewards.erc20RewardToken,
     };
     const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
