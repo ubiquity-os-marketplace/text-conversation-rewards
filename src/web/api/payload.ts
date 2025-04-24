@@ -12,6 +12,7 @@ export async function getPayload(owner: string, repo: string, issueId: number, u
     cfgFile.incentives.contentEvaluator.openAi = {
       ...cfgFile.incentives.contentEvaluator.openAi,
       endpoint: "http://localhost:4000/openai",
+      tokenCountLimit: Number.MAX_VALUE,
     };
   }
 
