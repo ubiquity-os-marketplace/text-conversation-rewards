@@ -54,11 +54,16 @@ export class IssueActivity {
 
   private async _getLinkedReviews(): Promise<Review[]> {
     this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
-    const pulls = (await collectLinkedMergedPulls(this._context, this._issueParams)).filter(
-      (pullRequest) =>
+    const pulls = (await collectLinkedMergedPulls(this._context, this._issueParams)).filter((pullRequest) => {
+      // This can happen when a user deleted its account
+      if (!pullRequest?.author?.login) {
+        return false;
+      }
+      return (
         this._context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login) &&
         pullRequest.state === "MERGED"
-    );
+      );
+    });
     this._context.logger.debug(`Collected linked pull-requests: ${pulls.map((v) => v.number).join(", ")}`);
 
     const promises = pulls
