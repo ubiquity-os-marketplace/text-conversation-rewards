@@ -93,12 +93,15 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
       if (!issues.length) {
         logger.warn("No issues found, skipping.");
       }
-      for (const issue of issues) {
-        logger.info(issue.html_url);
-        const filePath = githubUrlToFileName(issue.html_url);
-        if (existsSync(filePath)) {
-          logger.warn(`File ${filePath} already exists, skipping.`);
-        } else {
+      await Promise.all(
+        issues.map(async (issue) => {
+          logger.info(issue.html_url);
+          const filePath = githubUrlToFileName(issue.html_url);
+          if (existsSync(filePath)) {
+            logger.warn(`File ${filePath} already exists, skipping.`);
+            return;
+          }
+
           config.incentives.file = filePath;
           const ctx = {
             ...pluginContext,
@@ -106,18 +109,23 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           } as typeof pluginContext;
           const issueElem = parseGitHubUrl(issue.html_url);
           const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
-          await activity.init();
 
-          const shouldProceed = await handlePriceLabelValidation(ctx, activity);
-          if (!shouldProceed) {
-            continue;
+          try {
+            await activity.init();
+
+            const shouldProceed = await handlePriceLabelValidation(ctx, activity);
+            if (!shouldProceed) {
+              return;
+            }
+
+            const processor = new Processor(ctx);
+            await processor.run(activity);
+            processor.dump();
+          } catch (error) {
+            logger.error(`Error processing issue ${issue.html_url}: ${error}`);
           }
-
-          const processor = new Processor(ctx);
-          await processor.run(activity);
-          processor.dump();
-        }
-      }
+        })
+      );
     }
     return { output: { result: { evaluationCommentHtml: `<div>Done!</div>}` } } };
   },
