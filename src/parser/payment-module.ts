@@ -1,6 +1,7 @@
 import { context } from "@actions/github";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
+import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
 import { decodeError } from "@ubiquity-os/ethers-decode-error";
@@ -714,10 +715,26 @@ export class PaymentModule extends BaseModule {
       .select("id")
       .eq("id", userId)
       .single();
+
+    let beneficiaryId: number;
     if (userError || !userData) {
-      throw this.context.logger.error(`Failed to find user with ID ${userId} in database.`, { userError });
+      this.context.logger.info(`User with ID ${userId} not found in database. Attempting to create new user.`);
+
+      const { data: newUserData, error: createError } = await this._supabase
+        .from("users")
+        .insert({ id: userId })
+        .select("id")
+        .single();
+
+      if (createError || !newUserData) {
+        throw this.context.logger.error(`Failed to create user with ID ${userId} in database.`, { createError });
+      }
+
+      this.context.logger.info(`Successfully created user with ID ${userId} in database.`);
+      beneficiaryId = newUserData.id;
+    } else {
+      beneficiaryId = userData.id;
     }
-    const beneficiaryId = userData.id;
     const locationId = await this._getOrCreateIssueLocation(issue);
     const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
 
@@ -754,7 +771,7 @@ export class PaymentModule extends BaseModule {
         token_id: null,
         nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
         deadline: "",
-        signature: "",
+        signature: randomUUID(),
         partner_id: null,
       };
       const { error: insertError } = await this._supabase.from("permits").insert(insertData);
