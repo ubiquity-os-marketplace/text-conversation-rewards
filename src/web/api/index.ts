@@ -56,7 +56,10 @@ async function getRepositoryList(context: ContextPlugin, orgName: string) {
     repositories = [repository.data as Repository];
   }
 
-  return repositories;
+  return repositories.filter(
+    // We filter out the DevPool directory to avoid unnecessarily generating XP from it
+    (repo) => !repo.name.includes("devpool-directory") && !repo.owner.login.includes("ubiquity")
+  );
 }
 
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
