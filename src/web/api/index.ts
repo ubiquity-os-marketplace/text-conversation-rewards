@@ -58,7 +58,7 @@ async function getRepositoryList(context: ContextPlugin, orgName: string) {
 
   return repositories.filter(
     // We filter out the DevPool directory to avoid unnecessarily generating XP from it
-    (repo) => !repo.name.includes("devpool-directory") && !repo.owner.login.includes("ubiquity")
+    (repo) => !repo.owner.login.includes("ubiquity") || !repo.name.includes("devpool-directory")
   );
 }
 
