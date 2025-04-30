@@ -165,6 +165,7 @@ export class ContentEvaluatorModule extends BaseModule {
               return Number.isFinite(retryAfter) ? retryAfter : true;
             }
           }
+          // Retry if there is a SyntaxError caused by malformed JSON or TypeBoxError caused by incorrect JSON from OpenAI
           return error instanceof SyntaxError || error instanceof TypeBoxError || error instanceof LogReturn;
         },
       }
@@ -180,6 +181,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
       const currentReward = new Decimal(currentComment.score?.reward ?? 0);
       const priority =
+        // We do not apply priority multiplier on issue specification
         currentComment.score?.priority && !(currentComment.commentType & CommentAssociation.SPECIFICATION)
           ? currentComment.score.priority
           : 1;
