@@ -172,7 +172,7 @@ export class ContentEvaluatorModule extends BaseModule {
     );
 
     for (const currentComment of commentsWithScore) {
-      let currentRelevance = 1;
+      let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
       if (this._fixedRelevances[currentComment.commentType]) {
         currentRelevance = this._fixedRelevances[currentComment.commentType];
       } else if (!isNaN(relevancesByAi[currentComment.id])) {
