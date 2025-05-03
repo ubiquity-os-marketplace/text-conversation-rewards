@@ -394,10 +394,7 @@ export class ContentEvaluatorModule extends BaseModule {
       });
 
       // Strip any potential Markdown formatting like ```json or ``` from the response, because some LLMs love do to so
-      const rawResponse = String(res.choices[0].message.content)
-        .replace(/^```json\s*/, "")
-        .replace(/^```\s*/, "")
-        .replace(/\s*```$/, "");
+      const rawResponse = String(res.choices[0].message.content).replace(/^.*?{/, "{").replace(/}.*$/, "}");
 
       this.context.logger.info(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
