@@ -8,20 +8,32 @@ import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
 import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 
+function isIssueClosedEvent(context: ContextPlugin): context is ContextPlugin<"issues.closed"> {
+  return context.eventName === "issues.closed";
+}
+
+function isIssueCommentedEvent(context: ContextPlugin): context is ContextPlugin<"issue_comment.created"> {
+  return context.eventName === "issue_comment.created";
+}
+
 export async function run(context: ContextPlugin) {
   const { eventName, payload, logger, config, commentHandler } = context;
-  if (eventName !== "issues.closed") {
+
+  if (isIssueClosedEvent(context)) {
+    if (payload.issue.state_reason !== "completed") {
+      return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
+    }
+    if (!(await preCheck(context))) {
+      const result = logger.error("All linked pull requests must be closed to generate rewards.");
+      await commentHandler.postComment(context, result);
+      return result.logMessage.raw;
+    }
+  } else if (isIssueCommentedEvent(context)) {
+    if (context.payload.comment.body.startsWith("/finish")) {
+      return logger.error(`${context.payload.comment.body} is not not a valid command, skipping.`).logMessage.raw;
+    }
+  } else {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
-  }
-
-  if (payload.issue.state_reason !== "completed") {
-    return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
-  }
-
-  if (!(await preCheck(context))) {
-    const result = logger.error("All linked pull requests must be closed to generate rewards.");
-    await commentHandler.postComment(context, result);
-    return result.logMessage.raw;
   }
 
   if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {

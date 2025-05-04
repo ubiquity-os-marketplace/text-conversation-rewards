@@ -3,6 +3,12 @@
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
   "ubiquity:listeners": ["issues.closed"],
   "skipBotEvents": false,
+  "commands": {
+    "finish": {
+      "ubiquity:example": "/finish",
+      "description": "Forcefully close the task and generate rewards."
+    }
+  },
   "configuration": {
     "default": {},
     "type": "object",
