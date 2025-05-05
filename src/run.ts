@@ -16,8 +16,8 @@ function isIssueCommentedEvent(context: ContextPlugin): context is ContextPlugin
   return context.eventName === "issue_comment.created";
 }
 
-export async function run(context: ContextPlugin) {
-  const { eventName, payload, logger, config, commentHandler } = context;
+async function handleEventTypeChecks(context: ContextPlugin) {
+  const { eventName, payload, logger, commentHandler } = context;
 
   if (isIssueClosedEvent(context)) {
     if (payload.issue.state_reason !== "completed") {
@@ -34,6 +34,17 @@ export async function run(context: ContextPlugin) {
     }
   } else {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
+  }
+
+  return null;
+}
+
+export async function run(context: ContextPlugin) {
+  const { payload, logger, config, commentHandler } = context;
+
+  const eventCheckResult = await handleEventTypeChecks(context);
+  if (eventCheckResult) {
+    return eventCheckResult;
   }
 
   if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {
@@ -67,11 +78,15 @@ export async function run(context: ContextPlugin) {
     );
   }
 
+  return generateResults(context, activity);
+}
+
+async function generateResults(context: ContextPlugin, activity: IssueActivity) {
   const processor = new Processor(context);
   await processor.run(activity);
   let result = processor.dump();
   if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
-    logger.info("Truncating payload as it will trigger an error.");
+    context.logger.info("Truncating payload as it will trigger an error.");
     const resultObject = JSON.parse(result) as Result;
     for (const [key, value] of Object.entries(resultObject)) {
       resultObject[key] = {
