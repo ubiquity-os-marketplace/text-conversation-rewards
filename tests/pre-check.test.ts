@@ -1,14 +1,14 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { http, HttpResponse } from "msw";
+import { isUserAllowedToGenerateRewards } from "../src/helpers/permissions";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
-import { isUserAllowedToGenerateRewards } from "../src/helpers/permissions";
 import "./helpers/permit-mock";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
@@ -305,5 +305,60 @@ describe("Pre-check tests", () => {
       return { data: { role_name: "write" } };
     });
     expect(await isUserAllowedToGenerateRewards(ctx)).toEqual(true);
+  });
+
+  it("Should deny unknown commands and accept know commands", async () => {
+    jest.unstable_mockModule("../src/issue-activity", () => ({
+      IssueActivity: jest.fn(() => ({
+        init: jest.fn(),
+      })),
+    }));
+    const { run } = await import("../src/run");
+    const payload = {
+      comment: {
+        body: "/finish",
+      },
+      issue: {
+        html_url: issueUrl,
+        number: 1,
+        state_reason: "completed",
+        assignees: [
+          {
+            id: 1,
+            login: "gentlementlegen",
+          },
+          {
+            id: 2,
+            login: "0x4007",
+          },
+        ],
+      },
+      repository: {
+        name: "conversation-rewards",
+        owner: {
+          login: "ubiquity-os",
+          id: 76412717,
+        },
+      },
+      sender: {
+        login: "ubiquity-os",
+      },
+    };
+    const ctx = {
+      eventName: "issue_comment.created",
+      payload,
+      config: cfg,
+      logger: new Logs("debug"),
+      octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+      commentHandler: {
+        postComment: jest.fn(),
+      },
+    } as unknown as ContextPlugin;
+
+    let result = await run(ctx);
+    expect(result).toEqual("No price label has been set. Skipping permit generation.");
+    payload.comment.body = "/unknown";
+    result = await run(ctx);
+    expect(result).toEqual("/unknown is not not a valid command, skipping.");
   });
 });

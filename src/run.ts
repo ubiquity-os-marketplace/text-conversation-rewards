@@ -29,7 +29,7 @@ async function handleEventTypeChecks(context: ContextPlugin) {
       return result.logMessage.raw;
     }
   } else if (isIssueCommentedEvent(context)) {
-    if (context.payload.comment.body.startsWith("/finish")) {
+    if (!context.payload.comment.body.trim().startsWith("/finish")) {
       return logger.error(`${context.payload.comment.body} is not not a valid command, skipping.`).logMessage.raw;
     }
   } else {
