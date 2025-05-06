@@ -1,12 +1,13 @@
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
+import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
 import { getSortedPrices } from "./helpers/label-price-extractor";
+import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 import { IssueActivity } from "./issue-activity";
 import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
-import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 
 function isIssueClosedEvent(context: ContextPlugin): context is ContextPlugin<"issues.closed"> {
   return context.eventName === "issues.closed";
@@ -22,6 +23,9 @@ async function handleEventTypeChecks(context: ContextPlugin) {
   if (isIssueClosedEvent(context)) {
     if (payload.issue.state_reason !== "completed") {
       return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
+    }
+    if (await checkIfClosedByCommand(context)) {
+      return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
     }
     if (!(await preCheck(context))) {
       const result = logger.error("All linked pull requests must be closed to generate rewards.");
@@ -76,6 +80,10 @@ export async function run(context: ContextPlugin) {
     throw logger.warn(
       "No rewards have been distributed for this task because it was explicitly marked with a Price: 0 label."
     );
+  }
+
+  if (isIssueCommentedEvent(context)) {
+    await manuallyCloseIssue(context);
   }
 
   return generateResults(context, activity);
