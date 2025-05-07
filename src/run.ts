@@ -34,7 +34,7 @@ async function handleEventTypeChecks(context: ContextPlugin) {
     }
   } else if (isIssueCommentedEvent(context)) {
     if (!context.payload.comment.body.trim().startsWith("/finish")) {
-      return logger.error(`${context.payload.comment.body} is not not a valid command, skipping.`).logMessage.raw;
+      return logger.error(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
     }
   } else {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
