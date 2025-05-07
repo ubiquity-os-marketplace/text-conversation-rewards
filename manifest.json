@@ -6,7 +6,11 @@
   "commands": {
     "finish": {
       "ubiquity:example": "/finish",
-      "description": "Forcefully close the task and generate rewards."
+      "description": "Forcefully close the task and generate rewards.",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
     }
   },
   "configuration": {

@@ -20,6 +20,13 @@ function isIssueCommentedEvent(context: ContextPlugin): context is ContextPlugin
 async function handleEventTypeChecks(context: ContextPlugin) {
   const { eventName, payload, logger, commentHandler } = context;
 
+  if (context.command) {
+    if (context.command.name === "finish") {
+      return null;
+    }
+    return logger.error(`The command ${context.command.name} is not supported, skipping.`).logMessage.raw;
+  }
+
   if (isIssueClosedEvent(context)) {
     if (payload.issue.state_reason !== "completed") {
       return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
