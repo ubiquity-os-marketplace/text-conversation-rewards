@@ -33,20 +33,25 @@ export async function checkIfClosedByCommand(context: ContextPlugin<"issues.clos
       per_page: 100,
     });
 
-    const closeEvents = timeline
-      .filter((event) => event.event === "closed")
+    const lastReopenedEvent = timeline
+      .filter((event) => event.event === "reopened" && "created_at" in event)
       .sort((a, b) => {
-        if (!("created_at" in b) || !("created_at" in a)) return 0;
+        if (!("created_at" in a) || !("created_at" in b)) return 0;
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      });
+      })[0];
 
-    if (closeEvents.length === 0) {
+    const lastClosedEvent = timeline
+      .filter((event) => event.event === "closed" && "created_at" in event)
+      .sort((a, b) => {
+        if (!("created_at" in a) || !("created_at" in b)) return 0;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      })[0];
+
+    if (!lastClosedEvent) {
       return false;
     }
 
-    const latestCloseEvent = closeEvents[0];
-
-    if ("actor" in latestCloseEvent && latestCloseEvent.actor?.type !== "Bot") {
+    if ("actor" in lastClosedEvent && lastClosedEvent.actor?.type !== "Bot") {
       return false;
     }
 
@@ -57,17 +62,19 @@ export async function checkIfClosedByCommand(context: ContextPlugin<"issues.clos
       per_page: 100,
     });
 
-    const sortedComments = allComments.sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
+    if (!("created_at" in lastReopenedEvent) || !("created_at" in lastClosedEvent)) {
+      return false;
+    }
 
-    if (!("created_at" in latestCloseEvent)) return false;
+    const lastReopenedTime = lastReopenedEvent ? new Date(lastReopenedEvent.created_at) : null;
+    const closeTime = new Date(lastClosedEvent.created_at);
 
-    const closeTime = new Date(latestCloseEvent.created_at);
-    const commandComments = sortedComments.filter((comment) => {
+    const commandComments = allComments.filter((comment) => {
       if (!comment.body) return false;
       const commentTime = new Date(comment.created_at);
-      return commentTime < closeTime && comment.body.trim().startsWith("/finish");
+      const isAfterLastReopened = lastReopenedTime ? commentTime > lastReopenedTime : true;
+      const isBeforeClose = commentTime < closeTime;
+      return isAfterLastReopened && isBeforeClose && comment.body.trim().startsWith("/finish");
     });
 
     return commandComments.length > 0;
