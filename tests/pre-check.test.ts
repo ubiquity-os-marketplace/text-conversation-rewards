@@ -359,6 +359,6 @@ describe("Pre-check tests", () => {
     expect(result).toEqual("No price label has been set. Skipping permit generation.");
     payload.comment.body = "/unknown";
     result = await run(ctx);
-    expect(result).toEqual("/unknown is not not a valid command, skipping.");
+    expect(result).toEqual("/unknown is not a valid command, skipping.");
   });
 });
