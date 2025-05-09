@@ -207,12 +207,13 @@ Here is a possible valid configuration to enable this plugin. See [these files](
 ```yaml
 plugin: ubiquity-os/conversation-rewards
 with:
-  evmNetworkId: 100
-  evmPrivateEncrypted: "encrypted-key"
-  erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
   dataCollection:
     maxAttempts: 10
     delayMs: 10000
+  rewards:
+    evmNetworkId: 100
+    evmPrivateEncrypted: "encrypted-key"
+    erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
   incentives:
     requirePriceLabel: true
     limitRewards: true

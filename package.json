@@ -17,7 +17,7 @@
     "knip": "knip",
     "prepare": "husky install",
     "dev": "bun --watch src/index.ts",
-    "server": "bun --watch src/web/api/index.ts"
+    "server": "bun --watch --no-clear-screen src/web/api/index.ts"
   },
   "keywords": [
     "typescript",

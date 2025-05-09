@@ -1,6 +1,7 @@
 import { context } from "@actions/github";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
+import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
 import { decodeError } from "@ubiquity-os/ethers-decode-error";
@@ -64,9 +65,9 @@ export class PaymentModule extends BaseModule {
     this.context.config.incentives.payment?.automaticTransferMode == undefined
       ? true
       : this.context.config.incentives.payment?.automaticTransferMode;
-  readonly _evmPrivateEncrypted: string = `${this.context.config.permits?.evmPrivateEncrypted}`;
-  readonly _evmNetworkId: number = Number(this.context.config.permits?.evmNetworkId);
-  readonly _erc20RewardToken: string = `${this.context.config.permits?.erc20RewardToken}`;
+  readonly _evmPrivateEncrypted: string = `${this.context.config.rewards?.evmPrivateEncrypted}`;
+  readonly _evmNetworkId: number = Number(this.context.config.rewards?.evmNetworkId);
+  readonly _erc20RewardToken: string = `${this.context.config.rewards?.erc20RewardToken}`;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
@@ -77,7 +78,7 @@ export class PaymentModule extends BaseModule {
       return Promise.resolve(result);
     }
 
-    if (!this.context.config.permits) {
+    if (!this.context.config.rewards) {
       this.context.logger.info("No permit settings found, switching to XP recording mode.");
       return this._handleXpRecording(result);
     }
@@ -85,9 +86,9 @@ export class PaymentModule extends BaseModule {
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
       issueUrl: this.context.payload.issue.html_url,
-      evmPrivateEncrypted: this.context.config.permits.evmPrivateEncrypted,
-      evmNetworkId: this.context.config.permits.evmNetworkId,
-      erc20RewardToken: this.context.config.permits.erc20RewardToken,
+      evmPrivateEncrypted: this.context.config.rewards.evmPrivateEncrypted,
+      evmNetworkId: this.context.config.rewards.evmNetworkId,
+      erc20RewardToken: this.context.config.rewards.erc20RewardToken,
     };
     const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
@@ -709,65 +710,76 @@ export class PaymentModule extends BaseModule {
     this.context.logger.info(
       `Attempting to save XP for userId: ${userId}, issueId: ${issue.issueId}, amount: ${numericAmount}`
     );
-    try {
-      const { data: userData, error: userError } = await this._supabase
+    const { data: userData, error: userError } = await this._supabase
+      .from("users")
+      .select("id")
+      .eq("id", userId)
+      .single();
+
+    let beneficiaryId: number;
+    if (userError || !userData) {
+      this.context.logger.info(`User with ID ${userId} not found in database. Attempting to create new user.`);
+
+      const { data: newUserData, error: createError } = await this._supabase
         .from("users")
+        .insert({ id: userId })
         .select("id")
-        .eq("id", userId)
         .single();
-      if (userError || !userData) {
-        throw this.context.logger.error(`Failed to find user with ID ${userId} in database.`, { userError });
-      }
-      const beneficiaryId = userData.id;
-      const locationId = await this._getOrCreateIssueLocation(issue);
-      const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
 
-      const { data: existingXp, error: duplicateCheckError } = await this._supabase
+      if (createError || !newUserData) {
+        throw this.context.logger.error(`Failed to create user with ID ${userId} in database.`, { createError });
+      }
+
+      this.context.logger.info(`Successfully created user with ID ${userId} in database.`);
+      beneficiaryId = newUserData.id;
+    } else {
+      beneficiaryId = userData.id;
+    }
+    const locationId = await this._getOrCreateIssueLocation(issue);
+    const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
+
+    const { data: existingXp, error: duplicateCheckError } = await this._supabase
+      .from("permits")
+      .select("id")
+      .eq("beneficiary_id", beneficiaryId)
+      .eq("location_id", locationId)
+      .is("token_id", null)
+      .maybeSingle();
+
+    if (duplicateCheckError) {
+      throw this.context.logger.error("Error checking for duplicate XP records", { duplicateCheckError });
+    }
+
+    if (existingXp) {
+      this.context.logger.info(
+        `Existing XP record found for userId ${userId} on issue ${issue.issueId}. Updating amount.`
+      );
+      const { error: updateError } = await this._supabase
         .from("permits")
-        .select("id")
-        .eq("beneficiary_id", beneficiaryId)
-        .eq("location_id", locationId)
-        .is("token_id", null)
-        .maybeSingle();
+        .update({ amount: amountString })
+        .eq("id", existingXp.id);
 
-      if (duplicateCheckError) {
-        throw this.context.logger.error("Error checking for duplicate XP records", { duplicateCheckError });
+      if (updateError) {
+        throw this.context.logger.error("Failed to update XP record in database", { updateError });
       }
+      this.context.logger.ok(`XP record updated successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+    } else {
+      const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
+        amount: amountString,
+        beneficiary_id: beneficiaryId,
+        location_id: locationId,
+        token_id: null,
+        nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
+        deadline: "",
+        signature: randomUUID(),
+        partner_id: null,
+      };
+      const { error: insertError } = await this._supabase.from("permits").insert(insertData);
 
-      if (existingXp) {
-        this.context.logger.info(
-          `Existing XP record found for userId ${userId} on issue ${issue.issueId}. Updating amount.`
-        );
-        const { error: updateError } = await this._supabase
-          .from("permits")
-          .update({ amount: amountString })
-          .eq("id", existingXp.id);
-
-        if (updateError) {
-          throw this.context.logger.error("Failed to update XP record in database", { updateError });
-        }
-        this.context.logger.ok(`XP record updated successfully for userId: ${userId}, issueId: ${issue.issueId}`);
-      } else {
-        const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
-          amount: amountString,
-          beneficiary_id: beneficiaryId,
-          location_id: locationId,
-          token_id: null,
-          nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
-          deadline: "",
-          signature: "",
-          partner_id: null,
-        };
-        const { error: insertError } = await this._supabase.from("permits").insert(insertData);
-
-        if (insertError) {
-          throw this.context.logger.error("Failed to insert XP record into database", { insertError });
-        }
-        this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
+      if (insertError) {
+        throw this.context.logger.error("Failed to insert XP record into database", { insertError });
       }
-    } catch (e) {
-      this.context.logger.error("The user XP record could not be saved.", { e });
-      throw e;
+      this.context.logger.ok(`XP record inserted successfully for userId: ${userId}, issueId: ${issue.issueId}`);
     }
   }
 
@@ -775,7 +787,7 @@ export class PaymentModule extends BaseModule {
     const issueUrl = this.context.payload.issue.html_url;
     const { issue_number: issueId } = parseGitHubUrl(issueUrl);
     if (!issueId) {
-      this.context.logger.error("[PermitGenerationModule] Could not extract issue ID from URL for XP recording.", {
+      this.context.logger.error("[PaymentModule] Could not extract issue ID from URL for XP recording.", {
         issueUrl,
       });
       return result;
@@ -788,7 +800,7 @@ export class PaymentModule extends BaseModule {
         continue;
       }
       if (!value.userId) {
-        this.context.logger.error(`[PermitGenerationModule] Missing userId for user ${key}, cannot record XP.`);
+        this.context.logger.error(`[PaymentModule] Missing userId for user ${key}, cannot record XP.`);
         continue;
       }
 
@@ -796,7 +808,7 @@ export class PaymentModule extends BaseModule {
         await this._saveXpRecord(value.userId, issueDetails, value.total);
         this.context.logger.ok(`Successfully recorded XP for user ${key} (ID: ${value.userId})`);
       } catch (e) {
-        this.context.logger.error(`[PermitGenerationModule] Failed to record XP for user ${key}`, { e });
+        this.context.logger.error(`[PaymentModule] Failed to record XP for user ${key}`, { e });
       }
     }
 
