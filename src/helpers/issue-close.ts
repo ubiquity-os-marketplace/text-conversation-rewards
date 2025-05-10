@@ -47,7 +47,7 @@ export async function checkIfClosedByCommand(context: ContextPlugin<"issues.clos
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       })[0];
 
-    if (!lastClosedEvent) {
+    if (!lastClosedEvent || !("created_at" in lastClosedEvent)) {
       return false;
     }
 
@@ -62,7 +62,7 @@ export async function checkIfClosedByCommand(context: ContextPlugin<"issues.clos
       per_page: 100,
     });
 
-    if (!("created_at" in lastReopenedEvent) || !("created_at" in lastClosedEvent)) {
+    if (lastReopenedEvent && (!("created_at" in lastReopenedEvent) || !("created_at" in lastClosedEvent))) {
       return false;
     }
 
