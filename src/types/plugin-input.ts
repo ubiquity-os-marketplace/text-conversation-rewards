@@ -16,7 +16,7 @@ import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
   {
-    permits: T.Optional(
+    rewards: T.Optional(
       T.Object({
         /**
          * Network ID to run in, default to 100

@@ -415,10 +415,10 @@ export class GithubCommentModule extends BaseModule {
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
     let tokenSymbol = "XP";
-    if (this.context.config.permits) {
+    if (this.context.config.rewards) {
       const tokenContract = await getContract(
-        this.context.config.permits.evmNetworkId,
-        this.context.config.permits.erc20RewardToken,
+        this.context.config.rewards.evmNetworkId,
+        this.context.config.rewards.erc20RewardToken,
         ERC20_ABI
       );
       tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
