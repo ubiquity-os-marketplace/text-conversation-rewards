@@ -311,6 +311,18 @@ const openAiType = Type.Object(
       description: "Maximum number of retries to make",
       examples: ["10"],
     }),
+    /**
+     * Percentage (0.0-1.0) of reward to give to the original author when
+     * "Originally posted by @username in URL" is detected
+     */
+    originalAuthorWeight: Type.Number({
+      default: 0.5,
+      description:
+        "Percentage of reward given to original comment author when detected via 'Originally posted by' pattern. Value between 0.0 and 1.0.",
+      minimum: 0.0,
+      maximum: 1.0,
+      examples: [0.5],
+    }),
   },
   { default: {} }
 );

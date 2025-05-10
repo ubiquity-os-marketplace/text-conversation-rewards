@@ -5,6 +5,7 @@ import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import { extractOriginalAuthor } from "../helpers/original-author";
 import { retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
@@ -108,7 +109,34 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     await Promise.all(promises);
+    if (data?.self?.body) {
+      this._handleRewardsForOriginalAuthor(data.self.body, result);
+    }
     return result;
+  }
+
+  /*
+   * If the specification was created from the comment of another user, reward that user accordingly.
+   */
+  private _handleRewardsForOriginalAuthor(body: string, result: Result) {
+    const originalComment = extractOriginalAuthor(body);
+    if (originalComment) {
+      let specReward;
+      for (const resultKey of Object.keys(result)) {
+        const spec = result[resultKey].comments?.find(
+          (comment) => comment.commentType === CommentAssociation.SPECIFICATION
+        );
+        if (spec) {
+          if (spec.score?.multiplier) {
+            spec.score.multiplier /= 2;
+          }
+          specReward = { ...spec };
+        }
+      }
+      if (specReward) {
+        result[originalComment.username].comments?.push(specReward);
+      }
+    }
   }
 
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string, allComments: AllComments) {
