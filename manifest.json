@@ -374,6 +374,14 @@
                         "description": "Maximum number of retries to make",
                         "examples": ["10"],
                         "type": "number"
+                      },
+                      "originalAuthorWeight": {
+                        "default": 0.5,
+                        "description": "Percentage of reward given to original comment author when detected via 'Originally posted by' pattern. Value between 0.0 and 1.0.",
+                        "minimum": 0,
+                        "maximum": 1,
+                        "examples": [0.5],
+                        "type": "number"
                       }
                     }
                   },
