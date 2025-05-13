@@ -1,6 +1,8 @@
 import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
+import { encodingForModel } from "js-tiktoken";
 import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
@@ -18,8 +20,6 @@ import {
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
-import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
-import { encodingForModel } from "js-tiktoken";
 
 /**
  * Evaluates and rates comments.
@@ -114,7 +114,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
     await Promise.all(promises);
     if (data?.self?.body) {
-      this._handleRewardsForOriginalAuthor(data.self.body, result);
+      await this._handleRewardsForOriginalAuthor(data.self.body, result);
     }
     return result;
   }
@@ -122,32 +122,50 @@ export class ContentEvaluatorModule extends BaseModule {
   /*
    * If the specification was created from the comment of another user, reward that user accordingly.
    */
-  private _handleRewardsForOriginalAuthor(body: string, result: Result) {
+  private async _handleRewardsForOriginalAuthor(body: string, result: Result) {
     const originalComment = extractOriginalAuthor(body);
-    if (originalComment) {
-      let specReward;
-      for (const resultKey of Object.keys(result)) {
-        const spec = result[resultKey].comments?.find(
-          (comment) => comment.commentType & CommentAssociation.SPECIFICATION
-        );
-        if (spec) {
-          if (spec.score?.reward) {
-            spec.score.reward *= this._originalAuthorWeight;
-          }
-          specReward = { ...spec };
-        }
+    if (!originalComment) return;
+
+    const specReward = this._extractAndAdjustSpecReward(result);
+    if (!specReward) return;
+
+    await this._addRewardForAuthor(result, originalComment.username, specReward);
+  }
+
+  private _extractAndAdjustSpecReward(result: Result) {
+    for (const resultKey of Object.keys(result)) {
+      const comments = result[resultKey].comments;
+      if (!comments) continue;
+
+      const spec = comments.find((comment) => comment.commentType & CommentAssociation.SPECIFICATION);
+      if (spec && spec.score?.reward !== undefined) {
+        spec.score.reward *= this._originalAuthorWeight;
+        return { ...spec };
       }
-      if (specReward) {
-        if (result[originalComment.username]?.comments) {
-          result[originalComment.username].comments?.push(specReward);
-        } else {
-          result[originalComment.username] = {
-            total: 0,
-            userId: 0,
-            comments: [specReward],
-          };
-        }
-      }
+    }
+    return undefined;
+  }
+
+  private async _addRewardForAuthor(result: Result, username: string, specReward: GithubCommentScore) {
+    if (result[username]?.comments) {
+      result[username].comments.push(specReward);
+    } else {
+      const userId = await this._fetchGithubUserId(username);
+      result[username] = {
+        total: 0,
+        userId,
+        comments: [specReward],
+      };
+    }
+  }
+
+  private async _fetchGithubUserId(username: string) {
+    try {
+      const userResponse = await this.context.octokit.rest.users.getByUsername({ username });
+      return userResponse.data.id;
+    } catch (err) {
+      this.context.logger.warn("Failed to fetch the user ID.", { username, err });
+      return 0;
     }
   }
 
