@@ -32,6 +32,7 @@ export class ContentEvaluatorModule extends BaseModule {
   });
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
+  private readonly _originalAuthorWeight: number = 0.5;
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -51,6 +52,9 @@ export class ContentEvaluatorModule extends BaseModule {
           [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: curr.relevance,
         };
       }, {});
+    }
+    if (this._configuration?.originalAuthorWeight !== undefined) {
+      this._originalAuthorWeight = this._configuration.originalAuthorWeight;
     }
   }
 
@@ -124,17 +128,25 @@ export class ContentEvaluatorModule extends BaseModule {
       let specReward;
       for (const resultKey of Object.keys(result)) {
         const spec = result[resultKey].comments?.find(
-          (comment) => comment.commentType === CommentAssociation.SPECIFICATION
+          (comment) => comment.commentType & CommentAssociation.SPECIFICATION
         );
         if (spec) {
-          if (spec.score?.multiplier) {
-            spec.score.multiplier /= 2;
+          if (spec.score?.reward) {
+            spec.score.reward *= this._originalAuthorWeight;
           }
           specReward = { ...spec };
         }
       }
       if (specReward) {
-        result[originalComment.username].comments?.push(specReward);
+        if (result[originalComment.username]?.comments) {
+          result[originalComment.username].comments?.push(specReward);
+        } else {
+          result[originalComment.username] = {
+            total: 0,
+            userId: 0,
+            comments: [specReward],
+          };
+        }
       }
     }
   }
