@@ -18,7 +18,7 @@ async function tryAutoFetchingPrice(logger: LoggerType, activity: ActivityType):
   }
 
   try {
-    const response = await fetch("https://ubiquity-os-daemon-pricing.sshivaditya.workers.dev/time", {
+    const response = await fetch("https://ubiquity-os-daemon-pricing-development.azurewebsites.net/time", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
