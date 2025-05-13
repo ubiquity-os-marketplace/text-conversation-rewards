@@ -8,7 +8,7 @@
   "state": "closed",
   "state_reason": "completed",
   "title": "Test issue for content evaluator module",
-  "body": "This is a test issue for content evaluator module.\n\n## Requirements\n\n- Add new functionality to evaluate content\n- Test the implementation\n- Document the new features\n\n## Expected behavior\n\nThe content evaluator should analyze comments and determine their relevance to the issue.",
+  "body": "This is a test issue for content evaluator module.\n\n## Requirements\n\n- Add new functionality to evaluate content\n- Test the implementation\n- Document the new features\n\n## Expected behavior\n\nThe content evaluator should analyze comments and determine their relevance to the issue._Originally posted by @reviewer in [#69](https://github.com/ubiquity/work.ubq.fi/issues/69)_\n\nThe implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments.",
   "user": {
     "login": "test-user",
     "id": 12345678,

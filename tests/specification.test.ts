@@ -88,6 +88,23 @@ const { UserExtractorModule } = await import("../src/parser/user-extractor-modul
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
 
+jest
+  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+  .mockImplementation((specificationBody, comments, allComments, prComments) => {
+    return Promise.resolve(
+      (() => {
+        const relevance: { [k: string]: number } = {};
+        comments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        prComments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.7;
+        });
+        return relevance;
+      })()
+    );
+  });
+
 describe("Content Evaluator Module Test", () => {
   const issue = parseGitHubUrl(issueUrl);
   const ctx = {
@@ -138,8 +155,9 @@ describe("Content Evaluator Module Test", () => {
   });
 
   it("Should handle comments with original author references", async () => {
+    const commentId = 1571243461;
     const originalAuthorComment = {
-      id: 1571243461,
+      id: commentId,
       node_id: "IC_kwDOKzVPS89fGhiO",
       url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/1571243461",
       html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/71#issuecomment-1571243461",
@@ -190,10 +208,11 @@ describe("Content Evaluator Module Test", () => {
 
     const result = JSON.parse(processor.dump()) as Result;
 
-    // expect(result.stats.comment_relevance[originalAuthorComment.id]).toBeDefined();
-
     const users = Object.keys(result);
     const hasOriginalAuthor = users.some((user) => user === "reviewer");
     expect(hasOriginalAuthor).toBeTruthy();
+    expect(result["reviewer"].total).toEqual(10.105);
+    // "reviewer" should also be credited for the spec even though it didn't write it, due to the "originally posted by"
+    expect(result["reviewer"].comments).toEqual(expect.arrayContaining([expect.objectContaining({ id: commentId })]));
   }, 120000);
 });
