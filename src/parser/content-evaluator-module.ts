@@ -392,7 +392,10 @@ export class ContentEvaluatorModule extends BaseModule {
         frequency_penalty: 0,
         presence_penalty: 0,
       });
-      const rawResponse = String(res.choices[0].message.content);
+
+      // Strip any potential Markdown formatting like ```json or ``` from the response, because some LLMs love do to so
+      const rawResponse = String(res.choices[0].message.content).replace(/^.*?{/, "{").replace(/}.*$/, "}");
+
       this.context.logger.debug(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
       const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
@@ -412,8 +415,12 @@ export class ContentEvaluatorModule extends BaseModule {
     }
     const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const userCommentsMap = userComments.map((value) => `${value.id}: "${value.comment}"`);
+
     return `
+      CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
+      
       Evaluate the relevance of GitHub comments to an issue. Provide a raw JSON object with comment IDs and their relevance scores.
+
       Issue: ${issue}
 
       All comments:
@@ -445,7 +452,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
       Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
 
-      IMPORTANT: Your response MUST be ONLY the raw JSON object, suitable for direct parsing by a program. Do not include any explanatory text, markdown formatting, backticks, or code blocks.
+      YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.
     `;
   }
 
@@ -453,7 +460,9 @@ export class ContentEvaluatorModule extends BaseModule {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
-    return `I need to evaluate the value of a GitHub contributor's comments in a pull request. 
+    return `CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
+
+    I need to evaluate the value of a GitHub contributor's comments in a pull request. 
     Some of these comments are code review comments, and some are general suggestions or a part of the discussion. 
     I'm interested in how much each comment helps to solve the GitHub issue and improve code quality. 
     Please provide a float between 0 and 1 to represent the value of each comment. 
@@ -461,15 +470,14 @@ export class ContentEvaluatorModule extends BaseModule {
     A stringified JSON is given below that contains the specification of the GitHub issue, and comments by different contributors. 
     The property "diffHunk" presents the chunk of code being addressed for a possible change in a code review comment. 
     
-    \`\`\`
     ${JSON.stringify({ specification: issue, comments: userComments })}
-    \`\`\`\
   
     To what degree are each of the comments valuable? 
     Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
     The float number should represent the value of the comment for improving the issue solution and code quality. The number of entries in the JSON response must equal ${userComments.length}.
     Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
     
-    IMPORTANT: Your response MUST be ONLY the raw JSON object, suitable for direct parsing by a program. Do not include any explanatory text, markdown formatting, backticks, or code blocks.`;
+    YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.
+`;
   }
 }

@@ -1,31 +1,63 @@
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
+import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
 import { getSortedPrices } from "./helpers/label-price-extractor";
-import { logInvalidIssue } from "./helpers/log-invalid-issue";
 import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
-import { handlePriceLabelValidation } from "./helpers/price-label-handler";
 import { IssueActivity } from "./issue-activity";
 import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
 
-export async function run(context: ContextPlugin) {
-  const { eventName, payload, logger, config, commentHandler } = context;
-  if (eventName !== "issues.closed") {
+function isIssueClosedEvent(context: ContextPlugin): context is ContextPlugin<"issues.closed"> {
+  return context.eventName === "issues.closed";
+}
+
+function isIssueCommentedEvent(context: ContextPlugin): context is ContextPlugin<"issue_comment.created"> {
+  return context.eventName === "issue_comment.created";
+}
+
+async function handleEventTypeChecks(context: ContextPlugin) {
+  const { eventName, payload, logger, commentHandler } = context;
+
+  if (context.command) {
+    if (context.command.name === "finish") {
+      return null;
+    }
+    return logger.error(`The command ${context.command.name} is not supported, skipping.`).logMessage.raw;
+  }
+
+  if (isIssueClosedEvent(context)) {
+    if (payload.issue.state_reason !== "completed") {
+      await logInvalidIssue(logger, payload.issue.html_url);
+      return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
+    }
+    if (await checkIfClosedByCommand(context)) {
+      return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
+    }
+    if (!(await preCheck(context))) {
+      await logInvalidIssue(logger, payload.issue.html_url);
+      const result = logger.error("All linked pull requests must be closed to generate rewards.");
+      await commentHandler.postComment(context, result);
+      return result.logMessage.raw;
+    }
+  } else if (isIssueCommentedEvent(context)) {
+    if (!context.payload.comment.body.trim().startsWith("/finish")) {
+      return logger.error(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
+    }
+  } else {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }
 
-  if (payload.issue.state_reason !== "completed") {
-    await logInvalidIssue(logger, payload.issue.html_url);
-    return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
-  }
+  return null;
+}
 
-  if (!(await preCheck(context))) {
-    await logInvalidIssue(logger, payload.issue.html_url);
-    const result = logger.error("All linked pull requests must be closed to generate rewards.");
-    await commentHandler.postComment(context, result);
-    return result.logMessage.raw;
+export async function run(context: ContextPlugin) {
+  const { payload, logger, config, commentHandler } = context;
+
+  const eventCheckResult = await handleEventTypeChecks(context);
+  if (eventCheckResult) {
+    return eventCheckResult;
   }
 
   if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {
@@ -63,11 +95,19 @@ export async function run(context: ContextPlugin) {
     );
   }
 
+  if (isIssueCommentedEvent(context)) {
+    await manuallyCloseIssue(context);
+  }
+
+  return generateResults(context, activity);
+}
+
+async function generateResults(context: ContextPlugin, activity: IssueActivity) {
   const processor = new Processor(context);
   await processor.run(activity);
   let result = processor.dump();
   if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
-    logger.info("Truncating payload as it will trigger an error.");
+    context.logger.info("Truncating payload as it will trigger an error.");
     const resultObject = JSON.parse(result) as Result;
     for (const [key, value] of Object.entries(resultObject)) {
       resultObject[key] = {

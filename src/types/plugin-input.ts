@@ -11,6 +11,7 @@ import { paymentConfigurationType } from "../configuration/payment-configuration
 import { reviewIncentivizerConfigurationType } from "../configuration/review-incentivizer-config";
 import { simplificationIncentivizerConfigurationType } from "../configuration/simplification-incentivizer-config";
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
+import { Command } from "./command";
 import { EnvConfig } from "./env-type";
 
 export const pluginSettingsSchema = T.Object(
@@ -83,7 +84,12 @@ export const pluginSettingsSchema = T.Object(
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
-export type SupportedEvents = "issues.closed";
-export type ContextPlugin = Context<PluginSettings, EnvConfig, null, SupportedEvents> & {
+export type SupportedEvents = "issues.closed" | "issue_comment.created";
+export type ContextPlugin<T extends SupportedEvents = SupportedEvents> = Context<
+  PluginSettings,
+  EnvConfig,
+  Command,
+  T
+> & {
   adapters: ReturnType<typeof createAdapters>;
 };
