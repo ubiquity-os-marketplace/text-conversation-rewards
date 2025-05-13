@@ -8,6 +8,8 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
+import { logInvalidIssue } from "./helpers/log-invalid-issue";
+import { handlePriceLabelValidation } from "./helpers/price-label-handler";
 
 function isIssueClosedEvent(context: ContextPlugin): context is ContextPlugin<"issues.closed"> {
   return context.eventName === "issues.closed";
