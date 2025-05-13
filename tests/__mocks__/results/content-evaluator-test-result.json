@@ -1,0 +1,102 @@
+{
+  "data": {
+    "activity": {
+      "html_url": "https://github.com/ubiquity-os/conversation-rewards/issues/71",
+      "body": "This is a test issue for content evaluator module.\n\n## Requirements\n\n- Add new functionality to evaluate content\n- Test the implementation\n- Document the new features\n\n## Expected behavior\n\nThe content evaluator should analyze comments and determine their relevance to the issue.",
+      "title": "Test issue for content evaluator module",
+      "comments": {
+        "1571243456": {
+          "user": {
+            "login": "developer-1"
+          },
+          "body": "I'm starting work on this issue. I'll implement the content evaluation functionality as requested."
+        },
+        "1571243457": {
+          "user": {
+            "login": "test-user"
+          },
+          "body": "Great! Make sure to consider the relevance score calculation carefully. We should weight comments based on their technical depth and direct connection to the requirements."
+        },
+        "1571243458": {
+          "user": {
+            "login": "developer-1"
+          },
+          "body": "I've implemented the basic content evaluation functionality. The algorithm analyzes comments and assigns relevance scores between 0 and 1 based on their technical content and how well they address the issue requirements. Here's a sample of how it works:\n\n```typescript\nasync _evaluateComments(specificationBody: string, comments: Comment[], allComments: Comment[], prComments: Comment[]): Promise<{ [id: string]: number }> {\n  const relevance: { [id: string]: number } = {};\n  \n  // Process each comment and calculate relevance\n  for (const comment of [...comments, ...prComments]) {\n    const score = await this._calculateRelevanceScore(specificationBody, comment.body);\n    relevance[`${comment.id}`] = score;\n  }\n  \n  return relevance;\n}\n```\n\nWhat do you think of this implementation?"
+        },
+        "1571243459": {
+          "user": {
+            "login": "reviewer"
+          },
+          "body": "The implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments. This would help ensure that only meaningful contributions are counted towards rewards.\n\nAlso, could you add some documentation on how the relevance score is calculated?"
+        },
+        "1571243460": {
+          "user": {
+            "login": "developer-1"
+          },
+          "body": "I've made the suggested changes. Added a threshold configuration and documentation for the relevance calculation. The implementation is now complete and ready for review."
+        }
+      },
+      "author": {
+        "login": "test-user"
+      },
+      "assignees": [
+        {
+          "login": "developer-1"
+        }
+      ]
+    },
+    "users": [
+      {
+        "id": 87654321,
+        "login": "developer-1",
+        "comments": [
+          "1571243456",
+          "1571243458",
+          "1571243460"
+        ],
+        "reward": {
+          "total": 150,
+          "split": 1,
+          "final": 150
+        }
+      },
+      {
+        "id": 12345678,
+        "login": "test-user",
+        "comments": [
+          "1571243457"
+        ],
+        "reward": {
+          "total": 0,
+          "split": 0,
+          "final": 0
+        }
+      },
+      {
+        "id": 55555555,
+        "login": "reviewer",
+        "comments": [
+          "1571243459"
+        ],
+        "reward": {
+          "total": 0,
+          "split": 0,
+          "final": 0
+        }
+      }
+    ]
+  },
+  "stats": {
+    "comment_relevance": {
+      "1571243456": 0.65,
+      "1571243457": 0.75,
+      "1571243458": 0.92,
+      "1571243459": 0.85,
+      "1571243460": 0.78
+    },
+    "content_evaluation": {
+      "mostRelevant": "1571243458",
+      "thresholdApplied": true
+    }
+  }
+}

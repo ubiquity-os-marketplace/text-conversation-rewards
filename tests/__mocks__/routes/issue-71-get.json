@@ -1,0 +1,56 @@
+{
+  "id": 1571243123,
+  "node_id": "I_kwDOKzVPS11DERfQZ",
+  "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71",
+  "repository_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards",
+  "html_url": "https://github.com/ubiquity-os/conversation-rewards/issues/71",
+  "number": 71,
+  "state": "closed",
+  "state_reason": "completed",
+  "title": "Test issue for content evaluator module",
+  "body": "This is a test issue for content evaluator module.\n\n## Requirements\n\n- Add new functionality to evaluate content\n- Test the implementation\n- Document the new features\n\n## Expected behavior\n\nThe content evaluator should analyze comments and determine their relevance to the issue.",
+  "user": {
+    "login": "test-user",
+    "id": 12345678,
+    "node_id": "MDQ6VXNlcjEyMzQ1Njc4",
+    "avatar_url": "https://avatars.githubusercontent.com/u/12345678?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/test-user",
+    "html_url": "https://github.com/test-user",
+    "type": "User",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 5249512321,
+      "node_id": "LA_kwDOKzVPS88AAAABP-_D8Q",
+      "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/labels/enhancement",
+      "name": "enhancement",
+      "color": "a2eeef",
+      "default": true,
+      "description": "New feature or request"
+    }
+  ],
+  "assignees": [
+    {
+      "login": "developer-1",
+      "id": 87654321,
+      "node_id": "MDQ6VXNlcjg3NjU0MzIx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/87654321?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/developer-1",
+      "html_url": "https://github.com/developer-1",
+      "type": "User",
+      "site_admin": false
+    }
+  ],
+  "created_at": "2023-06-15T12:30:00Z",
+  "updated_at": "2023-06-25T18:45:00Z",
+  "closed_at": "2023-06-25T18:45:00Z",
+  "author_association": "MEMBER",
+  "active_lock_reason": null,
+  "locked": false,
+  "timeline_url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/timeline",
+  "comments": 5,
+  "performed_via_github_app": null
+}

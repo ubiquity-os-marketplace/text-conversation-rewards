@@ -12,8 +12,8 @@ describe("ContentEvaluatorConfiguration Validation", () => {
         endpoint: "not-a-valid-url",
         maxRetries: 3,
         tokenCountLimit: 0,
-        originalAuthorWeight: 0.5,
       },
+      originalAuthorWeight: 0.5,
     };
 
     function assertInvalidConfig() {
@@ -32,8 +32,8 @@ describe("ContentEvaluatorConfiguration Validation", () => {
         endpoint: "https://api.openai.com/v1",
         maxRetries: 3,
         tokenCountLimit: 100,
-        originalAuthorWeight: 0.5,
       },
+      originalAuthorWeight: 0.5,
     };
 
     const defaultedConfig = Value.Default(contentEvaluatorConfigurationType, validConfig);
