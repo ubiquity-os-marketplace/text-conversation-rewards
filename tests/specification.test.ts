@@ -213,6 +213,8 @@ describe("Content Evaluator Module Test", () => {
     expect(hasOriginalAuthor).toBeTruthy();
     expect(result["reviewer"].total).toEqual(10.105);
     // "reviewer" should also be credited for the spec even though it didn't write it, due to the "originally posted by"
-    expect(result["reviewer"].comments).toEqual(expect.arrayContaining([expect.objectContaining({ id: commentId })]));
+    expect(result["reviewer"].comments).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: activity.self?.id })])
+    );
   }, 120000);
 });
