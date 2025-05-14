@@ -249,7 +249,7 @@ export class PaymentModule extends BaseModule {
     return this._autoTransferMode ? "transfer" : "permit";
   }
 
-  private _getNetworkExplorer(networkId: number): string {
+  _getNetworkExplorer(networkId: number): string {
     const chain = chains.get(networkId);
     return chain?.explorers?.[0].url || "https://blockscan.com";
   }
