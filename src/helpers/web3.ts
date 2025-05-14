@@ -32,7 +32,7 @@ export const PERMIT2_ABI = permit2Abi;
  */
 
 export async function getContract(networkId: number, contractAddress: string, abi: ContractInterface) {
-  const provider = new ethers.providers.JsonRpcProvider(`https://permit2-rpc-proxy-1c562kq7phb8.deno.dev/${networkId}`);
+  const provider = new ethers.providers.JsonRpcProvider(`https://rpc.ubq.fi/${networkId}`);
   return new Contract(contractAddress, abi, provider);
 }
 
