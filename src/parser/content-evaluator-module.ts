@@ -151,6 +151,7 @@ export class ContentEvaluatorModule extends BaseModule {
       result[username].comments.push(specReward);
     } else {
       const userId = await this._fetchGithubUserId(username);
+      if (!userId) return;
       result[username] = {
         total: 0,
         userId,
@@ -162,6 +163,10 @@ export class ContentEvaluatorModule extends BaseModule {
   private async _fetchGithubUserId(username: string) {
     try {
       const userResponse = await this.context.octokit.rest.users.getByUsername({ username });
+      // We do not want to reward bot accounts
+      if (userResponse.data.type === "Bot") {
+        return 0;
+      }
       return userResponse.data.id;
     } catch (err) {
       this.context.logger.warn("Failed to fetch the user ID.", { username, err });
