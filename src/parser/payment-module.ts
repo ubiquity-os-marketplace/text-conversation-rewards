@@ -35,7 +35,7 @@ import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { PayoutMode, Result } from "../types/results";
-import { chains } from "eth-chains";
+import ethChains from "eth-chains";
 
 interface Payload {
   evmNetworkId: number;
@@ -250,7 +250,7 @@ export class PaymentModule extends BaseModule {
   }
 
   _getNetworkExplorer(networkId: number): string {
-    const chain = chains.get(networkId);
+    const chain = ethChains.chains.get(networkId);
     return chain?.explorers?.[0].url || "https://blockscan.com";
   }
 
