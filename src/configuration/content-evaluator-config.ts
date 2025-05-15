@@ -327,7 +327,7 @@ export const contentEvaluatorConfigurationType = Type.Object({
       "Percentage of reward given to original comment author when detected via 'Originally posted by' pattern. Value between 0.0 and 1.0.",
     minimum: 0.0,
     maximum: 1.0,
-    examples: [0.5],
+    examples: [0.5, 0.22, 0.79, 0, 1],
   }),
   /**
    * Multipliers applied to different types of comments
