@@ -139,8 +139,13 @@ export class ContentEvaluatorModule extends BaseModule {
 
       const spec = comments.find((comment) => comment.commentType & CommentAssociation.SPECIFICATION);
       if (spec && spec.score?.reward !== undefined) {
-        spec.score.reward *= this._originalAuthorWeight;
-        return { ...spec };
+        const authorReward = spec.score.reward * (1 - this._originalAuthorWeight);
+        const originalAuthorReward = spec.score.reward * this._originalAuthorWeight;
+        spec.score.reward = authorReward;
+        const originalAuthorSpec = structuredClone(spec);
+        // @ts-expect-error Cannot be undefined since we check it in this if closure
+        originalAuthorSpec.score.reward = originalAuthorReward;
+        return originalAuthorSpec;
       }
     }
     return undefined;

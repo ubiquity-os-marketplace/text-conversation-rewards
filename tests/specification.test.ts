@@ -81,7 +81,6 @@ const { IssueActivity } = await import("../src/issue-activity");
 const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
 const { DataPurgeModule } = await import("../src/parser/data-purge-module");
 const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { GithubCommentModule } = await import("../src/parser/github-comment-module");
 const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
@@ -199,8 +198,6 @@ describe("Content Evaluator Module Test", () => {
       new DataPurgeModule(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
-      new PaymentModule(ctx),
-      new GithubCommentModule(ctx),
     ];
 
     server.use(http.post("https://*", () => passthrough()));
@@ -211,7 +208,7 @@ describe("Content Evaluator Module Test", () => {
     const users = Object.keys(result);
     const hasOriginalAuthor = users.some((user) => user === "reviewer");
     expect(hasOriginalAuthor).toBeTruthy();
-    expect(result["reviewer"].total).toEqual(10.105);
+    expect(result["reviewer"].total).toEqual(8.3201);
     // "reviewer" should also be credited for the spec even though it didn't write it, due to the "originally posted by"
     expect(result["reviewer"].comments).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: activity.self?.id })])
