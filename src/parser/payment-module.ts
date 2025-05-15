@@ -543,6 +543,7 @@ export class PaymentModule extends BaseModule {
     return result;
   }
 
+  // Refer to https://github.com/ubiquity-os-marketplace/command-wallet/pull/51
   async _getOrCreateIssueLocation(issue: { issueId: number; issueUrl: string }) {
     let locationId: number | null = null;
 
