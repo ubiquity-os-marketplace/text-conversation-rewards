@@ -11,6 +11,17 @@ jobs:
     permissions: write-all
 
     steps:
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate RPCs
+        run: bun run fetch-rpcs
+
       - uses: ubiquity-os/action-deploy-plugin@main
         with:
           treatAsEsm: true
