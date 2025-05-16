@@ -15,7 +15,7 @@
     "format:prettier": "prettier --write .",
     "format:cspell": "cspell **/*",
     "knip": "knip",
-    "prepare": "husky",
+    "prepare": "husky && bun run fetch-rpcs",
     "dev": "bun --watch src/index.ts",
     "server": "bun --watch --no-clear-screen src/web/api/index.ts",
     "fetch-rpcs": "mkdir -p src/types && bun -e \"await Bun.write('src/types/rpcs.json', await (await fetch('https://chainlist.org/rpcs.json')).text())\""
