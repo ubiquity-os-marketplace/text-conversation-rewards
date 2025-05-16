@@ -135,8 +135,8 @@ const { PaymentModule } = await import("../../src/parser/payment-module");
 beforeAll(() => {
   server.listen();
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
-    return Promise.resolve("https://rpc");
+  PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
+    return "https://rpc";
   };
 });
 afterEach(() => server.resetHandlers());
@@ -228,7 +228,7 @@ describe("payment-module.ts", () => {
 
     it("Should return a network explorer url", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const url = await paymentModule._getNetworkExplorer(100);
+      const url = paymentModule._getNetworkExplorer(100);
       expect(url).toMatch(/http.*/);
     });
   });
