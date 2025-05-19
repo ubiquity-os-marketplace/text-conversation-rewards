@@ -1,6 +1,6 @@
 import { MaxUint256, PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer } from "@uniswap/permit2-sdk";
 import { BigNumber, BigNumberish, Contract, ContractInterface, ethers, Wallet } from "ethers";
-import permit2Abi from "../abi/permit2.json";
+import permit2Abi from "../abi/permit2.json" with { type: "json" };
 import { PERMIT_AGGREGATOR_CONTRACT_ADDRESS } from "../helpers/constants";
 
 export interface TransferRequest {
@@ -32,7 +32,7 @@ export const PERMIT2_ABI = permit2Abi;
  * @returns EVM token contract
  */
 
-export async function getContract(networkId: number, contractAddress: string, abi: ContractInterface) {
+export function getContract(networkId: number, contractAddress: string, abi: ContractInterface) {
   const provider = new ethers.providers.JsonRpcProvider(`https://rpc.ubq.fi/${networkId}`);
   return new Contract(contractAddress, abi, provider);
 }
@@ -43,7 +43,7 @@ export async function getContract(networkId: number, contractAddress: string, ab
  * @param provider ethers.Provider
  * @returns the evm wallet
  */
-export async function getEvmWallet(privateKey: string, provider: ethers.providers.Provider) {
+export function getEvmWallet(privateKey: string, provider: ethers.providers.Provider) {
   return new ethers.Wallet(privateKey, provider);
 }
 
@@ -108,9 +108,13 @@ export class Permit2Wrapper {
     transferRequests: TransferRequest[],
     nonce: BigNumber
   ): Promise<BatchTransferPermit> {
+    // Check if contract exists at PERMIT_AGGREGATOR_CONTRACT_ADDRESS
+    const code = await this._permit2.provider.getCode(PERMIT_AGGREGATOR_CONTRACT_ADDRESS);
+    const spender = code !== "0x" ? PERMIT_AGGREGATOR_CONTRACT_ADDRESS : evmWallet.address;
+
     const permitBatchTransferFromData: PermitBatchTransferFrom = {
       permitted: transferRequests.map((request) => ({ token: tokenAddress, amount: request.amount })),
-      spender: PERMIT_AGGREGATOR_CONTRACT_ADDRESS,
+      spender,
       nonce,
       deadline: MaxUint256,
     };
