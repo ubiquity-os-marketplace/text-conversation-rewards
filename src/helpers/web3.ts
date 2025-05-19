@@ -1,6 +1,7 @@
 import { MaxUint256, PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer } from "@uniswap/permit2-sdk";
 import { BigNumber, BigNumberish, Contract, ContractInterface, ethers, Wallet } from "ethers";
 import permit2Abi from "../abi/permit2.json";
+import { PERMIT_AGGREGATOR_CONTRACT_ADDRESS } from "../helpers/constants";
 
 export interface TransferRequest {
   address: string;
@@ -109,7 +110,7 @@ export class Permit2Wrapper {
   ): Promise<BatchTransferPermit> {
     const permitBatchTransferFromData: PermitBatchTransferFrom = {
       permitted: transferRequests.map((request) => ({ token: tokenAddress, amount: request.amount })),
-      spender: evmWallet.address,
+      spender: PERMIT_AGGREGATOR_CONTRACT_ADDRESS,
       nonce,
       deadline: MaxUint256,
     };
