@@ -139,12 +139,17 @@ export class ContentEvaluatorModule extends BaseModule {
 
       const spec = comments.find((comment) => comment.commentType & CommentAssociation.SPECIFICATION);
       if (spec && spec.score?.reward !== undefined) {
-        const authorReward = spec.score.reward * (1 - this._originalAuthorWeight);
-        const originalAuthorReward = spec.score.reward * this._originalAuthorWeight;
+        const reward = new Decimal(spec.score.reward);
+        const authorWeight = new Decimal(1).minus(this._originalAuthorWeight);
+        const authorReward = reward.mul(authorWeight).toNumber();
+        const originalAuthorReward = reward.mul(this._originalAuthorWeight).toNumber();
         spec.score.reward = authorReward;
+        spec.score.weight = authorWeight.toNumber();
         const originalAuthorSpec = structuredClone(spec);
         // @ts-expect-error Cannot be undefined since we check it in this if closure
         originalAuthorSpec.score.reward = originalAuthorReward;
+        // @ts-expect-error Cannot be undefined since we check it in this if closure
+        originalAuthorSpec.score.weight = this._originalAuthorWeight;
         return originalAuthorSpec;
       }
     }
