@@ -3,8 +3,10 @@ import { GitHubPullRequestReviewComment } from "../github-types";
 import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespan";
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
+import { QUERY_ISSUE_EDITS } from "../types/comment-edits";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
+import { writeFileSync } from "fs";
 
 /**
  * Removes the data in the comments that we do not want to be processed.
@@ -44,6 +46,17 @@ export class DataPurgeModule extends BaseModule {
     return false;
   }
 
+  async _getHumanEdits() {
+    const { owner, repo, issue_number } = parseGitHubUrl(this.context.payload.issue.html_url);
+    const data = await this.context.octokit.graphql.paginate(QUERY_ISSUE_EDITS, {
+      owner,
+      repo,
+      issue_number,
+    });
+    writeFileSync("edits.json", JSON.stringify(data, null, 2));
+    process.exit(0);
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result) {
     this._assignmentPeriods = await getAssignmentPeriods(
       this.context.octokit,
@@ -54,6 +67,7 @@ export class DataPurgeModule extends BaseModule {
         continue;
       }
       if (comment.body && comment.user?.login && result[comment.user.login]) {
+        await this._getHumanEdits();
         const newContent = comment.body
           // Remove quoted text
           .replace(/^>.*$/gm, "")
