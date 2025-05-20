@@ -157,10 +157,19 @@ export class GithubCommentModule extends BaseModule {
     if (this._configuration?.post) {
       try {
         if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
-          await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
+          const comment = await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
             raw: true,
             updateComment: true,
           });
+          if (comment) {
+            await this.context.adapters.supabase.location.upsert({
+              issue_id: this.context.payload.issue.number,
+              node_url: `${this.context.payload.issue.html_url}#issuecomment-${comment.id}`,
+              repository_id: this.context.payload.repository.id,
+              comment_id: comment.id,
+              node_type: "Issue",
+            });
+          }
         } else {
           const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
           await this.context.commentHandler.postComment(this.context, errorLog);

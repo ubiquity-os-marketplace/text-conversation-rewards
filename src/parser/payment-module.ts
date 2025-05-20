@@ -32,7 +32,7 @@ import {
   TransferRequest,
 } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
-import { getRepo, parseGitHubUrl } from "../start";
+import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { PayoutMode, Result } from "../types/results";
 import chains from "../types/rpcs.json";
@@ -522,43 +522,6 @@ export class PaymentModule extends BaseModule {
     return result;
   }
 
-  // Refer to https://github.com/ubiquity-os-marketplace/command-wallet/pull/51
-  async _getOrCreateIssueLocation(issue: { issueId: number; issueUrl: string }) {
-    let locationId: number | null = null;
-
-    const { data: locationData } = await this._supabase
-      .from("locations")
-      .select("id")
-      .eq("issue_id", issue.issueId)
-      .eq("node_url", issue.issueUrl)
-      .single();
-
-    if (!locationData) {
-      const issueItem = await getRepo(this.context, parseGitHubUrl(issue.issueUrl));
-      const { data: newLocationData, error } = await this._supabase
-        .from("locations")
-        .insert({
-          node_url: issue.issueUrl,
-          issue_id: issue.issueId,
-          node_type: "Issue",
-          repository_id: issueItem.id,
-        })
-        .select("id")
-        .single();
-      if (!newLocationData || error) {
-        this.context.logger.error("Failed to create a new location", error);
-      } else {
-        locationId = newLocationData.id;
-      }
-    } else {
-      locationId = locationData.id;
-    }
-    if (!locationId) {
-      throw this.context.logger.error("Failed to retrieve the related location from issue", { issue });
-    }
-    return locationId;
-  }
-
   async _getOrCreateToken(address: string, network: number) {
     let tokenId: number | null = null;
 
@@ -654,7 +617,7 @@ export class PaymentModule extends BaseModule {
     for (const permit of permits) {
       try {
         const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
-        const locationId = await this._getOrCreateIssueLocation(issue);
+        const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
         const tokenId = await this._getOrCreateToken(permit.tokenAddress, permit.networkId);
         const partnerId = await this._getOrCreatePartner(permit.owner);
 
@@ -715,7 +678,7 @@ export class PaymentModule extends BaseModule {
     } else {
       beneficiaryId = userData.id;
     }
-    const locationId = await this._getOrCreateIssueLocation(issue);
+    const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
     const amountString = new Decimal(numericAmount).mul(new Decimal(10).pow(18)).toFixed();
 
     const { data: existingXp, error: duplicateCheckError } = await this._supabase
