@@ -3,7 +3,6 @@ import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
 import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
-import { getNetworkExplorer, NetworkId } from "@ubiquity-dao/rpc-handler";
 import { decodeError } from "@ubiquity-os/ethers-decode-error";
 import {
   Context,
@@ -36,6 +35,7 @@ import { IssueActivity } from "../issue-activity";
 import { getRepo, parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { PayoutMode, Result } from "../types/results";
+import chains from "../types/rpcs.json";
 
 interface Payload {
   evmNetworkId: number;
@@ -71,7 +71,7 @@ export class PaymentModule extends BaseModule {
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const networkExplorer = await this._getNetworkExplorer(this._evmNetworkId);
+    const networkExplorer = this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
     if (!canMakePayment) {
       this.context.logger.warn("Non collaborative issue detected, skipping.");
@@ -249,12 +249,9 @@ export class PaymentModule extends BaseModule {
     return this._autoTransferMode ? "transfer" : "permit";
   }
 
-  async _getNetworkExplorer(networkId: number): Promise<string> {
-    const networkExplorer = getNetworkExplorer(String(networkId) as NetworkId);
-    if (!networkExplorer || networkExplorer.length === 0) {
-      return "https://blockscan.com";
-    }
-    return networkExplorer[0]?.url;
+  _getNetworkExplorer(networkId: number): string {
+    const chain = chains.find((chain) => chain.chainId === networkId);
+    return chain?.explorers?.[0].url || "https://blockscan.com";
   }
 
   async _canMakePayment(data: Readonly<IssueActivity>) {
@@ -269,15 +266,9 @@ export class PaymentModule extends BaseModule {
   async _getDirectTransferInfo(
     beneficiaries: Beneficiary[],
     privateKey: string,
-    nonce: string,
-    maxRetries = 5,
-    initialDelayMs = 500
+    nonce: string
   ): Promise<DirectTransferInfo> {
-    const { rewardTokenWrapper, fundingWallet } = await this._initializeContractsAndWallet(
-      privateKey,
-      maxRetries,
-      initialDelayMs
-    );
+    const { rewardTokenWrapper, fundingWallet } = await this._initializeContractsAndWallet(privateKey);
     const { rewardBalance, rewardAllowance, nativeBalance } = await this._fetchBalancesAndAllowances(
       rewardTokenWrapper,
       fundingWallet
@@ -313,13 +304,7 @@ export class PaymentModule extends BaseModule {
         directTransferLog
       );
     }
-    const permit2Contract = await getContract(
-      this._evmNetworkId,
-      permit2Address(this._evmNetworkId),
-      PERMIT2_ABI,
-      maxRetries,
-      initialDelayMs
-    );
+    const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
     const permit2Wrapper = new Permit2Wrapper(permit2Contract);
     const { gasEstimation, batchTransferPermit } = await this._getGasEstimation(
       fundingWallet,
@@ -347,14 +332,8 @@ export class PaymentModule extends BaseModule {
     };
   }
 
-  private async _initializeContractsAndWallet(privateKey: string, maxRetries = 5, initialDelayMs = 500) {
-    const erc20Contract = await getContract(
-      this._evmNetworkId,
-      this._erc20RewardToken,
-      ERC20_ABI,
-      maxRetries,
-      initialDelayMs
-    );
+  private async _initializeContractsAndWallet(privateKey: string) {
+    const erc20Contract = await getContract(this._evmNetworkId, this._erc20RewardToken, ERC20_ABI);
     const fundingWallet = await getEvmWallet(privateKey, erc20Contract.provider);
     const rewardTokenWrapper = new Erc20Wrapper(erc20Contract);
     return { rewardTokenWrapper, fundingWallet };
