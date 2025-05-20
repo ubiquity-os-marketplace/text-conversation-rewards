@@ -152,8 +152,8 @@ const { SimplificationIncentivizerModule } = await import("../src/parser/simplif
 beforeAll(() => {
   server.listen();
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  PaymentModule.prototype._getNetworkExplorer = async (_networkId: number) => {
-    return Promise.resolve("https://rpc");
+  PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
+    return "https://rpc";
   };
 });
 afterEach(() => server.resetHandlers());
