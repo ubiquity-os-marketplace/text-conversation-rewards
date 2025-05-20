@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1571243456,
+    "node_id": "IC_kwDOKzVPS89fGhiJ",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/1571243456",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/issues/71#issuecomment-1571243456",
+    "body": "I'm starting work on this issue. I'll implement the content evaluation functionality as requested.",
+    "user": {
+      "login": "developer-1",
+      "id": 87654321,
+      "node_id": "MDQ6VXNlcjg3NjU0MzIx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/87654321?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/developer-1",
+      "html_url": "https://github.com/developer-1",
+      "type": "User",
+      "site_admin": false
+    },
+    "created_at": "2023-06-16T09:15:00Z",
+    "updated_at": "2023-06-16T09:15:00Z",
+    "author_association": "CONTRIBUTOR",
+    "performed_via_github_app": null
+  },
+  {
+    "id": 1571243457,
+    "node_id": "IC_kwDOKzVPS89fGhiK",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/1571243457",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/issues/71#issuecomment-1571243457",
+    "body": "Great! Make sure to consider the relevance score calculation carefully. We should weight comments based on their technical depth and direct connection to the requirements.",
+    "user": {
+      "login": "test-user",
+      "id": 12345678,
+      "node_id": "MDQ6VXNlcjEyMzQ1Njc4",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12345678?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/test-user",
+      "html_url": "https://github.com/test-user",
+      "type": "User",
+      "site_admin": false
+    },
+    "created_at": "2023-06-17T10:30:00Z",
+    "updated_at": "2023-06-17T10:30:00Z",
+    "author_association": "MEMBER",
+    "performed_via_github_app": null
+  },
+  {
+    "id": 1571243458,
+    "node_id": "IC_kwDOKzVPS89fGhiL",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/1571243458",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/issues/71#issuecomment-1571243458",
+    "body": "I've implemented the basic content evaluation functionality. The algorithm analyzes comments and assigns relevance scores between 0 and 1 based on their technical content and how well they address the issue requirements. Here's a sample of how it works:\n\n```typescript\nasync _evaluateComments(specificationBody: string, comments: Comment[], allComments: Comment[], prComments: Comment[]): Promise<{ [id: string]: number }> {\n  const relevance: { [id: string]: number } = {};\n  \n  // Process each comment and calculate relevance\n  for (const comment of [...comments, ...prComments]) {\n    const score = await this._calculateRelevanceScore(specificationBody, comment.body);\n    relevance[`${comment.id}`] = score;\n  }\n  \n  return relevance;\n}\n```\n\nWhat do you think of this implementation?",
+    "user": {
+      "login": "developer-1",
+      "id": 87654321,
+      "node_id": "MDQ6VXNlcjg3NjU0MzIx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/87654321?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/developer-1",
+      "html_url": "https://github.com/developer-1",
+      "type": "User",
+      "site_admin": false
+    },
+    "created_at": "2023-06-20T16:20:00Z",
+    "updated_at": "2023-06-20T16:20:00Z",
+    "author_association": "CONTRIBUTOR",
+    "performed_via_github_app": null
+  },
+  {
+    "id": 1571243459,
+    "node_id": "IC_kwDOKzVPS89fGhiM",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/1571243459",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/issues/71#issuecomment-1571243459",
+    "body": "The implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments. This would help ensure that only meaningful contributions are counted towards rewards.\n\nAlso, could you add some documentation on how the relevance score is calculated?",
+    "user": {
+      "login": "reviewer",
+      "id": 55555555,
+      "node_id": "MDQ6VXNlcjU1NTU1NTU1",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55555555?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/reviewer",
+      "html_url": "https://github.com/reviewer",
+      "type": "User",
+      "site_admin": false
+    },
+    "created_at": "2023-06-22T14:45:00Z",
+    "updated_at": "2023-06-22T14:45:00Z",
+    "author_association": "MEMBER",
+    "performed_via_github_app": null
+  },
+  {
+    "id": 1571243460,
+    "node_id": "IC_kwDOKzVPS89fGhiN",
+    "url": "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/1571243460",
+    "html_url": "https://github.com/ubiquity-os/conversation-rewards/issues/71#issuecomment-1571243460",
+    "body": "I've made the suggested changes. Added a threshold configuration and documentation for the relevance calculation. The implementation is now complete and ready for review.",
+    "user": {
+      "login": "developer-1",
+      "id": 87654321,
+      "node_id": "MDQ6VXNlcjg3NjU0MzIx",
+      "avatar_url": "https://avatars.githubusercontent.com/u/87654321?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/developer-1",
+      "html_url": "https://github.com/developer-1",
+      "type": "User",
+      "site_admin": false
+    },
+    "created_at": "2023-06-25T13:10:00Z",
+    "updated_at": "2023-06-25T13:10:00Z",
+    "author_association": "CONTRIBUTOR",
+    "performed_via_github_app": null
+  }
+]
