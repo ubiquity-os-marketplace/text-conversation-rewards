@@ -163,7 +163,7 @@ export class GithubCommentModule extends BaseModule {
           });
           if (comment) {
             await this.context.adapters.supabase.location.upsert({
-              issue_id: this.context.payload.issue.number,
+              issue_id: this.context.payload.issue.id,
               node_url: `${this.context.payload.issue.html_url}#issuecomment-${comment.id}`,
               repository_id: this.context.payload.repository.id,
               comment_id: comment.id,
