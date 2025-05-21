@@ -43,7 +43,7 @@ export class Location extends Super {
   }
 
   // Refer to https://github.com/ubiquity-os-marketplace/command-wallet/pull/51
-  public async getOrCreateIssueLocation(issue: { issueId: number; issueUrl: string; commentId?: number }) {
+  public async getOrCreateIssueLocation(issue: { issueId: number; issueUrl: string }) {
     let locationId: number | null = null;
 
     const { data: locationData } = await this.supabase
