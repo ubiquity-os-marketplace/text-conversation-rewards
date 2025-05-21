@@ -5,24 +5,21 @@ import { getRepo, parseGitHubUrl } from "../start";
 import { Super } from "../adapters/supabase/helpers/supabase";
 
 export class Location extends Super {
+  locationId: number | null = null;
+
   constructor(supabase: SupabaseClient<Database>, context: ContextPlugin) {
     super(supabase, context);
   }
 
+  /*
+   * Will update the location based on the last created location row
+   */
   public async upsert(locationData: Database["public"]["Tables"]["locations"]["Insert"]) {
-    const { repository_id, issue_id } = locationData;
-
-    const { data: existingData } = await this.supabase
-      .from("locations")
-      .select()
-      .match({ repository_id, issue_id })
-      .single();
-
-    if (existingData) {
+    if (this.locationId) {
       const { data, error } = await this.supabase
         .from("locations")
         .update(locationData)
-        .match({ repository_id, issue_id })
+        .match({ id: this.locationId })
         .select()
         .single();
 
@@ -38,6 +35,7 @@ export class Location extends Super {
         throw this.context.logger.error("Failed to insert location", { err: error, locationData });
       }
 
+      this.locationId = data.id;
       return data;
     }
   }
@@ -69,6 +67,7 @@ export class Location extends Super {
         this.context.logger.error("Failed to create a new location", error);
       } else {
         locationId = newLocationData.id;
+        this.locationId = locationId;
       }
     } else {
       locationId = locationData.id;
