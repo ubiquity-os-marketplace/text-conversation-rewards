@@ -1,6 +1,6 @@
 import { diffChars } from "diff";
 import Decimal from "decimal.js";
-import file from "../../tests/__mocks__/routes/diffs/edits.json";
+import { UserContentEdits } from "../types/comment-edits";
 
 type Edit = {
   editor: {
@@ -10,12 +10,12 @@ type Edit = {
   diff: string;
 };
 
-function getCharacterContributionPercentages(edits: Edit[]): Record<string, number> {
-  if (edits.length === 0) return {};
+function getUser(editor: Edit["editor"]): string | undefined {
+  return editor.botLogin || editor.login;
+}
 
-  function getUser(editor: Edit["editor"]): string | undefined {
-    return editor.botLogin || editor.login;
-  }
+export function getCharacterContributionPercentages(edits: UserContentEdits["nodes"]): Record<string, number> {
+  if (edits.length === 0) return {};
 
   let prevText = edits[0].diff;
   const firstUser = getUser(edits[0].editor);
@@ -58,5 +58,3 @@ function getCharacterContributionPercentages(edits: Edit[]): Record<string, numb
   }
   return percentages;
 }
-
-console.log(getCharacterContributionPercentages(file.repository.issue.userContentEdits.nodes));
