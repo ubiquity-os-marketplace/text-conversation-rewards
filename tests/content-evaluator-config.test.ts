@@ -13,6 +13,7 @@ describe("ContentEvaluatorConfiguration Validation", () => {
         maxRetries: 3,
         tokenCountLimit: 0,
       },
+      originalAuthorWeight: 0.5,
     };
 
     function assertInvalidConfig() {
@@ -32,6 +33,7 @@ describe("ContentEvaluatorConfiguration Validation", () => {
         maxRetries: 3,
         tokenCountLimit: 100,
       },
+      originalAuthorWeight: 0.5,
     };
 
     const defaultedConfig = Value.Default(contentEvaluatorConfigurationType, validConfig);
