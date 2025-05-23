@@ -3,11 +3,8 @@ import { GitHubPullRequestReviewComment } from "../github-types";
 import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespan";
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
-import { IssueEdits, QUERY_ISSUE_EDITS } from "../types/comment-edits";
 import { BaseModule } from "../types/module";
 import { Result } from "../types/results";
-import { writeFileSync } from "fs";
-import { getCharacterContributionPercentages } from "../helpers/diff-count";
 
 /**
  * Removes the data in the comments that we do not want to be processed.
@@ -47,39 +44,11 @@ export class DataPurgeModule extends BaseModule {
     return false;
   }
 
-  async _getOriginalAuthorshipPercentage() {
-    const { owner, repo, issue_number } = parseGitHubUrl(this.context.payload.issue.html_url);
-    const data = await this.context.octokit.graphql.paginate<IssueEdits>(QUERY_ISSUE_EDITS, {
-      owner,
-      repo,
-      issue_number,
-    });
-
-    // const originalAuthor = this.context.payload.issue.user.login;
-    const userEdits = data.repository.issue.userContentEdits.nodes.sort((a, b) => {
-      return new Date(a.editedAt).getTime() - new Date(b.editedAt).getTime();
-    });
-
-    if (!userEdits.length) {
-      this.context.logger.debug("No edits detected on the issue body, skipping.");
-      process.exit(1);
-      return 1;
-    }
-
-    const result = getCharacterContributionPercentages(userEdits);
-
-    writeFileSync("edit-results.json", JSON.stringify(result, null, 2));
-    writeFileSync("edit.json", JSON.stringify(userEdits, null, 2));
-    process.exit(0);
-    // return user ownership
-  }
-
   async transform(data: Readonly<IssueActivity>, result: Result) {
     this._assignmentPeriods = await getAssignmentPeriods(
       this.context.octokit,
       parseGitHubUrl(this.context.payload.issue.html_url)
     );
-    await this._getOriginalAuthorshipPercentage();
     for (const comment of data.allComments) {
       if (await this._shouldSkipComment(comment)) {
         continue;
