@@ -27,12 +27,7 @@ export const QUERY_ISSUE_EDITS = /* GraphQL */ `
             editedAt
             diff
             editor {
-              ... on Bot {
-                botLogin: login
-              }
-              ... on User {
-                login
-              }
+              login
             }
           }
           pageInfo {

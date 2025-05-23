@@ -2,31 +2,19 @@ import { diffChars } from "diff";
 import Decimal from "decimal.js";
 import { UserContentEdits } from "../types/comment-edits";
 
-type Edit = {
-  editor: {
-    login?: string;
-    botLogin?: string;
-  };
-  diff: string;
-};
-
-function getUser(editor: Edit["editor"]): string | undefined {
-  return editor.botLogin || editor.login;
-}
-
 export function getCharacterContributionPercentages(edits: UserContentEdits["nodes"]): Record<string, number> {
   if (edits.length === 0) return {};
 
   let prevText = edits[0].diff;
-  const firstUser = getUser(edits[0].editor);
-  let attribution: (string | undefined)[] = Array.from(prevText, () => firstUser);
+  const firstUser = edits[0].editor;
+  let attribution = Array.from(prevText, () => firstUser);
 
-  for (let i = 1; i < edits.length; i++) {
-    const { editor, diff: currText } = edits[i];
-    const currUser = getUser(editor);
+  for (const edit of edits) {
+    const { editor, diff: currText } = edit;
+    const currUser = editor;
     const diff = diffChars(prevText, currText);
 
-    const newAttribution: (string | undefined)[] = [];
+    const newAttribution: UserContentEdits["nodes"][0]["editor"][] = [];
     let prevIdx = 0;
 
     for (const part of diff) {
@@ -48,7 +36,7 @@ export function getCharacterContributionPercentages(edits: UserContentEdits["nod
   let total = new Decimal(0);
   for (const user of attribution) {
     if (!user) continue;
-    counts.set(user, (counts.get(user) || new Decimal(0)).plus(1));
+    counts.set(user.login, (counts.get(user.login) || new Decimal(0)).plus(1));
     total = total.plus(1);
   }
 
