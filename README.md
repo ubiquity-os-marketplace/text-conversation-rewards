@@ -235,6 +235,7 @@ with:
           relevance: 1
         - role: [PULL_CONTRIBUTOR]
           relevance: 1
+      originalAuthorWeight: 0.5
     userExtractor:
       redeemTask: true
     dataPurge:

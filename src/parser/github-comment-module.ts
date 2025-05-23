@@ -284,6 +284,7 @@ export class GithubCommentModule extends BaseModule {
       const formatting = stringify({
         content: commentScore.score?.formatting,
         regex: commentScore.score?.words,
+        ...(commentScore.score?.weight !== undefined && { weight: commentScore.score.weight }),
       }).replace(/[\n\r]/g, "&#13;");
       // Makes sure any HTML injected in the templated is not rendered itself
       const sanitizedContent = commentScore.content

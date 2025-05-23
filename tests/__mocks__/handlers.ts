@@ -11,6 +11,10 @@ import issue13EventsGet from "./routes/issue-13-events-get.json";
 import issue69CommentsGet from "./routes/issue-69-comments-get.json";
 import issue13CommentsGet from "./routes/issue-13-comments-get.json";
 import issue69Get from "./routes/issue-69-get.json";
+import issue71Get from "./routes/issue-71-get.json";
+import issue71CommentsGet from "./routes/issue-71-comments-get.json";
+import issue71EventsGet from "./routes/issue-71-events-get.json";
+import issue71TimelineGet from "./routes/issue-71-timeline-get.json";
 import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
 import issue5CommentsGet from "./routes/issue-5-conversation-rewards/issue-5-comments-get.json";
@@ -48,6 +52,18 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/timeline", () => {
     return HttpResponse.json(issue5TimelineGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71", () => {
+    return HttpResponse.json(issue71Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/events", () => {
+    return HttpResponse.json(issue71EventsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/comments", () => {
+    return HttpResponse.json(issue71CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/timeline", () => {
+    return HttpResponse.json(issue71TimelineGet);
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12", () => {
     return HttpResponse.json(pull12Get);
