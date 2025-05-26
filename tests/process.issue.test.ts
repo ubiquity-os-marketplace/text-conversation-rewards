@@ -520,6 +520,7 @@ describe("Modules tests", () => {
             score: {
               reward: 50000,
               multiplier: 3,
+              authorship: 1,
             },
           },
         ],
