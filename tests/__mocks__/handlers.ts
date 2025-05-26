@@ -44,7 +44,7 @@ export const handlers = [
     // Check if this is a request for issue edits
     const body = await args.request.text();
     if (body.includes("IssueEdits") && body.includes("userContentEdits")) {
-      return HttpResponse.json(issue100Edits);
+      return HttpResponse.json({ data: issue100Edits });
     }
     return HttpResponse.json({});
   }),

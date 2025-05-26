@@ -143,7 +143,7 @@ export class FormattingEvaluatorModule extends BaseModule {
       return result[username];
     }
 
-    return 0;
+    return 1;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
