@@ -1,0 +1,120 @@
+{
+  "issueCreator": {
+    "total": 1.2,
+    "userId": 12345,
+    "comments": [
+      {
+        "type": "issue",
+        "url": "https://github.com/ubiquity/work.ubq.fi/issues/100",
+        "id": 1005,
+        "content": "We need to track the authorship of issue body edits so we can properly reward contributors who help improve the quality of issue descriptions.\n\nThis implementation should:\n1. Track all edits to the issue body\n2. Calculate percentage of contribution by each editor\n3. Distribute rewards accordingly\n4. Generate a visual report showing contribution percentages\n\nAdditional requirements:\n- Handle formatting changes properly\n- Track character-level changes\n- Support multiple editors",
+        "diffHunk": null,
+        "html_url": "https://github.com/ubiquity/work.ubq.fi/issues/100",
+        "commentType": 2,
+        "score": {
+          "multiplier": 0,
+          "relevance": 0.8,
+          "priority": 1,
+          "reward": 0.64,
+          "authorship": 0.1
+        }
+      },
+      {
+        "id": 1001,
+        "type": "issue_comment",
+        "content": "I've started working on this. Will track issue body edits.",
+        "url": "https://github.com/ubiquity/work.ubq.fi/issues/100#issuecomment-1001",
+        "html_url": "https://github.com/ubiquity/work.ubq.fi/issues/100#issuecomment-1001",
+        "commentType": 9,
+        "score": {
+          "multiplier": 0,
+          "relevance": 0.8,
+          "priority": 1,
+          "reward": 0.8,
+          "authorship": 1
+        }
+      }
+    ]
+  },
+  "contributor1": {
+    "total": 1.92,
+    "userId": 23456,
+    "comments": [
+      {
+        "type": "issue",
+        "url": "https://github.com/ubiquity/work.ubq.fi/issues/100",
+        "id": 1005,
+        "content": "We need to track the authorship of issue body edits so we can properly reward contributors who help improve the quality of issue descriptions.\n\nThis implementation should:\n1. Track all edits to the issue body\n2. Calculate percentage of contribution by each editor\n3. Distribute rewards accordingly\n4. Generate a visual report showing contribution percentages\n\nAdditional requirements:\n- Handle formatting changes properly\n- Track character-level changes\n- Support multiple editors",
+        "diffHunk": null,
+        "html_url": "https://github.com/ubiquity/work.ubq.fi/issues/100",
+        "commentType": 2,
+        "score": {
+          "multiplier": 0,
+          "relevance": 0.8,
+          "priority": 1,
+          "reward": 1.28,
+          "authorship": 0.4
+        }
+      },
+      {
+        "id": 1002,
+        "type": "issue_comment",
+        "content": "I've expanded the issue description to make it clearer what we need. Let's track character-level changes for better accuracy.",
+        "url": "https://github.com/ubiquity/work.ubq.fi/issues/100#issuecomment-1002",
+        "html_url": "https://github.com/ubiquity/work.ubq.fi/issues/100#issuecomment-1002",
+        "commentType": 9,
+        "score": {
+          "multiplier": 0,
+          "relevance": 0.8,
+          "priority": 1,
+          "reward": 0.8,
+          "authorship": 1
+        }
+      }
+    ]
+  },
+  "contributor2": {
+    "total": 0.64,
+    "userId": 34567,
+    "comments": [
+      {
+        "type": "issue",
+        "url": "https://github.com/ubiquity/work.ubq.fi/issues/100",
+        "id": 1005,
+        "content": "We need to track the authorship of issue body edits so we can properly reward contributors who help improve the quality of issue descriptions.\n\nThis implementation should:\n1. Track all edits to the issue body\n2. Calculate percentage of contribution by each editor\n3. Distribute rewards accordingly\n4. Generate a visual report showing contribution percentages\n\nAdditional requirements:\n- Handle formatting changes properly\n- Track character-level changes\n- Support multiple editors",
+        "diffHunk": null,
+        "html_url": "https://github.com/ubiquity/work.ubq.fi/issues/100",
+        "commentType": 2,
+        "score": {
+          "multiplier": 0,
+          "relevance": 0.8,
+          "priority": 1,
+          "reward": 0.64,
+          "authorship": 0.2
+        }
+      }
+    ]
+  },
+  "contributor3": {
+    "total": 0.96,
+    "userId": 45678,
+    "comments": [
+      {
+        "type": "issue",
+        "url": "https://github.com/ubiquity/work.ubq.fi/issues/100",
+        "id": 1005,
+        "content": "We need to track the authorship of issue body edits so we can properly reward contributors who help improve the quality of issue descriptions.\n\nThis implementation should:\n1. Track all edits to the issue body\n2. Calculate percentage of contribution by each editor\n3. Distribute rewards accordingly\n4. Generate a visual report showing contribution percentages\n\nAdditional requirements:\n- Handle formatting changes properly\n- Track character-level changes\n- Support multiple editors",
+        "diffHunk": null,
+        "html_url": "https://github.com/ubiquity/work.ubq.fi/issues/100",
+        "commentType": 2,
+        "score": {
+          "multiplier": 0,
+          "relevance": 0.8,
+          "priority": 1,
+          "reward": 0.96,
+          "authorship": 0.3
+        }
+      }
+    ]
+  }
+}

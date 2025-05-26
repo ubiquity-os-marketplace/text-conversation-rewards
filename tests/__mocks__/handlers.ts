@@ -1,42 +1,52 @@
 import { http, HttpResponse } from "msw";
 import { db } from "./db";
-import issue5Get from "./routes/issue-5-conversation-rewards/issue-5-get.json";
-import issue22CommentsGet from "./routes/issue-22-comments-get.json";
-import issue5EventsGet from "./routes/issue-5-conversation-rewards/issue-5-events-get.json";
-import issue22Get from "./routes/issue-22-get.json";
-import issue13Get from "./routes/issue-13-get.json";
-import issue25CommentsGet from "./routes/issue-25-comments-get.json";
-import issue69EventsGet from "./routes/issue-69-events-get.json";
-import issue13EventsGet from "./routes/issue-13-events-get.json";
-import issue69CommentsGet from "./routes/issue-69-comments-get.json";
+import issue100CommentsGet from "./routes/issue-100-comments-get.json";
+import issue100Edits from "./routes/issue-100-edits.json";
+import issue100EventsGet from "./routes/issue-100-events-get.json";
+import issue100Get from "./routes/issue-100-get.json";
+import issue100TimelineGet from "./routes/issue-100-timeline-get.json";
 import issue13CommentsGet from "./routes/issue-13-comments-get.json";
+import issue13EventsGet from "./routes/issue-13-events-get.json";
+import issue13Get from "./routes/issue-13-get.json";
+import issue22CommentsGet from "./routes/issue-22-comments-get.json";
+import issue22Get from "./routes/issue-22-get.json";
+import issue25CommentsGet from "./routes/issue-25-comments-get.json";
+import issue5CommentsGet from "./routes/issue-5-conversation-rewards/issue-5-comments-get.json";
+import issue5EventsGet from "./routes/issue-5-conversation-rewards/issue-5-events-get.json";
+import issue5Get from "./routes/issue-5-conversation-rewards/issue-5-get.json";
+import issue5TimelineGet from "./routes/issue-5-conversation-rewards/issue-5-timeline-get.json";
+import issue69CommentsGet from "./routes/issue-69-comments-get.json";
+import issue69EventsGet from "./routes/issue-69-events-get.json";
 import issue69Get from "./routes/issue-69-get.json";
-import issue71Get from "./routes/issue-71-get.json";
+import issue69TimelineGet from "./routes/issue-69-timeline-get.json";
+import issue70CommentsGet from "./routes/issue-70-comments-get.json";
+import pulls70Get from "./routes/issue-70-get.json";
 import issue71CommentsGet from "./routes/issue-71-comments-get.json";
 import issue71EventsGet from "./routes/issue-71-events-get.json";
+import issue71Get from "./routes/issue-71-get.json";
 import issue71TimelineGet from "./routes/issue-71-timeline-get.json";
 import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
-import issue5CommentsGet from "./routes/issue-5-conversation-rewards/issue-5-comments-get.json";
+import issueTimelineGet from "./routes/issue-timeline-get.json";
 import issue12CommentsGet from "./routes/pull-12-conversation-rewards/issue-12-comments-get.json";
+import pull12CommentsGet from "./routes/pull-12-conversation-rewards/pull-12-comments-get.json";
 import pull12Get from "./routes/pull-12-conversation-rewards/pull-12-get.json";
 import pull12ReviewsGet from "./routes/pull-12-conversation-rewards/pull-12-reviews-get.json";
-import pull12CommentsGet from "./routes/pull-12-conversation-rewards/pull-12-comments-get.json";
-import issueTimelineGet from "./routes/issue-timeline-get.json";
-import issue69TimelineGet from "./routes/issue-69-timeline-get.json";
-import issue70CommentsGet from "./routes/issue-70-comments-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
-import issue5TimelineGet from "./routes/issue-5-conversation-rewards/issue-5-timeline-get.json";
 import pullsGet from "./routes/pulls-get.json";
-import pulls70Get from "./routes/issue-70-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
 
 /**
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
-  http.post("https://api.github.com/graphql", () => {
-    return HttpResponse.json();
+  http.post("https://api.github.com/graphql", async (args) => {
+    // Check if this is a request for issue edits
+    const body = await args.request.text();
+    if (body.includes("IssueEdits") && body.includes("userContentEdits")) {
+      return HttpResponse.json(issue100Edits);
+    }
+    return HttpResponse.json({});
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5", () => {
     return HttpResponse.json(issue5Get);
@@ -82,6 +92,18 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", () => {
     return HttpResponse.json(issue69Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100", () => {
+    return HttpResponse.json(issue100Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/events", () => {
+    return HttpResponse.json(issue100EventsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/comments", () => {
+    return HttpResponse.json(issue100CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/timeline", () => {
+    return HttpResponse.json(issue100TimelineGet);
   }),
   http.get("https://api.github.com/repos/ubiquity-os/comment-incentives", () => {
     return HttpResponse.json(issue22Get);
