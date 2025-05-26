@@ -1,4 +1,3 @@
-import { HandlerConstructorConfig, NetworkId, RPCHandler } from "@ubiquity-dao/rpc-handler";
 import { MaxUint256, PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer } from "@uniswap/permit2-sdk";
 import { BigNumber, BigNumberish, Contract, ContractInterface, ethers, Wallet } from "ethers";
 import permit2Abi from "../abi/permit2.json";
@@ -32,33 +31,8 @@ export const PERMIT2_ABI = permit2Abi;
  * @returns EVM token contract
  */
 
-export async function getContract(
-  networkId: number,
-  contractAddress: string,
-  abi: ContractInterface,
-  retryCount: number = 5,
-  retryDelay: number = 500
-) {
-  // get fastest RPC
-  const config: HandlerConstructorConfig = {
-    networkName: null,
-    networkRpcs: null,
-    proxySettings: {
-      retryCount: retryCount,
-      retryDelay: retryDelay,
-      logTier: null,
-      logger: null,
-      strictLogs: false,
-      disabled: retryCount === 0,
-    },
-    runtimeRpcs: null,
-    networkId: String(networkId) as NetworkId,
-    rpcTimeout: 1500,
-    autoStorage: false,
-    cacheRefreshCycles: 10,
-  };
-  const handler = new RPCHandler(config);
-  const provider = await handler.getFastestRpcProvider();
+export async function getContract(networkId: number, contractAddress: string, abi: ContractInterface) {
+  const provider = new ethers.providers.JsonRpcProvider(`https://rpc.ubq.fi/${networkId}`);
   return new Contract(contractAddress, abi, provider);
 }
 

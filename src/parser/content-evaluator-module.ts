@@ -7,6 +7,7 @@ import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import { extractOriginalAuthor } from "../helpers/original-author";
 import { retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
@@ -31,6 +32,7 @@ export class ContentEvaluatorModule extends BaseModule {
   });
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
+  private readonly _originalAuthorWeight: number = 0.5;
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -50,6 +52,9 @@ export class ContentEvaluatorModule extends BaseModule {
           [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: curr.relevance,
         };
       }, {});
+    }
+    if (this._configuration?.originalAuthorWeight !== undefined) {
+      this._originalAuthorWeight = this._configuration.originalAuthorWeight;
     }
   }
 
@@ -108,7 +113,75 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     await Promise.all(promises);
+    if (data?.self?.body) {
+      await this._handleRewardsForOriginalAuthor(data.self.body, result);
+    }
     return result;
+  }
+
+  /*
+   * If the specification was created from the comment of another user, reward that user accordingly.
+   */
+  private async _handleRewardsForOriginalAuthor(body: string, result: Result) {
+    const originalComment = extractOriginalAuthor(body);
+    if (!originalComment) return;
+
+    const specReward = this._extractAndAdjustSpecReward(result);
+    if (!specReward) return;
+
+    await this._addRewardForAuthor(result, originalComment.username, specReward);
+  }
+
+  private _extractAndAdjustSpecReward(result: Result) {
+    for (const resultKey of Object.keys(result)) {
+      const comments = result[resultKey].comments;
+      if (!comments) continue;
+
+      const spec = comments.find((comment) => comment.commentType & CommentAssociation.SPECIFICATION);
+      if (spec && spec.score?.reward !== undefined) {
+        const reward = new Decimal(spec.score.reward);
+        const authorWeight = new Decimal(1).minus(this._originalAuthorWeight);
+        const authorReward = reward.mul(authorWeight).toNumber();
+        const originalAuthorReward = reward.mul(this._originalAuthorWeight).toNumber();
+        spec.score.reward = authorReward;
+        spec.score.weight = authorWeight.toNumber();
+        const originalAuthorSpec = structuredClone(spec);
+        // @ts-expect-error Cannot be undefined since we check it in this if closure
+        originalAuthorSpec.score.reward = originalAuthorReward;
+        // @ts-expect-error Cannot be undefined since we check it in this if closure
+        originalAuthorSpec.score.weight = this._originalAuthorWeight;
+        return originalAuthorSpec;
+      }
+    }
+    return undefined;
+  }
+
+  private async _addRewardForAuthor(result: Result, username: string, specReward: GithubCommentScore) {
+    if (result[username]?.comments) {
+      result[username].comments.push(specReward);
+    } else {
+      const userId = await this._fetchGithubUserId(username);
+      if (!userId) return;
+      result[username] = {
+        total: 0,
+        userId,
+        comments: [specReward],
+      };
+    }
+  }
+
+  private async _fetchGithubUserId(username: string) {
+    try {
+      const userResponse = await this.context.octokit.rest.users.getByUsername({ username });
+      // We do not want to reward bot accounts
+      if (userResponse.data.type === "Bot") {
+        return 0;
+      }
+      return userResponse.data.id;
+    } catch (err) {
+      this.context.logger.warn("Failed to fetch the user ID.", { username, err });
+      return 0;
+    }
   }
 
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string, allComments: AllComments) {

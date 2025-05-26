@@ -87,7 +87,7 @@ export class GithubCommentModule extends BaseModule {
     }
     for (const permit of permits) {
       const { owner, nonce, networkId } = permit;
-      const permit2Contract = await getContract(networkId, permit2Address(networkId), PERMIT2_ABI, 5, 1000);
+      const permit2Contract = await getContract(networkId, permit2Address(networkId), PERMIT2_ABI);
       const permit2Wrapper = new Permit2Wrapper(permit2Contract);
       if (!(await permit2Wrapper.isNonceClaimed(owner, nonce))) {
         return false;
@@ -275,6 +275,7 @@ export class GithubCommentModule extends BaseModule {
       const formatting = stringify({
         content: commentScore.score?.formatting,
         regex: commentScore.score?.words,
+        ...(commentScore.score?.weight !== undefined && { weight: commentScore.score.weight }),
       }).replace(/[\n\r]/g, "&#13;");
       // Makes sure any HTML injected in the templated is not rendered itself
       const sanitizedContent = commentScore.content
