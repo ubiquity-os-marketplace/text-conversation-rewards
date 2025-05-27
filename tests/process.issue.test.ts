@@ -28,6 +28,7 @@ import userCommentResults from "./__mocks__/results/user-comment-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
+import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 const web3Mocks = mockWeb3Module();
@@ -80,7 +81,7 @@ const ctx = {
   },
   config: cfg,
   logger: new Logs("debug"),
-  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+  octokit: new (Octokit.plugin(paginateGraphQL))({ auth: process.env.GITHUB_TOKEN }),
   env: {
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
@@ -332,8 +333,6 @@ describe("Modules tests", () => {
       new EventIncentivesModule(ctx),
       new PaymentModule(ctx),
     ];
-    // This catches calls by getFastestRpc
-    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(paymentResults);
@@ -351,8 +350,6 @@ describe("Modules tests", () => {
       new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
-    // This catches calls by getFastestRpc
-    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(githubCommentResults);
@@ -384,7 +381,6 @@ describe("Modules tests", () => {
       new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
-    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result["gentlementlegen"].evaluationCommentHtml).toEqual(undefined);
