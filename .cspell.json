@@ -44,7 +44,8 @@
     "Numberish",
     "OPENROUTER",
     "keccak",
-    "UUSD"
+    "UUSD",
+    "issuecomment"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
