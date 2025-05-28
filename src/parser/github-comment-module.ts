@@ -1,4 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
+import { decodePermits } from "@ubiquity-os/permit-generation";
+import { permit2Address } from "@uniswap/permit2-sdk";
+import { createHash } from "crypto";
 import Decimal from "decimal.js";
 import * as fs from "fs";
 import { JSDOM } from "jsdom";
@@ -10,8 +13,8 @@ import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
-import { removeKeyFromObject, commentTypeReplacer } from "../helpers/result-replacer";
-import { getErc20TokenSymbol } from "../helpers/web3";
+import { commentTypeReplacer, removeKeyFromObject } from "../helpers/result-replacer";
+import { ERC20_ABI, Erc20Wrapper, getContract, PERMIT2_ABI, Permit2Wrapper } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
@@ -38,32 +41,74 @@ export class GithubCommentModule extends BaseModule {
     return div.innerHTML;
   }
 
-  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
-    const keysToRemove: string[] = [];
-    const bodyArray: (string | undefined)[] = [];
-    const taskReward = getTaskReward(data.self);
+  _getPayoutMode(result: Result): string | undefined {
+    const someReward = Object.values(result)[0];
+    return someReward?.payoutMode;
+  }
 
-    if (stripContent) {
-      this.context.logger.info("Stripping content due to excessive length.");
-      bodyArray.push("> [!NOTE]\n");
-      bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
-      for (const [key, value] of Object.entries(result)) {
-        // Remove result with 0 total from being displayed
-        if (result[key].total <= 0) continue;
-        result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
-        bodyArray.push(result[key].evaluationCommentHtml);
-      }
-      bodyArray.push(
-        createStructuredMetadata("GithubCommentModule", {
-          workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        })
-      );
-      return bodyArray.join("");
-    }
+  /**
+   * Generates content when it needs to be stripped due to length limits
+   */
+  private async _getStrippedContent(result: Result, taskReward: number): Promise<string> {
+    const bodyArray: (string | undefined)[] = [];
+
+    this.context.logger.info("Stripping content due to excessive length.");
+    bodyArray.push("> [!NOTE]\n");
+    bodyArray.push("> This output has been truncated due to the comment length limit.\n\n");
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
-      if (result[key].total <= 0) {
+      if (result[key].total <= 0 || (await this.isRewardClaimed(value))) continue;
+      result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
+      bodyArray.push(result[key].evaluationCommentHtml);
+    }
+
+    bodyArray.push(
+      createStructuredMetadata("GithubCommentModule", {
+        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
+      })
+    );
+
+    return bodyArray.join("");
+  }
+
+  async isRewardClaimed(reward: Result[0]) {
+    if (!reward.permitUrl) {
+      return false;
+    }
+    const permitBase64 = new URL(reward.permitUrl).searchParams.get("claim");
+    if (!permitBase64) {
+      return false;
+    }
+    const permits = decodePermits(permitBase64);
+    if (!permits.length) {
+      return false;
+    }
+    for (const permit of permits) {
+      const { owner, nonce, networkId } = permit;
+      const permit2Contract = await getContract(networkId, permit2Address(networkId), PERMIT2_ABI);
+      const permit2Wrapper = new Permit2Wrapper(permit2Contract);
+      if (!(await permit2Wrapper.isNonceClaimed(owner, nonce))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
+    const taskReward = getTaskReward(data.self);
+
+    if (stripContent) {
+      return this._getStrippedContent(result, taskReward);
+    }
+
+    const keysToRemove: string[] = [];
+    const bodyArray: (string | undefined)[] = [];
+
+    for (const [key, value] of Object.entries(result)) {
+      // Remove result with 0 total from being displayed
+      if (result[key].total <= 0 || (await this.isRewardClaimed(value))) {
         keysToRemove.push(key);
         continue;
       }
@@ -90,6 +135,7 @@ export class GithubCommentModule extends BaseModule {
       // First, we try to diminish the metadata content to only contain the URL
       bodyArray[bodyArray.length - 1] = `${createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+        payoutMode: this._getPayoutMode(result),
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
@@ -110,11 +156,20 @@ export class GithubCommentModule extends BaseModule {
     }
     if (this._configuration?.post) {
       try {
-        if (Object.values(result).some((v) => v.permitUrl) || isIssueCollaborative || isUserAdmin) {
-          await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
+        if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
+          const comment = await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
             raw: true,
             updateComment: true,
           });
+          if (comment) {
+            await this.context.adapters.supabase.location.upsert({
+              issue_id: this.context.payload.issue.id,
+              node_url: `${this.context.payload.issue.html_url}#issuecomment-${comment.id}`,
+              repository_id: this.context.payload.repository.id,
+              comment_id: comment.id,
+              node_type: "Issue",
+            });
+          }
         } else {
           const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
           await this.context.commentHandler.postComment(this.context, errorLog);
@@ -155,6 +210,17 @@ export class GithubCommentModule extends BaseModule {
 
     if (result.task?.reward) {
       content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
+    }
+
+    if (result.simplificationReward && Object.keys(result.simplificationReward.files).length !== 0) {
+      content.push(
+        buildContributionRow(
+          "Issue",
+          "Task Simplification",
+          1,
+          Object.values(result.simplificationReward.files).reduce((sum, { reward }) => sum + reward, 0)
+        )
+      );
     }
 
     if (result.reviewRewards) {
@@ -218,6 +284,7 @@ export class GithubCommentModule extends BaseModule {
       const formatting = stringify({
         content: commentScore.score?.formatting,
         regex: commentScore.score?.words,
+        ...(commentScore.score?.weight !== undefined && { weight: commentScore.score.weight }),
       }).replace(/[\n\r]/g, "&#13;");
       // Makes sure any HTML injected in the templated is not rendered itself
       const sanitizedContent = commentScore.content
@@ -259,6 +326,34 @@ export class GithubCommentModule extends BaseModule {
     return content.join("");
   }
 
+  _createSimplificationRows(result: Result[0]) {
+    if (!result.simplificationReward || Object.keys(result.simplificationReward.files).length === 0) return "";
+    const rows: string[] = [];
+    for (const file of result.simplificationReward.files) {
+      rows.push(`
+        <tr>
+          <td><a href="${result.simplificationReward.url}/files#diff-${createHash("sha256").update(file.fileName).digest("hex")}" target="_blank" rel="noopener">${file.fileName}</a></td>
+          <td>${file.reward}</td>
+          <td>${file.deletions}</td>
+        </tr>`);
+    }
+
+    return `
+    <h6>Simplification Details for&nbsp;<a href="${result.simplificationReward.url}" target="_blank" rel="noopener">#${result.simplificationReward.url.split("/").slice(-1)[0]}</a></h6>
+    <table>
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Reward</th>
+          <th>Deletions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.join()}
+      </tbody>
+    </table>`;
+  }
+
   _createReviewRows(result: Result[0]) {
     if (result.reviewRewards?.every((reviewReward) => reviewReward.reviews?.length === 0) || !result.reviewRewards) {
       return "";
@@ -296,6 +391,23 @@ export class GithubCommentModule extends BaseModule {
 
     return reviewTables;
   }
+
+  _createWalletWarning(walletAddress: string | null | undefined) {
+    if (walletAddress === null) {
+      return `<h6>⚠️ Wallet address is not set</h6>`;
+    } else if (walletAddress === undefined) {
+      return `<h6>⚠️ Error fetching wallet</h6>`;
+    }
+    return "";
+  }
+
+  _createRewardLink(result: Result[0], tokenSymbol: string) {
+    if (result.permitUrl || result.explorerUrl) {
+      return `<a href="${result.permitUrl || result.explorerUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
+    }
+    return `[ ${result.total} ${tokenSymbol} ]`;
+  }
+
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
@@ -312,11 +424,15 @@ export class GithubCommentModule extends BaseModule {
       },
       { issues: { specification: null, comments: [] }, reviews: [] }
     );
-
-    const tokenSymbol = await getErc20TokenSymbol(
-      this.context.config.evmNetworkId,
-      this.context.config.erc20RewardToken
-    );
+    let tokenSymbol = "XP";
+    if (this.context.config.rewards) {
+      const tokenContract = await getContract(
+        this.context.config.rewards.evmNetworkId,
+        this.context.config.rewards.erc20RewardToken,
+        ERC20_ABI
+      );
+      tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    }
 
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
@@ -329,9 +445,7 @@ export class GithubCommentModule extends BaseModule {
         <b>
           <h3>
             &nbsp;
-            <a href="${result.permitUrl}" target="_blank" rel="noopener">
-              [ ${result.total} ${tokenSymbol} ]
-            </a>
+            ${this._createRewardLink(result, tokenSymbol)}
             &nbsp;
           </h3>
           <h6>
@@ -339,6 +453,7 @@ export class GithubCommentModule extends BaseModule {
           </h6>
         </b>
       </summary>
+      ${this._createWalletWarning(result.walletAddress)}
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       ${isCapped ? `<h6>⚠️ Your rewards have been limited to the task price of ${taskReward} ${tokenSymbol}.</h6>` : ""}
       <h6>Contributions Overview</h6>
@@ -355,6 +470,7 @@ export class GithubCommentModule extends BaseModule {
           ${this._createContributionRows(result, sortedTasks)}
         </tbody>
       </table>
+      ${!stripComments ? this._createSimplificationRows(result) : ""}
       ${!stripComments ? this._createReviewRows(result) : ""}
       ${
         !stripComments

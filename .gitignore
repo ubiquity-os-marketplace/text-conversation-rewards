@@ -13,3 +13,5 @@ coverage
 test-dashboard.md
 *.private.env.json
 output.html
+results
+src/types/rpcs.json

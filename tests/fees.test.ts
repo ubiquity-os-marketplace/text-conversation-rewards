@@ -3,14 +3,11 @@ import { IssueActivity } from "../src/issue-activity";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
+import { mockWeb3Module } from "./helpers/web3-mocks";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.unstable_mockModule("../src/helpers/web3", () => ({
-  getErc20TokenSymbol() {
-    return "WXDAI";
-  },
-}));
+mockWeb3Module();
 
 jest.unstable_mockModule("@actions/github", () => ({
   default: {},
@@ -68,11 +65,15 @@ describe("GithubCommentModule Fee Tests", () => {
         task: {
           reward: 50, // Example value
           multiplier: 1.5, // Example value
+          timestamp: "",
+          url: "",
         },
         feeRate: 0.2, // This implies a 5% fee
         permitUrl: "https://pay.ubq.fi", // Example URL
+        payoutMode: "permit",
         userId: 12345, // Example user ID
         evaluationCommentHtml: "",
+        walletAddress: "0x1",
       },
     };
 
@@ -91,11 +92,15 @@ describe("GithubCommentModule Fee Tests", () => {
         '      "total": 100,\n' +
         '      "task": {\n' +
         '        "reward": 50,\n' +
-        '        "multiplier": 1.5\n' +
+        '        "multiplier": 1.5,\n' +
+        '        "timestamp": "",\n' +
+        '        "url": ""\n' +
         "      },\n" +
         '      "feeRate": 0.2,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +
-        '      "userId": 12345\n' +
+        '      "payoutMode": "permit",\n' +
+        '      "userId": 12345,\n' +
+        '      "walletAddress": "0x1"\n' +
         "    }\n" +
         "  }\n" +
         "}\n" +

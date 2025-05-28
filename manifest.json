@@ -3,24 +3,40 @@
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
   "ubiquity:listeners": ["issues.closed"],
   "skipBotEvents": false,
+  "commands": {
+    "finish": {
+      "ubiquity:example": "/finish",
+      "description": "Forcefully close the task and generate rewards.",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  },
   "configuration": {
     "default": {},
     "type": "object",
     "properties": {
-      "evmNetworkId": {
-        "default": 100,
-        "description": "Network ID to run in, default to 100",
-        "examples": ["100"],
-        "type": "number"
-      },
-      "evmPrivateEncrypted": {
-        "description": "The encrypted key to use for permit generation",
-        "examples": ["0x000..."],
-        "type": "string"
-      },
-      "erc20RewardToken": {
-        "default": "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
-        "type": "string"
+      "rewards": {
+        "type": "object",
+        "properties": {
+          "evmNetworkId": {
+            "default": 100,
+            "description": "Network ID to run in, default to 100",
+            "examples": ["100"],
+            "type": "number"
+          },
+          "evmPrivateEncrypted": {
+            "description": "The encrypted Ethereum private key to use for funding rewards.",
+            "examples": ["0x000..."],
+            "type": "string"
+          },
+          "erc20RewardToken": {
+            "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
+            "type": "string"
+          }
+        },
+        "required": ["evmPrivateEncrypted"]
       },
       "incentives": {
         "default": {},
@@ -33,8 +49,16 @@
           },
           "requirePriceLabel": {
             "default": true,
-            "description": "If set to false, the plugin runs even if the price label is missing, and will evaluate comments.",
-            "type": "boolean"
+            "description": "If set to false, the plugin runs even if the price label is missing. If set to 'auto', it will attempt to fetch the price from an external API if no price label is found. If set to true (default), the plugin requires a price label to be present.",
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "const": "auto",
+                "type": "string"
+              }
+            ]
           },
           "limitRewards": {
             "default": true,
@@ -361,6 +385,14 @@
                       }
                     }
                   },
+                  "originalAuthorWeight": {
+                    "default": 0.5,
+                    "description": "Percentage of reward given to original comment author when detected via 'Originally posted by' pattern. Value between 0.0 and 1.0.",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "examples": [0.5, 0.22, 0.79, 0, 1],
+                    "type": "number"
+                  },
                   "multipliers": {
                     "default": [
                       {
@@ -633,6 +665,27 @@
               {
                 "type": "object",
                 "properties": {}
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "simplificationIncentivizer": {
+            "default": null,
+            "anyOf": [
+              {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "simplificationRate": {
+                    "default": 100,
+                    "exclusiveMinimum": 0,
+                    "description": "The amount of lines simplified to be credited 1$ of incentive",
+                    "examples": ["100"],
+                    "type": "number"
+                  }
+                }
               },
               {
                 "type": "null"
@@ -1872,12 +1925,19 @@
               }
             ]
           },
-          "permitGeneration": {
+          "payment": {
             "default": null,
             "anyOf": [
               {
+                "default": {},
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "automaticTransferMode": {
+                    "default": true,
+                    "description": "If set to false, or if there are insufficient funds to settle the payment, permits will be generated instead of immediately transferring rewards to the beneficiaries.",
+                    "type": "boolean"
+                  }
+                }
               },
               {
                 "type": "null"
@@ -1930,7 +1990,6 @@
           }
         }
       }
-    },
-    "required": ["evmPrivateEncrypted"]
+    }
   }
 }

@@ -17,6 +17,7 @@ import {
   getPullRequestReviewComments,
   getPullRequestReviews,
   IssueParams,
+  parseGitHubUrl,
   PullParams,
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
@@ -53,11 +54,16 @@ export class IssueActivity {
 
   private async _getLinkedReviews(): Promise<Review[]> {
     this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
-    const pulls = (await collectLinkedMergedPulls(this._context, this._issueParams)).filter(
-      (pullRequest) =>
+    const pulls = (await collectLinkedMergedPulls(this._context, this._issueParams)).filter((pullRequest) => {
+      // This can happen when a user deleted its account
+      if (!pullRequest?.author?.login) {
+        return false;
+      }
+      return (
         this._context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login) &&
         pullRequest.state === "MERGED"
-    );
+      );
+    });
     this._context.logger.debug(`Collected linked pull-requests: ${pulls.map((v) => v.number).join(", ")}`);
 
     const promises = pulls
@@ -108,46 +114,88 @@ export class IssueActivity {
     return ret;
   }
 
-  _getLinkedReviewComments() {
+  private _addAnchorToUrl(item: { html_url?: string; id?: number }) {
+    if (!item.html_url || !item.id) {
+      return;
+    }
+
+    const hashIndex = item.html_url.indexOf("#");
+
+    if (hashIndex === -1) {
+      item.html_url += `#issue-${item.id}`;
+    } else {
+      item.html_url = item.html_url.replace(/\d+$/, String(item.id));
+    }
+  }
+
+  private async _processSingleLinkedReview(linkedReview: Review) {
     const comments = [];
-    for (const linkedReview of this.linkedReviews) {
-      for (const value of Object.values(linkedReview)) {
-        if (Array.isArray(value)) {
-          for (const review of value) {
-            comments.push({
-              ...review,
-              commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
-            });
-          }
-        } else if (value) {
+    for (const value of Object.values(linkedReview)) {
+      if (Array.isArray(value)) {
+        for (const review of value) {
+          this._addAnchorToUrl(review);
           comments.push({
-            ...value,
-            commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
+            ...review,
+            timestamp: review.submitted_at ?? review.created_at,
+            commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
           });
         }
+      } else if (value) {
+        this._addAnchorToUrl(value);
+        const c = {
+          ...value,
+          timestamp: value.submitted_at ?? value.created_at,
+          commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
+        };
+        // Special case for anchoring with pull-request bodies, that have to be retrieved differently
+        if (c.commentType & CommentAssociation.SPECIFICATION && c.html_url) {
+          const { owner, repo, issue_number } = parseGitHubUrl(c.html_url);
+          const { data } = await this._context.octokit.rest.issues.get({
+            owner,
+            repo,
+            issue_number: issue_number,
+          });
+          c.id = data.id;
+          this._addAnchorToUrl(c);
+        }
+        comments.push(c);
       }
     }
     return comments;
   }
 
-  get allComments() {
+  async _getLinkedReviewComments() {
+    const commentPromises = this.linkedReviews.map((linkedReview) => this._processSingleLinkedReview(linkedReview));
+    const commentsArrays = await Promise.all(commentPromises);
+    return commentsArrays.flat();
+  }
+
+  async getAllComments() {
     const comments: Array<
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & {
         commentType: CommentKind | CommentAssociation;
+        timestamp: string;
       }
-    > = this.comments.map((comment) => ({
-      ...comment,
-      commentType: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
-    }));
+    > = this.comments.map((comment) => {
+      this._addAnchorToUrl(comment);
+      return {
+        ...comment,
+        timestamp: comment.created_at,
+        commentType: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
+      };
+    });
     if (this.self) {
       const c: GitHubIssue = this.self;
+      this._addAnchorToUrl(c);
       comments.push({
         ...c,
+        timestamp: c.created_at,
         commentType: this._getTypeFromComment(CommentKind.ISSUE, this.self, this.self),
       });
     }
     if (this.linkedReviews) {
-      comments.push(...this._getLinkedReviewComments());
+      const linkedComments = await this._getLinkedReviewComments();
+      comments.push(...linkedComments);
     }
     return comments;
   }

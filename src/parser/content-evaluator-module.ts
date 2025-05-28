@@ -1,10 +1,13 @@
 import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
+import { encodingForModel } from "js-tiktoken";
 import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import { extractOriginalAuthor } from "../helpers/original-author";
 import { retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
@@ -17,8 +20,6 @@ import {
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
-import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
-import { encodingForModel } from "js-tiktoken";
 
 /**
  * Evaluates and rates comments.
@@ -31,6 +32,7 @@ export class ContentEvaluatorModule extends BaseModule {
   });
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
+  private readonly _originalAuthorWeight: number = 0.5;
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -50,6 +52,9 @@ export class ContentEvaluatorModule extends BaseModule {
           [curr.role.reduce((a, b) => this._getEnumValue(b) | a, 0)]: curr.relevance,
         };
       }, {});
+    }
+    if (this._configuration?.originalAuthorWeight !== undefined) {
+      this._originalAuthorWeight = this._configuration.originalAuthorWeight;
     }
   }
 
@@ -108,7 +113,75 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     await Promise.all(promises);
+    if (data?.self?.body) {
+      await this._handleRewardsForOriginalAuthor(data.self.body, result);
+    }
     return result;
+  }
+
+  /*
+   * If the specification was created from the comment of another user, reward that user accordingly.
+   */
+  private async _handleRewardsForOriginalAuthor(body: string, result: Result) {
+    const originalComment = extractOriginalAuthor(body);
+    if (!originalComment) return;
+
+    const specReward = this._extractAndAdjustSpecReward(result);
+    if (!specReward) return;
+
+    await this._addRewardForAuthor(result, originalComment.username, specReward);
+  }
+
+  private _extractAndAdjustSpecReward(result: Result) {
+    for (const resultKey of Object.keys(result)) {
+      const comments = result[resultKey].comments;
+      if (!comments) continue;
+
+      const spec = comments.find((comment) => comment.commentType & CommentAssociation.SPECIFICATION);
+      if (spec && spec.score?.reward !== undefined) {
+        const reward = new Decimal(spec.score.reward);
+        const authorWeight = new Decimal(1).minus(this._originalAuthorWeight);
+        const authorReward = reward.mul(authorWeight).toNumber();
+        const originalAuthorReward = reward.mul(this._originalAuthorWeight).toNumber();
+        spec.score.reward = authorReward;
+        spec.score.weight = authorWeight.toNumber();
+        const originalAuthorSpec = structuredClone(spec);
+        // @ts-expect-error Cannot be undefined since we check it in this if closure
+        originalAuthorSpec.score.reward = originalAuthorReward;
+        // @ts-expect-error Cannot be undefined since we check it in this if closure
+        originalAuthorSpec.score.weight = this._originalAuthorWeight;
+        return originalAuthorSpec;
+      }
+    }
+    return undefined;
+  }
+
+  private async _addRewardForAuthor(result: Result, username: string, specReward: GithubCommentScore) {
+    if (result[username]?.comments) {
+      result[username].comments.push(specReward);
+    } else {
+      const userId = await this._fetchGithubUserId(username);
+      if (!userId) return;
+      result[username] = {
+        total: 0,
+        userId,
+        comments: [specReward],
+      };
+    }
+  }
+
+  private async _fetchGithubUserId(username: string) {
+    try {
+      const userResponse = await this.context.octokit.rest.users.getByUsername({ username });
+      // We do not want to reward bot accounts
+      if (userResponse.data.type === "Bot") {
+        return 0;
+      }
+      return userResponse.data.id;
+    } catch (err) {
+      this.context.logger.warn("Failed to fetch the user ID.", { username, err });
+      return 0;
+    }
   }
 
   async _processComment(comments: Readonly<GithubCommentScore>[], specificationBody: string, allComments: AllComments) {
@@ -268,7 +341,7 @@ export class ContentEvaluatorModule extends BaseModule {
     ) {
       chunks++;
     }
-    this.context.logger.info(`Splitting issue comments into ${chunks} chunks`);
+    this.context.logger.debug(`Splitting issue comments into ${chunks} chunks`);
 
     for (const commentSplit of this._splitArrayToChunks(allComments, chunks)) {
       const promptForComments = this._generatePromptForComments(specification, comments, commentSplit);
@@ -388,15 +461,18 @@ export class ContentEvaluatorModule extends BaseModule {
         ],
         max_tokens: maxTokens,
         top_p: 1,
-        temperature: 1,
+        temperature: 0.5,
         frequency_penalty: 0,
         presence_penalty: 0,
       });
-      const rawResponse = String(res.choices[0].message.content);
-      this.context.logger.info(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
+
+      // Strip any potential Markdown formatting like ```json or ``` from the response, because some LLMs love do to so
+      const rawResponse = String(res.choices[0].message.content).replace(/^.*?{/, "{").replace(/}.*$/, "}");
+
+      this.context.logger.debug(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
       const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
-      this.context.logger.info(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
+      this.context.logger.debug(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {
       this.context.logger.error(`Invalid response type received from the LLM while evaluating: \n\n${e}`, {
@@ -412,8 +488,12 @@ export class ContentEvaluatorModule extends BaseModule {
     }
     const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const userCommentsMap = userComments.map((value) => `${value.id}: "${value.comment}"`);
+
     return `
+      CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
+      
       Evaluate the relevance of GitHub comments to an issue. Provide a raw JSON object with comment IDs and their relevance scores.
+
       Issue: ${issue}
 
       All comments:
@@ -436,14 +516,16 @@ export class ContentEvaluatorModule extends BaseModule {
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object: {ID: score}
+      6. Return only a JSON object like this example: {"123": 0.8, "456": 0.2, "789": 1.0}
 
       Notes:
       - Even minor details may be significant.
       - Comments may reference earlier comments.
       - The number of entries in the JSON response must equal ${userCommentsMap.length}.
 
-      IMPORTANT: Do not use markdown formatting. Do not include backticks or code blocks. Return just the plain JSON object text that can be directly parsed.
+      Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
+
+      YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.
     `;
   }
 
@@ -451,7 +533,9 @@ export class ContentEvaluatorModule extends BaseModule {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
-    return `I need to evaluate the value of a GitHub contributor's comments in a pull request. 
+    return `CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
+
+    I need to evaluate the value of a GitHub contributor's comments in a pull request. 
     Some of these comments are code review comments, and some are general suggestions or a part of the discussion. 
     I'm interested in how much each comment helps to solve the GitHub issue and improve code quality. 
     Please provide a float between 0 and 1 to represent the value of each comment. 
@@ -459,14 +543,14 @@ export class ContentEvaluatorModule extends BaseModule {
     A stringified JSON is given below that contains the specification of the GitHub issue, and comments by different contributors. 
     The property "diffHunk" presents the chunk of code being addressed for a possible change in a code review comment. 
     
-    \`\`\`
     ${JSON.stringify({ specification: issue, comments: userComments })}
-    \`\`\`\
   
     To what degree are each of the comments valuable? 
     Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
-    The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.
+    The float number should represent the value of the comment for improving the issue solution and code quality. The number of entries in the JSON response must equal ${userComments.length}.
+    Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
     
-    IMPORTANT: Do not use markdown formatting. Do not include backticks or code blocks. Return just the plain JSON object text that can be directly parsed.`;
+    YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.
+`;
   }
 }

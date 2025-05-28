@@ -1,6 +1,6 @@
+import { IssueActivity } from "../issue-activity";
 import { IssueParams } from "../start";
 import { ContextPlugin } from "../types/plugin-input";
-import { IssueActivity } from "../issue-activity";
 
 export interface AssignmentPeriod {
   assignedAt: string;
@@ -55,7 +55,7 @@ export async function getAssignmentPeriods(octokit: ContextPlugin["octokit"], is
 }
 
 export function isCommentDuringAssignment(
-  comment: IssueActivity["allComments"][0],
+  comment: Awaited<ReturnType<IssueActivity["getAllComments"]>>[0],
   assignments: AssignmentPeriod[],
   isExact: boolean
 ) {

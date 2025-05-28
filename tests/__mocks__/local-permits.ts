@@ -1,6 +1,6 @@
 import { decrypt, parseDecryptedPrivateKey } from "@ubiquity-os/permit-generation/utils";
 import { ethers, utils } from "ethers";
-import { ContextPlugin } from "../../src/types/plugin-input";
+import { Context } from "@ubiquity-os/permit-generation";
 
 type PermitDetails = {
   token: string; // address
@@ -73,7 +73,7 @@ async function getPrivateKey(evmPrivateEncrypted: string) {
  * Generates a claim base64 encoded compatible with pay.ubq.fi
  */
 export async function generatePermitUrlPayload(
-  context: ContextPlugin,
+  context: Context,
   permitRequests: {
     type: string;
     username: string;
@@ -82,10 +82,13 @@ export async function generatePermitUrlPayload(
   }[]
 ) {
   const { amount, username } = permitRequests[0];
-  // @ts-expect-error adapters is not in the type
   const { config, adapters, payload } = context;
+  if (!config.permitRequests.length) {
+    context.logger.info("No permit requests, won't generate permits.");
+    return [];
+  }
   const chainId = config.evmNetworkId;
-  const privateKey = await getPrivateKey(context.config.evmPrivateEncrypted);
+  const privateKey = await getPrivateKey(config.evmPrivateEncrypted);
   const permit2Address = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
   const convertedAmount = utils.parseUnits(amount.toString(), 18);
   const deadline = new Date(0).getTime().toString();

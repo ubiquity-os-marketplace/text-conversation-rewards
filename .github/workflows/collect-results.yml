@@ -1,18 +1,71 @@
-name: Bun GitHub Action
+name: XP Calculations
 
 on:
   workflow_dispatch:
     inputs:
       organization:
-        description: "Organization to parse (e.g. ubiquity-os-marketplace)"
-        required: true
+        description: "Organization to parse (e.g. ubiquity-os-marketplace). Leave empty to run for ubiquity organizations."
+        required: false
         type: string
+        default: ""
+      repo:
+        description: "Optional repository to parse within the organization (e.g. conversation-rewards). Leave empty to run for all repositories in the organization."
+        required: false
+        type: string
+        default: ""
+      useLlm:
+        description: "Enable LLMs for evaluations."
+        required: false
+        type: boolean
+        default: true
+      notification_email:
+        description: "Optional email address to notify upon completion."
+        required: false
+        type: string
+        default: ""
 
 jobs:
-  build:
+  generate_results:
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        organization: ${{ fromJson(github.event.inputs.organization && format('["{0}"]', github.event.inputs.organization) || '["ubiquity", "ubiquity-os", "ubiquity-os-marketplace"]') }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PLUGIN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      X25519_PRIVATE_KEY: ${{ secrets.X25519_PRIVATE_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
+      NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
+      PERMIT_FEE_RATE: ${{ secrets.PERMIT_FEE_RATE }}
+      PERMIT_TREASURY_GITHUB_USERNAME: ${{ secrets.PERMIT_TREASURY_GITHUB_USERNAME }}
+      PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
+      KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
     steps:
+      - name: Save workflow inputs
+        run: |
+          if [ -z "${{ github.event.inputs.organization }}" ]; then
+            org='["ubiquity", "ubiquity-os", "ubiquity-os-marketplace"]'
+          else
+            org=$(echo "[\"${{ github.event.inputs.organization }}\"]")
+          fi
+          jq -n \
+            --argjson org "$org" \
+            --arg repo "${{ github.event.inputs.repo }}" \
+            --arg email "${{ github.event.inputs.notification_email }}" \
+            '{"organization": $org, "repo": $repo, "notification_email": $email}' > workflow-inputs.json
+
+      - name: Upload workflow inputs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflow-inputs-${{ matrix.organization }}-${{ github.run_id }}
+          path: workflow-inputs.json
+
       - uses: actions/checkout@v4
 
       - name: Setup Bun
@@ -24,27 +77,91 @@ jobs:
         run: bun install
 
       - name: Start server
-        run: bun run server &
-
-      - name: Wait for server to start
-        run: sleep 10
-
-      - name: Send network request
+        env:
+          NODE_ENV: local
         run: |
-          curl -X POST \
+          bun run server &
+          sleep 3s
+          curl -s -X POST \
             -H "Content-Type: application/json" \
             -d '{
-              "ownerRepo": "${{ github.event.inputs.organization || '' }}",
-              "useOpenAi": true,
-              "useCache": true
+              "owner": "${{ matrix.organization }}",
+              "useOpenAi": ${{ github.event.inputs.useLlm }},
+              "useCache": false
+              ${{ github.event.inputs.repo != '' && format(',"repo": "{0}"', github.event.inputs.repo) || '' }}
             }' \
             http://localhost:4000
 
-      - name: Zip results folder
-        run: zip -r results.zip results/
+      - name: Generate Rewards Summary
+        run: bun run scripts/generate-rewards-summary.ts
 
-      - name: Upload results artifact
+      - name: Generate CSV Summary
+        run: bun run scripts/generate-csv-summary.ts
+
+      - name: Output Rewards Summary
+        run: echo "$(< rewards-summary.md)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload results artifact for ${{ matrix.organization }}
         uses: actions/upload-artifact@v4
         with:
-          name: results
-          path: results.zip
+          name: results-${{ matrix.organization }}
+          path: |
+            invalid-issues.json
+            rewards_summary.csv
+            results/
+
+  aggregate_results:
+    runs-on: ubuntu-latest
+    needs: generate_results
+    steps:
+      - name: Download all results artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded-artifacts
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Aggregate JSON results
+        run: |
+          echo '[' > temp_aggregated_results.json
+          first_item=true
+          find downloaded-artifacts/*/results/ -name '*.json' -print0 | while IFS= read -r -d $'\0' file; do
+            filename=$(basename "$file")
+            base_filename="${filename%.json}"
+            org="${base_filename%%_*}"
+            repo_issue="${base_filename#*_}"
+            repo="${repo_issue%_*}"
+            issueId="${repo_issue##*_}"
+
+            if [ "$first_item" = true ]; then
+              first_item=false
+            else
+              echo ',' >> temp_aggregated_results.json
+            fi
+
+            jq --arg org "$org" --arg repo "$repo" --arg issueId "$issueId" -c 'del(.. | .evaluationCommentHtml?) | { org: $org, repo: $repo, issueId: $issueId, metadata: . }' "$file" >> temp_aggregated_results.json
+          done
+          echo ']' >> temp_aggregated_results.json
+
+          mv temp_aggregated_results.json aggregated_results.json
+          echo "Aggregated results created in aggregated_results.json"
+
+      - name: Upload aggregated results artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-aggregated-results
+          path: aggregated_results.json
+
+      - name: Send completion email notification
+        if: github.event.inputs.notification_email != ''
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Your XP report is ready!"
+          body: Your xp report is ready at xp.ubq.fi?r=${{ github.run_id }}
+          to: ${{ github.event.inputs.notification_email }}
+          from: xp@ubq.fi

@@ -1,5 +1,6 @@
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 
+export type PayoutMode = "transfer" | "permit";
 export interface Result {
   [k: string]: {
     comments?: GithubCommentScore[];
@@ -7,14 +8,28 @@ export interface Result {
     task?: {
       reward: number;
       multiplier: number;
+      timestamp: string;
+      url: string;
     };
     feeRate?: number;
     permitUrl?: string;
+    explorerUrl?: string;
+    payoutMode?: PayoutMode;
     userId: number;
+    walletAddress?: string | null;
     reviewRewards?: {
       reviews?: ReviewScore[];
       url: string;
     }[];
+    simplificationReward?: {
+      url: string;
+      files: {
+        fileName: string;
+        reward: number;
+        additions: number;
+        deletions: number;
+      }[];
+    };
     events?: {
       [eventName: string]: {
         count: number;
@@ -52,6 +67,7 @@ export interface GithubCommentScore {
   id: number;
   content: string;
   url: string;
+  timestamp: string;
   commentType: CommentKind | CommentAssociation;
   diffHunk?: string;
   score?: {
@@ -66,5 +82,6 @@ export interface GithubCommentScore {
     clarity?: number;
     priority?: number;
     reward: number;
+    weight?: number;
   };
 }

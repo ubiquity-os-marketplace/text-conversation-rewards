@@ -1,27 +1,128 @@
+import { RestEndpointMethodTypes } from "@octokit/rest";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
+import { mkdirSync } from "fs";
 import { ExecutionContext } from "hono";
 import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
+import { existsSync } from "node:fs";
 import manifest from "../../../manifest.json";
+import { createAdapters } from "../../adapters";
+import { handlePriceLabelValidation } from "../../helpers/price-label-handler";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
 import envConfigSchema, { EnvConfig } from "../../types/env-type";
-import { PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
+import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 
+function githubUrlToFileName(url: string): string {
+  const repoMatch = RegExp(/github\.com\/([^/]+)\/([^/?#]+)/).exec(url);
+
+  if (!repoMatch) {
+    throw new Error("Invalid GitHub URL");
+  }
+
+  const owner = repoMatch[1].toLowerCase();
+  const repo = repoMatch[2].toLowerCase();
+
+  const issueMatch = RegExp(/\/issues\/(\d+)/).exec(url);
+
+  if (issueMatch) {
+    const issueNumber = issueMatch[1];
+    return `results/${owner}_${repo}_${issueNumber}.json`;
+  }
+
+  return `results/${owner}_${repo}.json`;
+}
+
+type Repository = RestEndpointMethodTypes["repos"]["listForOrg"]["response"]["data"][0];
+
+async function getRepositoryList(context: ContextPlugin, orgName: string) {
+  const { payload, octokit } = context;
+  let repositories: Repository[];
+  if (!payload.repository) {
+    repositories = await octokit.paginate(octokit.rest.repos.listForOrg, {
+      org: orgName,
+    });
+  } else {
+    const repository = await octokit.rest.repos.get({
+      org: orgName,
+      repo: payload.repository.name,
+      owner: payload.repository.owner.login,
+    });
+    repositories = [repository.data as Repository];
+  }
+
+  return repositories.filter(
+    // We filter out the DevPool directory to avoid unnecessarily generating XP from it
+    (repo) => !repo.owner.login.includes("ubiquity") || !repo.name.includes("devpool-directory")
+  );
+}
+
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
-    const { payload, config } = context;
-    const issue = parseGitHubUrl(payload.issue.html_url);
-    const activity = new IssueActivityCache(context, issue, "useCache" in config);
-    await activity.init();
-    const processor = new Processor(context);
-    await processor.run(activity);
-    const result = processor.dump();
-    return JSON.parse(result);
+    const { payload, config, octokit, logger } = context;
+    const supabaseClient = new SupabaseClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY);
+    const adapters = createAdapters(supabaseClient, context as ContextPlugin);
+    const pluginContext = { ...context, adapters };
+
+    mkdirSync("results", { recursive: true });
+
+    const orgName = payload.organization?.login.trim();
+
+    if (!orgName) {
+      throw logger.error("Unable to find organization name");
+    }
+
+    const repositories = await getRepositoryList(pluginContext, orgName);
+    for (const repo of repositories) {
+      logger.info(repo.html_url);
+      const issues = (
+        await octokit.paginate(octokit.rest.issues.listForRepo, {
+          owner: orgName,
+          repo: repo.name,
+          state: "closed",
+        })
+      ).filter((o) => {
+        if (payload.issue && o.id !== payload.issue.id) {
+          logger.warn(`Skipping issue ${o.id} because matching issue should be ${payload.issue.html_url}`);
+          return false;
+        }
+        return !o.pull_request && o.state_reason === "completed";
+      });
+      if (!issues.length) {
+        logger.warn("No issues found, skipping.");
+      }
+      for (const issue of issues) {
+        logger.info(issue.html_url);
+        const filePath = githubUrlToFileName(issue.html_url);
+        if (existsSync(filePath)) {
+          logger.warn(`File ${filePath} already exists, skipping.`);
+        } else {
+          config.incentives.file = filePath;
+          const ctx = {
+            ...pluginContext,
+            payload: { ...context.payload, issue, repository: repo },
+          } as typeof pluginContext;
+          const issueElem = parseGitHubUrl(issue.html_url);
+          const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
+          await activity.init();
+
+          const shouldProceed = await handlePriceLabelValidation(ctx, activity);
+          if (!shouldProceed) {
+            continue;
+          }
+
+          const processor = new Processor(ctx);
+          await processor.run(activity);
+          processor.dump();
+        }
+      }
+    }
+    return { output: { result: { evaluationCommentHtml: `<div>Done!</div>}` } } };
   },
   manifest as Manifest,
   {
@@ -37,15 +138,12 @@ baseApp.use("*", cors());
 
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
-    if (
-      request.method === "POST" &&
-      new URL(request.url).pathname === "/" &&
-      request.headers.get("referer")?.startsWith("http://localhost")
-    ) {
+    if (request.method === "POST" && new URL(request.url).pathname === "/") {
       try {
         const originalBody = await request.json();
         const modifiedBody = await getPayload(
-          originalBody.ownerRepo,
+          originalBody.owner,
+          originalBody.repo,
           originalBody.issueId,
           originalBody.useOpenAi,
           originalBody.useCache
@@ -87,15 +185,16 @@ app.use(
 // Fakes OpenAi routes
 app.post("/openai/*", async (c) => {
   const text = await c.req.json();
-  const regex =
-    /(The total number of properties in your JSON response should equal exactly|The number of entries in the JSON response must equal) (\d+)/g;
+  const regex = /The number of entries in the JSON response must equal (\d+)/g;
 
   const comments: { id: string; comment: string; author: string }[] = [];
 
   if ("messages" in text) {
-    const matches = [...text.messages[0].content.matchAll(regex)];
+    const allMatches = [...text.messages[0].content.matchAll(regex)];
 
-    const length = matches.reduce((sum, match) => sum + parseInt(match[2], 10), 0);
+    const lastMatch = allMatches.length > 0 ? allMatches[allMatches.length - 1] : null;
+
+    const length = lastMatch ? parseInt(lastMatch[1], 10) : 0;
     comments.push(
       ...Array.from({ length }, () => ({
         id: crypto.randomUUID(),

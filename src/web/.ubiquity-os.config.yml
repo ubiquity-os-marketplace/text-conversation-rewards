@@ -1,13 +1,85 @@
-# This file serves as a base to build a custom configuration
+zeroTrue: &zeroTrue
+  score: 0
+  countWords: true
 
-evmNetworkId: 100
+zeroFalse: &zeroFalse
+  score: 0
+  countWords: false
+
+oneTrue: &oneTrue
+  score: 1
+  countWords: true
+
+oneFalse: &oneFalse
+  score: 1
+  countWords: false
+
+tcrHtmlConfig: &tcrHtmlConfig
+  a: *oneTrue
+  code: *oneFalse
+  img: *oneFalse
+  h1: *oneTrue
+  h2: *oneTrue
+  h3: *oneTrue
+  h4: *oneTrue
+  h5: *oneTrue
+  h6: *oneTrue
+  br: *zeroTrue
+  p: *zeroTrue
+  em: *zeroTrue
+  ul: *zeroTrue
+  td: *zeroTrue
+  hr: *zeroTrue
+  ol: *zeroTrue
+  pre: *zeroFalse
+  strong: *zeroFalse
+  blockquote: *zeroFalse
+  li:
+    score: 0.1
+    countWords: true
+
+evmPrivateEncrypted: "0x00"
 incentives:
-  contentEvaluator: {}
-  userExtractor: {}
-  dataPurge: {}
-  formattingEvaluator: {}
-  permitGeneration: {}
+  requirePriceLabel: "auto"
+  contentEvaluator:
+    openAi:
+      endpoint: https://openrouter.ai/api/v1
+      model: deepseek/deepseek-chat-v3-0324
+  userExtractor:
+    redeemTask: true
+  dataPurge:
+    skipCommentsWhileAssigned: none
+  formattingEvaluator:
+    multipliers:
+      - role:
+          - ISSUE_AUTHOR
+          - ISSUE_COLLABORATOR
+          - ISSUE_SPECIFICATION
+          - PULL_COLLABORATOR
+          - PULL_SPECIFICATION
+        multiplier: 1
+        rewards:
+          wordValue: 0.1
+          html: *tcrHtmlConfig
+
+      - role:
+          - ISSUE_ASSIGNEE
+          - ISSUE_CONTRIBUTOR
+          - PULL_CONTRIBUTOR
+        multiplier: 0.25
+        rewards:
+          wordValue: 0.1
+          html: *tcrHtmlConfig
+
+      - role:
+          - PULL_ASSIGNEE
+          - PULL_AUTHOR
+        multiplier: 0
+        rewards:
+          wordValue: 0
+          html: *tcrHtmlConfig
   reviewIncentivizer: {}
+  simplificationIncentivizer: {}
   githubComment:
     post: false
     debug: false

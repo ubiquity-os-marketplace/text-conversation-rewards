@@ -10,7 +10,8 @@
     "dist/**",
     "eslint.config.mjs",
     "output.html",
-    "src/web/api/payload.ts"
+    "src/web/api/payload.ts",
+    "src/adapters/supabase/types/database.ts"
   ],
   "useGitignore": true,
   "language": "en",
@@ -39,7 +40,12 @@
     "Flesch",
     "Kincaid",
     "flesch",
-    "OPENROUTER"
+    "keccak",
+    "Numberish",
+    "OPENROUTER",
+    "keccak",
+    "UUSD",
+    "issuecomment"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

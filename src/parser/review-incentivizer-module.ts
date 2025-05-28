@@ -40,11 +40,7 @@ export class ReviewIncentivizerModule extends BaseModule {
       return result;
     }
 
-    const message =
-      prNumbers.length === 1
-        ? `Pull request ${prNumbers[0]} is linked to this issue`
-        : `Pull requests ${prNumbers} are linked to this issue`;
-    this.context.logger.info(message);
+    this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
 
     for (const username of Object.keys(result)) {
       const reward = result[username];
@@ -103,7 +99,15 @@ export class ReviewIncentivizerModule extends BaseModule {
     const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
-      if (!excludedFilePatterns?.length || !excludedFilePatterns.some((pattern) => minimatch(fileName, pattern))) {
+      if (
+        !excludedFilePatterns?.length ||
+        !excludedFilePatterns.some((pattern) => {
+          // Adjust pattern to handle directories: append '**' if pattern ends with '/' otherwise minimatch doesn't
+          // exclude the files within the subdirectories
+          const adjustedPattern = pattern.endsWith("/") ? `${pattern}**` : pattern;
+          return minimatch(fileName, adjustedPattern);
+        })
+      ) {
         reviewEffect.addition += changes.addition;
         reviewEffect.deletion += changes.deletion;
       }

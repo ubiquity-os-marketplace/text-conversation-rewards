@@ -187,6 +187,7 @@ interface PermitRecord {
     },
     "feeRate": 0.1,
     "permitUrl": "https://example.com/permit",
+    "payoutMode": "permit",
     "userId": 123,
     "evaluationCommentHtml": "<p>Evaluation comment</p>"
   }
@@ -206,12 +207,13 @@ Here is a possible valid configuration to enable this plugin. See [these files](
 ```yaml
 plugin: ubiquity-os/conversation-rewards
 with:
-  evmNetworkId: 100
-  evmPrivateEncrypted: "encrypted-key"
-  erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
   dataCollection:
     maxAttempts: 10
     delayMs: 10000
+  rewards:
+    evmNetworkId: 100
+    evmPrivateEncrypted: "encrypted-key"
+    erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
   incentives:
     requirePriceLabel: true
     limitRewards: true
@@ -233,6 +235,7 @@ with:
           relevance: 1
         - role: [PULL_CONTRIBUTOR]
           relevance: 1
+      originalAuthorWeight: 0.5
     userExtractor:
       redeemTask: true
     dataPurge:
@@ -492,7 +495,8 @@ with:
               pre: { score: 0, countWords: false }
               ol: { score: 1, countWords: true }
             wordValue: 0.1
-      permitGeneration: {}
+      payment:
+        autmaticTransferMode: false
       githubComment:
         post: true
         debug: false
@@ -537,3 +541,32 @@ curl -H "Accept: application/json" -H "Authorization: token GITHUB_PAT_TOKEN" ht
 5. Click "Encrypt" to get an encrypted value in the `CIPHER_TEXT` field
 6. Set the encrypted text (from step 5) in the `evmPrivateEncrypted` config parameter
 7. Set `X25519_PRIVATE_KEY` environment variable in github secrets of your forked instance of the `conversation-rewards` plugin
+
+## Configuring Reward Fees
+
+To enable and configure the automatic deduction of fees from generated rewards, you need to set specific environment variables:
+
+1.  **`PERMIT_FEE_RATE`**:
+
+    - **Purpose:** Defines the percentage of the reward to be deducted as a fee.
+    - **Format:** A number representing the percentage (e.g., `5` for 5%, `2.5` for 2.5%).
+    - **Behavior:** If this variable is not set, is set to `0`, or is not a valid number, the fee deduction process will be skipped entirely.
+
+2.  **`PERMIT_TREASURY_GITHUB_USERNAME`**:
+
+    - **Purpose:** Specifies the GitHub username of the account designated to receive the accumulated fees. The system uses this username to fetch the corresponding GitHub user ID for internal accounting.
+    - **Format:** A valid GitHub username (e.g., `ubiquity-os-treasury`).
+    - **Behavior:** If this variable is not set or the username does not correspond to a valid GitHub user, the fee deduction process will be skipped.
+
+3.  **`PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST`** (Optional):
+    - **Purpose:** Allows specific ERC20 tokens to be exempt from fee deductions.
+    - **Format:** A comma-separated string of ERC20 token addresses (e.g., `0xTokenAddress1,0xTokenAddress2`). Ensure addresses are in the correct checksum format if applicable, although the check is case-insensitive.
+    - **Behavior:** If the `erc20RewardToken` configured for the current run matches any address in this whitelist, fees will not be applied for that specific reward calculation, even if `PERMIT_FEE_RATE` and `PERMIT_TREASURY_GITHUB_USERNAME` are set.
+
+**Example Setup:**
+
+```dotenv
+PERMIT_FEE_RATE=5
+PERMIT_TREASURY_GITHUB_USERNAME=ubiquity-os-treasury
+PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST="0xSomeTokenAddress,0xAnotherTokenAddress"
+```
