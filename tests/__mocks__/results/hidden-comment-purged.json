@@ -5,7 +5,8 @@
         "commentType": "ISSUE_SPECIFICATION",
         "content": "Issue",
         "id": 2524890317,
-        "url": "https://github.com/Meniole/conversation-rewards/issues/13"
+        "timestamp": "2024-09-13T13:44:01Z",
+        "url": "https://github.com/Meniole/conversation-rewards/issues/13#issue-2524890317"
       }
     ],
     "total": 0,
@@ -17,6 +18,7 @@
         "commentType": "ISSUE_CONTRIBUTOR",
         "content": "Other comment.",
         "id": 2349004935,
+        "timestamp": "2024-09-13T13:46:29Z",
         "url": "https://github.com/Meniole/conversation-rewards/issues/13#issuecomment-2349004935"
       }
     ],

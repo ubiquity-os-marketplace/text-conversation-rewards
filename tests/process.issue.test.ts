@@ -456,6 +456,8 @@ describe("Modules tests", () => {
         task: {
           multiplier: 0.5,
           reward: 18.5,
+          timestamp: "",
+          url: "",
         },
         userId: 0,
       },
@@ -510,12 +512,15 @@ describe("Modules tests", () => {
         task: {
           multiplier: 0.5,
           reward: 18.5,
+          timestamp: "",
+          url: "",
         },
         comments: [
           {
             id: 1,
             content: "",
             url: "",
+            timestamp: "",
             commentType: CommentAssociation.ASSIGNEE,
             score: {
               reward: 50000,

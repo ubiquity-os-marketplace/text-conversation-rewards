@@ -3,33 +3,51 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 
-export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: boolean, useCache: boolean) {
+export async function getPayload(owner: string, repo: string, issueId: number, useOpenAi: boolean, useCache: boolean) {
   const filePath = path.resolve(__dirname, "../.ubiquity-os.config.yml");
   const fileContent = await fs.readFile(filePath, "utf8");
   const cfgFile = YAML.parse(fileContent);
-  const [owner, repo] = ownerRepo.split("/");
 
   if (!useOpenAi) {
     cfgFile.incentives.contentEvaluator.openAi = {
       ...cfgFile.incentives.contentEvaluator.openAi,
       endpoint: "http://localhost:4000/openai",
+      tokenCountLimit: Number.MAX_VALUE,
     };
   }
 
   const octokit = new customOctokit({ auth: process.env.GITHUB_TOKEN });
-  const issue = (
-    await octokit.rest.issues.get({
-      owner,
-      repo,
-      issue_number: issueId,
-    })
-  ).data;
-  const repository = (
-    await octokit.rest.repos.get({
-      owner,
-      repo,
-    })
-  ).data;
+
+  let eventPayload;
+  if (repo) {
+    const organization = (
+      await octokit.rest.orgs.get({
+        org: owner,
+      })
+    ).data;
+    const repository = (
+      await octokit.rest.repos.get({
+        owner,
+        repo,
+      })
+    ).data;
+    eventPayload = { repository, organization };
+    if (issueId) {
+      const issue = (
+        await octokit.rest.issues.get({
+          owner,
+          repo,
+          issue_number: issueId,
+        })
+      ).data;
+      eventPayload = { issue, repository, organization };
+    }
+  } else {
+    const { data: organization } = await octokit.rest.orgs.get({
+      org: owner,
+    });
+    eventPayload = { organization };
+  }
 
   return {
     ref: "http://localhost",
@@ -46,8 +64,7 @@ export async function getPayload(ownerRepo: string, issueId: number, useOpenAi: 
     }),
     authToken: process.env.GITHUB_TOKEN,
     eventPayload: JSON.stringify({
-      issue,
-      repository,
+      ...eventPayload,
       sender: {
         login: "ubiquity-os",
         id: 159901852,

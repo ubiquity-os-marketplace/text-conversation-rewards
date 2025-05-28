@@ -1,15 +1,17 @@
 {
-  "gentlementlegen": {
-    "userId": 9807008,
-    "total": 400,
-    "task": {
-      "reward": 400,
-      "multiplier": 1
-    }
-  },
   "0x4007": {
     "total": 0,
     "userId": 4975670
+  },
+  "gentlementlegen": {
+    "task": {
+      "multiplier": 1,
+      "reward": 400,
+      "timestamp": "2024-04-25T14:29:35Z",
+      "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#event-12609679506"
+    },
+    "total": 400,
+    "userId": 9807008
   },
   "whilefoo": {
     "total": 0,

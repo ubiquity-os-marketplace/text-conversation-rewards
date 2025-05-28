@@ -25,7 +25,7 @@ export class UserExtractorModule extends BaseModule {
   /**
    * Checks if the comment is made by a human user, not empty, and not a command.
    */
-  _checkEntryValidity(comment: (typeof IssueActivity.prototype.allComments)[0]) {
+  _checkEntryValidity(comment: Awaited<ReturnType<IssueActivity["getAllComments"]>>[0]) {
     return comment.body && comment.user?.type === "User" && !comment.body.trim().startsWith("/");
   }
 
@@ -48,13 +48,33 @@ export class UserExtractorModule extends BaseModule {
     return new Decimal(1).div(issue.assignees?.length ?? 1);
   }
 
+  _addEventAnchorToHtmlUrl(url: string, id: string): string {
+    const hashIndex = url.indexOf("#");
+    const baseUrl = hashIndex >= 0 ? url.substring(0, hashIndex) : url;
+    return `${baseUrl}#event-${id}`;
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const closedEvents = data.events?.filter((event) => event.event === "closed") ?? [];
+    let taskTimestamp: string;
+    let taskUrl: string;
+    if (closedEvents.length > 0) {
+      closedEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      taskTimestamp = closedEvents[0].created_at;
+      taskUrl = this._addEventAnchorToHtmlUrl(`${data.self?.html_url}`, closedEvents[0].id.toString());
+    } else {
+      taskTimestamp = new Date().toISOString();
+      taskUrl = `${data.self?.html_url}`;
+    }
+
     // First, try to add all assignees as they didn't necessarily add a comment but should receive a reward
     data.self?.assignees?.forEach((assignee) => {
       const task = data.self
         ? {
             reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getTaskMultiplier(data.self)).toNumber(),
             multiplier: this._getTaskMultiplier(data.self).toNumber(),
+            timestamp: taskTimestamp,
+            url: taskUrl,
           }
         : undefined;
       result[assignee.login] = {
@@ -64,7 +84,8 @@ export class UserExtractorModule extends BaseModule {
         task,
       };
     });
-    for (const comment of data.allComments) {
+    const allComments = await data.getAllComments();
+    for (const comment of allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
         result[comment.user.login] = {
           ...result[comment.user.login],
