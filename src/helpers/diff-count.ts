@@ -9,7 +9,8 @@ export function getCharacterContributionPercentages(edits: UserContentEdits["nod
   const firstUser = edits[0].editor;
   let attribution = Array.from(prevText, () => firstUser);
 
-  for (const edit of edits) {
+  for (let i = 1; i < edits.length; i++) {
+    const edit = edits[i];
     const { editor, diff: currText } = edit;
     const currUser = editor;
     const diff = diffChars(prevText, currText);
