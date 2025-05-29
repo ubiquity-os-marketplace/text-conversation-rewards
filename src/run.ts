@@ -8,6 +8,8 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
+import { logInvalidIssue } from "./helpers/log-invalid-issue";
+import { handlePriceLabelValidation } from "./helpers/price-label-handler";
 
 function isIssueClosedEvent(context: ContextPlugin): context is ContextPlugin<"issues.closed"> {
   return context.eventName === "issues.closed";
@@ -29,12 +31,14 @@ async function handleEventTypeChecks(context: ContextPlugin) {
 
   if (isIssueClosedEvent(context)) {
     if (payload.issue.state_reason !== "completed") {
+      await logInvalidIssue(logger, payload.issue.html_url);
       return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
     }
     if (await checkIfClosedByCommand(context)) {
       return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
     }
     if (!(await preCheck(context))) {
+      await logInvalidIssue(logger, payload.issue.html_url);
       const result = logger.error("All linked pull requests must be closed to generate rewards.");
       await commentHandler.postComment(context, result);
       return result.logMessage.raw;
@@ -59,6 +63,7 @@ export async function run(context: ContextPlugin) {
   }
 
   if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {
+    await logInvalidIssue(logger, payload.issue.html_url);
     const result =
       payload.sender.type === "Bot"
         ? logger.warn("Bots can not generate rewards.")
@@ -76,8 +81,11 @@ export async function run(context: ContextPlugin) {
   const issue = parseGitHubUrl(payload.issue.html_url);
   const activity = new IssueActivity(context, issue);
   await activity.init();
-  if (config.incentives.requirePriceLabel && !getSortedPrices(activity.self?.labels).length) {
-    const result = logger.error("No price label has been set. Skipping permit generation.");
+
+  const shouldProceed = await handlePriceLabelValidation(context, activity);
+  if (!shouldProceed) {
+    const errorMsg = "No price label has been set. Skipping permit generation.";
+    const result = logger.error(errorMsg);
     await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
@@ -120,9 +128,13 @@ async function preCheck(context: ContextPlugin) {
   const { payload, octokit, logger } = context;
 
   const issue = parseGitHubUrl(payload.issue.html_url);
-  const linkedPulls = (await collectLinkedMergedPulls(context, issue)).filter((pullRequest) =>
-    context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login)
-  );
+  const linkedPulls = (await collectLinkedMergedPulls(context, issue)).filter((pullRequest) => {
+    // This can happen when a user deleted its account
+    if (!pullRequest?.author?.login) {
+      return false;
+    }
+    return context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login);
+  });
   logger.debug("Checking open linked pull-requests for", {
     issue,
     linkedPulls,

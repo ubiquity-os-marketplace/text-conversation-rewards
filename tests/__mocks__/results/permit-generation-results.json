@@ -6,7 +6,6 @@
         "content": "@whilefoo rfc on how we can deal with comment outputs. Perhaps we can have a standard recognized property on the output interface? Then the kernel can decide whether to pass it around or something. \r\n```ts\r\ninterface PluginOutput {\r\n  comment: string; // html comment\r\n  rewards: Rewards; // { \"whilefoo\": \"500\", \"token\": \"0x0\" } etc\r\n}\r\n```",
         "id": 2030164289,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -40,6 +39,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-01T17:02:54Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2030164289"
       },
       {
@@ -47,7 +47,6 @@
         "content": "I think you should fork from and overtake that second pull due to us being behind schedule",
         "id": 2033488255,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -73,6 +72,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-03T04:04:16Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2033488255"
       },
       {
@@ -80,7 +80,6 @@
         "content": "I think the most pure architecture would be that plugins can NOT inherit (write) authentication (only read if possible) of the kernel. As a consequence, no plugin should be able to post directly any issue. Ideally it should only be the kernel with a direct interface to issues. Plugins should just output comment HTML and the kernel can post it all in a single comment at the end of the webhook event invocation chain.\r\nCould be interesting to have a dedicated plugin to handle commenting, but because this seems like such an essential capability, I would more carefully consider the pros/cons of including this within the kernel. \r\n- On one hand, I really like the idea of making the kernel as pure and lean as possible\r\n- On the other hand there are practical considerations that if every plugin standard output interface includes `comment:` and then we don't have the `comment` capability available (the comment plugin is not included in the config) then why is this a standard output property required on every plugin?\r\nI'm not concerned about latency now. Besides we can port any plugin to Cloudflare Workers (or combine several inside a single Worker) when we are ready to fix latency issues. To be honest though, except for setting labels, I have no problem with latency (like with permit generation) so there's no need to overengineer yet. I also love the GitHub Actions logs being available for easy debugging, and the fact that they are super generous with the compute. \r\nGiven the entire conversation and all the considerations, I definitely think we should do option 3. \r\nThis separates concerns the best, which will allow our plugin ecosystem to grow the fastest.",
         "id": 2036355445,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -118,6 +117,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-04T07:07:18Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036355445"
       },
       {
@@ -125,7 +125,6 @@
         "content": "I know JSON makes things more complicated than it needs to be with serialization/transport. Then we have problems like this https://github.com/ubiquity-os/conversation-rewards/issues/18. If the comment property is ONLY meant to be used for GitHub comments, then transporting HTML only is the most sensible. Besides, there's no other metadata thats necessary within the `comment` property, which is the main point of sending a JSON object (it has multiple properties.) \r\nAs a somewhat side note: there should also not be any variables inside of the HTML. We could look it as like server-side-rendering (or in this case, plugin-side-rendering) handle producing the final HTML output and then output it as a single string of html entities. \r\nWe are currently using `mdast` in `@ubiquity-os/comment-incentives` to generate virtual DOMs. No `window` needed.\r\nIf we agree that this is considered as technical debt, and that we are accruing this so that we can get back on schedule, ok.",
         "id": 2036370459,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -159,6 +158,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-04T07:15:45Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036370459"
       },
       {
@@ -166,7 +166,6 @@
         "content": "Going back to my \"plugin-side-rendering\" mention, the data manipulation happens inside of the logic of the plugin. Then when the plugin is finally done with all of its compute, it emits a single string in the `comment` output property. This string is the final, rendered HTML. \r\nThe `comment` output is not intended to be consumed by other plugins. In most cases, the kernel will concatenate all the `comment` outputs from every plugin and post a single comment at the end. Plugins will consume the `metadata` property output which will include raw values to work with. I forget where I originally proposed this, but imagine something like:\r\n```typescript\r\ntype HtmlString = string;\r\ntype RequestedPermits = { username: string; amount: string; token: string; }[]\r\ninterface PluginOutput {\r\n   metadata: Record<string, any>;\r\n   comment: HtmlString;\r\n   rewards: RequestedPermits;\r\n}\r\n```",
         "id": 2036393020,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -200,6 +199,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-04T07:27:54Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036393020"
       },
       {
@@ -207,7 +207,6 @@
         "content": "The proposed `comment` output is intended for ease of composability for MOST situations, basically that the output from one plugin would just be appended to the final rendered comment. For simple plugin configurations (plugins not modifying the output results of others) this seems like straightforward architecture. \r\nHowever, as we know, there will be situations where a subsequent plugin will consider the results of a previous plugin, which means it would need to change the comment that is rendered. \r\nIn this situation the subsequent plugin should clobber the output of the previous plugin. It is now clear to be that this will be a new challenge to express to the kernel that it should ignore the comment output of a previous plugin. I suppose it would be straightforward in the metadata using the plugin ID i.e. `{ \"silences\": [\"ubiquity-os/conversation-rewards\"] }`.\r\nI think that comments should be handled from within the kernel. There should not be a separate comment plugin. Read my explanation [here](https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036355445). \r\n### Inputs\r\nFor completeness of my [previous comment](https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036393020):\r\n```typescript\r\ntype PluginId = string; // i.e. `ubiquity-os/conversation-rewards` `ubiquity-os/daemon-pricing`\r\ninterface PluginInput {\r\n   metadata: Record<PluginId, any>;\r\n   context: GitHubEventContext;\r\n}\r\n```\r\nNotice that we should not pass in the HTML of other plugins. Instead, just the metadata (\"computed\") values from the previous plugins.",
         "id": 2036433646,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -245,6 +244,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-04T07:49:05Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036433646"
       },
       {
@@ -252,7 +252,6 @@
         "content": "I understand your concern and I would need to put more thought into composability. Maybe the `comment` proposal is bad after all due to your point. It's only useful with simple plugins, but for more complex ones your point is valid. \r\nI need help to think through how any partner in the future can create new plugins that modify \r\n1. permit reward amounts \r\n2. XP reward amounts\r\nI don't like the idea of having a single monolithic rewards generation plugin that wraps all the ways possible to compute rewards (i.e. time estimation, comment rewards, review rewards etc)",
         "id": 2036516869,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -290,6 +289,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-04T08:26:34Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036516869"
       },
       {
@@ -297,7 +297,6 @@
         "content": "I see, so you're suggesting that we must annotate each comment as well in order to properly handle the scoring at the end?\nOff hand I think there's:\n1. Specification \n2. Issue comment\n3. Pull request comment (a normal comment on a pull request, not related to posting a \"review\"\n4. Pull request review comment (associated with a \"review state\" I.e. approved, left comments, requested changes)\nI suppose we need a better naming convention for the pull related ones. They are considered as separate entities according to the GitHub api. They require different methods to obtain both types.",
         "id": 2053332029,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "li": {
@@ -331,6 +330,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-13T04:06:19Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2053332029"
       },
       {
@@ -338,7 +338,6 @@
         "content": "Consider calling it \"contributor\" and \"collaborator\" as that is how it is presented on the GitHub APIs as I recall. \nAlso I think you forgot about the \"review comments\"",
         "id": 2055783331,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -364,6 +363,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-15T07:15:04Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2055783331"
       },
       {
@@ -371,7 +371,6 @@
         "content": "Nice code quality per usual",
         "id": 2007841578,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -397,6 +396,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T04:56:11Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#pullrequestreview-2007841578"
       },
       {
@@ -405,7 +405,6 @@
         "diffHunk": "@@ -27,29 +27,39 @@ formattingEvaluator:\n     td: 1\n     hr: 0\n   multipliers:\n-    - type: [ISSUE, ISSUER]:\n+    - type: [ISSUE, ISSUER, TASK]:\n+      formattingMultiplier: 1\n+      wordValue: 0.1\n+    - type: [ISSUE, ISSUER, COMMENT]:\n       formattingMultiplier: 1\n       wordValue: 0.2\n-    - type: [ISSUE, ASSIGNEE]:\n+    - type: [ISSUE, ASSIGNEE, COMMENT]:",
         "id": 1569964797,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -431,6 +430,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T04:47:41Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569964797"
       },
       {
@@ -439,7 +439,6 @@
         "diffHunk": "@@ -0,0 +1,212 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";",
         "id": 1569970517,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -465,6 +464,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T04:54:04Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569970517"
       },
       {
@@ -473,7 +473,6 @@
         "diffHunk": "@@ -0,0 +1,22 @@\n+// available tokens for payouts\n+export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {\n+  \"1\": {\n+    rpc: \"https://rpc-bot.ubq.fi/v1/mainnet\",",
         "id": 1569971792,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -499,6 +498,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T04:55:30Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569971792"
       },
       {
@@ -507,7 +507,6 @@
         "diffHunk": "@@ -27,29 +27,39 @@ formattingEvaluator:\n     td: 1\n     hr: 0\n   multipliers:\n-    - type: [ISSUE, ISSUER]:\n+    - type: [ISSUE, ISSUER, TASK]:\n+      formattingMultiplier: 1\n+      wordValue: 0.1\n+    - type: [ISSUE, ISSUER, COMMENT]:\n       formattingMultiplier: 1\n       wordValue: 0.2\n-    - type: [ISSUE, ASSIGNEE]:\n+    - type: [ISSUE, ASSIGNEE, COMMENT]:",
         "id": 1570133378,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -537,6 +536,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T07:13:42Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570133378"
       },
       {
@@ -545,7 +545,6 @@
         "diffHunk": "@@ -0,0 +1,212 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";",
         "id": 1570159594,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -575,6 +574,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T07:31:03Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570159594"
       },
       {
@@ -583,7 +583,6 @@
         "diffHunk": "@@ -27,29 +27,39 @@ formattingEvaluator:\n     td: 1\n     hr: 0\n   multipliers:\n-    - type: [ISSUE, ISSUER]:\n+    - type: [ISSUE, ISSUER, TASK]:\n+      formattingMultiplier: 1\n+      wordValue: 0.1\n+    - type: [ISSUE, ISSUER, COMMENTED]:\n       formattingMultiplier: 1\n       wordValue: 0.2\n-    - type: [ISSUE, ASSIGNEE]:\n+    - type: [ISSUE, ASSIGNEE, COMMENTED]:\n       formattingMultiplier: 0\n       wordValue: 0\n-    - type: [ISSUE, COLLABORATOR]:\n+    - type: [ISSUE, COLLABORATOR, COMMENTED]:",
         "id": 1570588757,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -617,6 +616,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T12:00:37Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570588757"
       },
       {
@@ -625,7 +625,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}",
         "id": 1570589892,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -651,6 +650,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T12:01:24Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570589892"
       },
       {
@@ -659,7 +659,6 @@
         "diffHunk": "@@ -73,12 +103,17 @@ export class IssueActivity {\n     self: GitHubPullRequest | GitHubIssue | null\n   ) {\n     let ret = 0;\n-    ret |= \"pull_request_review_id\" in comment ? CommentType.REVIEW : CommentType.ISSUE;\n+    ret |= \"pull_request_review_id\" in comment || \"draft\" in comment ? CommentType.REVIEW : CommentType.ISSUE;",
         "id": 1570591425,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -685,6 +684,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T12:02:22Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570591425"
       },
       {
@@ -693,7 +693,6 @@
         "diffHunk": "@@ -0,0 +1,212 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";",
         "id": 1570596007,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -727,6 +726,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T12:05:36Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570596007"
       },
       {
@@ -735,7 +735,6 @@
         "diffHunk": "@@ -27,29 +27,39 @@ formattingEvaluator:\n     td: 1\n     hr: 0\n   multipliers:\n-    - type: [ISSUE, ISSUER]:\n+    - type: [ISSUE, ISSUER, TASK]:\n+      formattingMultiplier: 1\n+      wordValue: 0.1\n+    - type: [ISSUE, ISSUER, COMMENTED]:\n       formattingMultiplier: 1\n       wordValue: 0.2\n-    - type: [ISSUE, ASSIGNEE]:\n+    - type: [ISSUE, ASSIGNEE, COMMENTED]:\n       formattingMultiplier: 0\n       wordValue: 0\n-    - type: [ISSUE, COLLABORATOR]:\n+    - type: [ISSUE, COLLABORATOR, COMMENTED]:",
         "id": 1573720820,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -761,6 +760,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-21T11:33:15Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573720820"
       },
       {
@@ -769,7 +769,6 @@
         "diffHunk": "@@ -0,0 +1,212 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";",
         "id": 1573722731,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -795,6 +794,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-21T11:40:25Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573722731"
       },
       {
@@ -803,7 +803,6 @@
         "diffHunk": "@@ -0,0 +1,216 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      body += result[key].evaluationCommentHtml;\n+    }\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    function createIncentiveRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function buildIncentiveRow(commentScore: GithubCommentScore) {\n+        // Properly escape carriage returns for HTML rendering\n+        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\\n\\r]/g, \"&#13;\");\n+        return `\n+          <tr>\n+            <td>\n+              <h6>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n+              </h6>\n+            </td>\n+            <td>\n+            <details>\n+              <summary>\n+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc.add(curr.score * curr.count);\n+                }, new Decimal(0))}\n+              </summary>\n+              <pre>${formatting}</pre>\n+             </details>\n+            </td>\n+            <td>${commentScore.score?.relevance || \"-\"}</td>\n+            <td>${commentScore.score?.reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      for (const issueComment of sorted.issues.comments) {\n+        content.push(buildIncentiveRow(issueComment));\n+      }\n+      for (const reviewComment of sorted.reviews) {\n+        content.push(buildIncentiveRow(reviewComment));\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    return `\n+    <details>\n+      <summary>\n+        <b>\n+          <h3>\n+            <a href=\"${result.permitUrl}\" target=\"_blank\" rel=\"noopener\">\n+              [ ${result.total} ${getPayoutConfigByNetworkId(program.opts().evmNetworkId).symbol} ]\n+            </a>\n+          </h3>\n+          <h6>\n+            @${username}\n+          </h6>\n+        </b>\n+      </summary>\n+      <h6>Contributions Overview</h6>\n+      <table>\n+        <thead>\n+          <tr>\n+            <th>View</th>\n+            <th>Contribution</th>\n+            <th>Count</th>\n+            <th>Reward</th>\n+          </tr>\n+        </thead>\n+        <tbody>\n+          ${createContributionRows()}\n+        </tbody>\n+      </table>\n+      <h6>Conversation Incentives</h6>\n+      <table>\n+        <thead>\n+          <tr>\n+            <th>Comment</th>\n+            <th>Formatting</th>\n+            <th>Relevance</th>\n+            <th>Reward</th>\n+          </tr>\n+        </thead>\n+        <tbody>\n+          ${createIncentiveRows()}\n+        </tbody>\n+      </table>\n+    </details>\n+    `\n+      .replace(/\\s+/g, \" \")",
         "id": 1573723262,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -833,6 +832,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-21T11:42:07Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723262"
       },
       {
@@ -841,7 +841,6 @@
         "diffHunk": "@@ -0,0 +1,22 @@\n+// available tokens for payouts\n+export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {\n+  \"1\": {\n+    rpc: \"https://rpc.gnosischain.com\",\n+    token: \"0x6B175474E89094C44Da98b954EedeAC495271d0F\",\n+    symbol: \"DAI\",\n+  },",
         "id": 1573723774,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -867,6 +866,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-21T11:44:13Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723774"
       },
       {
@@ -875,7 +875,6 @@
         "diffHunk": "",
         "id": 1573724498,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -901,6 +900,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-21T11:47:05Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724498"
       },
       {
@@ -909,7 +909,6 @@
         "diffHunk": "",
         "id": 1573724853,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -935,6 +934,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-21T11:48:10Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724853"
       },
       {
@@ -943,7 +943,6 @@
         "diffHunk": "@@ -0,0 +1,22 @@\n+// available tokens for payouts\n+export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {\n+  \"1\": {\n+    rpc: \"https://rpc.gnosischain.com\",\n+    token: \"0x6B175474E89094C44Da98b954EedeAC495271d0F\",\n+    symbol: \"DAI\",\n+  },",
         "id": 1574086028,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -969,6 +968,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-22T03:41:54Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086028"
       },
       {
@@ -977,7 +977,6 @@
         "diffHunk": "@@ -0,0 +1,216 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      body += result[key].evaluationCommentHtml;\n+    }\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    function createIncentiveRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function buildIncentiveRow(commentScore: GithubCommentScore) {\n+        // Properly escape carriage returns for HTML rendering\n+        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\\n\\r]/g, \"&#13;\");\n+        return `\n+          <tr>\n+            <td>\n+              <h6>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n+              </h6>\n+            </td>\n+            <td>\n+            <details>\n+              <summary>\n+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc.add(curr.score * curr.count);\n+                }, new Decimal(0))}\n+              </summary>\n+              <pre>${formatting}</pre>\n+             </details>\n+            </td>\n+            <td>${commentScore.score?.relevance || \"-\"}</td>\n+            <td>${commentScore.score?.reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      for (const issueComment of sorted.issues.comments) {\n+        content.push(buildIncentiveRow(issueComment));\n+      }\n+      for (const reviewComment of sorted.reviews) {\n+        content.push(buildIncentiveRow(reviewComment));\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    return `\n+    <details>\n+      <summary>\n+        <b>\n+          <h3>\n+            <a href=\"${result.permitUrl}\" target=\"_blank\" rel=\"noopener\">\n+              [ ${result.total} ${getPayoutConfigByNetworkId(program.opts().evmNetworkId).symbol} ]\n+            </a>\n+          </h3>\n+          <h6>\n+            @${username}\n+          </h6>\n+        </b>\n+      </summary>\n+      <h6>Contributions Overview</h6>\n+      <table>\n+        <thead>\n+          <tr>\n+            <th>View</th>\n+            <th>Contribution</th>\n+            <th>Count</th>\n+            <th>Reward</th>\n+          </tr>\n+        </thead>\n+        <tbody>\n+          ${createContributionRows()}\n+        </tbody>\n+      </table>\n+      <h6>Conversation Incentives</h6>\n+      <table>\n+        <thead>\n+          <tr>\n+            <th>Comment</th>\n+            <th>Formatting</th>\n+            <th>Relevance</th>\n+            <th>Reward</th>\n+          </tr>\n+        </thead>\n+        <tbody>\n+          ${createIncentiveRows()}\n+        </tbody>\n+      </table>\n+    </details>\n+    `\n+      .replace(/\\s+/g, \" \")",
         "id": 1574086293,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -1003,6 +1002,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-22T03:42:28Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086293"
       },
       {
@@ -1011,7 +1011,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))",
         "id": 1575555444,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -1041,6 +1040,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-23T02:12:51Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575555444"
       },
       {
@@ -1049,7 +1049,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1575556553,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -1075,6 +1074,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-23T02:14:45Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575556553"
       },
       {
@@ -1083,7 +1083,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1576666170,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -1109,6 +1108,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-23T17:54:58Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576666170"
       },
       {
@@ -1117,7 +1117,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))",
         "id": 1577225638,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -1143,6 +1142,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-24T04:08:45Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577225638"
       },
       {
@@ -1150,7 +1150,6 @@
         "content": "I think it's fine. I generally scrutinize test code less than normal program code anyways.",
         "id": 2063712447,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -1176,6 +1175,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-18T12:07:07Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
@@ -1332,7 +1332,7 @@
             "reward": 1
           }
         ],
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12"
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
       }
     ],
     "total": 535.856,
@@ -1346,7 +1346,6 @@
         "content": "This needs https://github.com/ubiquity-os/conversation-rewards/pull/7 to be merged first. Also probably needs https://github.com/ubiquity-os/permit-generation/pull/2 to be able to generate the permits properly.",
         "id": 2033404518,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -1376,6 +1375,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-03T02:05:44Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2033404518"
       },
       {
@@ -1383,7 +1383,6 @@
         "content": "To me 1 is the most straightforward to do for few reasons:\r\n- the comment reward plugin has all the needed data already\r\n- it can import the https://github.com/ubiquity-os/permit-generation to generate permits itself\r\n- if it is done this way it can be used as a complete standalone without the kernel\r\n3 might make more sense in terms of architecture however. In such case the kernel should pass down results. It is more of an architecture question. Although, if we ever have other plugins in the flow that have influence on the total incentives, it would make sense to go through the kernel to aggregate the total result.",
         "id": 2036174312,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -1421,6 +1420,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-04T04:33:44Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036174312"
       },
       {
@@ -1428,7 +1428,6 @@
         "content": "I think each plugin should output JSON not html as it is not reliable to parse nor manipulate and requires `window` instance to be instantiated which is annoying on `node` based projects. \r\nHaving a plugin handling commenting seems quite weird as commenting is done by calling Octokit and the REST api which is already a library by itself, so no need to encapsulate it within another one to do the same thing.\r\nMy view on this, is to finalize https://github.com/ubiquity-os/permit-generation/issues/5 to import it withing the `conversation-reward` that will post the comment itself as well, otherwise the architecture will be quite convoluted doing ping pong with everything.",
         "id": 2036367126,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -1462,6 +1461,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-04T07:13:44Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036367126"
       },
       {
@@ -1469,7 +1469,6 @@
         "content": "If you want to manipulate and convey data, HTML really is not made for this. If you want something formatted similarly but made for data we can use XML format.\r\nThe new comment reward actually does instantiate a DOM through [JSDOM](https://github.com/ubiquity-os/conversation-rewards/blob/ba434761281446a23566cd02c68bd3b0e79d4eb1/src/parser/formatting-evaluator-module.ts#L80) to make things way simpler instead of using Regex everywhere which is highly unreliable. But there it makes sense because we are parsing comments from an HTML page content.\r\nBiggest advantage from this is to have the comment reward fully standalone, while easy to integrate with the kernel.\r\nIf we do something that handles the comment it means each and every module has to send it there and that module should understand every different content / format we send which would be way easier if the module itself handled its own comments, formatting wise.",
         "id": 2036385985,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -1499,6 +1498,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-04T07:24:01Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036385985"
       },
       {
@@ -1506,7 +1506,6 @@
         "content": "But then how do we consider the formatting of that output?\r\nPractical case: we want to post a comment when a user queries a wallet. That comment is 'user name': 'wallet 0x0'\r\nKernel calls the comment plugin, saying that it wants a comment to be posted. Should the Kernel send the rendering it wants, should the comment plugin transform the data to HTML?\r\nThen, comment-reward wants to post the results. Should ask the Kernel to call the comment plugin, but then formatting is different. Should the Kernel notify the comment plugin that it wants a different output formatting? Should the Kernel compute beforehand the HTML and send it to the comment plugin?\r\nMight be something I don't grasp there. Because I do understand your use case but it seems to be very deterministic on what is the purpose of the plugins which kinda defeats the purpose of having plugins, looks more like a monolithic approach to me",
         "id": 2036411811,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -1532,6 +1531,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-04T07:37:30Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036411811"
       },
       {
@@ -1539,7 +1539,6 @@
         "content": "This can work, but we skyrocket coupling and to me defeat purpose of plugins that should be unaware of each other. If any plugin has to understand the result of a previous plugin, it means these plugins have necessarily to co-exist so basically they become a single plugin with no purpose to split them.",
         "id": 2036458775,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -1565,6 +1564,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-04T08:01:43Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036458775"
       },
       {
@@ -1572,7 +1572,6 @@
         "content": "@pavlovcik To mitigate that that's why inside the comment reward itself I also integrated that `Module` principle so code is not coupled tightly and easy to build on. There is as usual pros and cons to both approaches (splitting or not) but biggest pro is that comments get evaluated once in the same spot, so we save calls to OpenAPI and speed up the process. Also makes it only one configuration file in one location. We need to think about our best options there.",
         "id": 2036535332,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -1602,6 +1601,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-04T08:33:57Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036535332"
       },
       {
@@ -1609,7 +1609,6 @@
         "content": "I realized that to carry this task properly we need to handle flags for comment more delicately as they only indicate if the comment is `ISSUE | REVIEW` with the level `MEMBER | CONTRIBUTOR` etc. but doesn't specify if it is from a task, a specification and so on. Tags should be added to the config properly as well.",
         "id": 2051094255,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -1639,6 +1638,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-12T06:44:31Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2051094255"
       },
       {
@@ -1646,7 +1646,6 @@
         "content": "Agreed, I think currently there are 3 possible things to annotate on the comments:\r\n- `SPECIFICATION` for the issue itself, `TASK` for the related PR fixing it, or simply `COMMENT`\r\n- `MEMBER` or `CONTRIBUTOR` for the status of the member\r\n- `REVIEW` or `ISSUE` for where the comment was added\r\nI think this shall cover all cases.",
         "id": 2054424028,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -1684,6 +1683,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-15T02:27:24Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2054424028"
       },
       {
@@ -1691,7 +1691,6 @@
         "content": "In the v1 of the Ubiquibot, when a result gets evaluated, a recap is posted to the related issue with a summary and details of the rewards as well as the link to the rewards themselves Example: https://github.com/ubiquity/cloudflare-deploy-action/issues/9#issuecomment-2028623754\r\nThe same logic should be applied in the v2 version by creating a new Module responsible to post that comment. This module will receive a similar input than the one mentioned [here](https://github.com/ubiquity/cloudflare-deploy-action/issues/9#issuecomment-2028623754)\r\nThe module should be:\r\n- possible to enable / disable\r\n- eventually configurable (what data to show / hide)\r\n- coming with tests",
         "id": 2218638141,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -1729,14 +1728,14 @@
             "wordValue": 0.1
           }
         },
-        "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5"
+        "timestamp": "2024-04-01T16:42:17Z",
+        "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issue-2218638141"
       },
       {
         "commentType": "PULL_SPECIFICATION",
         "content": "Resolves #5 \r\nDepends on #8 \r\nReviews looks gigantic but it's only due to the API snapshots I promise.",
-        "id": 1822452078,
+        "id": 2242745217,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -1762,7 +1761,8 @@
             "wordValue": 0
           }
         },
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12"
+        "timestamp": "2024-04-15T05:34:08Z",
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-2242745217"
       },
       {
         "commentType": "PULL_AUTHOR",
@@ -1770,7 +1770,6 @@
         "diffHunk": "@@ -0,0 +1,212 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";",
         "id": 1570010044,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -1800,6 +1799,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-18T05:35:07Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570010044"
       },
       {
@@ -1808,7 +1808,6 @@
         "diffHunk": "@@ -27,29 +27,39 @@ formattingEvaluator:\n     td: 1\n     hr: 0\n   multipliers:\n-    - type: [ISSUE, ISSUER]:\n+    - type: [ISSUE, ISSUER, TASK]:\n+      formattingMultiplier: 1\n+      wordValue: 0.1\n+    - type: [ISSUE, ISSUER, COMMENT]:\n       formattingMultiplier: 1\n       wordValue: 0.2\n-    - type: [ISSUE, ASSIGNEE]:\n+    - type: [ISSUE, ASSIGNEE, COMMENT]:",
         "id": 1570011467,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -1838,6 +1837,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-18T05:36:18Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570011467"
       },
       {
@@ -1846,7 +1846,6 @@
         "diffHunk": "@@ -0,0 +1,22 @@\n+// available tokens for payouts\n+export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {\n+  \"1\": {\n+    rpc: \"https://rpc-bot.ubq.fi/v1/mainnet\",",
         "id": 1570014142,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -1876,6 +1875,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-18T05:39:05Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570014142"
       },
       {
@@ -1884,7 +1884,6 @@
         "diffHunk": "@@ -0,0 +1,212 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";",
         "id": 1570187141,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -1914,6 +1913,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-18T07:47:51Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570187141"
       },
       {
@@ -1922,7 +1922,6 @@
         "diffHunk": "@@ -27,29 +27,39 @@ formattingEvaluator:\n     td: 1\n     hr: 0\n   multipliers:\n-    - type: [ISSUE, ISSUER]:\n+    - type: [ISSUE, ISSUER, TASK]:\n+      formattingMultiplier: 1\n+      wordValue: 0.1\n+    - type: [ISSUE, ISSUER, COMMENT]:\n       formattingMultiplier: 1\n       wordValue: 0.2\n-    - type: [ISSUE, ASSIGNEE]:\n+    - type: [ISSUE, ASSIGNEE, COMMENT]:",
         "id": 1570188450,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -1956,6 +1955,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-18T07:48:41Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570188450"
       },
       {
@@ -1964,7 +1964,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}",
         "id": 1573413974,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -1994,6 +1993,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-20T21:23:57Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573413974"
       },
       {
@@ -2002,7 +2002,6 @@
         "diffHunk": "@@ -0,0 +1,212 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";",
         "id": 1573416633,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2028,6 +2027,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-20T21:27:14Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573416633"
       },
       {
@@ -2036,7 +2036,6 @@
         "diffHunk": "@@ -27,29 +27,39 @@ formattingEvaluator:\n     td: 1\n     hr: 0\n   multipliers:\n-    - type: [ISSUE, ISSUER]:\n+    - type: [ISSUE, ISSUER, TASK]:\n+      formattingMultiplier: 1\n+      wordValue: 0.1\n+    - type: [ISSUE, ISSUER, COMMENTED]:\n       formattingMultiplier: 1\n       wordValue: 0.2\n-    - type: [ISSUE, ASSIGNEE]:\n+    - type: [ISSUE, ASSIGNEE, COMMENTED]:\n       formattingMultiplier: 0\n       wordValue: 0\n-    - type: [ISSUE, COLLABORATOR]:\n+    - type: [ISSUE, COLLABORATOR, COMMENTED]:",
         "id": 1573420718,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -2070,6 +2069,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-20T21:32:28Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573420718"
       },
       {
@@ -2078,7 +2078,6 @@
         "diffHunk": "",
         "id": 1573731420,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -2108,6 +2107,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-21T12:11:42Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731420"
       },
       {
@@ -2116,7 +2116,6 @@
         "diffHunk": "",
         "id": 1573731649,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -2146,6 +2145,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-21T12:12:30Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731649"
       },
       {
@@ -2154,7 +2154,6 @@
         "diffHunk": "@@ -0,0 +1,22 @@\n+// available tokens for payouts\n+export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {\n+  \"1\": {\n+    rpc: \"https://rpc.gnosischain.com\",\n+    token: \"0x6B175474E89094C44Da98b954EedeAC495271d0F\",\n+    symbol: \"DAI\",\n+  },",
         "id": 1573733603,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -2188,6 +2187,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-21T12:19:50Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573733603"
       },
       {
@@ -2196,7 +2196,6 @@
         "diffHunk": "@@ -0,0 +1,212 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";",
         "id": 1573737049,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2222,6 +2221,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-21T12:32:11Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573737049"
       },
       {
@@ -2230,7 +2230,6 @@
         "diffHunk": "@@ -0,0 +1,216 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      body += result[key].evaluationCommentHtml;\n+    }\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    function createIncentiveRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function buildIncentiveRow(commentScore: GithubCommentScore) {\n+        // Properly escape carriage returns for HTML rendering\n+        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\\n\\r]/g, \"&#13;\");\n+        return `\n+          <tr>\n+            <td>\n+              <h6>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n+              </h6>\n+            </td>\n+            <td>\n+            <details>\n+              <summary>\n+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc.add(curr.score * curr.count);\n+                }, new Decimal(0))}\n+              </summary>\n+              <pre>${formatting}</pre>\n+             </details>\n+            </td>\n+            <td>${commentScore.score?.relevance || \"-\"}</td>\n+            <td>${commentScore.score?.reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      for (const issueComment of sorted.issues.comments) {\n+        content.push(buildIncentiveRow(issueComment));\n+      }\n+      for (const reviewComment of sorted.reviews) {\n+        content.push(buildIncentiveRow(reviewComment));\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    return `\n+    <details>\n+      <summary>\n+        <b>\n+          <h3>\n+            <a href=\"${result.permitUrl}\" target=\"_blank\" rel=\"noopener\">\n+              [ ${result.total} ${getPayoutConfigByNetworkId(program.opts().evmNetworkId).symbol} ]\n+            </a>\n+          </h3>\n+          <h6>\n+            @${username}\n+          </h6>\n+        </b>\n+      </summary>\n+      <h6>Contributions Overview</h6>\n+      <table>\n+        <thead>\n+          <tr>\n+            <th>View</th>\n+            <th>Contribution</th>\n+            <th>Count</th>\n+            <th>Reward</th>\n+          </tr>\n+        </thead>\n+        <tbody>\n+          ${createContributionRows()}\n+        </tbody>\n+      </table>\n+      <h6>Conversation Incentives</h6>\n+      <table>\n+        <thead>\n+          <tr>\n+            <th>Comment</th>\n+            <th>Formatting</th>\n+            <th>Relevance</th>\n+            <th>Reward</th>\n+          </tr>\n+        </thead>\n+        <tbody>\n+          ${createIncentiveRows()}\n+        </tbody>\n+      </table>\n+    </details>\n+    `\n+      .replace(/\\s+/g, \" \")",
         "id": 1574114225,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2256,6 +2255,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-22T04:38:15Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574114225"
       },
       {
@@ -2264,7 +2264,6 @@
         "diffHunk": "@@ -0,0 +1,41 @@\n+import { parseGitHubUrl } from \"../src/start\";\n+import { IssueActivity } from \"../src/issue-activity\";\n+import { Processor } from \"../src/parser/processor\";\n+import { UserExtractorModule } from \"../src/parser/user-extractor-module\";\n+import { server } from \"./__mocks__/node\";\n+import { DataPurgeModule } from \"../src/parser/data-purge-module\";\n+import userCommentResults from \"./__mocks__/results/user-comment-results.json\";\n+import dataPurgeResults from \"./__mocks__/results/data-purge-result.json\";\n+\n+const issueUrl = process.env.TEST_ISSUE_URL || \"https://github.com/ubiquity-os/comment-incentives/issues/22\";\n+\n+beforeAll(() => server.listen());\n+afterEach(() => server.resetHandlers());\n+afterAll(() => server.close());\n+\n+describe(\"Modules tests\", () => {\n+  const issue = parseGitHubUrl(issueUrl);\n+  const activity = new IssueActivity(issue);\n+\n+  beforeAll(async () => {\n+    await activity.init();\n+  });\n+\n+  it(\"Should extract users from comments\", async () => {\n+    const logSpy = jest.spyOn(console, \"log\");\n+    const processor = new Processor();\n+    processor[\"_transformers\"] = [new UserExtractorModule()];\n+    await processor.run(activity);\n+    processor.dump();\n+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));",
         "id": 1574622869,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -2294,6 +2293,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-22T11:49:30Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574622869"
       },
       {
@@ -2302,7 +2302,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(",
         "id": 1574702577,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -2332,6 +2331,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-22T12:50:38Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574702577"
       },
       {
@@ -2340,7 +2340,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))",
         "id": 1574724902,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2366,6 +2365,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-22T13:03:54Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574724902"
       },
       {
@@ -2374,7 +2374,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    function createIncentiveRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function buildIncentiveRow(commentScore: GithubCommentScore) {\n+        // Properly escape carriage returns for HTML rendering\n+        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\\n\\r]/g, \"&#13;\");\n+        return `\n+          <tr>\n+            <td>\n+              <h6>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n+              </h6>\n+            </td>\n+            <td>\n+            <details>\n+              <summary>\n+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc.add(curr.score * curr.count);\n+                }, new Decimal(0))}\n+              </summary>\n+              <pre>${formatting}</pre>\n+             </details>\n+            </td>\n+            <td>${commentScore.score?.relevance || \"-\"}</td>\n+            <td>${commentScore.score?.reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      for (const issueComment of sorted.issues.comments) {\n+        content.push(buildIncentiveRow(issueComment));\n+      }\n+      for (const reviewComment of sorted.reviews) {\n+        content.push(buildIncentiveRow(reviewComment));\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    return `\n+    <details>\n+      <summary>\n+        <b>\n+          <h3>\n+            <a href=\"${result.permitUrl}\" target=\"_blank\" rel=\"noopener\">",
         "id": 1574767984,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -2404,6 +2403,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-22T13:33:22Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574767984"
       },
       {
@@ -2412,7 +2412,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1575659438,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -2450,6 +2449,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-23T05:27:59Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575659438"
       },
       {
@@ -2458,7 +2458,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))",
         "id": 1575675704,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -2488,6 +2487,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-23T05:51:39Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575675704"
       },
       {
@@ -2496,7 +2496,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1576567583,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -2526,6 +2525,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-23T16:43:00Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576567583"
       },
       {
@@ -2534,7 +2534,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))",
         "id": 1577477616,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2560,6 +2559,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-24T08:15:11Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577477616"
       },
       {
@@ -2568,7 +2568,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1578162024,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -2602,6 +2601,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-24T16:08:53Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578162024"
       },
       {
@@ -2609,7 +2609,6 @@
         "content": "Example of successful comment posting with results:\r\nhttps://github.com/Meniole/test/issues/1#issuecomment-2056572986",
         "id": 2056635516,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -2639,6 +2638,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-15T11:46:57Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2056635516"
       },
       {
@@ -2646,7 +2646,6 @@
         "content": "@0x4007 I believe that if I had all the tests in this PR it will become enormous, maybe I ought to do it in a separate PR.",
         "id": 2063348339,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2672,6 +2671,7 @@
             "wordValue": 0.2
           }
         },
+        "timestamp": "2024-04-18T08:45:19Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063348339"
       }
     ],
@@ -2762,7 +2762,9 @@
     "reviewRewards": [],
     "task": {
       "multiplier": 1,
-      "reward": 400
+      "reward": 400,
+      "timestamp": "2024-04-25T14:29:35Z",
+      "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#event-12609679506"
     },
     "total": 1920.72,
     "userId": 9807008,
@@ -2775,7 +2777,6 @@
         "content": "there are a couple of options:\r\n1. we let the conversation-rewards plugin generate and post the comment\r\n2. we put comment as output and then another module is responsible for posting it or let conversation-rewards generate rewards and permit-generation generate permits and a third module that uses output from previous plugins to make a comment and post it\r\n3. we let the conversation-rewards plugin generate the comment and pass it as a standard property like you suggested.\r\nIn theory 2. option sounds good to separate concerns but it's another plugin which means another call to github actions thus more latency, so for the sake of speed it'd go with option 1 or 3, but going with these 2 options would mean there will 1 comment for rewards summary and 1 comment for permits.\r\nI'm not sure if option 3 is any better than option 1 because the plugin already has a token that has permissions to post comments so passing it to the kernel doesn't make much difference.",
         "id": 2035427134,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "li": {
@@ -2809,6 +2810,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-03T19:34:29Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2035427134"
       },
       {
@@ -2817,7 +2819,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);",
         "id": 1574427305,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -2851,6 +2852,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-22T09:21:18Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574427305"
       },
       {
@@ -2859,7 +2861,6 @@
         "diffHunk": "@@ -0,0 +1,41 @@\n+import { parseGitHubUrl } from \"../src/start\";\n+import { IssueActivity } from \"../src/issue-activity\";\n+import { Processor } from \"../src/parser/processor\";\n+import { UserExtractorModule } from \"../src/parser/user-extractor-module\";\n+import { server } from \"./__mocks__/node\";\n+import { DataPurgeModule } from \"../src/parser/data-purge-module\";\n+import userCommentResults from \"./__mocks__/results/user-comment-results.json\";\n+import dataPurgeResults from \"./__mocks__/results/data-purge-result.json\";\n+\n+const issueUrl = process.env.TEST_ISSUE_URL || \"https://github.com/ubiquity-os/comment-incentives/issues/22\";\n+\n+beforeAll(() => server.listen());\n+afterEach(() => server.resetHandlers());\n+afterAll(() => server.close());\n+\n+describe(\"Modules tests\", () => {\n+  const issue = parseGitHubUrl(issueUrl);\n+  const activity = new IssueActivity(issue);\n+\n+  beforeAll(async () => {\n+    await activity.init();\n+  });\n+\n+  it(\"Should extract users from comments\", async () => {\n+    const logSpy = jest.spyOn(console, \"log\");\n+    const processor = new Processor();\n+    processor[\"_transformers\"] = [new UserExtractorModule()];\n+    await processor.run(activity);\n+    processor.dump();\n+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));",
         "id": 1574441918,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2885,6 +2886,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-22T09:31:35Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574441918"
       },
       {
@@ -2893,7 +2895,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(",
         "id": 1574458540,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2919,6 +2920,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-22T09:43:17Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574458540"
       },
       {
@@ -2927,7 +2929,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))",
         "id": 1574460099,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2953,6 +2954,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-22T09:44:28Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574460099"
       },
       {
@@ -2961,7 +2963,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1574487172,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -2987,6 +2988,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-22T10:03:50Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574487172"
       },
       {
@@ -2995,7 +2997,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    function createIncentiveRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function buildIncentiveRow(commentScore: GithubCommentScore) {\n+        // Properly escape carriage returns for HTML rendering\n+        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\\n\\r]/g, \"&#13;\");\n+        return `\n+          <tr>\n+            <td>\n+              <h6>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n+              </h6>\n+            </td>\n+            <td>\n+            <details>\n+              <summary>\n+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc.add(curr.score * curr.count);\n+                }, new Decimal(0))}\n+              </summary>\n+              <pre>${formatting}</pre>\n+             </details>\n+            </td>\n+            <td>${commentScore.score?.relevance || \"-\"}</td>\n+            <td>${commentScore.score?.reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      for (const issueComment of sorted.issues.comments) {\n+        content.push(buildIncentiveRow(issueComment));\n+      }\n+      for (const reviewComment of sorted.reviews) {\n+        content.push(buildIncentiveRow(reviewComment));\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    return `\n+    <details>\n+      <summary>\n+        <b>\n+          <h3>\n+            <a href=\"${result.permitUrl}\" target=\"_blank\" rel=\"noopener\">",
         "id": 1574492061,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -3021,6 +3022,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-22T10:07:39Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574492061"
       },
       {
@@ -3029,7 +3031,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    function createIncentiveRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function buildIncentiveRow(commentScore: GithubCommentScore) {\n+        // Properly escape carriage returns for HTML rendering\n+        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\\n\\r]/g, \"&#13;\");\n+        return `\n+          <tr>\n+            <td>\n+              <h6>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n+              </h6>\n+            </td>\n+            <td>\n+            <details>\n+              <summary>\n+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc.add(curr.score * curr.count);\n+                }, new Decimal(0))}\n+              </summary>\n+              <pre>${formatting}</pre>\n+             </details>\n+            </td>\n+            <td>${commentScore.score?.relevance || \"-\"}</td>\n+            <td>${commentScore.score?.reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      for (const issueComment of sorted.issues.comments) {\n+        content.push(buildIncentiveRow(issueComment));\n+      }\n+      for (const reviewComment of sorted.reviews) {\n+        content.push(buildIncentiveRow(reviewComment));\n+      }\n+      return content.join(\"\");\n+    }\n+\n+    return `\n+    <details>\n+      <summary>\n+        <b>\n+          <h3>\n+            <a href=\"${result.permitUrl}\" target=\"_blank\" rel=\"noopener\">",
         "id": 1575851470,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -3055,6 +3056,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-23T08:23:11Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575851470"
       },
       {
@@ -3063,7 +3065,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1576482609,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "a": {
@@ -3093,6 +3094,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-23T15:40:43Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576482609"
       },
       {
@@ -3101,7 +3103,6 @@
         "diffHunk": "@@ -0,0 +1,217 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import Decimal from \"decimal.js\";\n+import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubCommentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    const bodyArray: (string | undefined)[] = [];\n+\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      bodyArray.push(result[key].evaluationCommentHtml);\n+    }\n+    const body = bodyArray.join(\"\");\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n+    }\n+    if (this._configuration.post) {\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.TASK) {\n+            acc.issues.task = curr;\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { task: null, comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      const content: string[] = [];\n+\n+      if (!sorted) {\n+        return content.join(\"\");\n+      }\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+      }\n+\n+      if (result.task?.reward) {\n+        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+      }\n+      if (sorted.issues.task) {\n+        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n+      }\n+      if (sorted.issues.comments.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Issue\",\n+            \"Comment\",\n+            sorted.issues.comments.length,\n+            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+          )\n+        );\n+      }\n+      if (sorted.reviews.length) {\n+        content.push(\n+          generateContributionRow(\n+            \"Review\",\n+            \"Comment\",\n+            sorted.reviews.length,\n+            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))",
         "id": 1578040543,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -3127,6 +3128,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-24T14:58:06Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578040543"
       },
       {
@@ -3135,7 +3137,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1578050965,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "code": {
@@ -3165,6 +3166,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-24T15:04:04Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578050965"
       },
       {
@@ -3173,7 +3175,6 @@
         "diffHunk": "@@ -19,12 +19,42 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n+  TASK = 0b10000000,",
         "id": 1579556333,
         "score": {
-          "authorship": 1,
           "formatting": {
             "content": {
               "p": {
@@ -3199,6 +3200,7 @@
             "wordValue": 0.1
           }
         },
+        "timestamp": "2024-04-25T14:14:51Z",
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
@@ -3282,7 +3284,7 @@
             "reward": 1
           }
         ],
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12"
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
       }
     ],
     "total": 44.068,

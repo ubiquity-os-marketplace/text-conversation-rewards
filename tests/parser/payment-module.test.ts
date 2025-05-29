@@ -71,6 +71,8 @@ function getResultOriginal() {
       task: {
         reward: 90,
         multiplier: 1,
+        timestamp: "",
+        url: "",
       },
       userId: 1,
       walletAddress: "0x1",
@@ -79,6 +81,7 @@ function getResultOriginal() {
           id: 57,
           content: "comment 3",
           url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
+          timestamp: "",
           commentType: CommentKind.ISSUE,
           score: {
             reward: 10,
@@ -93,6 +96,8 @@ function getResultOriginal() {
       task: {
         reward: 9.99,
         multiplier: 1,
+        timestamp: "",
+        url: "",
       },
       userId: 2,
       walletAddress: "0x1",
@@ -101,6 +106,7 @@ function getResultOriginal() {
           id: 57,
           content: "comment 3",
           url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
+          timestamp: "",
           commentType: CommentKind.ISSUE,
           score: {
             reward: 1.12,

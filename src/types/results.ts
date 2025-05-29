@@ -8,6 +8,8 @@ export interface Result {
     task?: {
       reward: number;
       multiplier: number;
+      timestamp: string;
+      url: string;
     };
     feeRate?: number;
     permitUrl?: string;
@@ -65,6 +67,7 @@ export interface GithubCommentScore {
   id: number;
   content: string;
   url: string;
+  timestamp: string;
   commentType: CommentKind | CommentAssociation;
   diffHunk?: string;
   score?: {

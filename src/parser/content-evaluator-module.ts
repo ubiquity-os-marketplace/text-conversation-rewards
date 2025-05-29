@@ -342,7 +342,7 @@ export class ContentEvaluatorModule extends BaseModule {
     ) {
       chunks++;
     }
-    this.context.logger.info(`Splitting issue comments into ${chunks} chunks`);
+    this.context.logger.debug(`Splitting issue comments into ${chunks} chunks`);
 
     for (const commentSplit of this._splitArrayToChunks(allComments, chunks)) {
       const promptForComments = this._generatePromptForComments(specification, comments, commentSplit);
@@ -462,7 +462,7 @@ export class ContentEvaluatorModule extends BaseModule {
         ],
         max_tokens: maxTokens,
         top_p: 1,
-        temperature: 1,
+        temperature: 0.5,
         frequency_penalty: 0,
         presence_penalty: 0,
       });
@@ -470,10 +470,10 @@ export class ContentEvaluatorModule extends BaseModule {
       // Strip any potential Markdown formatting like ```json or ``` from the response, because some LLMs love do to so
       const rawResponse = String(res.choices[0].message.content).replace(/^.*?{/, "{").replace(/}.*$/, "}");
 
-      this.context.logger.info(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
+      this.context.logger.debug(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
 
       const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
-      this.context.logger.info(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
+      this.context.logger.debug(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {
       this.context.logger.error(`Invalid response type received from the LLM while evaluating: \n\n${e}`, {
@@ -548,8 +548,7 @@ export class ContentEvaluatorModule extends BaseModule {
   
     To what degree are each of the comments valuable? 
     Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
-    The float number should represent the value of the comment for improving the issue solution and code quality. The total number of properties in your JSON response should equal exactly ${userComments.length}.
-
+    The float number should represent the value of the comment for improving the issue solution and code quality. The number of entries in the JSON response must equal ${userComments.length}.
     Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
     
     YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.

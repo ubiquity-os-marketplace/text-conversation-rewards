@@ -65,6 +65,8 @@ describe("GithubCommentModule Fee Tests", () => {
         task: {
           reward: 50, // Example value
           multiplier: 1.5, // Example value
+          timestamp: "",
+          url: "",
         },
         feeRate: 0.2, // This implies a 5% fee
         permitUrl: "https://pay.ubq.fi", // Example URL
@@ -90,7 +92,9 @@ describe("GithubCommentModule Fee Tests", () => {
         '      "total": 100,\n' +
         '      "task": {\n' +
         '        "reward": 50,\n' +
-        '        "multiplier": 1.5\n' +
+        '        "multiplier": 1.5,\n' +
+        '        "timestamp": "",\n' +
+        '        "url": ""\n' +
         "      },\n" +
         '      "feeRate": 0.2,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +

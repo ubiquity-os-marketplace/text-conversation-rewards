@@ -9,12 +9,14 @@ function Form() {
   async function handleSubmit(event: InputEvent) {
     event.preventDefault();
     setIsLoading(true);
-    const ownerRepo = `${event.target?.owner.value}/${event.target?.repo.value}`;
+    const owner = event.target?.owner.value;
+    const repo = event.target?.repo.value;
     const issueId = event.target?.issue_id.value;
     const useOpenAi = event.target?.openai.checked;
     const useCache = event.target?.cache.checked;
     const payload = {
-      ownerRepo,
+      owner,
+      repo,
       issueId,
       useOpenAi,
       useCache,
@@ -55,9 +57,9 @@ function Form() {
         </nav>
         <form onSubmit={handleSubmit}>
           <fieldset role="group">
-            <input name="owner" autocomplete="on" type="text" placeholder="Owner" required />
-            <input name="repo" autocomplete="on" type="text" placeholder="Repo" required />
-            <input name="issue_id" autocomplete="on" type="number" placeholder="Issue ID" required />
+            <input name="owner" autoComplete="on" type="text" placeholder="Owner" required />
+            <input name="repo" autoComplete="on" type="text" placeholder="Repo" />
+            <input name="issue_id" autoComplete="on" type="number" placeholder="Issue ID" />
             <button type="submit" aria-busy={isLoading ? "true" : undefined}>
               Generate
             </button>
