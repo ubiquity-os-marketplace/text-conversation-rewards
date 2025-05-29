@@ -83,5 +83,6 @@ export interface GithubCommentScore {
     priority?: number;
     reward: number;
     weight?: number;
+    authorship: number;
   };
 }

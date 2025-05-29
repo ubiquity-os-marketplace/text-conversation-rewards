@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1001,
+    "node_id": "IC_kwDOHsKBrc5NygbJ",
+    "user": {
+      "login": "issueCreator",
+      "id": 12345,
+      "node_id": "MDQ6VXNlcjEyMzQ1",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12345?v=4",
+      "url": "https://api.github.com/users/issueCreator",
+      "html_url": "https://github.com/issueCreator",
+      "type": "User",
+      "site_admin": false
+    },
+    "body": "I've started working on this. Will track issue body edits.",
+    "created_at": "2023-04-05T10:15:30Z",
+    "updated_at": "2023-04-05T10:15:30Z",
+    "author_association": "CONTRIBUTOR"
+  },
+  {
+    "id": 1002,
+    "node_id": "IC_kwDOHsKBrc5NygbK",
+    "user": {
+      "login": "contributor1",
+      "id": 23456,
+      "node_id": "MDQ6VXNlcjIzNDU2",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23456?v=4",
+      "url": "https://api.github.com/users/contributor1",
+      "html_url": "https://github.com/contributor1",
+      "type": "User",
+      "site_admin": false
+    },
+    "body": "I've expanded the issue description to make it clearer what we need. Let's track character-level changes for better accuracy.",
+    "created_at": "2023-04-06T08:30:15Z",
+    "updated_at": "2023-04-06T08:30:15Z",
+    "author_association": "CONTRIBUTOR"
+  }
+]

@@ -86,6 +86,7 @@ function getResultOriginal() {
           score: {
             reward: 10,
             multiplier: 1,
+            authorship: 1,
           },
         },
       ],
@@ -110,6 +111,7 @@ function getResultOriginal() {
           score: {
             reward: 1.12,
             multiplier: 1,
+            authorship: 1,
           },
         },
       ],

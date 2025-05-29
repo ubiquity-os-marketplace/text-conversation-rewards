@@ -264,6 +264,7 @@ export class ContentEvaluatorModule extends BaseModule {
         relevance: new Decimal(currentRelevance).toNumber(),
         priority: priority,
         reward: currentReward.mul(currentRelevance).mul(priority).toDecimalPlaces(3).toNumber(),
+        authorship: currentComment.score?.authorship ?? 1,
       };
     }
 
