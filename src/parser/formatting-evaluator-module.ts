@@ -139,11 +139,7 @@ export class FormattingEvaluatorModule extends BaseModule {
 
     const result = getCharacterContributionPercentages(userEdits);
 
-    if (result[username]) {
-      return result[username];
-    }
-
-    return 1;
+    return result[username] || 1;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
