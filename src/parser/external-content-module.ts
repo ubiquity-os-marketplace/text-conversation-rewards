@@ -1,15 +1,23 @@
-import { GithubCommentScore } from "../../types/results";
+import { GithubCommentScore, Result } from "../types/results";
 import MarkdownIt from "markdown-it";
 import { JSDOM } from "jsdom";
 import OpenAI from "openai";
+import { BaseModule } from "../types/module";
+import { IssueActivity } from "../issue-activity";
+import { ContextPlugin } from "../types/plugin-input";
+import { ExternalContentConfig } from "../configuration/external-content-config";
 
-export class ExternalContentProcessor {
+export class ExternalContentProcessor extends BaseModule {
   private readonly _md = new MarkdownIt();
+  readonly _configuration: ExternalContentConfig | null = this.context.config.incentives.externalContent;
+  readonly _openAi = new OpenAI({
+    apiKey: this.context.env.OPENROUTER_API_KEY,
+    ...(this._configuration?.llmWebsiteModel.endpoint && { baseURL: this._configuration?.llmWebsiteModel.endpoint }),
+  });
 
-  constructor(
-    private readonly _openAi: OpenAI,
-    private readonly _llmModel: string
-  ) {}
+  constructor(context: ContextPlugin) {
+    super(context);
+  }
 
   public async evaluateExternalElements(comment: GithubCommentScore) {
     const html = this._md.render(comment.content.replaceAll("\r", "\n"));
@@ -84,5 +92,19 @@ export class ExternalContentProcessor {
       // Should replace the content in the image
       console.log(imageContent);
     }
+  }
+
+  get enabled(): boolean {
+    if (!this._configuration) {
+      this.context.logger.warn(
+        "The configuration for the module ExternalContentModule is invalid or missing, disabling."
+      );
+      return false;
+    }
+    return true;
+  }
+
+  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    return Promise.resolve(result);
   }
 }

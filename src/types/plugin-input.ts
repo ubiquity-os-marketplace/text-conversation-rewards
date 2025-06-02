@@ -13,6 +13,7 @@ import { simplificationIncentivizerConfigurationType } from "../configuration/si
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { Command } from "./command";
 import { EnvConfig } from "./env-type";
+import { externalContentConfigurationType } from "../configuration/external-content-config";
 
 export const pluginSettingsSchema = T.Object(
   {
@@ -74,6 +75,7 @@ export const pluginSettingsSchema = T.Object(
         formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()], { default: null }),
         payment: T.Union([paymentConfigurationType, T.Null()], { default: null }),
         githubComment: T.Union([githubCommentConfigurationType, T.Null()], { default: null }),
+        externalContent: T.Union([externalContentConfigurationType, T.Null()], { default: null }),
       },
       { default: {} }
     ),

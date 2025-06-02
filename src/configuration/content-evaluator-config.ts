@@ -1,7 +1,7 @@
 import { Static, Type } from "@sinclair/typebox";
 import { commentType } from "./formatting-evaluator-config";
 
-const openAiType = Type.Object(
+export const openAiType = Type.Object(
   {
     /**
      * AI model to use for comment evaluation.
