@@ -68,7 +68,7 @@ export class ExternalContentProcessor extends BaseModule {
           },
           {
             role: "user",
-            content: `Summarize the following external content in one paragraph, written in a single line: ${linkContent}`,
+            content: `Summarize the following external content in one paragraph, written in a single line. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
           },
         ],
       });

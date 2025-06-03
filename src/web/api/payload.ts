@@ -14,6 +14,16 @@ export async function getPayload(owner: string, repo: string, issueId: number, u
       endpoint: "http://localhost:4000/openai",
       tokenCountLimit: Number.MAX_VALUE,
     };
+    cfgFile.incentives.externalContent.llmImageModel = {
+      ...cfgFile.incentives.externalContent.llmImageModel,
+      endpoint: "http://localhost:4000/openai",
+      tokenCountLimit: Number.MAX_VALUE,
+    };
+    cfgFile.incentives.externalContent.llmWebsiteModel = {
+      ...cfgFile.incentives.externalContent.llmWebsiteModel,
+      endpoint: "http://localhost:4000/openai",
+      tokenCountLimit: Number.MAX_VALUE,
+    };
   }
 
   const octokit = new customOctokit({ auth: process.env.GITHUB_TOKEN });
