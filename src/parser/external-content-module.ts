@@ -37,8 +37,7 @@ export class ExternalContentProcessor extends BaseModule {
   }
 
   public async evaluateExternalElements(comment: GithubCommentScore) {
-    const urlRegex = /(?<!]\()(https?:\/\/[^\s<>"'\]]+)(?!\))/gi;
-    const html = this._md.render(comment.content.replaceAll("\r", "\n").replaceAll(urlRegex, "[$1]($1)"));
+    const html = this._md.render(comment.content.replaceAll("\r", "\n"));
     const jsDom = new JSDOM(html);
 
     if (jsDom.window.document.body) {

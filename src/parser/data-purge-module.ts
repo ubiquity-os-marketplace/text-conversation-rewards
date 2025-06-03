@@ -47,6 +47,7 @@ export class DataPurgeModule extends BaseModule {
   }
 
   private _cleanCommentBody(body: string): string {
+    const urlRegex = /(?<!]\()(https?:\/\/[^\s<>"'\]]+)(?!\))/gi;
     return (
       body
         // Remove quoted text
@@ -61,6 +62,8 @@ export class DataPurgeModule extends BaseModule {
         .replace(/\[\^[\w-]+\^?]/g, "")
         // Keep only one new line needed by markdown-it package to convert to html
         .replace(/\n\s*\n/g, "\n")
+        // Make sure links are all in the MD link format
+        .replaceAll(urlRegex, "[$1]($1)")
         .trim()
     );
   }
