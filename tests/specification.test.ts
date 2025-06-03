@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest 
 import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { http, HttpResponse, passthrough } from "msw";
+import { http, HttpResponse } from "msw";
 import { extractOriginalAuthor } from "../src/helpers/original-author";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
@@ -200,7 +200,6 @@ describe("Content Evaluator Module Test", () => {
       new ContentEvaluatorModule(ctx),
     ];
 
-    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
 
     const result = JSON.parse(processor.dump()) as Result;

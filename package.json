@@ -40,6 +40,7 @@
     "@ubiquity-os/ubiquity-os-logger": "^1.4.0",
     "csv-writer": "^1.6.0",
     "decimal.js": "10.4.3",
+    "diff": "^8.0.1",
     "ethers": "^5.7.2",
     "js-tiktoken": "^1.0.19",
     "jsdom": "24.0.0",
