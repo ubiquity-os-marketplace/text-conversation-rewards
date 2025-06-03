@@ -37,7 +37,8 @@ export class ExternalContentProcessor extends BaseModule {
   }
 
   public async evaluateExternalElements(comment: GithubCommentScore) {
-    const html = this._md.render(comment.content.replaceAll("\r", "\n"));
+    const urlRegex = /(?<!]\()(https?:\/\/[^\s<>"'\]]+)(?!\))/gi;
+    const html = this._md.render(comment.content.replaceAll("\r", "\n").replaceAll(urlRegex, "[$1]($1)"));
     const jsDom = new JSDOM(html);
 
     if (jsDom.window.document.body) {
@@ -112,11 +113,16 @@ export class ExternalContentProcessor extends BaseModule {
   }
 
   get enabled(): boolean {
+    if (!this._isEnabled) {
+      this.context.logger.warn(
+        "The configuration for the module ExternalContentProcessor is invalid or missing, disabling."
+      );
+    }
     return this._isEnabled;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    for (const [, data] of Object.entries(result)) {
+    for (const data of Object.values(result)) {
       if (data.comments?.length) {
         for (const comment of data.comments) {
           await this.evaluateExternalElements(comment);

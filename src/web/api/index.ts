@@ -88,7 +88,9 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
         })
       ).filter((o) => {
         if (payload.issue && o.id !== payload.issue.id) {
-          logger.warn(`Skipping issue ${o.id} because matching issue should be ${payload.issue.html_url}`);
+          logger.warn(
+            `Skipping issue ${o.id} (${o.html_url}) because matching issue should be ${payload.issue.html_url}`
+          );
           return false;
         }
         return !o.pull_request && o.state_reason === "completed";
