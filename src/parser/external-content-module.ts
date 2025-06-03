@@ -9,14 +9,31 @@ import { ExternalContentConfig } from "../configuration/external-content-config"
 
 export class ExternalContentProcessor extends BaseModule {
   private readonly _md = new MarkdownIt();
-  readonly _configuration: ExternalContentConfig | null = this.context.config.incentives.externalContent;
-  readonly _openAi = new OpenAI({
-    apiKey: this.context.env.OPENROUTER_API_KEY,
-    ...(this._configuration?.llmWebsiteModel.endpoint && { baseURL: this._configuration?.llmWebsiteModel.endpoint }),
-  });
+  private readonly _isEnabled: boolean;
+  readonly _configuration: ExternalContentConfig;
+  readonly _llmImage: OpenAI;
+  readonly _llmContent: OpenAI;
 
   constructor(context: ContextPlugin) {
     super(context);
+    const config = this.context.config.incentives.externalContent;
+    this._isEnabled = !!config;
+
+    if (config) {
+      this._configuration = config;
+      this._llmImage = new OpenAI({
+        apiKey: this.context.env.OPENROUTER_API_KEY,
+        ...(config.llmImageModel.endpoint && { baseURL: config.llmImageModel.endpoint }),
+      });
+      this._llmContent = new OpenAI({
+        apiKey: this.context.env.OPENROUTER_API_KEY,
+        ...(config.llmWebsiteModel.endpoint && { baseURL: config.llmWebsiteModel.endpoint }),
+      });
+    } else {
+      this._configuration = {} as ExternalContentConfig;
+      this._llmImage = {} as OpenAI;
+      this._llmContent = {} as OpenAI;
+    }
   }
 
   public async evaluateExternalElements(comment: GithubCommentScore) {
@@ -41,8 +58,8 @@ export class ExternalContentProcessor extends BaseModule {
       const contentType = linkResponse.headers.get("content-type");
       if (!contentType || !contentType.startsWith("text/")) continue;
       const linkContent = await linkResponse.text();
-      const llmResponse = await this._openAi.chat.completions.create({
-        model: this._llmModel,
+      const llmResponse = await this._llmContent.chat.completions.create({
+        model: this._configuration?.llmWebsiteModel.model,
         messages: [
           {
             role: "system",
@@ -71,8 +88,8 @@ export class ExternalContentProcessor extends BaseModule {
       if (!contentType || !contentType.startsWith("image/")) continue;
       const imageData = await linkResponse.arrayBuffer();
       const base64Image = Buffer.from(imageData).toString("base64");
-      const llmResponse = await this._openAi.chat.completions.create({
-        model: this._llmModel,
+      const llmResponse = await this._llmImage.chat.completions.create({
+        model: this._configuration.llmImageModel.model,
         messages: [
           {
             role: "system",
@@ -95,16 +112,17 @@ export class ExternalContentProcessor extends BaseModule {
   }
 
   get enabled(): boolean {
-    if (!this._configuration) {
-      this.context.logger.warn(
-        "The configuration for the module ExternalContentModule is invalid or missing, disabling."
-      );
-      return false;
-    }
-    return true;
+    return this._isEnabled;
   }
 
-  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    return Promise.resolve(result);
+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    for (const [, data] of Object.entries(result)) {
+      if (data.comments?.length) {
+        for (const comment of data.comments) {
+          await this.evaluateExternalElements(comment);
+        }
+      }
+    }
+    return result;
   }
 }
