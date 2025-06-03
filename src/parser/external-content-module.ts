@@ -42,18 +42,19 @@ export class ExternalContentProcessor extends BaseModule {
 
     if (jsDom.window.document.body) {
       const htmlElement = jsDom.window.document.body;
-      await this._handleAnchorElements(htmlElement);
-      await this._handleImageElements(htmlElement);
+      await this._handleAnchorElements(htmlElement, comment);
+      await this._handleImageElements(htmlElement, comment);
     } else {
       throw new Error(`Could not create DOM for comment [${JSON.stringify(comment)}]`);
     }
   }
 
-  private async _handleAnchorElements(htmlElement: HTMLElement) {
+  private async _handleAnchorElements(htmlElement: HTMLElement, comment: GithubCommentScore) {
     const anchors = htmlElement.getElementsByTagName("a");
     for (const anchor of anchors) {
       const href = anchor.getAttribute("href");
       if (!href) continue;
+
       const linkResponse = await fetch(href);
       const contentType = linkResponse.headers.get("content-type");
       if (!contentType || !contentType.startsWith("text/")) continue;
@@ -73,17 +74,19 @@ export class ExternalContentProcessor extends BaseModule {
       });
       const altContent = llmResponse.choices[0]?.message?.content;
       if (!altContent) continue;
-      // Should replace the content in the comment
-      console.log(altContent);
+
+      const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
+      comment.content = comment.content.replace(linkRegex, `[$1 (description: ${altContent})](${href})`);
     }
   }
 
-  private async _handleImageElements(htmlElement: HTMLElement) {
+  private async _handleImageElements(htmlElement: HTMLElement, comment: GithubCommentScore) {
     const images = htmlElement.getElementsByTagName("img");
     for (const image of images) {
-      const href = image.getAttribute("href");
-      if (!href) continue;
-      const linkResponse = await fetch(href);
+      const src = image.getAttribute("src");
+      if (!src) continue;
+
+      const linkResponse = await fetch(src);
       const contentType = linkResponse.headers.get("content-type");
       if (!contentType || !contentType.startsWith("image/")) continue;
       const imageData = await linkResponse.arrayBuffer();
@@ -106,8 +109,10 @@ export class ExternalContentProcessor extends BaseModule {
       });
       const imageContent = llmResponse.choices[0]?.message?.content;
       if (!imageContent) continue;
-      // Should replace the content in the image
-      console.log(imageContent);
+
+      const altText = image.getAttribute("alt") || "";
+      const imageRegex = new RegExp(`!\\[([^\\]]*)\\]\\(${src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
+      comment.content = comment.content.replace(imageRegex, `![${altText} (description: ${imageContent})](${src})`);
     }
   }
 
