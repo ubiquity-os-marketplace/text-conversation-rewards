@@ -7,7 +7,7 @@ import { ContextPlugin } from "../types/plugin-input";
 import { ExternalContentConfig } from "../configuration/external-content-config";
 import { marked } from "marked";
 import { encode } from "he";
-import ChatCompletionMessageParam = OpenAI.ChatCompletionMessageParam;
+import ChatCompletionCreateParamsNonStreaming = OpenAI.ChatCompletionCreateParamsNonStreaming;
 
 export class ExternalContentProcessor extends BaseModule {
   private readonly _isEnabled: boolean;
@@ -50,35 +50,56 @@ export class ExternalContentProcessor extends BaseModule {
     }
   }
 
-  private _buildUserPrompt(linkContent: string, contentType: string | null): ChatCompletionMessageParam[] {
+  private async _buildUserPrompt(href: string): Promise<ChatCompletionCreateParamsNonStreaming | null> {
+    const linkResponse = await fetch(href);
+    const contentType = linkResponse.headers.get("content-type");
+    if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
+
     if (contentType?.startsWith("image/")) {
-      return [
+      const imageData = await linkResponse.arrayBuffer();
+      const linkContent = Buffer.from(imageData).toString("base64");
+      this.context.logger.debug("Analyzing image", { href, model: this._configuration.llmImageModel.model });
+      return {
+        model: this._configuration.llmImageModel.model,
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful assistant that evaluates external images and summarize them.",
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "Describe this image concisely in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences",
+              },
+              { type: "image_url", image_url: { url: `data:image/jpeg;base64,${linkContent}` } },
+            ],
+          },
+        ],
+      };
+    }
+    const linkContent = await linkResponse.text();
+    this.context.logger.debug("Evaluating anchor content", {
+      href,
+      contentType,
+      model: this._configuration.llmWebsiteModel.model,
+    });
+    return {
+      model: this._configuration.llmWebsiteModel.model,
+      max_tokens: 1000,
+      messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that evaluates external images and summarize them.",
+          content: "You are a helpful assistant that evaluates external content and summerize it.",
         },
         {
           role: "user",
-          content: [
-            {
-              type: "text",
-              text: "Describe this image concisely in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences",
-            },
-            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${linkContent}` } },
-          ],
+          content: `Summarize the following external content in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
         },
-      ];
-    }
-    return [
-      {
-        role: "system",
-        content: "You are a helpful assistant that evaluates external content and summerize it.",
-      },
-      {
-        role: "user",
-        content: `Summarize the following external content in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
-      },
-    ];
+      ],
+    };
   }
 
   private async _handleAnchorElements(htmlElement: HTMLElement, comment: GithubCommentScore) {
@@ -90,17 +111,9 @@ export class ExternalContentProcessor extends BaseModule {
       const linkResponse = await fetch(href);
       const contentType = linkResponse.headers.get("content-type");
       if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) continue;
-      const linkContent = await linkResponse.text();
-      this.context.logger.debug("Evaluating anchor content", {
-        href,
-        contentType,
-        model: this._configuration.llmWebsiteModel.model,
-      });
-      const llmResponse = await this._llmWebsite.chat.completions.create({
-        model: this._configuration.llmWebsiteModel.model,
-        max_tokens: 1000,
-        messages: this._buildUserPrompt(linkContent, contentType),
-      });
+      const prompt = await this._buildUserPrompt(href);
+      if (!prompt) continue;
+      const llmResponse = await this._llmWebsite.chat.completions.create(prompt);
       const altContent = llmResponse.choices[0]?.message?.content;
       if (!altContent) continue;
 
@@ -118,15 +131,10 @@ export class ExternalContentProcessor extends BaseModule {
       const linkResponse = await fetch(src);
       const contentType = linkResponse.headers.get("content-type");
       if (!contentType || !contentType.startsWith("image/")) continue;
-      const imageData = await linkResponse.arrayBuffer();
-      const base64Image = Buffer.from(imageData).toString("base64");
-      this.context.logger.debug("Analyzing image", { src, model: this._configuration.llmImageModel.model });
 
-      const llmResponse = await this._llmImage.chat.completions.create({
-        model: this._configuration.llmImageModel.model,
-        max_tokens: 1000,
-        messages: this._buildUserPrompt(base64Image, contentType),
-      });
+      const prompt = await this._buildUserPrompt(src);
+      if (!prompt) continue;
+      const llmResponse = await this._llmImage.chat.completions.create(prompt);
       const imageContent = llmResponse.choices[0]?.message?.content;
       if (!imageContent) continue;
 
