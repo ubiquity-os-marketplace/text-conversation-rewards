@@ -47,7 +47,8 @@
     "UUSD",
     "issuecomment",
     "qwen",
-    "deepseek"
+    "deepseek",
+    "summarise"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
