@@ -201,7 +201,6 @@ export class FormattingEvaluatorModule extends BaseModule {
 
     sum = sum.add(new Decimal(regex.result));
 
-    // Apply readability scoring if enabled
     if (this._readabilityConfig.enabled && readability) {
       const readabilityScore = new Decimal(readability.score).mul(this._readabilityConfig.weight).mul(sum);
       sum = sum.add(readabilityScore);
@@ -250,7 +249,6 @@ export class FormattingEvaluatorModule extends BaseModule {
   }
 
   _updateTagCount(tagCount: Record<string, { score: number; elementCount: number }>, tagName: string, score: number) {
-    // If we already had that tag included in the result, merge them and update total count
     if (Object.keys(tagCount).includes(tagName)) {
       tagCount[tagName].elementCount += 1;
     } else {
@@ -264,7 +262,6 @@ export class FormattingEvaluatorModule extends BaseModule {
   _createUniqueEntryForAnchor(element: Element, commentScore: GithubCommentScore) {
     const url = element.getAttribute("href");
     if (url) {
-      // We only want to add urls that do not point to self
       if (!areBaseUrlsEqual(url, commentScore.url)) {
         return url.split(/[#?]/)[0];
       }
@@ -279,44 +276,90 @@ export class FormattingEvaluatorModule extends BaseModule {
     const commentType = commentScore.commentType;
 
     for (const element of elements) {
-      const tagName = element.tagName.toLowerCase();
-      let score = 0;
-      if (this._multipliers[commentType]?.html[tagName] !== undefined) {
-        score = this._multipliers[commentType].html[tagName].score;
-        if (!this._multipliers[commentType].html[tagName].countWords) {
-          element.textContent = "";
-          // img tags are expected to be empty most of the time
-          if (tagName !== "img") {
-            continue;
-          }
-        }
-      } else {
-        this.context.logger.error(
-          `Could not find multiplier for element <${tagName}> with association <${commentTypeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
-        );
-        element.remove();
-        continue;
-      }
-      if (tagName === "a") {
-        const newUrl = this._createUniqueEntryForAnchor(element, commentScore);
-        if (newUrl) {
-          urlSet.add(newUrl);
-        }
-      } else {
-        const bodyContent = element.textContent;
-        const matches = bodyContent?.match(urlRegex);
-        matches?.map((url) => url.split(/[#?]/)[0]).forEach((url) => urlSet.add(url));
-        this._updateTagCount(formatting, tagName, score);
-      }
+      this._processElement(element, commentType, commentScore, formatting, urlSet);
     }
-    urlSet.forEach(() => {
-      this._updateTagCount(formatting, "a", this._multipliers[commentType].html["a"].score ?? 0);
-    });
+
+    this._addUrlsToFormatting(urlSet, formatting, commentType);
     const words = this._countWordsFromRegex(
       htmlElement.textContent?.replace(urlRegex, "") ?? "",
       this._multipliers[commentType]?.wordValue
     );
 
     return { formatting, words };
+  }
+
+  private _processElement(
+    element: Element,
+    commentType: number,
+    commentScore: GithubCommentScore,
+    formatting: Record<string, { score: number; elementCount: number }>,
+    urlSet: Set<string>
+  ) {
+    const tagName = element.tagName.toLowerCase();
+    const score = this._getElementScore(element, tagName, commentType);
+
+    if (score === null) return;
+
+    if (tagName === "a") {
+      this._handleAnchorElement(element, commentScore, urlSet);
+    } else {
+      this._handleRegularElement(element, tagName, score, formatting, urlSet);
+    }
+  }
+
+  private _getElementScore(element: Element, tagName: string, commentType: number): number | null {
+    const multiplier = this._multipliers[commentType]?.html[tagName];
+
+    if (multiplier === undefined) {
+      this.context.logger.error(
+        `Could not find multiplier for element <${tagName}> with association <${commentTypeReplacer("type", commentType)}> in comment [${element.outerHTML}]`
+      );
+      element.remove();
+      return null;
+    }
+
+    if (!multiplier.countWords) {
+      element.textContent = "";
+      // img tags are expected to be empty most of the time
+      if (tagName !== "img") {
+        return null;
+      }
+    }
+
+    return multiplier.score;
+  }
+
+  private _handleAnchorElement(element: Element, commentScore: GithubCommentScore, urlSet: Set<string>) {
+    const newUrl = this._createUniqueEntryForAnchor(element, commentScore);
+    if (newUrl) {
+      urlSet.add(newUrl);
+    }
+  }
+
+  private _handleRegularElement(
+    element: Element,
+    tagName: string,
+    score: number,
+    formatting: Record<string, { score: number; elementCount: number }>,
+    urlSet: Set<string>
+  ) {
+    this._extractUrlsFromElement(element, urlSet);
+    this._updateTagCount(formatting, tagName, score);
+  }
+
+  private _extractUrlsFromElement(element: Element, urlSet: Set<string>) {
+    const bodyContent = element.textContent;
+    const matches = bodyContent?.match(urlRegex);
+    matches?.map((url) => url.split(/[#?]/)[0]).forEach((url) => urlSet.add(url));
+  }
+
+  private _addUrlsToFormatting(
+    urlSet: Set<string>,
+    formatting: Record<string, { score: number; elementCount: number }>,
+    commentType: number
+  ) {
+    urlSet.forEach(() => {
+      this._updateTagCount(formatting, "a", this._multipliers[commentType].html["a"].score ?? 0);
+    });
   }
 }
