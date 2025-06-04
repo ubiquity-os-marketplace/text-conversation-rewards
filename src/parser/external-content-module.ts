@@ -6,6 +6,8 @@ import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
 import { ExternalContentConfig } from "../configuration/external-content-config";
 import { marked } from "marked";
+import { encode } from "he";
+import ChatCompletionMessageParam = OpenAI.ChatCompletionMessageParam;
 
 export class ExternalContentProcessor extends BaseModule {
   private readonly _isEnabled: boolean;
@@ -48,6 +50,37 @@ export class ExternalContentProcessor extends BaseModule {
     }
   }
 
+  private _buildUserPrompt(linkContent: string, contentType: string | null): ChatCompletionMessageParam[] {
+    if (contentType?.startsWith("image/")) {
+      return [
+        {
+          role: "system",
+          content: "You are a helpful assistant that evaluates external images and summarize them.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Describe this image concisely in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences",
+            },
+            { type: "image_url", image_url: { url: `data:image/jpeg;base64,${linkContent}` } },
+          ],
+        },
+      ];
+    }
+    return [
+      {
+        role: "system",
+        content: "You are a helpful assistant that evaluates external content and summerize it.",
+      },
+      {
+        role: "user",
+        content: `Summarize the following external content in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
+      },
+    ];
+  }
+
   private async _handleAnchorElements(htmlElement: HTMLElement, comment: GithubCommentScore) {
     const anchors = htmlElement.getElementsByTagName("a");
     for (const anchor of anchors) {
@@ -56,7 +89,7 @@ export class ExternalContentProcessor extends BaseModule {
 
       const linkResponse = await fetch(href);
       const contentType = linkResponse.headers.get("content-type");
-      if (!contentType || !contentType.startsWith("text/")) continue;
+      if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) continue;
       const linkContent = await linkResponse.text();
       this.context.logger.debug("Evaluating anchor content", {
         href,
@@ -66,22 +99,13 @@ export class ExternalContentProcessor extends BaseModule {
       const llmResponse = await this._llmWebsite.chat.completions.create({
         model: this._configuration.llmWebsiteModel.model,
         max_tokens: 1000,
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful assistant that evaluates external content and summerize it.",
-          },
-          {
-            role: "user",
-            content: `Summarize the following external content in one paragraph, written in a single line. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
-          },
-        ],
+        messages: this._buildUserPrompt(linkContent, contentType),
       });
       const altContent = llmResponse.choices[0]?.message?.content;
       if (!altContent) continue;
 
       const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-      comment.content = comment.content.replace(linkRegex, `[$1](${href} "${altContent}")`);
+      comment.content = comment.content.replace(linkRegex, `[$1](${href} "${encode(altContent)}")`);
     }
   }
 
@@ -101,26 +125,14 @@ export class ExternalContentProcessor extends BaseModule {
       const llmResponse = await this._llmImage.chat.completions.create({
         model: this._configuration.llmImageModel.model,
         max_tokens: 1000,
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful assistant that evaluates external images and summarize them.",
-          },
-          {
-            role: "user",
-            content: [
-              { type: "text", text: "Describe this image concisely in one paragraph, written in a single line." },
-              { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } },
-            ],
-          },
-        ],
+        messages: this._buildUserPrompt(base64Image, contentType),
       });
       const imageContent = llmResponse.choices[0]?.message?.content;
       if (!imageContent) continue;
 
       const escapedSrc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const imageRegex = new RegExp(`<img([^>]*?)alt="[^"]*"([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
-      comment.content = comment.content.replace(imageRegex, `<img$1alt="${imageContent}"$2src="${src}"$3 />`);
+      comment.content = comment.content.replace(imageRegex, `<img$1alt="${encode(imageContent)}"$2src="${src}"$3 />`);
     }
   }
 

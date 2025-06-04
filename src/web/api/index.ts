@@ -78,7 +78,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
     }
 
     const repositories = await getRepositoryList(pluginContext, orgName);
-    const results = [];
+    const results: Record<string, unknown>[] = [];
     for (const repo of repositories) {
       logger.info(repo.html_url);
       const issues = (
