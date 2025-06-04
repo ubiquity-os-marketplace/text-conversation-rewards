@@ -1,5 +1,4 @@
 import { GithubCommentScore, Result } from "../types/results";
-import MarkdownIt from "markdown-it";
 import { JSDOM } from "jsdom";
 import OpenAI from "openai";
 import { BaseModule } from "../types/module";
@@ -9,11 +8,10 @@ import { ExternalContentConfig } from "../configuration/external-content-config"
 import { marked } from "marked";
 
 export class ExternalContentProcessor extends BaseModule {
-  private readonly _md = new MarkdownIt();
   private readonly _isEnabled: boolean;
   readonly _configuration: ExternalContentConfig;
   readonly _llmImage: OpenAI;
-  readonly _llmContent: OpenAI;
+  readonly _llmWebsite: OpenAI;
 
   constructor(context: ContextPlugin) {
     super(context);
@@ -26,14 +24,14 @@ export class ExternalContentProcessor extends BaseModule {
         apiKey: this.context.env.OPENROUTER_API_KEY,
         ...(config.llmImageModel.endpoint && { baseURL: config.llmImageModel.endpoint }),
       });
-      this._llmContent = new OpenAI({
+      this._llmWebsite = new OpenAI({
         apiKey: this.context.env.OPENROUTER_API_KEY,
         ...(config.llmWebsiteModel.endpoint && { baseURL: config.llmWebsiteModel.endpoint }),
       });
     } else {
       this._configuration = {} as ExternalContentConfig;
       this._llmImage = {} as OpenAI;
-      this._llmContent = {} as OpenAI;
+      this._llmWebsite = {} as OpenAI;
     }
   }
 
@@ -60,8 +58,14 @@ export class ExternalContentProcessor extends BaseModule {
       const contentType = linkResponse.headers.get("content-type");
       if (!contentType || !contentType.startsWith("text/")) continue;
       const linkContent = await linkResponse.text();
-      const llmResponse = await this._llmContent.chat.completions.create({
-        model: this._configuration?.llmWebsiteModel.model,
+      this.context.logger.debug("Evaluating anchor content", {
+        href,
+        contentType,
+        model: this._configuration.llmWebsiteModel.model,
+      });
+      const llmResponse = await this._llmWebsite.chat.completions.create({
+        model: this._configuration.llmWebsiteModel.model,
+        max_tokens: 1000,
         messages: [
           {
             role: "system",
@@ -92,12 +96,15 @@ export class ExternalContentProcessor extends BaseModule {
       if (!contentType || !contentType.startsWith("image/")) continue;
       const imageData = await linkResponse.arrayBuffer();
       const base64Image = Buffer.from(imageData).toString("base64");
+      this.context.logger.debug("Analyzing image", { src, model: this._configuration.llmImageModel.model });
+
       const llmResponse = await this._llmImage.chat.completions.create({
         model: this._configuration.llmImageModel.model,
+        max_tokens: 1000,
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that evaluates external images and summerize it.",
+            content: "You are a helpful assistant that evaluates external images and summarize them.",
           },
           {
             role: "user",
@@ -113,7 +120,7 @@ export class ExternalContentProcessor extends BaseModule {
 
       const escapedSrc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const imageRegex = new RegExp(`<img([^>]*?)alt="[^"]*"([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
-      comment.content = comment.content.replace(imageRegex, `<img$1alt=${imageContent}$2src="${src}"$3 />`);
+      comment.content = comment.content.replace(imageRegex, `<img$1alt="${imageContent}"$2src="${src}"$3 />`);
     }
   }
 
