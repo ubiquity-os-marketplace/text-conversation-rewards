@@ -65,7 +65,7 @@ export class ExternalContentProcessor extends BaseModule {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that evaluates external images and summarize them.",
+            content: "You are a helpful assistant that evaluates external images and summarise them.",
           },
           {
             role: "user",
@@ -92,11 +92,11 @@ export class ExternalContentProcessor extends BaseModule {
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that evaluates external content and summerize it.",
+          content: "You are a helpful assistant that evaluates external content and summarise it.",
         },
         {
           role: "user",
-          content: `Summarize the following external content in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
+          content: `Summarise the following external content in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
         },
       ],
     };
