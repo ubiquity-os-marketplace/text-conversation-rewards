@@ -76,7 +76,7 @@ export class ExternalContentProcessor extends BaseModule {
       if (!altContent) continue;
 
       const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-      comment.content = comment.content.replace(linkRegex, `[$1 (description: ${altContent})](${href})`);
+      comment.content = comment.content.replace(linkRegex, `[$1](${href} ${altContent})`);
     }
   }
 
@@ -112,7 +112,7 @@ export class ExternalContentProcessor extends BaseModule {
 
       const altText = image.getAttribute("alt") || "";
       const imageRegex = new RegExp(`!\\[([^\\]]*)\\]\\(${src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-      comment.content = comment.content.replace(imageRegex, `![${altText} (description: ${imageContent})](${src})`);
+      comment.content = comment.content.replace(imageRegex, `![${altText}](${src} ${imageContent})`);
     }
   }
 

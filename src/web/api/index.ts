@@ -185,38 +185,52 @@ app.use(
 );
 
 // Fakes OpenAi routes
-app.post("/openai/*", async (c) => {
+app.post("/openai/:module/*", async (c) => {
   const text = await c.req.json();
   const regex = /The number of entries in the JSON response must equal (\d+)/g;
 
-  const comments: { id: string; comment: string; author: string }[] = [];
-
   if ("messages" in text) {
-    const allMatches = [...text.messages[0].content.matchAll(regex)];
+    switch (c.req.param("module")) {
+      case "contentEvaluator": {
+        const comments: { id: string; comment: string; author: string }[] = [];
 
-    const lastMatch = allMatches.length > 0 ? allMatches[allMatches.length - 1] : null;
+        if ("messages" in text) {
+          const allMatches = [...text.messages[0].content.matchAll(regex)];
 
-    const length = lastMatch ? parseInt(lastMatch[1], 10) : 0;
-    comments.push(
-      ...Array.from({ length }, () => ({
-        id: crypto.randomUUID(),
-        comment: "Generic comment",
-        author: "Generic author",
-      }))
-    );
+          const lastMatch = allMatches.length > 0 ? allMatches[allMatches.length - 1] : null;
+
+          const length = lastMatch ? parseInt(lastMatch[1], 10) : 0;
+          comments.push(
+            ...Array.from({ length }, () => ({
+              id: crypto.randomUUID(),
+              comment: "Generic comment",
+              author: "Generic author",
+            }))
+          );
+        }
+
+        const commentsObject = comments.reduce(
+          (acc, comment) => {
+            acc[comment.id] = 0.83;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
+
+        return Response.json({
+          choices: [{ message: { content: JSON.stringify(commentsObject) } }],
+        });
+      }
+      case "llmWebsiteModel":
+        return Response.json({
+          choices: [{ message: { content: JSON.stringify("This website contains some relevant content.") } }],
+        });
+      case "llmImageModel":
+        return Response.json({
+          choices: [{ message: { content: JSON.stringify("This image represents some relevant content.") } }],
+        });
+    }
   }
-
-  const commentsObject = comments.reduce(
-    (acc, comment) => {
-      acc[comment.id] = 0.83;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-
-  return Response.json({
-    choices: [{ message: { content: JSON.stringify(commentsObject) } }],
-  });
 });
 
 app.get("/openai/*", () => {
