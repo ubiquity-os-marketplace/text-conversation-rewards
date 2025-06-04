@@ -1975,12 +1975,12 @@
                 "default": {},
                 "type": "object",
                 "properties": {
-                  "llmImageModel": {
+                  "llmWebsiteModel": {
                     "default": {},
                     "type": "object",
                     "properties": {
                       "model": {
-                        "default": "deepseek/deepseek-r1-0528-qwen3-8b",
+                        "default": "deepseek/deepseek-r1-0528",
                         "description": "LLM model, e.g. anthropic/claude-3.7-sonnet, openai/gpt-4o",
                         "examples": [
                           "mistralai/mistral-small-3.1-24b-instruct:free",
@@ -2284,7 +2284,7 @@
                       }
                     }
                   },
-                  "llmWebsiteModel": {
+                  "llmImageModel": {
                     "default": {},
                     "type": "object",
                     "properties": {
