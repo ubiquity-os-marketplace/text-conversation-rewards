@@ -78,6 +78,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
     }
 
     const repositories = await getRepositoryList(pluginContext, orgName);
+    const results = [];
     for (const repo of repositories) {
       logger.info(repo.html_url);
       const issues = (
@@ -120,11 +121,12 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
 
           const processor = new Processor(ctx);
           await processor.run(activity);
-          processor.dump();
+          const result = processor.dump();
+          results.push(JSON.parse(result));
         }
       }
     }
-    return { output: { result: { evaluationCommentHtml: `<div>Done!</div>}` } } };
+    return results;
   },
   manifest as Manifest,
   {

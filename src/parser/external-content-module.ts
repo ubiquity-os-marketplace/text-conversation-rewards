@@ -6,6 +6,7 @@ import { BaseModule } from "../types/module";
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
 import { ExternalContentConfig } from "../configuration/external-content-config";
+import { marked } from "marked";
 
 export class ExternalContentProcessor extends BaseModule {
   private readonly _md = new MarkdownIt();
@@ -37,7 +38,7 @@ export class ExternalContentProcessor extends BaseModule {
   }
 
   public async evaluateExternalElements(comment: GithubCommentScore) {
-    const html = this._md.render(comment.content.replaceAll("\r", "\n"));
+    const html = await marked(comment.content);
     const jsDom = new JSDOM(html);
 
     if (jsDom.window.document.body) {
