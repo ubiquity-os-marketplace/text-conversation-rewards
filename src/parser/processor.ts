@@ -27,9 +27,9 @@ export class Processor {
   constructor(context: ContextPlugin) {
     this.add(new UserExtractorModule(context))
       .add(new DataPurgeModule(context))
+      .add(new ExternalContentProcessor(context))
       .add(new FormattingEvaluatorModule(context))
       .add(new ContentEvaluatorModule(context))
-      .add(new ExternalContentProcessor(context))
       .add(new ReviewIncentivizerModule(context))
       .add(new EventIncentivesModule(context))
       .add(new SimplificationIncentivizerModule(context))

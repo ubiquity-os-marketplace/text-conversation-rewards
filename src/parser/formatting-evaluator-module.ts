@@ -1,7 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
-import MarkdownIt from "markdown-it";
 import { CommentAssociation, commentEnum, CommentType } from "../configuration/comment-types";
 import {
   FormattingEvaluatorConfiguration,
@@ -19,6 +18,7 @@ import { areBaseUrlsEqual } from "../helpers/urls";
 import { parseGitHubUrl } from "../start";
 import { IssueEdits, QUERY_ISSUE_EDITS } from "../types/comment-edits";
 import { getCharacterContributionPercentages } from "../helpers/diff-count";
+import { marked } from "marked";
 
 interface Multiplier {
   multiplier: number;
@@ -29,7 +29,6 @@ interface Multiplier {
 export class FormattingEvaluatorModule extends BaseModule {
   private readonly _configuration: FormattingEvaluatorConfiguration | null =
     this.context.config.incentives.formattingEvaluator;
-  private readonly _md = new MarkdownIt();
   private readonly _multipliers: { [k: number]: Multiplier } = {};
   private readonly _wordCountExponent: number;
   private readonly _readabilityConfig: FormattingEvaluatorConfiguration["readabilityScoring"];
@@ -147,7 +146,7 @@ export class FormattingEvaluatorModule extends BaseModule {
       const currentElement = result[key];
       const comments = currentElement.comments ?? [];
       for (const comment of comments) {
-        const { formatting, words, readability } = this._getFormattingScore(comment);
+        const { formatting, words, readability } = await this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.commentType] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(
           formatting,
@@ -178,7 +177,7 @@ export class FormattingEvaluatorModule extends BaseModule {
     return result;
   }
 
-  private _calculateFormattingResult(formatting: ReturnType<typeof this._getFormattingScore>["formatting"]) {
+  private _calculateFormattingResult(formatting: Awaited<ReturnType<typeof this._getFormattingScore>>["formatting"]) {
     return Object.values(formatting)
       .reduce((acc, curr) => acc.add(new Decimal(curr.score).mul(new Decimal(curr.elementCount))), new Decimal(0))
       .toDecimalPlaces(3)
@@ -186,7 +185,7 @@ export class FormattingEvaluatorModule extends BaseModule {
   }
 
   private _calculateFormattingTotal(
-    formatting: ReturnType<typeof this._getFormattingScore>["formatting"],
+    formatting: Awaited<ReturnType<typeof this._getFormattingScore>>["formatting"],
     regex: WordResult,
     multiplierFactor: Multiplier,
     readability?: ReadabilityScore
@@ -221,9 +220,8 @@ export class FormattingEvaluatorModule extends BaseModule {
     return true;
   }
 
-  _getFormattingScore(comment: GithubCommentScore) {
-    // Change the \r to \n to fix markup interpretation
-    const html = this._md.render(comment.content.replaceAll("\r", "\n"));
+  async _getFormattingScore(comment: GithubCommentScore) {
+    const html = await marked(comment.content);
     this.context.logger.debug("Will analyze formatting for the current content:", { comment: comment.content, html });
     const temp = new JSDOM(html);
     if (temp.window.document.body) {
@@ -287,7 +285,10 @@ export class FormattingEvaluatorModule extends BaseModule {
         score = this._multipliers[commentType].html[tagName].score;
         if (!this._multipliers[commentType].html[tagName].countWords) {
           element.textContent = "";
-          continue;
+          // img tags are expected to be empty most of the time
+          if (tagName !== "img") {
+            continue;
+          }
         }
       } else {
         this.context.logger.error(

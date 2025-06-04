@@ -225,11 +225,11 @@ app.post("/openai/:module/*", async (c) => {
       }
       case "llmWebsiteModel":
         return Response.json({
-          choices: [{ message: { content: JSON.stringify("This website contains some relevant content.") } }],
+          choices: [{ message: { content: "This website contains some relevant content." } }],
         });
       case "llmImageModel":
         return Response.json({
-          choices: [{ message: { content: JSON.stringify("This image represents some relevant content.") } }],
+          choices: [{ message: { content: "This image represents some relevant content." } }],
         });
     }
   }

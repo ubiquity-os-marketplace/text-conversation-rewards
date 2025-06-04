@@ -44,7 +44,6 @@
     "ethers": "^5.7.2",
     "js-tiktoken": "^1.0.19",
     "jsdom": "26.1.0",
-    "markdown-it": "14.1.0",
     "marked": "^15.0.12",
     "minimatch": "^10.0.1",
     "ms": "^2.1.3",
