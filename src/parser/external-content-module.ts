@@ -81,7 +81,7 @@ export class ExternalContentProcessor extends BaseModule {
       if (!altContent) continue;
 
       const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-      comment.content = comment.content.replace(linkRegex, `[$1](${href} ${altContent})`);
+      comment.content = comment.content.replace(linkRegex, `[$1](${href} "${altContent}")`);
     }
   }
 
