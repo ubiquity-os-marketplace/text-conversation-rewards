@@ -45,7 +45,9 @@
     "OPENROUTER",
     "keccak",
     "UUSD",
-    "issuecomment"
+    "issuecomment",
+    "qwen",
+    "deepseek"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

@@ -65,7 +65,7 @@ export class ExternalContentProcessor extends BaseModule {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that evaluates external content and summerizes it.",
+            content: "You are a helpful assistant that evaluates external content and summerize it.",
           },
           {
             role: "user",
@@ -97,7 +97,7 @@ export class ExternalContentProcessor extends BaseModule {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that evaluates external images and summerizes it.",
+            content: "You are a helpful assistant that evaluates external images and summerize it.",
           },
           {
             role: "user",
