@@ -111,9 +111,9 @@ export class ExternalContentProcessor extends BaseModule {
       const imageContent = llmResponse.choices[0]?.message?.content;
       if (!imageContent) continue;
 
-      const altText = image.getAttribute("alt") || "";
-      const imageRegex = new RegExp(`!\\[([^\\]]*)\\]\\(${src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-      comment.content = comment.content.replace(imageRegex, `![${altText}](${src} ${imageContent})`);
+      const escapedSrc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const imageRegex = new RegExp(`<img([^>]*?)alt="[^"]*"([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
+      comment.content = comment.content.replace(imageRegex, `<img$1alt=${imageContent}$2src="${src}"$3 />`);
     }
   }
 
