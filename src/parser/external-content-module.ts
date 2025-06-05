@@ -1,14 +1,13 @@
-import { GithubCommentScore, Result } from "../types/results";
-import { JSDOM } from "jsdom";
-import OpenAI from "openai";
-import { BaseModule } from "../types/module";
-import { IssueActivity } from "../issue-activity";
-import { ContextPlugin } from "../types/plugin-input";
-import { ExternalContentConfig } from "../configuration/external-content-config";
-import { marked } from "marked";
 import { encode } from "he";
-import { retry } from "../helpers/retry";
-import ms, { StringValue } from "ms";
+import { JSDOM } from "jsdom";
+import { marked } from "marked";
+import OpenAI from "openai";
+import { ExternalContentConfig } from "../configuration/external-content-config";
+import { checkLlmRetryableState, retry } from "../helpers/retry";
+import { IssueActivity } from "../issue-activity";
+import { BaseModule } from "../types/module";
+import { ContextPlugin } from "../types/plugin-input";
+import { GithubCommentScore, Result } from "../types/results";
 import ChatCompletionCreateParamsNonStreaming = OpenAI.ChatCompletionCreateParamsNonStreaming;
 
 export class ExternalContentProcessor extends BaseModule {
@@ -123,23 +122,7 @@ export class ExternalContentProcessor extends BaseModule {
         },
         {
           maxRetries: this._configuration.llmWebsiteModel.maxRetries,
-          isErrorRetryable: (error) => {
-            if (error instanceof OpenAI.APIError && error.status) {
-              if ([500, 503].includes(error.status)) {
-                return true;
-              }
-              if (error.status === 429 && error.headers) {
-                const retryAfterTokens = error.headers["x-ratelimit-reset-tokens"];
-                const retryAfterRequests = error.headers["x-ratelimit-reset-requests"];
-                if (!retryAfterTokens || !retryAfterRequests) {
-                  return true;
-                }
-                const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
-                return Number.isFinite(retryAfter) ? retryAfter : true;
-              }
-            }
-            return false;
-          },
+          isErrorRetryable: checkLlmRetryableState,
         }
       );
 
@@ -169,23 +152,7 @@ export class ExternalContentProcessor extends BaseModule {
         },
         {
           maxRetries: this._configuration.llmImageModel.maxRetries,
-          isErrorRetryable: (error) => {
-            if (error instanceof OpenAI.APIError && error.status) {
-              if ([500, 503].includes(error.status)) {
-                return true;
-              }
-              if (error.status === 429 && error.headers) {
-                const retryAfterTokens = error.headers["x-ratelimit-reset-tokens"];
-                const retryAfterRequests = error.headers["x-ratelimit-reset-requests"];
-                if (!retryAfterTokens || !retryAfterRequests) {
-                  return true;
-                }
-                const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
-                return Number.isFinite(retryAfter) ? retryAfter : true;
-              }
-            }
-            return false;
-          },
+          isErrorRetryable: checkLlmRetryableState,
         }
       );
 
