@@ -156,16 +156,40 @@ export class ExternalContentProcessor extends BaseModule {
       const src = image.getAttribute("src");
       if (!src) continue;
 
-      const linkResponse = await fetch(src);
-      const contentType = linkResponse.headers.get("content-type");
-      if (!contentType || !contentType.startsWith("image/")) continue;
+      const imageContent = await retry(
+        async () => {
+          const linkResponse = await fetch(src);
+          const contentType = linkResponse.headers.get("content-type");
+          if (!contentType || !contentType.startsWith("image/")) return null;
 
-      const prompt = await this._buildUserPrompt(src);
-      if (!prompt) continue;
-      const llmResponse = await this._llmImage.chat.completions.create(prompt);
-      const imageContent = llmResponse.choices[0]?.message?.content;
+          const prompt = await this._buildUserPrompt(src);
+          if (!prompt) return null;
+          const llmResponse = await this._llmImage.chat.completions.create(prompt);
+          return llmResponse.choices[0]?.message?.content;
+        },
+        {
+          maxRetries: this._configuration.llmImageModel.maxRetries,
+          isErrorRetryable: (error) => {
+            if (error instanceof OpenAI.APIError && error.status) {
+              if ([500, 503].includes(error.status)) {
+                return true;
+              }
+              if (error.status === 429 && error.headers) {
+                const retryAfterTokens = error.headers["x-ratelimit-reset-tokens"];
+                const retryAfterRequests = error.headers["x-ratelimit-reset-requests"];
+                if (!retryAfterTokens || !retryAfterRequests) {
+                  return true;
+                }
+                const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
+                return Number.isFinite(retryAfter) ? retryAfter : true;
+              }
+            }
+            return false;
+          },
+        }
+      );
+
       if (!imageContent) continue;
-
       const escapedSrc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const imageRegex = new RegExp(`<img([^>]*?)alt="[^"]*"([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
       comment.content = comment.content.replace(imageRegex, `<img$1alt="${encode(imageContent)}"$2src="${src}"$3 />`);
