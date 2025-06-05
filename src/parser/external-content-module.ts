@@ -7,6 +7,8 @@ import { ContextPlugin } from "../types/plugin-input";
 import { ExternalContentConfig } from "../configuration/external-content-config";
 import { marked } from "marked";
 import { encode } from "he";
+import { retry } from "../helpers/retry";
+import ms, { StringValue } from "ms";
 import ChatCompletionCreateParamsNonStreaming = OpenAI.ChatCompletionCreateParamsNonStreaming;
 
 export class ExternalContentProcessor extends BaseModule {
@@ -108,13 +110,39 @@ export class ExternalContentProcessor extends BaseModule {
       const href = anchor.getAttribute("href");
       if (!href) continue;
 
-      const linkResponse = await fetch(href);
-      const contentType = linkResponse.headers.get("content-type");
-      if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) continue;
-      const prompt = await this._buildUserPrompt(href);
-      if (!prompt) continue;
-      const llmResponse = await this._llmWebsite.chat.completions.create(prompt);
-      const altContent = llmResponse.choices[0]?.message?.content;
+      const altContent = await retry(
+        async () => {
+          const linkResponse = await fetch(href);
+          const contentType = linkResponse.headers.get("content-type");
+          if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
+          const prompt = await this._buildUserPrompt(href);
+          if (!prompt) return null;
+          const llmResponse =
+            await this[contentType.startsWith("image/") ? "_llmImage" : "_llmWebsite"].chat.completions.create(prompt);
+          return llmResponse.choices[0]?.message?.content;
+        },
+        {
+          maxRetries: this._configuration.llmWebsiteModel.maxRetries,
+          isErrorRetryable: (error) => {
+            if (error instanceof OpenAI.APIError && error.status) {
+              if ([500, 503].includes(error.status)) {
+                return true;
+              }
+              if (error.status === 429 && error.headers) {
+                const retryAfterTokens = error.headers["x-ratelimit-reset-tokens"];
+                const retryAfterRequests = error.headers["x-ratelimit-reset-requests"];
+                if (!retryAfterTokens || !retryAfterRequests) {
+                  return true;
+                }
+                const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
+                return Number.isFinite(retryAfter) ? retryAfter : true;
+              }
+            }
+            return false;
+          },
+        }
+      );
+
       if (!altContent) continue;
 
       const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
