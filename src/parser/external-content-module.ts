@@ -1,4 +1,4 @@
-import { encode } from "he";
+import he from "he";
 import { JSDOM } from "jsdom";
 import { marked } from "marked";
 import OpenAI from "openai";
@@ -129,7 +129,7 @@ export class ExternalContentProcessor extends BaseModule {
       if (!altContent) continue;
 
       const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-      comment.content = comment.content.replace(linkRegex, `[$1](${href} "${encode(altContent)}")`);
+      comment.content = comment.content.replace(linkRegex, `[$1](${href} "${he.encode(altContent)}")`);
     }
   }
 
@@ -159,7 +159,10 @@ export class ExternalContentProcessor extends BaseModule {
       if (!imageContent) continue;
       const escapedSrc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const imageRegex = new RegExp(`<img([^>]*?)alt="[^"]*"([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
-      comment.content = comment.content.replace(imageRegex, `<img$1alt="${encode(imageContent)}"$2src="${src}"$3 />`);
+      comment.content = comment.content.replace(
+        imageRegex,
+        `<img$1alt="${he.encode(imageContent)}"$2src="${src}"$3 />`
+      );
     }
   }
 

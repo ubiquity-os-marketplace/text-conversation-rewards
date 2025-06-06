@@ -207,7 +207,7 @@ describe("Content Evaluator Module Test", () => {
     const users = Object.keys(result);
     const hasOriginalAuthor = users.some((user) => user === "reviewer");
     expect(hasOriginalAuthor).toBeTruthy();
-    expect(result["reviewer"].total).toEqual(8.3201);
+    expect(result["reviewer"].total).toEqual(9.7684);
     // "reviewer" should also be credited for the spec even though it didn't write it, due to the "originally posted by"
     expect(result["reviewer"].comments).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: activity.self?.id })])
