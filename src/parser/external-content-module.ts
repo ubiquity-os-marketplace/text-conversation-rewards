@@ -45,22 +45,23 @@ export class ExternalContentProcessor extends BaseModule {
 
     if (jsDom.window.document.body) {
       const htmlElement = jsDom.window.document.body;
-      await this._handleAnchorElements(htmlElement, comment);
-      await this._handleImageElements(htmlElement, comment);
+      await this._handleExternalElements(htmlElement, comment);
     } else {
       throw new Error(`Could not create DOM for comment [${JSON.stringify(comment)}]`);
     }
   }
 
-  private async _buildUserPrompt(href: string): Promise<ChatCompletionCreateParamsNonStreaming | null> {
-    const linkResponse = await fetch(href);
+  private async _buildUserPrompt(linkResponse: Response): Promise<ChatCompletionCreateParamsNonStreaming | null> {
     const contentType = linkResponse.headers.get("content-type");
     if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
 
     if (contentType?.startsWith("image/")) {
       const imageData = await linkResponse.arrayBuffer();
       const linkContent = Buffer.from(imageData).toString("base64");
-      this.context.logger.debug("Analyzing image", { href, model: this._configuration.llmImageModel.model });
+      this.context.logger.debug("Analyzing image", {
+        href: linkResponse.url,
+        model: this._configuration.llmImageModel.model,
+      });
       return {
         model: this._configuration.llmImageModel.model,
         max_tokens: 1000,
@@ -84,7 +85,7 @@ export class ExternalContentProcessor extends BaseModule {
     }
     const linkContent = await linkResponse.text();
     this.context.logger.debug("Evaluating anchor content", {
-      href,
+      href: linkResponse.url,
       contentType,
       model: this._configuration.llmWebsiteModel.model,
     });
@@ -104,36 +105,42 @@ export class ExternalContentProcessor extends BaseModule {
     };
   }
 
-  private async _handleAnchorElements(htmlElement: HTMLElement, comment: GithubCommentScore) {
+  private async _handleExternalElements(htmlElement: HTMLElement, comment: GithubCommentScore) {
     const anchors = htmlElement.getElementsByTagName("a");
-    for (const anchor of anchors) {
-      const href = anchor.getAttribute("href");
-      if (!href) continue;
+    const images = htmlElement.getElementsByTagName("img");
+
+    const processElement = async (element: HTMLAnchorElement | HTMLImageElement, isImage: boolean) => {
+      const url = isImage
+        ? (element as HTMLImageElement).getAttribute("src")
+        : (element as HTMLAnchorElement).getAttribute("href");
+      if (!url) return;
 
       const altContent = await retry(
         async () => {
-          const linkResponse = await fetch(href);
+          const linkResponse = await fetch(url);
           if (!linkResponse.ok) {
             throw this.context.logger.error("Failed to fetch the content of an external element.", {
-              href,
+              url,
             });
           }
           const contentType = linkResponse.headers.get("content-type");
           if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
-          const prompt = await this._buildUserPrompt(href);
+          if (isImage && !contentType.startsWith("image/")) return null;
+
+          const prompt = await this._buildUserPrompt(linkResponse);
           if (!prompt) return null;
           const llmResponse =
             await this[contentType.startsWith("image/") ? "_llmImage" : "_llmWebsite"].chat.completions.create(prompt);
-          if (llmResponse.choices[0]?.message?.content) {
+          if (!llmResponse.choices[0]?.message?.content) {
             throw this.context.logger.error("Failed to generate a description for the given external element.", {
-              href,
+              url,
               contentType,
             });
           }
           return llmResponse.choices[0]?.message?.content;
         },
         {
-          maxRetries: this._configuration.llmWebsiteModel.maxRetries,
+          maxRetries: this._configuration[isImage ? "llmImageModel" : "llmWebsiteModel"].maxRetries,
           isErrorRetryable: (error) => {
             const llmRetryable = checkLlmRetryableState(error);
             return llmRetryable || error instanceof LogReturn;
@@ -141,57 +148,27 @@ export class ExternalContentProcessor extends BaseModule {
         }
       );
 
-      if (!altContent) continue;
+      if (!altContent) return;
 
-      const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-      comment.content = comment.content.replace(linkRegex, `[$1](${href} "${he.encode(altContent)}")`);
+      if (isImage) {
+        const escapedSrc = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const imageRegex = new RegExp(`<img([^>]*?)alt="[^"]*"([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
+        comment.content = comment.content.replace(
+          imageRegex,
+          `<img$1alt="${he.encode(altContent)}"$2src="${url}"$3 />`
+        );
+      } else {
+        const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
+        comment.content = comment.content.replace(linkRegex, `[$1](${url} "${he.encode(altContent)}")`);
+      }
+    };
+
+    for (const anchor of anchors) {
+      await processElement(anchor, false);
     }
-  }
 
-  private async _handleImageElements(htmlElement: HTMLElement, comment: GithubCommentScore) {
-    const images = htmlElement.getElementsByTagName("img");
     for (const image of images) {
-      const src = image.getAttribute("src");
-      if (!src) continue;
-
-      const imageContent = await retry(
-        async () => {
-          const linkResponse = await fetch(src);
-          if (!linkResponse.ok) {
-            throw this.context.logger.error("Failed to fetch the content of an external element.", {
-              src,
-            });
-          }
-          const contentType = linkResponse.headers.get("content-type");
-          if (!contentType || !contentType.startsWith("image/")) return null;
-
-          const prompt = await this._buildUserPrompt(src);
-          if (!prompt) return null;
-          const llmResponse = await this._llmImage.chat.completions.create(prompt);
-          if (llmResponse.choices[0]?.message?.content) {
-            throw this.context.logger.error("Failed to generate a description for the given external element.", {
-              src,
-              contentType,
-            });
-          }
-          return llmResponse.choices[0]?.message?.content;
-        },
-        {
-          maxRetries: this._configuration.llmImageModel.maxRetries,
-          isErrorRetryable: (error) => {
-            const llmRetryable = checkLlmRetryableState(error);
-            return llmRetryable || error instanceof LogReturn;
-          },
-        }
-      );
-
-      if (!imageContent) continue;
-      const escapedSrc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const imageRegex = new RegExp(`<img([^>]*?)alt="[^"]*"([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
-      comment.content = comment.content.replace(
-        imageRegex,
-        `<img$1alt="${he.encode(imageContent)}"$2src="${src}"$3 />`
-      );
+      await processElement(image, true);
     }
   }
 
