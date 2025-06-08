@@ -9,6 +9,7 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import ChatCompletionCreateParamsNonStreaming = OpenAI.ChatCompletionCreateParamsNonStreaming;
+import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 
 export class ExternalContentProcessor extends BaseModule {
   private readonly _isEnabled: boolean;
@@ -112,17 +113,31 @@ export class ExternalContentProcessor extends BaseModule {
       const altContent = await retry(
         async () => {
           const linkResponse = await fetch(href);
+          if (!linkResponse.ok) {
+            throw this.context.logger.error("Failed to fetch the content of an external element.", {
+              href,
+            });
+          }
           const contentType = linkResponse.headers.get("content-type");
           if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
           const prompt = await this._buildUserPrompt(href);
           if (!prompt) return null;
           const llmResponse =
             await this[contentType.startsWith("image/") ? "_llmImage" : "_llmWebsite"].chat.completions.create(prompt);
+          if (llmResponse.choices[0]?.message?.content) {
+            throw this.context.logger.error("Failed to generate a description for the given external element.", {
+              href,
+              contentType,
+            });
+          }
           return llmResponse.choices[0]?.message?.content;
         },
         {
           maxRetries: this._configuration.llmWebsiteModel.maxRetries,
-          isErrorRetryable: checkLlmRetryableState,
+          isErrorRetryable: (error) => {
+            const llmRetryable = checkLlmRetryableState(error);
+            return llmRetryable || error instanceof LogReturn;
+          },
         }
       );
 
@@ -142,17 +157,31 @@ export class ExternalContentProcessor extends BaseModule {
       const imageContent = await retry(
         async () => {
           const linkResponse = await fetch(src);
+          if (!linkResponse.ok) {
+            throw this.context.logger.error("Failed to fetch the content of an external element.", {
+              src,
+            });
+          }
           const contentType = linkResponse.headers.get("content-type");
           if (!contentType || !contentType.startsWith("image/")) return null;
 
           const prompt = await this._buildUserPrompt(src);
           if (!prompt) return null;
           const llmResponse = await this._llmImage.chat.completions.create(prompt);
+          if (llmResponse.choices[0]?.message?.content) {
+            throw this.context.logger.error("Failed to generate a description for the given external element.", {
+              src,
+              contentType,
+            });
+          }
           return llmResponse.choices[0]?.message?.content;
         },
         {
           maxRetries: this._configuration.llmImageModel.maxRetries,
-          isErrorRetryable: checkLlmRetryableState,
+          isErrorRetryable: (error) => {
+            const llmRetryable = checkLlmRetryableState(error);
+            return llmRetryable || error instanceof LogReturn;
+          },
         }
       );
 
