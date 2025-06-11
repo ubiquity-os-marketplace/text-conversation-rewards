@@ -152,11 +152,14 @@ export class ExternalContentProcessor extends BaseModule {
 
       if (isImage) {
         const escapedSrc = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const imageRegex = new RegExp(`<img([^>]*?)alt="[^"]*"([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
-        comment.content = comment.content.replace(
-          imageRegex,
-          `<img$1alt="${he.encode(altContent)}"$2src="${url}"$3 />`
-        );
+        const imageRegex = new RegExp(`<img([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
+        comment.content = comment.content.replace(imageRegex, (match, beforeSrc, afterSrc) => {
+          if (match.includes("alt=")) {
+            return match.replace(/alt="[^"]*"/, `alt="${he.encode(altContent)}"`);
+          } else {
+            return `<img${beforeSrc}alt="${he.encode(altContent)}" src="${url}"${afterSrc} />`;
+          }
+        });
       } else {
         const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
         comment.content = comment.content.replace(linkRegex, `[$1](${url} "${he.encode(altContent)}")`);
