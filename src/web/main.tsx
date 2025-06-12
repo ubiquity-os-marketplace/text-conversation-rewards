@@ -30,11 +30,10 @@ function Form() {
         body: JSON.stringify(payload),
       });
       const data = await result.json();
-      setResponse(
-        Object.values(data.output)
-          .map((o) => o.evaluationCommentHtml)
-          .join("\n")
-      );
+      const response = data.output
+        .flatMap((item) => Object.values(item).map((user) => user.evaluationCommentHtml))
+        .join("\n");
+      setResponse(response);
     } catch (error) {
       console.error("Error:", error);
       setResponse("Failed to run the plugin, check the console for more details.");

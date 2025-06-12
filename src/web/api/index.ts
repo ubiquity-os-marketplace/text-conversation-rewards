@@ -78,6 +78,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
     }
 
     const repositories = await getRepositoryList(pluginContext, orgName);
+    const results: Record<string, unknown>[] = [];
     for (const repo of repositories) {
       logger.info(repo.html_url);
       const issues = (
@@ -88,7 +89,9 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
         })
       ).filter((o) => {
         if (payload.issue && o.id !== payload.issue.id) {
-          logger.warn(`Skipping issue ${o.id} because matching issue should be ${payload.issue.html_url}`);
+          logger.warn(
+            `Skipping issue ${o.id} (${o.html_url}) because matching issue should be ${payload.issue.html_url}`
+          );
           return false;
         }
         return !o.pull_request && o.state_reason === "completed";
@@ -118,11 +121,12 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
 
           const processor = new Processor(ctx);
           await processor.run(activity);
-          processor.dump();
+          const result = processor.dump();
+          results.push(JSON.parse(result));
         }
       }
     }
-    return { output: { result: { evaluationCommentHtml: `<div>Done!</div>}` } } };
+    return results;
   },
   manifest as Manifest,
   {
@@ -183,38 +187,52 @@ app.use(
 );
 
 // Fakes OpenAi routes
-app.post("/openai/*", async (c) => {
+app.post("/openai/:module/*", async (c) => {
   const text = await c.req.json();
   const regex = /The number of entries in the JSON response must equal (\d+)/g;
 
-  const comments: { id: string; comment: string; author: string }[] = [];
-
   if ("messages" in text) {
-    const allMatches = [...text.messages[0].content.matchAll(regex)];
+    switch (c.req.param("module")) {
+      case "contentEvaluator": {
+        const comments: { id: string; comment: string; author: string }[] = [];
 
-    const lastMatch = allMatches.length > 0 ? allMatches[allMatches.length - 1] : null;
+        if ("messages" in text) {
+          const allMatches = [...text.messages[0].content.matchAll(regex)];
 
-    const length = lastMatch ? parseInt(lastMatch[1], 10) : 0;
-    comments.push(
-      ...Array.from({ length }, () => ({
-        id: crypto.randomUUID(),
-        comment: "Generic comment",
-        author: "Generic author",
-      }))
-    );
+          const lastMatch = allMatches.length > 0 ? allMatches[allMatches.length - 1] : null;
+
+          const length = lastMatch ? parseInt(lastMatch[1], 10) : 0;
+          comments.push(
+            ...Array.from({ length }, () => ({
+              id: crypto.randomUUID(),
+              comment: "Generic comment",
+              author: "Generic author",
+            }))
+          );
+        }
+
+        const commentsObject = comments.reduce(
+          (acc, comment) => {
+            acc[comment.id] = 0.83;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
+
+        return Response.json({
+          choices: [{ message: { content: JSON.stringify(commentsObject) } }],
+        });
+      }
+      case "llmWebsiteModel":
+        return Response.json({
+          choices: [{ message: { content: "This website contains some relevant content." } }],
+        });
+      case "llmImageModel":
+        return Response.json({
+          choices: [{ message: { content: "This image represents some relevant content." } }],
+        });
+    }
   }
-
-  const commentsObject = comments.reduce(
-    (acc, comment) => {
-      acc[comment.id] = 0.83;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-
-  return Response.json({
-    choices: [{ message: { content: JSON.stringify(commentsObject) } }],
-  });
 });
 
 app.get("/openai/*", () => {
