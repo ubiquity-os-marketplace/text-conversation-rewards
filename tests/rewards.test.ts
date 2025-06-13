@@ -273,4 +273,35 @@ describe("Rewards tests", () => {
     const result: Result = JSON.parse(processor.dump());
     expect(Object.values(result)?.[0].evaluationCommentHtml).not.toMatch("Error fetching wallet");
   });
+
+  it("Should display a capped messaged on capped rewards", async () => {
+    const taskPrice = 0.01;
+    let originalLabel: string | undefined = undefined;
+    let labelIdx = -1;
+    if (activity.self) {
+      const idx = activity.self.labels.findIndex((item) => typeof item !== "string" && item.name?.includes("Price"));
+      if (typeof activity.self.labels[idx] !== "string") {
+        originalLabel = activity.self.labels[idx].name;
+        labelIdx = idx;
+        activity.self.labels[idx].name = `Price: ${taskPrice} USD`;
+      }
+    }
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new GithubCommentModule(ctx),
+    ];
+    await processor.run(activity);
+    const result: Result = JSON.parse(processor.dump());
+    if (activity.self && labelIdx > -1 && originalLabel) {
+      // @ts-expect-error This is checker earlier
+      activity.self.labels[labelIdx].name = originalLabel;
+    }
+    expect(Object.values(result)?.[0].evaluationCommentHtml).toMatch(
+      `Your rewards have been limited to the task price of ${taskPrice} WXDAI`
+    );
+  });
 });
