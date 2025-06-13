@@ -297,7 +297,7 @@ describe("Rewards tests", () => {
     await processor.run(activity);
     const result: Result = JSON.parse(processor.dump());
     if (activity.self && labelIdx > -1 && originalLabel) {
-      // @ts-expect-error This is checker earlier
+      // @ts-expect-error This is checked earlier
       activity.self.labels[labelIdx].name = originalLabel;
     }
     expect(Object.values(result)?.[0].evaluationCommentHtml).toMatch(
