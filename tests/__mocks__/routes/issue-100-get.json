@@ -1,0 +1,62 @@
+{
+  "id": 1005,
+  "node_id": "I_kwDOHsKBrc54Gdbh",
+  "number": 100,
+  "title": "Implement authorship tracking for issue edits",
+  "user": {
+    "login": "issueCreator",
+    "id": 12345,
+    "node_id": "MDQ6VXNlcjEyMzQ1",
+    "avatar_url": "https://avatars.githubusercontent.com/u/12345?v=4",
+    "url": "https://api.github.com/users/issueCreator",
+    "html_url": "https://github.com/issueCreator",
+    "type": "User",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 4609215512,
+      "node_id": "LA_kwDOHsKBrc8AAAABEw8pWA",
+      "url": "https://api.github.com/repos/ubiquity/work.ubq.fi/labels/bug",
+      "name": "bug",
+      "color": "d73a4a",
+      "default": true,
+      "description": "Something isn't working"
+    }
+  ],
+  "state": "closed",
+  "assignees": [
+    {
+      "login": "issueCreator",
+      "id": 12345,
+      "node_id": "MDQ6VXNlcjEyMzQ1",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12345?v=4",
+      "url": "https://api.github.com/users/issueCreator",
+      "html_url": "https://github.com/issueCreator",
+      "type": "User",
+      "site_admin": false
+    }
+  ],
+  "milestone": null,
+  "comments": 2,
+  "created_at": "2023-04-04T05:21:54Z",
+  "updated_at": "2023-04-10T15:53:27Z",
+  "closed_at": "2023-04-10T15:53:25Z",
+  "author_association": "CONTRIBUTOR",
+  "body": "We need to track the authorship of issue body edits so we can properly reward contributors who help improve the quality of issue descriptions.\n\nThis implementation should:\n1. Track all edits to the issue body\n2. Calculate percentage of contribution by each editor\n3. Distribute rewards accordingly\n4. Generate a visual report showing contribution percentages\n\nAdditional requirements:\n- Handle formatting changes properly\n- Track character-level changes\n- Support multiple editors",
+  "reactions": {
+    "url": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/reactions",
+    "total_count": 0,
+    "+1": 0,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/timeline",
+  "performed_via_github_app": null,
+  "state_reason": "completed"
+}

@@ -1,7 +1,8 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import { RestEndpointMethodTypes } from "@octokit/rest";
+import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
@@ -80,7 +81,7 @@ const ctx = {
   },
   config: cfg,
   logger: new Logs("debug"),
-  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+  octokit: new customOctokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
@@ -332,8 +333,6 @@ describe("Modules tests", () => {
       new EventIncentivesModule(ctx),
       new PaymentModule(ctx),
     ];
-    // This catches calls by getFastestRpc
-    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(paymentResults);
@@ -351,8 +350,6 @@ describe("Modules tests", () => {
       new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
-    // This catches calls by getFastestRpc
-    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(githubCommentResults);
@@ -384,7 +381,6 @@ describe("Modules tests", () => {
       new PaymentModule(ctx),
       new GithubCommentModule(ctx),
     ];
-    server.use(http.post("https://*", () => passthrough()));
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result["gentlementlegen"].evaluationCommentHtml).toEqual(undefined);
@@ -525,6 +521,7 @@ describe("Modules tests", () => {
             score: {
               reward: 50000,
               multiplier: 3,
+              authorship: 1,
             },
           },
         ],
