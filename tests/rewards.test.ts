@@ -15,6 +15,7 @@ import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
+import { Result } from "../src/types/results";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -234,4 +235,42 @@ describe("Rewards tests", () => {
       fs.readFileSync("./tests/__mocks__/results/output-authorship-reward.html", "utf-8")
     );
   }, 120000);
+
+  it("Should display a wallet warning on missing wallet, but none on XP mode", async () => {
+    const modifiedCtx = {
+      ...ctx,
+      config: {
+        ...ctx.config,
+        rewards: undefined,
+      },
+    };
+    modifiedCtx.config.rewards = undefined;
+    const processor = new Processor(modifiedCtx);
+    processor["_transformers"] = [
+      new UserExtractorModule(modifiedCtx),
+      new DataPurgeModule(modifiedCtx),
+      new FormattingEvaluatorModule(modifiedCtx),
+      new ContentEvaluatorModule(modifiedCtx),
+      new PaymentModule(modifiedCtx),
+      new GithubCommentModule(modifiedCtx),
+    ];
+    await processor.run(activity);
+    const result: Result = JSON.parse(processor.dump());
+    expect(Object.values(result)?.[0].evaluationCommentHtml).toMatch("Error fetching wallet");
+  });
+
+  it("Should not display a wallet warning on XP mode", async () => {
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+      new PaymentModule(ctx),
+      new GithubCommentModule(ctx),
+    ];
+    await processor.run(activity);
+    const result: Result = JSON.parse(processor.dump());
+    expect(Object.values(result)?.[0].evaluationCommentHtml).not.toMatch("Error fetching wallet");
+  });
 });
