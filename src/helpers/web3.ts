@@ -1,6 +1,7 @@
-import { MaxUint256, PERMIT2_ADDRESS, PermitBatchTransferFrom, SignatureTransfer } from "@uniswap/permit2-sdk";
+import { MaxUint256, PermitBatchTransferFrom, SignatureTransfer } from "@uniswap/permit2-sdk";
 import { BigNumber, BigNumberish, Contract, ContractInterface, ethers, Wallet } from "ethers";
 import permit2Abi from "../abi/permit2.json";
+import { PERMIT2_ADDRESS } from "../types/permit2";
 
 export interface TransferRequest {
   address: string;
