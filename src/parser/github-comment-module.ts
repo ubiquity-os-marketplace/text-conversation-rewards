@@ -1,6 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
 import { decodePermits } from "@ubiquity-os/permit-generation";
-import { permit2Address } from "@uniswap/permit2-sdk";
 import { createHash } from "crypto";
 import Decimal from "decimal.js";
 import * as fs from "fs";
@@ -17,6 +16,7 @@ import { commentTypeReplacer, removeKeyFromObject } from "../helpers/result-repl
 import { ERC20_ABI, Erc20Wrapper, getContract, PERMIT2_ABI, Permit2Wrapper } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
+import { PERMIT2_ADDRESS } from "../types/permit2";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
 
 interface SortedTasks {
@@ -87,7 +87,7 @@ export class GithubCommentModule extends BaseModule {
     }
     for (const permit of permits) {
       const { owner, nonce, networkId } = permit;
-      const permit2Contract = await getContract(networkId, permit2Address(networkId), PERMIT2_ABI);
+      const permit2Contract = await getContract(networkId, PERMIT2_ADDRESS, PERMIT2_ABI);
       const permit2Wrapper = new Permit2Wrapper(permit2Contract);
       if (!(await permit2Wrapper.isNonceClaimed(owner, nonce))) {
         return false;
