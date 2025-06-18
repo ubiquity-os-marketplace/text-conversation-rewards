@@ -2,7 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
 import MarkdownIt from "markdown-it";
-import { commentEnum, CommentType } from "../configuration/comment-types";
+import { CommentAssociation, commentEnum, CommentType } from "../configuration/comment-types";
 import {
   FormattingEvaluatorConfiguration,
   formattingEvaluatorConfigurationType,
@@ -16,6 +16,9 @@ import { commentTypeReplacer } from "../helpers/result-replacer";
 import { ContextPlugin } from "../types/plugin-input";
 import { parsePriorityLabel } from "../helpers/github";
 import { areBaseUrlsEqual } from "../helpers/urls";
+import { parseGitHubUrl } from "../start";
+import { IssueEdits, QUERY_ISSUE_EDITS } from "../types/comment-edits";
+import { getCharacterContributionPercentages } from "../helpers/diff-count";
 
 interface Multiplier {
   multiplier: number;
@@ -114,6 +117,31 @@ export class FormattingEvaluatorModule extends BaseModule {
     };
   }
 
+  async _getOriginalAuthorshipPercentage(username: string, comment: GithubCommentScore) {
+    if (!(comment.commentType & CommentAssociation.SPECIFICATION)) {
+      return 1;
+    }
+    const { owner, repo, issue_number } = parseGitHubUrl(this.context.payload.issue.html_url);
+    const data = await this.context.octokit.graphql.paginate<IssueEdits>(QUERY_ISSUE_EDITS, {
+      owner,
+      repo,
+      issue_number,
+    });
+
+    const userEdits = data.repository.issue.userContentEdits.nodes.sort((a, b) => {
+      return new Date(a.editedAt).getTime() - new Date(b.editedAt).getTime();
+    });
+
+    if (!userEdits.length) {
+      this.context.logger.debug("No edits detected on the issue body, skipping.");
+      return 1;
+    }
+
+    const result = getCharacterContributionPercentages(userEdits);
+
+    return result[username] || 1;
+  }
+
   async transform(data: Readonly<IssueActivity>, result: Result) {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
@@ -128,7 +156,10 @@ export class FormattingEvaluatorModule extends BaseModule {
           readability
         ).toDecimalPlaces(2);
         const priority = parsePriorityLabel(data.self?.labels);
-        const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal).toNumber();
+        const authorship = await this._getOriginalAuthorshipPercentage(key, comment);
+        const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal)
+          .mul(authorship)
+          .toNumber();
         comment.score = {
           ...comment.score,
           reward,
@@ -140,6 +171,7 @@ export class FormattingEvaluatorModule extends BaseModule {
           words,
           readability,
           multiplier: multiplierFactor.multiplier,
+          authorship,
         };
       }
     }

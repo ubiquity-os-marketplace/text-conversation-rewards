@@ -1,0 +1,54 @@
+{
+  "repository": {
+    "issue": {
+      "userContentEdits": {
+        "nodes": [
+          {
+            "createdAt": "2023-04-04T05:21:54Z",
+            "editedAt": "2023-04-04T05:21:54Z",
+            "diff": "We need to track authorship of edits.",
+            "editor": {
+              "login": "issueCreator"
+            }
+          },
+          {
+            "createdAt": "2023-04-05T12:30:00Z",
+            "editedAt": "2023-04-05T12:30:00Z",
+            "diff": "We need to track the authorship of issue body edits so we can properly reward contributors.",
+            "editor": {
+              "login": "contributor1"
+            }
+          },
+          {
+            "createdAt": "2023-04-06T09:45:22Z",
+            "editedAt": "2023-04-06T09:45:22Z",
+            "diff": "We need to track the authorship of issue body edits so we can properly reward contributors who help improve the quality of issue descriptions.",
+            "editor": {
+              "login": "contributor2"
+            }
+          },
+          {
+            "createdAt": "2023-04-07T14:20:15Z",
+            "editedAt": "2023-04-07T14:20:15Z",
+            "diff": "We need to track the authorship of issue body edits so we can properly reward contributors who help improve the quality of issue descriptions.\n\nThis implementation should:\n1. Track all edits to the issue body\n2. Calculate percentage of contribution by each editor\n3. Distribute rewards accordingly",
+            "editor": {
+              "login": "contributor1"
+            }
+          },
+          {
+            "createdAt": "2023-04-10T15:50:00Z",
+            "editedAt": "2023-04-10T15:50:00Z",
+            "diff": "We need to track the authorship of issue body edits so we can properly reward contributors who help improve the quality of issue descriptions.\n\nThis implementation should:\n1. Track all edits to the issue body\n2. Calculate percentage of contribution by each editor\n3. Distribute rewards accordingly\n4. Generate a visual report showing contribution percentages\n\nAdditional requirements:\n- Handle formatting changes properly\n- Track character-level changes\n- Support multiple editors",
+            "editor": {
+              "login": "contributor3"
+            }
+          }
+        ],
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": null
+        }
+      }
+    }
+  }
+}
