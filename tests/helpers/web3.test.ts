@@ -1,16 +1,16 @@
-import {
-  Erc20Wrapper,
-  getEvmWallet,
-  getContract,
-  ERC20_ABI,
-  Permit2Wrapper,
-  BatchTransferPermit,
-  TransferRequest,
-} from "../../src/helpers/web3";
-import { Interface } from "ethers/lib/utils";
-import { BigNumber, ethers, utils } from "ethers";
 import { describe, expect, it, jest } from "@jest/globals";
 import { MaxUint256 } from "@uniswap/permit2-sdk";
+import { BigNumber, ethers, utils } from "ethers";
+import { Interface } from "ethers/lib/utils";
+import {
+  BatchTransferPermit,
+  ERC20_ABI,
+  Erc20Wrapper,
+  getContract,
+  getEvmWallet,
+  Permit2Wrapper,
+  TransferRequest,
+} from "../../src/helpers/web3";
 
 class MockProvider extends ethers.providers.BaseProvider {
   async getNetwork(): Promise<ethers.providers.Network> {
@@ -100,7 +100,7 @@ describe("web3.ts", () => {
         { to: "0x2", requestedAmount: utils.parseUnits("200", 18) },
       ],
       signature:
-        "0x758bcfab03a055e22db67d02d906fe60755cc7e3f47e89026354c94f2a26554c76e9b4e1e4d91479ba89667cbf3d1ed732800ca54b81879e8790a2b5b284cc351c",
+        "0xff39fa6eacfd5147a5fae772f93dc9b47d97c684423b2ccd44a4d3516b5d238f246db6fc0690e269f5ee1a15761a29c9e8347072b291db716cfdfb0488b1be141c",
     } as BatchTransferPermit);
   }, 120000);
 });

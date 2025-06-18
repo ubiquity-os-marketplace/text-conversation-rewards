@@ -1,7 +1,6 @@
 import { context } from "@actions/github";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
-import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { decodeError } from "@ubiquity-os/ethers-decode-error";
 import {
@@ -16,7 +15,8 @@ import {
   SupportedEvents,
   TokenType,
 } from "@ubiquity-os/permit-generation";
-import { MaxUint256, permit2Address } from "@uniswap/permit2-sdk";
+import { MaxUint256 } from "@uniswap/permit2-sdk";
+import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
 import { BigNumber, ethers, utils } from "ethers";
 import { PaymentConfiguration, paymentConfigurationType } from "../configuration/payment-configuration";
@@ -34,6 +34,7 @@ import {
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
+import { PERMIT2_ADDRESS } from "../types/permit2";
 import { PayoutMode, Result } from "../types/results";
 import chains from "../types/rpcs.json";
 
@@ -304,7 +305,7 @@ export class PaymentModule extends BaseModule {
         directTransferLog
       );
     }
-    const permit2Contract = await getContract(this._evmNetworkId, permit2Address(this._evmNetworkId), PERMIT2_ABI);
+    const permit2Contract = await getContract(this._evmNetworkId, PERMIT2_ADDRESS, PERMIT2_ABI);
     const permit2Wrapper = new Permit2Wrapper(permit2Contract);
     const { gasEstimation, batchTransferPermit } = await this._getGasEstimation(
       fundingWallet,
@@ -341,10 +342,7 @@ export class PaymentModule extends BaseModule {
 
   private async _fetchBalancesAndAllowances(rewardTokenWrapper: Erc20Wrapper, fundingWallet: ethers.Wallet) {
     const rewardBalance = await rewardTokenWrapper.getBalance(fundingWallet.address);
-    const rewardAllowance = await rewardTokenWrapper.getAllowance(
-      fundingWallet.address,
-      permit2Address(this._evmNetworkId)
-    );
+    const rewardAllowance = await rewardTokenWrapper.getAllowance(fundingWallet.address, PERMIT2_ADDRESS);
     const nativeBalance = await fundingWallet.getBalance();
     return { rewardBalance, rewardAllowance, nativeBalance };
   }
