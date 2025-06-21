@@ -394,6 +394,10 @@ export class GithubCommentModule extends BaseModule {
   }
 
   _createWalletWarning(walletAddress: string | null | undefined) {
+    // When using XP mode, this warning is not relevant, as it doesn't require a wallet
+    if (!this.context.config.rewards) {
+      return "";
+    }
     if (walletAddress === null) {
       return `<h6>⚠️ Wallet address is not set</h6>`;
     } else if (walletAddress === undefined) {
