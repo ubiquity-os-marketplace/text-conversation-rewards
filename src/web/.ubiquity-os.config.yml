@@ -39,9 +39,20 @@ tcrHtmlConfig: &tcrHtmlConfig
     countWords: true
 
 evmPrivateEncrypted: "0x00"
+rewards:
+  evmNetworkId: 100
+  evmPrivateEncrypted: "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ"
+  erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
+
 incentives:
+  payment:
+    automaticTransferMode: false
   requirePriceLabel: "auto"
-  externalContent: {}
+  externalContent:
+    llmImageModel:
+      model: meta-llama/llama-4-maverick:free
+    llmWebsiteModel:
+      model: deepseek/deepseek-r1-0528:free
   contentEvaluator:
     openAi:
       endpoint: https://openrouter.ai/api/v1
