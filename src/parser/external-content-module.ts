@@ -1,3 +1,4 @@
+import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import he from "he";
 import { JSDOM } from "jsdom";
 import { marked } from "marked";
@@ -9,7 +10,6 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import ChatCompletionCreateParamsNonStreaming = OpenAI.ChatCompletionCreateParamsNonStreaming;
-import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 
 export class ExternalContentProcessor extends BaseModule {
   private readonly _isEnabled: boolean;
@@ -150,20 +150,18 @@ export class ExternalContentProcessor extends BaseModule {
 
       if (!altContent) return;
 
-      if (isImage) {
-        const escapedSrc = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const imageRegex = new RegExp(`<img([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
-        comment.content = comment.content.replace(imageRegex, (match, beforeSrc, afterSrc) => {
-          if (match.includes("alt=")) {
-            return match.replace(/alt="[^"]*"/, `alt="${he.encode(altContent)}"`);
-          } else {
-            return `<img${beforeSrc}alt="${he.encode(altContent)}" src="${url}"${afterSrc} />`;
-          }
-        });
-      } else {
-        const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-        comment.content = comment.content.replace(linkRegex, `[$1](${url} "${he.encode(altContent)}")`);
-      }
+      const escapedSrc = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const imageHtmlRegex = new RegExp(`<img([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
+      comment.content = comment.content.replace(imageHtmlRegex, (match, beforeSrc, afterSrc) => {
+        if (match.includes("alt=")) {
+          return match.replace(/alt="[^"]*"/, `alt="${he.encode(altContent)}"`);
+        } else {
+          return `<img${beforeSrc}alt="${he.encode(altContent)}" src="${url}"${afterSrc} />`;
+        }
+      });
+      // Image elements can be either contained in <img> elements or in Markdown format
+      const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
+      comment.content = comment.content.replace(linkRegex, `[$1](${url} "${he.encode(altContent)}")`);
     };
 
     for (const anchor of anchors) {
