@@ -220,7 +220,7 @@ with:
     collaboratorOnlyPaymentInvocation: true
     externalContent:
       llmImageModel:
-        model: google/gemini-2.5
+        model: google/gemini-2.5-pro
       llmWebsiteModel:
         model: deepseek/deepseek-r1-0528
     contentEvaluator:
