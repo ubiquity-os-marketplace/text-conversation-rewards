@@ -1,3 +1,4 @@
+import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import he from "he";
 import { JSDOM } from "jsdom";
 import { marked } from "marked";
@@ -9,7 +10,6 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import ChatCompletionCreateParamsNonStreaming = OpenAI.ChatCompletionCreateParamsNonStreaming;
-import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 
 export class ExternalContentProcessor extends BaseModule {
   private readonly _isEnabled: boolean;
@@ -68,14 +68,14 @@ export class ExternalContentProcessor extends BaseModule {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that evaluates external images and summarise them.",
+            content: "You are an assistant that analyzes external images and provides factual descriptions.",
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Describe this image concisely in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences",
+                text: "Provide a direct factual description in one paragraph, written in a single line. Start immediately with what you observe without introductory phrases. Focus on factual content and avoid subjective adjectives or emotional language. Do not use bullet points or numbering, only plain sentences.",
               },
               { type: "image_url", image_url: { url: `data:image/jpeg;base64,${linkContent}` } },
             ],
@@ -95,11 +95,11 @@ export class ExternalContentProcessor extends BaseModule {
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that evaluates external content and summarise it.",
+          content: "You are an assistant that analyzes external content and provides factual summaries.",
         },
         {
           role: "user",
-          content: `Summarise the following external content in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
+          content: `Provide a direct factual summary in one paragraph, written in a single line. Start immediately with the key information without introductory phrases. Focus on factual information and avoid subjective language or emotional adjectives. Do not use bullet points or numbering, only plain sentences. The content is provided as "${contentType}" content.\n\n${linkContent}`,
         },
       ],
     };
@@ -145,25 +145,26 @@ export class ExternalContentProcessor extends BaseModule {
             const llmRetryable = checkLlmRetryableState(error);
             return llmRetryable || error instanceof LogReturn;
           },
+          onError: (e) => {
+            this.context.logger.warn("Failed to run the LLM.", { e });
+          },
         }
       );
 
       if (!altContent) return;
 
-      if (isImage) {
-        const escapedSrc = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const imageRegex = new RegExp(`<img([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
-        comment.content = comment.content.replace(imageRegex, (match, beforeSrc, afterSrc) => {
-          if (match.includes("alt=")) {
-            return match.replace(/alt="[^"]*"/, `alt="${he.encode(altContent)}"`);
-          } else {
-            return `<img${beforeSrc}alt="${he.encode(altContent)}" src="${url}"${afterSrc} />`;
-          }
-        });
-      } else {
-        const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
-        comment.content = comment.content.replace(linkRegex, `[$1](${url} "${he.encode(altContent)}")`);
-      }
+      const escapedSrc = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const imageHtmlRegex = new RegExp(`<img([^>]*?)src="${escapedSrc}"([^>]*?)\\s*/?>`, "g");
+      comment.content = comment.content.replace(imageHtmlRegex, (match, beforeSrc, afterSrc) => {
+        if (match.includes("alt=")) {
+          return match.replace(/alt="[^"]*"/, `alt="${he.encode(altContent)}"`);
+        } else {
+          return `<img${beforeSrc}alt="${he.encode(altContent)}" src="${url}"${afterSrc} />`;
+        }
+      });
+      // Image elements can be either contained in <img> elements or in Markdown format
+      const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${escapedSrc}\\)`, "g");
+      comment.content = comment.content.replace(linkRegex, `[$1](${url} "${he.encode(altContent)}")`);
     };
 
     for (const anchor of anchors) {
