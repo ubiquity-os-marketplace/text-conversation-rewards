@@ -160,7 +160,7 @@ export class ExternalContentProcessor extends BaseModule {
         }
       });
       // Image elements can be either contained in <img> elements or in Markdown format
-      const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\)`, "g");
+      const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${escapedSrc}\\)`, "g");
       comment.content = comment.content.replace(linkRegex, `[$1](${url} "${he.encode(altContent)}")`);
     };
 
