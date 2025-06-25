@@ -68,14 +68,14 @@ export class ExternalContentProcessor extends BaseModule {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that evaluates external images and summarise them.",
+            content: "You are an assistant that analyzes external images and provides factual descriptions.",
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Describe this image concisely in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences",
+                text: "Describe this image objectively in one paragraph, written in a single line. Focus on factual content and avoid subjective adjectives or emotional language. Do not use bullet points or numbering, only plain sentences.",
               },
               { type: "image_url", image_url: { url: `data:image/jpeg;base64,${linkContent}` } },
             ],
@@ -95,11 +95,11 @@ export class ExternalContentProcessor extends BaseModule {
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that evaluates external content and summarise it.",
+          content: "You are an assistant that analyzes external content and provides factual summaries.",
         },
         {
           role: "user",
-          content: `Summarise the following external content in one paragraph, written in a single line. Do not use bullet points, numbering, only plain sentences. The content is given to you as a "${contentType}" content.\n\n${linkContent}`,
+          content: `Summarize the following external content objectively in one paragraph, written in a single line. Focus on factual information and avoid subjective language or emotional adjectives. Do not use bullet points or numbering, only plain sentences. The content is provided as "${contentType}" content.\n\n${linkContent}`,
         },
       ],
     };
