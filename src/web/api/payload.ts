@@ -11,9 +11,21 @@ export async function getPayload(owner: string, repo: string, issueId: number, u
   if (!useOpenAi) {
     cfgFile.incentives.contentEvaluator.openAi = {
       ...cfgFile.incentives.contentEvaluator.openAi,
-      endpoint: "http://localhost:4000/openai",
+      endpoint: "http://localhost:4000/openai/contentEvaluator",
       tokenCountLimit: Number.MAX_VALUE,
     };
+    if (cfgFile.incentives.externalContent) {
+      cfgFile.incentives.externalContent.llmImageModel = {
+        ...cfgFile.incentives.externalContent.llmImageModel,
+        endpoint: "http://localhost:4000/openai/llmImageModel",
+        tokenCountLimit: Number.MAX_VALUE,
+      };
+      cfgFile.incentives.externalContent.llmWebsiteModel = {
+        ...cfgFile.incentives.externalContent.llmWebsiteModel,
+        endpoint: "http://localhost:4000/openai/llmWebsiteModel",
+        tokenCountLimit: Number.MAX_VALUE,
+      };
+    }
   }
 
   const octokit = new customOctokit({ auth: process.env.GITHUB_TOKEN });

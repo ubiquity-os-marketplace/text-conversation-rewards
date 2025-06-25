@@ -16,6 +16,7 @@ import { PaymentModule } from "./payment-module";
 import { ReviewIncentivizerModule } from "./review-incentivizer-module";
 import { SimplificationIncentivizerModule } from "./simplification-incentivizer-module";
 import { UserExtractorModule } from "./user-extractor-module";
+import { ExternalContentProcessor } from "./external-content-module";
 
 export class Processor {
   private _transformers: Module[] = [];
@@ -26,6 +27,7 @@ export class Processor {
   constructor(context: ContextPlugin) {
     this.add(new UserExtractorModule(context))
       .add(new DataPurgeModule(context))
+      .add(new ExternalContentProcessor(context))
       .add(new FormattingEvaluatorModule(context))
       .add(new ContentEvaluatorModule(context))
       .add(new ReviewIncentivizerModule(context))
