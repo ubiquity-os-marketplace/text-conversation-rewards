@@ -75,7 +75,7 @@ export class ExternalContentProcessor extends BaseModule {
             content: [
               {
                 type: "text",
-                text: "Describe this image objectively in one paragraph, written in a single line. Focus on factual content and avoid subjective adjectives or emotional language. Do not use bullet points or numbering, only plain sentences.",
+                text: "Provide a direct factual description in one paragraph, written in a single line. Start immediately with what you observe without introductory phrases. Focus on factual content and avoid subjective adjectives or emotional language. Do not use bullet points or numbering, only plain sentences.",
               },
               { type: "image_url", image_url: { url: `data:image/jpeg;base64,${linkContent}` } },
             ],
@@ -99,7 +99,7 @@ export class ExternalContentProcessor extends BaseModule {
         },
         {
           role: "user",
-          content: `Summarize the following external content objectively in one paragraph, written in a single line. Focus on factual information and avoid subjective language or emotional adjectives. Do not use bullet points or numbering, only plain sentences. The content is provided as "${contentType}" content.\n\n${linkContent}`,
+          content: `Provide a direct factual summary in one paragraph, written in a single line. Start immediately with the key information without introductory phrases. Focus on factual information and avoid subjective language or emotional adjectives. Do not use bullet points or numbering, only plain sentences. The content is provided as "${contentType}" content.\n\n${linkContent}`,
         },
       ],
     };
@@ -144,6 +144,9 @@ export class ExternalContentProcessor extends BaseModule {
           isErrorRetryable: (error) => {
             const llmRetryable = checkLlmRetryableState(error);
             return llmRetryable || error instanceof LogReturn;
+          },
+          onError: (e) => {
+            this.context.logger.warn("Failed to run the LLM.", { e });
           },
         }
       );
