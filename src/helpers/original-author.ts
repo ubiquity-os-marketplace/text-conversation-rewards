@@ -14,6 +14,6 @@ export function extractOriginalAuthor(commentText: string): { username: string; 
 
   return {
     username: match[1],
-    url: match[2],
+    url: match[2] || match[3],
   };
 }
