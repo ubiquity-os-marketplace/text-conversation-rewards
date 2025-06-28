@@ -237,10 +237,12 @@ describe("Content Evaluator Module Test", () => {
     ];
     await processor.run(activity);
     result = JSON.parse(processor.dump()) as Result;
-    console.log(JSON.stringify(result["test-user"], null, 2));
     const comments = result["test-user"].comments?.filter((comment) =>
       comment.content.includes("_Originally posted by @test-user")
     );
     expect(comments).toHaveLength(1);
+    comments?.forEach((comment) => {
+      expect(comment.score?.authorship).toEqual(1);
+    });
   }, 120000);
 });
