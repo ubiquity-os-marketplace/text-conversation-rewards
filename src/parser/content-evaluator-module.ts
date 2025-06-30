@@ -125,7 +125,7 @@ export class ContentEvaluatorModule extends BaseModule {
     const originalComment = extractOriginalAuthor(body);
     const issueAuthor = this.context.payload.issue.user?.login;
 
-    if (!originalComment || issueAuthor === originalComment.username) return;
+    if (!originalComment || !issueAuthor || issueAuthor === originalComment.username) return;
 
     const specReward = this._extractAndAdjustSpecReward(result);
     if (!specReward) return;
