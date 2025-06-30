@@ -119,6 +119,9 @@ describe("Content Evaluator Module Test", () => {
             login: "developer-1",
           },
         ],
+        user: {
+          login: "test-user",
+        },
       },
       repository: {
         name: "conversation-rewards",
@@ -242,7 +245,7 @@ describe("Content Evaluator Module Test", () => {
     );
     expect(comments).toHaveLength(1);
     comments?.forEach((comment) => {
-      expect(comment.score?.authorship).toBeUndefined();
+      expect(comment.score?.authorship).toEqual(1);
     });
   }, 120000);
 });
