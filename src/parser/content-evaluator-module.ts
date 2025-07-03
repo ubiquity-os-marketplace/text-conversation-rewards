@@ -123,7 +123,9 @@ export class ContentEvaluatorModule extends BaseModule {
    */
   private async _handleRewardsForOriginalAuthor(body: string, result: Result) {
     const originalComment = extractOriginalAuthor(body);
-    if (!originalComment) return;
+    const issueAuthor = this.context.payload.issue.user?.login;
+
+    if (!originalComment || !issueAuthor || issueAuthor === originalComment.username) return;
 
     const specReward = this._extractAndAdjustSpecReward(result);
     if (!specReward) return;

@@ -33,9 +33,9 @@
             "syllables": 78
           },
           "relevance": 0.8,
-          "reward": 17.792,
+          "reward": 14.976,
           "words": {
-            "result": 2.33,
+            "result": 1.65,
             "wordCount": 47,
             "wordValue": 0.1
           }
@@ -67,9 +67,9 @@
             "syllables": 23
           },
           "relevance": 0.8,
-          "reward": 9.312,
+          "reward": 7.776,
           "words": {
-            "result": 1.32,
+            "result": 0.94,
             "wordCount": 17,
             "wordValue": 0.1
           }
@@ -113,9 +113,9 @@
             "syllables": 461
           },
           "relevance": 0.8,
-          "reward": 44.256,
+          "reward": 43.104,
           "words": {
-            "result": 1,
+            "result": 0.71,
             "wordCount": 285,
             "wordValue": 0.1
           }
@@ -155,9 +155,9 @@
             "syllables": 256
           },
           "relevance": 0.8,
-          "reward": 46.24,
+          "reward": 43.68,
           "words": {
-            "result": 2.14,
+            "result": 1.52,
             "wordCount": 159,
             "wordValue": 0.1
           }
@@ -197,9 +197,9 @@
             "syllables": 214
           },
           "relevance": 0.8,
-          "reward": 38.08,
+          "reward": 35.2,
           "words": {
-            "result": 2.42,
+            "result": 1.71,
             "wordCount": 129,
             "wordValue": 0.1
           }
@@ -243,9 +243,9 @@
             "syllables": 361
           },
           "relevance": 0.8,
-          "reward": 47.072,
+          "reward": 45.184,
           "words": {
-            "result": 1.59,
+            "result": 1.13,
             "wordCount": 214,
             "wordValue": 0.1
           }
@@ -289,9 +289,9 @@
             "syllables": 150
           },
           "relevance": 0.8,
-          "reward": 35.744,
+          "reward": 32.608,
           "words": {
-            "result": 2.61,
+            "result": 1.85,
             "wordCount": 98,
             "wordValue": 0.1
           }
@@ -331,9 +331,9 @@
             "syllables": 150
           },
           "relevance": 0.8,
-          "reward": 39.968,
+          "reward": 36.768,
           "words": {
-            "result": 2.62,
+            "result": 1.85,
             "wordCount": 97,
             "wordValue": 0.1
           }
@@ -365,9 +365,9 @@
             "syllables": 48
           },
           "relevance": 0.8,
-          "reward": 15.712,
+          "reward": 13.504,
           "words": {
-            "result": 1.85,
+            "result": 1.31,
             "wordCount": 29,
             "wordValue": 0.1
           }
@@ -399,9 +399,9 @@
             "syllables": 8
           },
           "relevance": 0.7,
-          "reward": 5.488,
+          "reward": 4.9,
           "words": {
-            "result": 0.53,
+            "result": 0.37,
             "wordCount": 5,
             "wordValue": 0.1
           }
@@ -434,9 +434,9 @@
             "syllables": 11
           },
           "relevance": 0.7,
-          "reward": 6.048,
+          "reward": 5.348,
           "words": {
-            "result": 0.69,
+            "result": 0.49,
             "wordCount": 7,
             "wordValue": 0.1
           }
@@ -469,9 +469,9 @@
             "syllables": 79
           },
           "relevance": 0.7,
-          "reward": 15.82,
+          "reward": 13.3,
           "words": {
-            "result": 2.37,
+            "result": 1.67,
             "wordCount": 49,
             "wordValue": 0.1
           }
@@ -504,9 +504,9 @@
             "syllables": 8
           },
           "relevance": 0.7,
-          "reward": 5.488,
+          "reward": 4.872,
           "words": {
-            "result": 0.61,
+            "result": 0.43,
             "wordCount": 6,
             "wordValue": 0.1
           }
@@ -543,9 +543,9 @@
             "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 23.716,
+          "reward": 21.868,
           "words": {
-            "result": 1.81,
+            "result": 1.28,
             "wordCount": 28,
             "wordValue": 0.1
           }
@@ -582,9 +582,9 @@
             "syllables": 17
           },
           "relevance": 0.7,
-          "reward": 10.528,
+          "reward": 9.38,
           "words": {
-            "result": 1.16,
+            "result": 0.82,
             "wordCount": 14,
             "wordValue": 0.1
           }
@@ -625,9 +625,9 @@
             "syllables": 43
           },
           "relevance": 0.7,
-          "reward": 16.296,
+          "reward": 14.588,
           "words": {
-            "result": 1.66,
+            "result": 1.17,
             "wordCount": 24,
             "wordValue": 0.1
           }
@@ -660,9 +660,9 @@
             "syllables": 6
           },
           "relevance": 0.7,
-          "reward": 5.572,
+          "reward": 4.984,
           "words": {
-            "result": 0.53,
+            "result": 0.37,
             "wordCount": 5,
             "wordValue": 0.1
           }
@@ -695,9 +695,9 @@
             "syllables": 12
           },
           "relevance": 0.7,
-          "reward": 6.244,
+          "reward": 5.46,
           "words": {
-            "result": 0.76,
+            "result": 0.54,
             "wordCount": 8,
             "wordValue": 0.1
           }
@@ -738,9 +738,9 @@
             "syllables": 88
           },
           "relevance": 0.7,
-          "reward": 26.292,
+          "reward": 23.688,
           "words": {
-            "result": 2.56,
+            "result": 1.81,
             "wordCount": 65,
             "wordValue": 0.1
           }
@@ -773,9 +773,9 @@
             "syllables": 32
           },
           "relevance": 0.7,
-          "reward": 9.128,
+          "reward": 7.476,
           "words": {
-            "result": 1.61,
+            "result": 1.14,
             "wordCount": 23,
             "wordValue": 0.1
           }
@@ -808,9 +808,9 @@
             "syllables": 7
           },
           "relevance": 0.7,
-          "reward": 5.264,
+          "reward": 4.732,
           "words": {
-            "result": 0.53,
+            "result": 0.37,
             "wordCount": 5,
             "wordValue": 0.1
           }
@@ -847,9 +847,9 @@
             "syllables": 26
           },
           "relevance": 0.7,
-          "reward": 15.204,
+          "reward": 13.776,
           "words": {
-            "result": 1.43,
+            "result": 1.01,
             "wordCount": 19,
             "wordValue": 0.1
           }
@@ -882,9 +882,9 @@
             "syllables": 31
           },
           "relevance": 0.7,
-          "reward": 9.016,
+          "reward": 7.364,
           "words": {
-            "result": 1.7,
+            "result": 1.2,
             "wordCount": 25,
             "wordValue": 0.1
           }
@@ -917,9 +917,9 @@
             "syllables": 10
           },
           "relevance": 0.7,
-          "reward": 5.88,
+          "reward": 5.18,
           "words": {
-            "result": 0.69,
+            "result": 0.49,
             "wordCount": 7,
             "wordValue": 0.1
           }
@@ -952,9 +952,9 @@
             "syllables": 2
           },
           "relevance": 0.7,
-          "reward": 4.564,
+          "reward": 4.284,
           "words": {
-            "result": 0.25,
+            "result": 0.18,
             "wordCount": 2,
             "wordValue": 0.1
           }
@@ -987,9 +987,9 @@
             "syllables": 14
           },
           "relevance": 0.7,
-          "reward": 6.272,
+          "reward": 5.488,
           "words": {
-            "result": 0.76,
+            "result": 0.54,
             "wordCount": 8,
             "wordValue": 0.1
           }
@@ -1022,9 +1022,9 @@
             "syllables": 6
           },
           "relevance": 0.7,
-          "reward": 3.5,
+          "reward": 3.304,
           "words": {
-            "result": 0.25,
+            "result": 0.18,
             "wordCount": 2,
             "wordValue": 0.1
           }
@@ -1061,9 +1061,9 @@
             "syllables": 42
           },
           "relevance": 0.7,
-          "reward": 20.496,
+          "reward": 18.592,
           "words": {
-            "result": 1.88,
+            "result": 1.33,
             "wordCount": 30,
             "wordValue": 0.1
           }
@@ -1096,9 +1096,9 @@
             "syllables": 63
           },
           "relevance": 0.7,
-          "reward": 10.976,
+          "reward": 8.792,
           "words": {
-            "result": 2.2,
+            "result": 1.56,
             "wordCount": 41,
             "wordValue": 0.1
           }
@@ -1131,9 +1131,9 @@
             "syllables": 143
           },
           "relevance": 0.7,
-          "reward": 20.076,
+          "reward": 17.36,
           "words": {
-            "result": 2.6,
+            "result": 1.84,
             "wordCount": 101,
             "wordValue": 0.1
           }
@@ -1166,9 +1166,9 @@
             "syllables": 52
           },
           "relevance": 0.7,
-          "reward": 9.66,
+          "reward": 7.84,
           "words": {
-            "result": 1.81,
+            "result": 1.28,
             "wordCount": 28,
             "wordValue": 0.1
           }
@@ -1200,9 +1200,9 @@
             "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 8.148,
+          "reward": 6.804,
           "words": {
-            "result": 1.27,
+            "result": 0.9,
             "wordCount": 16,
             "wordValue": 0.1
           }
@@ -1211,7 +1211,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "evaluationCommentHtml": "<details><summary><b><h3>&nbsp;<a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MWRmODVjZGNkZDU0NDIwMDAwIn19LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjAifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDFkZjg1Y2RjZGQ1NDQyMDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDNiMTczN2U2NGEyZjc2YWZhZDJiZWI3NDdmNGYyNmZhYzE3ZGFmMzc4YzEwODJmNzYzYjdlODQxNjRmNWNlYzEwOTBhYmIwMjFlN2IyZDJjMWFmZjdhYmIzYmJhOWE3MmFhMjBjNTNjZWRiOWRlMGVlYTU4NjkyOThmNzY1YmNmMWIiLCJuZXR3b3JrSWQiOjEwMH1d\" target=\"_blank\" rel=\"noopener\">[ 552.852 WXDAI ]</a>&nbsp;</h3><h6>@0x4007</h6></b></summary><h6>⚠️ Your rewards have been limited to the task price of 400 WXDAI.</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Review</td><td>Code Review</td><td>9</td><td>9</td></tr><tr><td>Issue</td><td>Comment</td><td>9</td><td>294.176</td></tr><tr><td>Review</td><td>Comment</td><td>23</td><td>249.676</td></tr></tbody></table><h6>Review Details for&nbsp;<a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078\" target=\"_blank\" rel=\"noopener\">#12#issue-1822452078</a></h6><table><thead><tr><th>Changes</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2030164289\" target=\"_blank\" rel=\"noopener\">@whilefoo rfc on how we can deal with comment outputs. Perhaps w&hellip;</a></h6></td><td><details><summary>4.33</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 47&#13;  wordValue: 0.1&#13;  result: 2.33&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>17.792</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2033488255\" target=\"_blank\" rel=\"noopener\">I think you should fork from and overtake that second pull due t&hellip;</a></h6></td><td><details><summary>2.32</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 17&#13;  wordValue: 0.1&#13;  result: 1.32&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>9.312</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036355445\" target=\"_blank\" rel=\"noopener\">I think the most pure architecture would be that plugins can NOT&hellip;</a></h6></td><td><details><summary>11</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 5&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 10&#13;regex:&#13;  wordCount: 285&#13;  wordValue: 0.1&#13;  result: 1&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>44.256</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036370459\" target=\"_blank\" rel=\"noopener\">I know JSON makes things more complicated than it needs to be wi&hellip;</a></h6></td><td><details><summary>11.14</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 4&#13;    code:&#13;      score: 1&#13;      elementCount: 4&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 9&#13;regex:&#13;  wordCount: 159&#13;  wordValue: 0.1&#13;  result: 2.14&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>46.24</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036393020\" target=\"_blank\" rel=\"noopener\">Going back to my \"plugin-side-rendering\" mention, the data manip&hellip;</a></h6></td><td><details><summary>9.42</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 5&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;  result: 7&#13;regex:&#13;  wordCount: 129&#13;  wordValue: 0.1&#13;  result: 2.42&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>38.08</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036433646\" target=\"_blank\" rel=\"noopener\">The proposed &#96;comment&#96; output is intended for ease of co&hellip;</a></h6></td><td><details><summary>11.59</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 6&#13;    code:&#13;      score: 1&#13;      elementCount: 3&#13;    h3:&#13;      score: 1&#13;      elementCount: 1&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;  result: 10&#13;regex:&#13;  wordCount: 214&#13;  wordValue: 0.1&#13;  result: 1.59&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>47.072</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036516869\" target=\"_blank\" rel=\"noopener\">I understand your concern and I would need to put more thought i&hellip;</a></h6></td><td><details><summary>8.61</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;    ol:&#13;      score: 0&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 6&#13;regex:&#13;  wordCount: 98&#13;  wordValue: 0.1&#13;  result: 2.61&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>35.744</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2053332029\" target=\"_blank\" rel=\"noopener\">I see, so you're suggesting that we must annotate each comment a&hellip;</a></h6></td><td><details><summary>9.62</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    ol:&#13;      score: 0&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 4&#13;  result: 7&#13;regex:&#13;  wordCount: 97&#13;  wordValue: 0.1&#13;  result: 2.62&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>39.968</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2055783331\" target=\"_blank\" rel=\"noopener\">Consider calling it \"contributor\" and \"collaborator\" as that is &hellip;</a></h6></td><td><details><summary>3.85</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 2&#13;regex:&#13;  wordCount: 29&#13;  wordValue: 0.1&#13;  result: 1.85&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>15.712</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#pullrequestreview-2007841578\" target=\"_blank\" rel=\"noopener\">Nice code quality per usual</a></h6></td><td><details><summary>1.53</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 5&#13;  wordValue: 0.1&#13;  result: 0.53&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.488</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569964797\" target=\"_blank\" rel=\"noopener\">\"Comment\" implication isn't clear to me</a></h6></td><td><details><summary>1.69</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 7&#13;  wordValue: 0.1&#13;  result: 0.69&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>6.048</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569970517\" target=\"_blank\" rel=\"noopener\">I've always been anti empty string for variable declarations. It&hellip;</a></h6></td><td><details><summary>4.37</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 2&#13;regex:&#13;  wordCount: 49&#13;  wordValue: 0.1&#13;  result: 2.37&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>15.82</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569971792\" target=\"_blank\" rel=\"noopener\">Our RPCs don't work anymore</a></h6></td><td><details><summary>1.61</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 6&#13;  wordValue: 0.1&#13;  result: 0.61&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.488</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570133378\" target=\"_blank\" rel=\"noopener\">Yes consider changing them to verbs &#96;ISSUER&#96;&#96;COMM&hellip;</a></h6></td><td><details><summary>6.81</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 5&#13;regex:&#13;  wordCount: 28&#13;  wordValue: 0.1&#13;  result: 1.81&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>23.716</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570159594\" target=\"_blank\" rel=\"noopener\">&#96;[].join(\"\");&#96; yields an empty string as well if there's&hellip;</a></h6></td><td><details><summary>3.16</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 14&#13;  wordValue: 0.1&#13;  result: 1.16&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>10.528</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570588757\" target=\"_blank\" rel=\"noopener\">Perhaps it will make the config more expressive if you add other&hellip;</a></h6></td><td><details><summary>4.66</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 24&#13;  wordValue: 0.1&#13;  result: 1.66&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>16.296</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570589892\" target=\"_blank\" rel=\"noopener\">What is this @link syntax</a></h6></td><td><details><summary>1.53</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 5&#13;  wordValue: 0.1&#13;  result: 0.53&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.572</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570591425\" target=\"_blank\" rel=\"noopener\">Just noticed the bit wise operators 1337 code</a></h6></td><td><details><summary>1.76</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 8&#13;  wordValue: 0.1&#13;  result: 0.76&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>6.244</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570596007\" target=\"_blank\" rel=\"noopener\">It might seem convoluted but I think that it condenses the logic&hellip;</a></h6></td><td><details><summary>7.56</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 3&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;  result: 5&#13;regex:&#13;  wordCount: 65&#13;  wordValue: 0.1&#13;  result: 2.56&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>26.292</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573720820\" target=\"_blank\" rel=\"noopener\">I am aware of its purpose. I am proposing to make the config mor&hellip;</a></h6></td><td><details><summary>2.61</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 23&#13;  wordValue: 0.1&#13;  result: 1.61&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>9.128</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573722731\" target=\"_blank\" rel=\"noopener\">Will you use array syntax?</a></h6></td><td><details><summary>1.53</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 5&#13;  wordValue: 0.1&#13;  result: 0.53&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.264</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723262\" target=\"_blank\" rel=\"noopener\">This regex appears to convert repeating spaces i.e. &#96;\"   \"&#&hellip;</a></h6></td><td><details><summary>4.43</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 3&#13;regex:&#13;  wordCount: 19&#13;  wordValue: 0.1&#13;  result: 1.43&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>15.204</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723774\" target=\"_blank\" rel=\"noopener\">This doesn't seem right. Network ID 1 is mainnet. The RPC clearl&hellip;</a></h6></td><td><details><summary>2.7</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 25&#13;  wordValue: 0.1&#13;  result: 1.7&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>9.016</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724498\" target=\"_blank\" rel=\"noopener\">Seems like not a very useful mock.</a></h6></td><td><details><summary>1.69</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 7&#13;  wordValue: 0.1&#13;  result: 0.69&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.88</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724853\" target=\"_blank\" rel=\"noopener\">Same here</a></h6></td><td><details><summary>1.25</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 2&#13;  wordValue: 0.1&#13;  result: 0.25&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>4.564</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086028\" target=\"_blank\" rel=\"noopener\">The token address indeed represents DAI on mainnet.</a></h6></td><td><details><summary>1.76</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 8&#13;  wordValue: 0.1&#13;  result: 0.76&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>6.272</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086293\" target=\"_blank\" rel=\"noopener\">@gentlementlegen rfc</a></h6></td><td><details><summary>1.25</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 2&#13;  wordValue: 0.1&#13;  result: 0.25&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>3.5</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575555444\" target=\"_blank\" rel=\"noopener\">Why not do it in the industry standard way? All values are denom&hellip;</a></h6></td><td><details><summary>5.88</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 4&#13;regex:&#13;  wordCount: 30&#13;  wordValue: 0.1&#13;  result: 1.88&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>20.496</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575556553\" target=\"_blank\" rel=\"noopener\">I'm not sure if I understand but task reward is if you completed&hellip;</a></h6></td><td><details><summary>3.2</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 41&#13;  wordValue: 0.1&#13;  result: 2.2&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>10.976</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576666170\" target=\"_blank\" rel=\"noopener\">Spoke a bit on this in dms. @whilefoo my intent with referring t&hellip;</a></h6></td><td><details><summary>5.6</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;  result: 3&#13;regex:&#13;  wordCount: 101&#13;  wordValue: 0.1&#13;  result: 2.6&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>20.076</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577225638\" target=\"_blank\" rel=\"noopener\">Possibly. I personally haven't had that issue but either way my &hellip;</a></h6></td><td><details><summary>2.81</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 28&#13;  wordValue: 0.1&#13;  result: 1.81&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>9.66</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447\" target=\"_blank\" rel=\"noopener\">I think it's fine. I generally scrutinize test code less than no&hellip;</a></h6></td><td><details><summary>2.27</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 16&#13;  wordValue: 0.1&#13;  result: 1.27&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>8.148</td></tr></tbody></table></details>",
+    "evaluationCommentHtml": "<details><summary><b><h3>&nbsp;<a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MWIyYjQ1MGFhMjcyNDYwMDAwIn19LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjAifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDFiMmI0NTBhYTI3MjQ2MDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGRjZjBhNTRkNjM5OTYyZWU0OGU4MGJiYWQ1YTU2ZTdmZmYzMzNiZTJjYzI1YjkwYmJlNzRkYjg0MTQ3ZmY0YTQxOGRlNDkzMDRmZTc0YTcwMzIxZjJmZmVhNGRjMTczNDU3OWU2NDRjMmQ5YTBjNzc5NDBhYzkzZjk3Mjc4ZmJmMWMiLCJuZXR3b3JrSWQiOjEwMH1d\" target=\"_blank\" rel=\"noopener\">[ 501.18 WXDAI ]</a>&nbsp;</h3><h6>@0x4007</h6></b></summary><h6>⚠️ Your rewards have been limited to the task price of 400 WXDAI.</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Review</td><td>Code Review</td><td>9</td><td>9</td></tr><tr><td>Issue</td><td>Comment</td><td>9</td><td>272.8</td></tr><tr><td>Review</td><td>Comment</td><td>23</td><td>219.38</td></tr></tbody></table><h6>Review Details for&nbsp;<a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078\" target=\"_blank\" rel=\"noopener\">#12#issue-1822452078</a></h6><table><thead><tr><th>Changes</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2030164289\" target=\"_blank\" rel=\"noopener\">@whilefoo rfc on how we can deal with comment outputs. Perhaps w&hellip;</a></h6></td><td><details><summary>3.65</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 47&#13;  wordValue: 0.1&#13;  result: 1.65&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>14.976</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2033488255\" target=\"_blank\" rel=\"noopener\">I think you should fork from and overtake that second pull due t&hellip;</a></h6></td><td><details><summary>1.94</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 17&#13;  wordValue: 0.1&#13;  result: 0.94&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>7.776</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036355445\" target=\"_blank\" rel=\"noopener\">I think the most pure architecture would be that plugins can NOT&hellip;</a></h6></td><td><details><summary>10.71</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 5&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 10&#13;regex:&#13;  wordCount: 285&#13;  wordValue: 0.1&#13;  result: 0.71&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>43.104</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036370459\" target=\"_blank\" rel=\"noopener\">I know JSON makes things more complicated than it needs to be wi&hellip;</a></h6></td><td><details><summary>10.52</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 4&#13;    code:&#13;      score: 1&#13;      elementCount: 4&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 9&#13;regex:&#13;  wordCount: 159&#13;  wordValue: 0.1&#13;  result: 1.52&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>43.68</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036393020\" target=\"_blank\" rel=\"noopener\">Going back to my \"plugin-side-rendering\" mention, the data manip&hellip;</a></h6></td><td><details><summary>8.71</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 5&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;  result: 7&#13;regex:&#13;  wordCount: 129&#13;  wordValue: 0.1&#13;  result: 1.71&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>35.2</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036433646\" target=\"_blank\" rel=\"noopener\">The proposed &#96;comment&#96; output is intended for ease of co&hellip;</a></h6></td><td><details><summary>11.13</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 6&#13;    code:&#13;      score: 1&#13;      elementCount: 3&#13;    h3:&#13;      score: 1&#13;      elementCount: 1&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;  result: 10&#13;regex:&#13;  wordCount: 214&#13;  wordValue: 0.1&#13;  result: 1.13&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>45.184</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036516869\" target=\"_blank\" rel=\"noopener\">I understand your concern and I would need to put more thought i&hellip;</a></h6></td><td><details><summary>7.85</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;    ol:&#13;      score: 0&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 6&#13;regex:&#13;  wordCount: 98&#13;  wordValue: 0.1&#13;  result: 1.85&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>32.608</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2053332029\" target=\"_blank\" rel=\"noopener\">I see, so you're suggesting that we must annotate each comment a&hellip;</a></h6></td><td><details><summary>8.85</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    ol:&#13;      score: 0&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 4&#13;  result: 7&#13;regex:&#13;  wordCount: 97&#13;  wordValue: 0.1&#13;  result: 1.85&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>36.768</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2055783331\" target=\"_blank\" rel=\"noopener\">Consider calling it \"contributor\" and \"collaborator\" as that is &hellip;</a></h6></td><td><details><summary>3.31</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 2&#13;regex:&#13;  wordCount: 29&#13;  wordValue: 0.1&#13;  result: 1.31&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>13.504</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#pullrequestreview-2007841578\" target=\"_blank\" rel=\"noopener\">Nice code quality per usual</a></h6></td><td><details><summary>1.37</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 5&#13;  wordValue: 0.1&#13;  result: 0.37&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>4.9</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569964797\" target=\"_blank\" rel=\"noopener\">\"Comment\" implication isn't clear to me</a></h6></td><td><details><summary>1.49</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 7&#13;  wordValue: 0.1&#13;  result: 0.49&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.348</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569970517\" target=\"_blank\" rel=\"noopener\">I've always been anti empty string for variable declarations. It&hellip;</a></h6></td><td><details><summary>3.67</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 2&#13;regex:&#13;  wordCount: 49&#13;  wordValue: 0.1&#13;  result: 1.67&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>13.3</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1569971792\" target=\"_blank\" rel=\"noopener\">Our RPCs don't work anymore</a></h6></td><td><details><summary>1.43</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 6&#13;  wordValue: 0.1&#13;  result: 0.43&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>4.872</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570133378\" target=\"_blank\" rel=\"noopener\">Yes consider changing them to verbs &#96;ISSUER&#96;&#96;COMM&hellip;</a></h6></td><td><details><summary>6.28</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 5&#13;regex:&#13;  wordCount: 28&#13;  wordValue: 0.1&#13;  result: 1.28&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>21.868</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570159594\" target=\"_blank\" rel=\"noopener\">&#96;[].join(\"\");&#96; yields an empty string as well if there's&hellip;</a></h6></td><td><details><summary>2.82</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 14&#13;  wordValue: 0.1&#13;  result: 0.82&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>9.38</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570588757\" target=\"_blank\" rel=\"noopener\">Perhaps it will make the config more expressive if you add other&hellip;</a></h6></td><td><details><summary>4.17</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 24&#13;  wordValue: 0.1&#13;  result: 1.17&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>14.588</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570589892\" target=\"_blank\" rel=\"noopener\">What is this @link syntax</a></h6></td><td><details><summary>1.37</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 5&#13;  wordValue: 0.1&#13;  result: 0.37&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>4.984</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570591425\" target=\"_blank\" rel=\"noopener\">Just noticed the bit wise operators 1337 code</a></h6></td><td><details><summary>1.54</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 8&#13;  wordValue: 0.1&#13;  result: 0.54&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.46</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570596007\" target=\"_blank\" rel=\"noopener\">It might seem convoluted but I think that it condenses the logic&hellip;</a></h6></td><td><details><summary>6.81</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 3&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;  result: 5&#13;regex:&#13;  wordCount: 65&#13;  wordValue: 0.1&#13;  result: 1.81&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>23.688</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573720820\" target=\"_blank\" rel=\"noopener\">I am aware of its purpose. I am proposing to make the config mor&hellip;</a></h6></td><td><details><summary>2.14</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 23&#13;  wordValue: 0.1&#13;  result: 1.14&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>7.476</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573722731\" target=\"_blank\" rel=\"noopener\">Will you use array syntax?</a></h6></td><td><details><summary>1.37</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 5&#13;  wordValue: 0.1&#13;  result: 0.37&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>4.732</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723262\" target=\"_blank\" rel=\"noopener\">This regex appears to convert repeating spaces i.e. &#96;\"   \"&#&hellip;</a></h6></td><td><details><summary>4.01</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 3&#13;regex:&#13;  wordCount: 19&#13;  wordValue: 0.1&#13;  result: 1.01&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>13.776</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573723774\" target=\"_blank\" rel=\"noopener\">This doesn't seem right. Network ID 1 is mainnet. The RPC clearl&hellip;</a></h6></td><td><details><summary>2.2</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 25&#13;  wordValue: 0.1&#13;  result: 1.2&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>7.364</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724498\" target=\"_blank\" rel=\"noopener\">Seems like not a very useful mock.</a></h6></td><td><details><summary>1.49</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 7&#13;  wordValue: 0.1&#13;  result: 0.49&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.18</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573724853\" target=\"_blank\" rel=\"noopener\">Same here</a></h6></td><td><details><summary>1.18</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 2&#13;  wordValue: 0.1&#13;  result: 0.18&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>4.284</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086028\" target=\"_blank\" rel=\"noopener\">The token address indeed represents DAI on mainnet.</a></h6></td><td><details><summary>1.54</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 8&#13;  wordValue: 0.1&#13;  result: 0.54&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.488</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574086293\" target=\"_blank\" rel=\"noopener\">@gentlementlegen rfc</a></h6></td><td><details><summary>1.18</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 2&#13;  wordValue: 0.1&#13;  result: 0.18&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>3.304</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575555444\" target=\"_blank\" rel=\"noopener\">Why not do it in the industry standard way? All values are denom&hellip;</a></h6></td><td><details><summary>5.33</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 4&#13;regex:&#13;  wordCount: 30&#13;  wordValue: 0.1&#13;  result: 1.33&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>18.592</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575556553\" target=\"_blank\" rel=\"noopener\">I'm not sure if I understand but task reward is if you completed&hellip;</a></h6></td><td><details><summary>2.56</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 41&#13;  wordValue: 0.1&#13;  result: 1.56&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>8.792</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576666170\" target=\"_blank\" rel=\"noopener\">Spoke a bit on this in dms. @whilefoo my intent with referring t&hellip;</a></h6></td><td><details><summary>4.84</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;  result: 3&#13;regex:&#13;  wordCount: 101&#13;  wordValue: 0.1&#13;  result: 1.84&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>17.36</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577225638\" target=\"_blank\" rel=\"noopener\">Possibly. I personally haven't had that issue but either way my &hellip;</a></h6></td><td><details><summary>2.28</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 28&#13;  wordValue: 0.1&#13;  result: 1.28&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>7.84</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447\" target=\"_blank\" rel=\"noopener\">I think it's fine. I generally scrutinize test code less than no&hellip;</a></h6></td><td><details><summary>1.9</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 16&#13;  wordValue: 0.1&#13;  result: 0.9&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>6.804</td></tr></tbody></table></details>",
     "events": {
       "issue.commented": {
         "count": 9,
@@ -1279,7 +1279,7 @@
       }
     },
     "payoutMode": "permit",
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MWRmODVjZGNkZDU0NDIwMDAwIn19LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjAifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDFkZjg1Y2RjZGQ1NDQyMDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDNiMTczN2U2NGEyZjc2YWZhZDJiZWI3NDdmNGYyNmZhYzE3ZGFmMzc4YzEwODJmNzYzYjdlODQxNjRmNWNlYzEwOTBhYmIwMjFlN2IyZDJjMWFmZjdhYmIzYmJhOWE3MmFhMjBjNTNjZWRiOWRlMGVlYTU4NjkyOThmNzY1YmNmMWIiLCJuZXR3b3JrSWQiOjEwMH1d",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MWIyYjQ1MGFhMjcyNDYwMDAwIn19LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjAifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDFiMmI0NTBhYTI3MjQ2MDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGRjZjBhNTRkNjM5OTYyZWU0OGU4MGJiYWQ1YTU2ZTdmZmYzMzNiZTJjYzI1YjkwYmJlNzRkYjg0MTQ3ZmY0YTQxOGRlNDkzMDRmZTc0YTcwMzIxZjJmZmVhNGRjMTczNDU3OWU2NDRjMmQ5YTBjNzc5NDBhYzkzZjk3Mjc4ZmJmMWMiLCJuZXR3b3JrSWQiOjEwMH1d",
     "reviewRewards": [
       {
         "reviews": [
@@ -1368,7 +1368,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
       }
     ],
-    "total": 552.852,
+    "total": 501.18,
     "userId": 4975670,
     "walletAddress": "0x1"
   },
@@ -1402,9 +1402,9 @@
             "syllables": 60
           },
           "relevance": 0.8,
-          "reward": 22.048,
+          "reward": 19.968,
           "words": {
-            "result": 2.39,
+            "result": 1.88,
             "wordCount": 17,
             "wordValue": 0.2
           }
@@ -1448,9 +1448,9 @@
             "syllables": 162
           },
           "relevance": 0.8,
-          "reward": 48.416,
+          "reward": 44.256,
           "words": {
-            "result": 4.66,
+            "result": 3.66,
             "wordCount": 104,
             "wordValue": 0.2
           }
@@ -1490,9 +1490,9 @@
             "syllables": 180
           },
           "relevance": 0.8,
-          "reward": 46.816,
+          "reward": 42.784,
           "words": {
-            "result": 4.65,
+            "result": 3.65,
             "wordCount": 106,
             "wordValue": 0.2
           }
@@ -1528,9 +1528,9 @@
             "syllables": 207
           },
           "relevance": 0.8,
-          "reward": 33.952,
+          "reward": 30.208,
           "words": {
-            "result": 4.29,
+            "result": 3.37,
             "wordCount": 134,
             "wordValue": 0.2
           }
@@ -1562,9 +1562,9 @@
             "syllables": 233
           },
           "relevance": 0.8,
-          "reward": 32.192,
+          "reward": 28.8,
           "words": {
-            "result": 3.86,
+            "result": 3.03,
             "wordCount": 159,
             "wordValue": 0.2
           }
@@ -1596,9 +1596,9 @@
             "syllables": 84
           },
           "relevance": 0.8,
-          "reward": 22.048,
+          "reward": 18.208,
           "words": {
-            "result": 4.43,
+            "result": 3.48,
             "wordCount": 55,
             "wordValue": 0.2
           }
@@ -1634,9 +1634,9 @@
             "syllables": 124
           },
           "relevance": 0.8,
-          "reward": 27.968,
+          "reward": 23.744,
           "words": {
-            "result": 4.75,
+            "result": 3.73,
             "wordCount": 85,
             "wordValue": 0.2
           }
@@ -1672,9 +1672,9 @@
             "syllables": 88
           },
           "relevance": 0.8,
-          "reward": 31.104,
+          "reward": 27.104,
           "words": {
-            "result": 4.5,
+            "result": 3.53,
             "wordCount": 58,
             "wordValue": 0.2
           }
@@ -1718,9 +1718,9 @@
             "syllables": 82
           },
           "relevance": 0.8,
-          "reward": 66.304,
+          "reward": 62.72,
           "words": {
-            "result": 4.4,
+            "result": 3.46,
             "wordCount": 54,
             "wordValue": 0.2
           }
@@ -1764,9 +1764,9 @@
             "syllables": 160
           },
           "relevance": 1,
-          "reward": 13.04,
+          "reward": 12.11,
           "words": {
-            "result": 2.63,
+            "result": 1.87,
             "wordCount": 87,
             "wordValue": 0.1
           }
@@ -1837,9 +1837,9 @@
             "syllables": 82
           },
           "relevance": 0.7,
-          "reward": 74.788,
+          "reward": 67.844,
           "words": {
-            "result": 4.54,
+            "result": 3.56,
             "wordCount": 60,
             "wordValue": 0.2
           }
@@ -1876,9 +1876,9 @@
             "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 30.772,
+          "reward": 27.244,
           "words": {
-            "result": 2.29,
+            "result": 1.8,
             "wordCount": 16,
             "wordValue": 0.2
           }
@@ -1915,9 +1915,9 @@
             "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 28.336,
+          "reward": 25.172,
           "words": {
-            "result": 2.19,
+            "result": 1.72,
             "wordCount": 15,
             "wordValue": 0.2
           }
@@ -1954,9 +1954,9 @@
             "syllables": 52
           },
           "relevance": 0.7,
-          "reward": 40.852,
+          "reward": 35,
           "words": {
-            "result": 3.93,
+            "result": 3.08,
             "wordCount": 40,
             "wordValue": 0.2
           }
@@ -1997,9 +1997,9 @@
             "syllables": 43
           },
           "relevance": 0.7,
-          "reward": 39.76,
+          "reward": 37.296,
           "words": {
-            "result": 1.63,
+            "result": 1.28,
             "wordCount": 10,
             "wordValue": 0.2
           }
@@ -2036,9 +2036,9 @@
             "syllables": 42
           },
           "relevance": 0.7,
-          "reward": 44.744,
+          "reward": 39.76,
           "words": {
-            "result": 3.27,
+            "result": 2.57,
             "wordCount": 28,
             "wordValue": 0.2
           }
@@ -2071,9 +2071,9 @@
             "syllables": 27
           },
           "relevance": 0.7,
-          "reward": 27.496,
+          "reward": 23.044,
           "words": {
-            "result": 3.06,
+            "result": 2.4,
             "wordCount": 25,
             "wordValue": 0.2
           }
@@ -2114,9 +2114,9 @@
             "syllables": 61
           },
           "relevance": 0.7,
-          "reward": 49.924,
+          "reward": 43.82,
           "words": {
-            "result": 3.97,
+            "result": 3.12,
             "wordCount": 41,
             "wordValue": 0.2
           }
@@ -2153,9 +2153,9 @@
             "syllables": 56
           },
           "relevance": 0.7,
-          "reward": 37.38,
+          "reward": 32.396,
           "words": {
-            "result": 3.27,
+            "result": 2.57,
             "wordCount": 28,
             "wordValue": 0.2
           }
@@ -2192,9 +2192,9 @@
             "syllables": 25
           },
           "relevance": 0.7,
-          "reward": 23.828,
+          "reward": 21.7,
           "words": {
-            "result": 1.38,
+            "result": 1.08,
             "wordCount": 8,
             "wordValue": 0.2
           }
@@ -2235,9 +2235,9 @@
             "syllables": 55
           },
           "relevance": 0.7,
-          "reward": 46.452,
+          "reward": 40.852,
           "words": {
-            "result": 3.88,
+            "result": 3.05,
             "wordCount": 39,
             "wordValue": 0.2
           }
@@ -2270,9 +2270,9 @@
             "syllables": 15
           },
           "relevance": 0.7,
-          "reward": 19.488,
+          "reward": 16.772,
           "words": {
-            "result": 1.87,
+            "result": 1.47,
             "wordCount": 12,
             "wordValue": 0.2
           }
@@ -2305,9 +2305,9 @@
             "syllables": 45
           },
           "relevance": 0.7,
-          "reward": 32.2,
+          "reward": 26.796,
           "words": {
-            "result": 3.58,
+            "result": 2.81,
             "wordCount": 33,
             "wordValue": 0.2
           }
@@ -2344,9 +2344,9 @@
             "syllables": 92
           },
           "relevance": 0.7,
-          "reward": 48.244,
+          "reward": 40.992,
           "words": {
-            "result": 4.66,
+            "result": 3.66,
             "wordCount": 68,
             "wordValue": 0.2
           }
@@ -2383,9 +2383,9 @@
             "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 34.916,
+          "reward": 30.38,
           "words": {
-            "result": 3.06,
+            "result": 2.4,
             "wordCount": 25,
             "wordValue": 0.2
           }
@@ -2418,9 +2418,9 @@
             "syllables": 45
           },
           "relevance": 0.7,
-          "reward": 26.544,
+          "reward": 22.288,
           "words": {
-            "result": 2.98,
+            "result": 2.34,
             "wordCount": 24,
             "wordValue": 0.2
           }
@@ -2457,9 +2457,9 @@
             "syllables": 34
           },
           "relevance": 0.7,
-          "reward": 25.564,
+          "reward": 23.1,
           "words": {
-            "result": 1.63,
+            "result": 1.28,
             "wordCount": 10,
             "wordValue": 0.2
           }
@@ -2504,9 +2504,9 @@
             "syllables": 74
           },
           "relevance": 0.7,
-          "reward": 65.128,
+          "reward": 60.032,
           "words": {
-            "result": 3.46,
+            "result": 2.72,
             "wordCount": 31,
             "wordValue": 0.2
           }
@@ -2543,9 +2543,9 @@
             "syllables": 39
           },
           "relevance": 0.7,
-          "reward": 36.876,
+          "reward": 31.892,
           "words": {
-            "result": 3.4,
+            "result": 2.67,
             "wordCount": 30,
             "wordValue": 0.2
           }
@@ -2582,9 +2582,9 @@
             "syllables": 102
           },
           "relevance": 0.7,
-          "reward": 111.636,
+          "reward": 104.552,
           "words": {
-            "result": 4.62,
+            "result": 3.63,
             "wordCount": 65,
             "wordValue": 0.2
           }
@@ -2617,9 +2617,9 @@
             "syllables": 76
           },
           "relevance": 0.7,
-          "reward": 37.072,
+          "reward": 30.604,
           "words": {
-            "result": 4.23,
+            "result": 3.32,
             "wordCount": 48,
             "wordValue": 0.2
           }
@@ -2660,9 +2660,9 @@
             "syllables": 103
           },
           "relevance": 0.7,
-          "reward": 92.064,
+          "reward": 85.792,
           "words": {
-            "result": 4.2,
+            "result": 3.3,
             "wordCount": 47,
             "wordValue": 0.2
           }
@@ -2698,9 +2698,9 @@
             "syllables": 30
           },
           "relevance": 0.7,
-          "reward": 22.512,
+          "reward": 20.636,
           "words": {
-            "result": 1.24,
+            "result": 0.97,
             "wordCount": 7,
             "wordValue": 0.2
           }
@@ -2732,9 +2732,9 @@
             "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 29.456,
+          "reward": 24.612,
           "words": {
-            "result": 3.2,
+            "result": 2.51,
             "wordCount": 27,
             "wordValue": 0.2
           }
@@ -2743,7 +2743,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063348339"
       }
     ],
-    "evaluationCommentHtml": "<details><summary><b><h3>&nbsp;<a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4NWZmMjkyZmU4ZmRiNjAwMDAwIn19LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6eyJ0eXBlIjoiQmlnTnVtYmVyIiwiaGV4IjoiMHg1ZmYyOTJmZThmZGI2MDAwMDAifX0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHhjNDRhNmVjYzc0NTdjN2UwZjBkZDVlMDBlNGQ0MTMyZjk3OTQ4ZTZjOTFkOTczOGNhNWZhMjZiMDBkMDZjYzM3MDNjZjA1MGIwZThkMzVlYmIyMTdlOTllOTBjMGEzYjcyNWRjNjliZjljZWFjZDViMTgzMjRkYTFkOWZhM2ZiNDFjIiwibmV0d29ya0lkIjoxMDB9XQ==\" target=\"_blank\" rel=\"noopener\">[ 1769.92 WXDAI ]</a>&nbsp;</h3><h6>@gentlementlegen</h6></b></summary><h6>⚠️ Your rewards have been limited to the task price of 400 WXDAI.</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Issue</td><td>Task</td><td>1</td><td>400</td></tr><tr><td>Issue</td><td>Specification</td><td>1</td><td>13.04</td></tr><tr><td>Issue</td><td>Comment</td><td>9</td><td>330.848</td></tr><tr><td>Review</td><td>Comment</td><td>25</td><td>1026.032</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issue-2218638141\" target=\"_blank\" rel=\"noopener\">In the v1 of the Ubiquibot, when a result gets evaluated, a reca&hellip;</a></h6></td><td><details><summary>10.63</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 3&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 8&#13;regex:&#13;  wordCount: 87&#13;  wordValue: 0.1&#13;  result: 2.63&#13;authorship: 1&#13;</pre></details></td><td>1</td><td>1</td><td>13.04</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2033404518\" target=\"_blank\" rel=\"noopener\">This needs [https://github.com/ubiquity-os/conversation-rewards/&hellip;</a></h6></td><td><details><summary>5.39</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 3&#13;regex:&#13;  wordCount: 17&#13;  wordValue: 0.2&#13;  result: 2.39&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>22.048</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036174312\" target=\"_blank\" rel=\"noopener\">To me 1 is the most straightforward to do for few reasons:- th&hellip;</a></h6></td><td><details><summary>11.66</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 3&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 7&#13;regex:&#13;  wordCount: 104&#13;  wordValue: 0.2&#13;  result: 4.66&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>48.416</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036367126\" target=\"_blank\" rel=\"noopener\">I think each plugin should output JSON not html as it is not rel&hellip;</a></h6></td><td><details><summary>11.65</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 3&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 7&#13;regex:&#13;  wordCount: 106&#13;  wordValue: 0.2&#13;  result: 4.65&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>46.816</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036385985\" target=\"_blank\" rel=\"noopener\">If you want to manipulate and convey data, HTML really is not ma&hellip;</a></h6></td><td><details><summary>8.29</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 4&#13;regex:&#13;  wordCount: 134&#13;  wordValue: 0.2&#13;  result: 4.29&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>33.952</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036411811\" target=\"_blank\" rel=\"noopener\">But then how do we consider the formatting of that output?Pr&hellip;</a></h6></td><td><details><summary>7.86</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 4&#13;  result: 4&#13;regex:&#13;  wordCount: 159&#13;  wordValue: 0.2&#13;  result: 3.86&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>32.192</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036458775\" target=\"_blank\" rel=\"noopener\">This can work, but we skyrocket coupling and to me defeat purpos&hellip;</a></h6></td><td><details><summary>5.43</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 55&#13;  wordValue: 0.2&#13;  result: 4.43&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>22.048</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036535332\" target=\"_blank\" rel=\"noopener\">@pavlovcik To mitigate that that's why inside the comment reward&hellip;</a></h6></td><td><details><summary>6.75</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 85&#13;  wordValue: 0.2&#13;  result: 4.75&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>27.968</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2051094255\" target=\"_blank\" rel=\"noopener\">I realized that to carry this task properly we need to handle fl&hellip;</a></h6></td><td><details><summary>7.5</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 3&#13;regex:&#13;  wordCount: 58&#13;  wordValue: 0.2&#13;  result: 4.5&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>31.104</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2054424028\" target=\"_blank\" rel=\"noopener\">Agreed, I think currently there are 3 possible things to annotat&hellip;</a></h6></td><td><details><summary>17.4</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 7&#13;  result: 13&#13;regex:&#13;  wordCount: 54&#13;  wordValue: 0.2&#13;  result: 4.4&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>66.304</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-2242745217\" target=\"_blank\" rel=\"noopener\">Resolves #5 Depends on #8 Reviews looks gigantic but it'&hellip;</a></h6></td><td><details><summary>3</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;  result: 3&#13;regex:&#13;  wordCount: 19&#13;  wordValue: 0&#13;  result: 0&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>1</td><td>0</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570010044\" target=\"_blank\" rel=\"noopener\">I think in this case it makes sense because this function will r&hellip;</a></h6></td><td><details><summary>10.54</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 4&#13;  result: 6&#13;regex:&#13;  wordCount: 60&#13;  wordValue: 0.2&#13;  result: 4.54&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>74.788</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570011467\" target=\"_blank\" rel=\"noopener\">It is supposed to represent a comment. Would you prefer a descri&hellip;</a></h6></td><td><details><summary>4.29</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 16&#13;  wordValue: 0.2&#13;  result: 2.29&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>30.772</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570014142\" target=\"_blank\" rel=\"noopener\">True, just picked this up from the previous codebase. [https://r&hellip;</a></h6></td><td><details><summary>4.19</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 15&#13;  wordValue: 0.2&#13;  result: 2.19&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>28.336</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570187141\" target=\"_blank\" rel=\"noopener\">Seems convoluted to me and I don't know what problem that solved&hellip;</a></h6></td><td><details><summary>5.93</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 40&#13;  wordValue: 0.2&#13;  result: 3.93&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>40.852</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570188450\" target=\"_blank\" rel=\"noopener\">Changed &#96;COMMENT&#96; to &#96;COMMENTED&#96;, added jsdoc de&hellip;</a></h6></td><td><details><summary>5.63</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 4&#13;regex:&#13;  wordCount: 10&#13;  wordValue: 0.2&#13;  result: 1.63&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>39.76</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573413974\" target=\"_blank\" rel=\"noopener\">Simply makes the docs linking the code within the comment, for c&hellip;</a></h6></td><td><details><summary>6.27</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    img:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 28&#13;  wordValue: 0.2&#13;  result: 3.27&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>44.744</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573416633\" target=\"_blank\" rel=\"noopener\">In the case of a string it would coerce the value and you would &hellip;</a></h6></td><td><details><summary>4.06</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 25&#13;  wordValue: 0.2&#13;  result: 3.06&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>27.496</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573420718\" target=\"_blank\" rel=\"noopener\">&#96;observe&#96; would help to chose what we want to include an&hellip;</a></h6></td><td><details><summary>6.97</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 41&#13;  wordValue: 0.2&#13;  result: 3.97&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>49.924</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731420\" target=\"_blank\" rel=\"noopener\">Not very useful indeed. I am working on the tests on a separate &hellip;</a></h6></td><td><details><summary>5.27</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 28&#13;  wordValue: 0.2&#13;  result: 3.27&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>37.38</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731649\" target=\"_blank\" rel=\"noopener\">See [https://github.com/ubiquity-os/conversation-rewards/pull/14&hellip;</a></h6></td><td><details><summary>3.38</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 8&#13;  wordValue: 0.2&#13;  result: 1.38&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>23.828</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573733603\" target=\"_blank\" rel=\"noopener\">Good point, also symbol should not be DAI but ETH isn't it?&#9&hellip;</a></h6></td><td><details><summary>6.88</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 39&#13;  wordValue: 0.2&#13;  result: 3.88&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>46.452</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573737049\" target=\"_blank\" rel=\"noopener\">Had changed it everywhere else but here, now it should be fine</a></h6></td><td><details><summary>2.87</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 12&#13;  wordValue: 0.2&#13;  result: 1.87&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>19.488</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574114225\" target=\"_blank\" rel=\"noopener\">This matches any whitespace character (spaces, tabs, line breaks&hellip;</a></h6></td><td><details><summary>4.58</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 33&#13;  wordValue: 0.2&#13;  result: 3.58&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>32.2</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574622869\" target=\"_blank\" rel=\"noopener\">By definition &#96;dump&#96; was just outputting results to stdo&hellip;</a></h6></td><td><details><summary>6.66</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 68&#13;  wordValue: 0.2&#13;  result: 4.66&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>48.244</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574702577\" target=\"_blank\" rel=\"noopener\">Un-nested them one level. I think that the &#96;buildXrow&#96; s&hellip;</a></h6></td><td><details><summary>5.06</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 25&#13;  wordValue: 0.2&#13;  result: 3.06&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>34.916</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574724902\" target=\"_blank\" rel=\"noopener\">I assumed BigInt only handles integers, and we manipulate a lot &hellip;</a></h6></td><td><details><summary>3.98</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 24&#13;  wordValue: 0.2&#13;  result: 2.98&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>26.544</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574767984\" target=\"_blank\" rel=\"noopener\">There is one permit generated per participating user, last run:&hellip;</a></h6></td><td><details><summary>3.63</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 10&#13;  wordValue: 0.2&#13;  result: 1.63&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>25.564</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575659438\" target=\"_blank\" rel=\"noopener\">I made it according to the previous version:- Issue Specificat&hellip;</a></h6></td><td><details><summary>9.46</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 2&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 6&#13;regex:&#13;  wordCount: 31&#13;  wordValue: 0.2&#13;  result: 3.46&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>65.128</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575675704\" target=\"_blank\" rel=\"noopener\">Wouldn't that lead to precision loss in JS and after the divisio&hellip;</a></h6></td><td><details><summary>5.4</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 30&#13;  wordValue: 0.2&#13;  result: 3.4&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>36.876</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576567583\" target=\"_blank\" rel=\"noopener\">That is correct. I understand now why you're confused:The va&hellip;</a></h6></td><td><details><summary>15.62</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 4&#13;    code:&#13;      score: 1&#13;      elementCount: 7&#13;  result: 11&#13;regex:&#13;  wordCount: 65&#13;  wordValue: 0.2&#13;  result: 4.62&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>111.636</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577477616\" target=\"_blank\" rel=\"noopener\">I don't think is it relevant in this scenario because we are not&hellip;</a></h6></td><td><details><summary>5.23</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 48&#13;  wordValue: 0.2&#13;  result: 4.23&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>37.072</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578162024\" target=\"_blank\" rel=\"noopener\">@whilefoo you are correct, these were wrongly used. I corrected &hellip;</a></h6></td><td><details><summary>13.2</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 5&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 9&#13;regex:&#13;  wordCount: 47&#13;  wordValue: 0.2&#13;  result: 4.2&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>92.064</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2056635516\" target=\"_blank\" rel=\"noopener\">Example of successful comment posting with results:[https://gi&hellip;</a></h6></td><td><details><summary>3.24</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 7&#13;  wordValue: 0.2&#13;  result: 1.24&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>22.512</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063348339\" target=\"_blank\" rel=\"noopener\">@0x4007 I believe that if I had all the tests in this PR it will&hellip;</a></h6></td><td><details><summary>4.2</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 27&#13;  wordValue: 0.2&#13;  result: 3.2&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>29.456</td></tr></tbody></table></details>",
+    "evaluationCommentHtml": "<details><summary><b><h3>&nbsp;<a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4NTdmNDY3YzhiZTNlM2IwMDAwIn19LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6eyJ0eXBlIjoiQmlnTnVtYmVyIiwiaGV4IjoiMHg1N2Y0NjdjOGJlM2UzYjAwMDAifX0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg1OTNkNDgyOWE5MzcyN2FmZTMwNmEwODM5MzU3MWE3ZDgwNDhjZDU5YjE5MmRhYWNlYTBiNjVmYjZmY2NkMzMyMDkyODIzYmJiZTAxNDNhMjA1YzFlMDg5NGU1YjU4ZGY3MjNiNzYyNzUxMTQxNTcwOWM3NjgxYTY4MWI4NjVlNzFiIiwibmV0d29ya0lkIjoxMDB9XQ==\" target=\"_blank\" rel=\"noopener\">[ 1622.478 WXDAI ]</a>&nbsp;</h3><h6>@gentlementlegen</h6></b></summary><h6>⚠️ Your rewards have been limited to the task price of 400 WXDAI.</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Issue</td><td>Task</td><td>1</td><td>400</td></tr><tr><td>Issue</td><td>Specification</td><td>1</td><td>12.11</td></tr><tr><td>Issue</td><td>Comment</td><td>9</td><td>297.792</td></tr><tr><td>Review</td><td>Comment</td><td>25</td><td>912.576</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issue-2218638141\" target=\"_blank\" rel=\"noopener\">In the v1 of the Ubiquibot, when a result gets evaluated, a reca&hellip;</a></h6></td><td><details><summary>9.87</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 3&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 8&#13;regex:&#13;  wordCount: 87&#13;  wordValue: 0.1&#13;  result: 1.87&#13;authorship: 1&#13;</pre></details></td><td>1</td><td>1</td><td>12.11</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2033404518\" target=\"_blank\" rel=\"noopener\">This needs [https://github.com/ubiquity-os/conversation-rewards/&hellip;</a></h6></td><td><details><summary>4.88</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 3&#13;regex:&#13;  wordCount: 17&#13;  wordValue: 0.2&#13;  result: 1.88&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>19.968</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036174312\" target=\"_blank\" rel=\"noopener\">To me 1 is the most straightforward to do for few reasons:- th&hellip;</a></h6></td><td><details><summary>10.66</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 3&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 7&#13;regex:&#13;  wordCount: 104&#13;  wordValue: 0.2&#13;  result: 3.66&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>44.256</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036367126\" target=\"_blank\" rel=\"noopener\">I think each plugin should output JSON not html as it is not rel&hellip;</a></h6></td><td><details><summary>10.65</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 3&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 7&#13;regex:&#13;  wordCount: 106&#13;  wordValue: 0.2&#13;  result: 3.65&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>42.784</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036385985\" target=\"_blank\" rel=\"noopener\">If you want to manipulate and convey data, HTML really is not ma&hellip;</a></h6></td><td><details><summary>7.37</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 4&#13;regex:&#13;  wordCount: 134&#13;  wordValue: 0.2&#13;  result: 3.37&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>30.208</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036411811\" target=\"_blank\" rel=\"noopener\">But then how do we consider the formatting of that output?Pr&hellip;</a></h6></td><td><details><summary>7.03</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 4&#13;  result: 4&#13;regex:&#13;  wordCount: 159&#13;  wordValue: 0.2&#13;  result: 3.03&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>28.8</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036458775\" target=\"_blank\" rel=\"noopener\">This can work, but we skyrocket coupling and to me defeat purpos&hellip;</a></h6></td><td><details><summary>4.48</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 55&#13;  wordValue: 0.2&#13;  result: 3.48&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>18.208</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2036535332\" target=\"_blank\" rel=\"noopener\">@pavlovcik To mitigate that that's why inside the comment reward&hellip;</a></h6></td><td><details><summary>5.73</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 85&#13;  wordValue: 0.2&#13;  result: 3.73&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>23.744</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2051094255\" target=\"_blank\" rel=\"noopener\">I realized that to carry this task properly we need to handle fl&hellip;</a></h6></td><td><details><summary>6.53</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 3&#13;regex:&#13;  wordCount: 58&#13;  wordValue: 0.2&#13;  result: 3.53&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>27.104</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2054424028\" target=\"_blank\" rel=\"noopener\">Agreed, I think currently there are 3 possible things to annotat&hellip;</a></h6></td><td><details><summary>16.46</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 7&#13;  result: 13&#13;regex:&#13;  wordCount: 54&#13;  wordValue: 0.2&#13;  result: 3.46&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>62.72</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-2242745217\" target=\"_blank\" rel=\"noopener\">Resolves #5 Depends on #8 Reviews looks gigantic but it'&hellip;</a></h6></td><td><details><summary>3</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;  result: 3&#13;regex:&#13;  wordCount: 19&#13;  wordValue: 0&#13;  result: 0&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>1</td><td>0</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570010044\" target=\"_blank\" rel=\"noopener\">I think in this case it makes sense because this function will r&hellip;</a></h6></td><td><details><summary>9.56</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 4&#13;  result: 6&#13;regex:&#13;  wordCount: 60&#13;  wordValue: 0.2&#13;  result: 3.56&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>67.844</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570011467\" target=\"_blank\" rel=\"noopener\">It is supposed to represent a comment. Would you prefer a descri&hellip;</a></h6></td><td><details><summary>3.8</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 16&#13;  wordValue: 0.2&#13;  result: 1.8&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>27.244</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570014142\" target=\"_blank\" rel=\"noopener\">True, just picked this up from the previous codebase. [https://r&hellip;</a></h6></td><td><details><summary>3.72</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 15&#13;  wordValue: 0.2&#13;  result: 1.72&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>25.172</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570187141\" target=\"_blank\" rel=\"noopener\">Seems convoluted to me and I don't know what problem that solved&hellip;</a></h6></td><td><details><summary>5.08</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 40&#13;  wordValue: 0.2&#13;  result: 3.08&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>35</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1570188450\" target=\"_blank\" rel=\"noopener\">Changed &#96;COMMENT&#96; to &#96;COMMENTED&#96;, added jsdoc de&hellip;</a></h6></td><td><details><summary>5.28</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 4&#13;regex:&#13;  wordCount: 10&#13;  wordValue: 0.2&#13;  result: 1.28&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>37.296</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573413974\" target=\"_blank\" rel=\"noopener\">Simply makes the docs linking the code within the comment, for c&hellip;</a></h6></td><td><details><summary>5.57</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    img:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 28&#13;  wordValue: 0.2&#13;  result: 2.57&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>39.76</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573416633\" target=\"_blank\" rel=\"noopener\">In the case of a string it would coerce the value and you would &hellip;</a></h6></td><td><details><summary>3.4</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 25&#13;  wordValue: 0.2&#13;  result: 2.4&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>23.044</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573420718\" target=\"_blank\" rel=\"noopener\">&#96;observe&#96; would help to chose what we want to include an&hellip;</a></h6></td><td><details><summary>6.12</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 41&#13;  wordValue: 0.2&#13;  result: 3.12&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>43.82</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731420\" target=\"_blank\" rel=\"noopener\">Not very useful indeed. I am working on the tests on a separate &hellip;</a></h6></td><td><details><summary>4.57</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 28&#13;  wordValue: 0.2&#13;  result: 2.57&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>32.396</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573731649\" target=\"_blank\" rel=\"noopener\">See [https://github.com/ubiquity-os/conversation-rewards/pull/14&hellip;</a></h6></td><td><details><summary>3.08</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 8&#13;  wordValue: 0.2&#13;  result: 1.08&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>21.7</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573733603\" target=\"_blank\" rel=\"noopener\">Good point, also symbol should not be DAI but ETH isn't it?&#9&hellip;</a></h6></td><td><details><summary>6.05</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 39&#13;  wordValue: 0.2&#13;  result: 3.05&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>40.852</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1573737049\" target=\"_blank\" rel=\"noopener\">Had changed it everywhere else but here, now it should be fine</a></h6></td><td><details><summary>2.47</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 12&#13;  wordValue: 0.2&#13;  result: 1.47&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>16.772</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574114225\" target=\"_blank\" rel=\"noopener\">This matches any whitespace character (spaces, tabs, line breaks&hellip;</a></h6></td><td><details><summary>3.81</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 33&#13;  wordValue: 0.2&#13;  result: 2.81&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>26.796</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574622869\" target=\"_blank\" rel=\"noopener\">By definition &#96;dump&#96; was just outputting results to stdo&hellip;</a></h6></td><td><details><summary>5.66</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 68&#13;  wordValue: 0.2&#13;  result: 3.66&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>40.992</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574702577\" target=\"_blank\" rel=\"noopener\">Un-nested them one level. I think that the &#96;buildXrow&#96; s&hellip;</a></h6></td><td><details><summary>4.4</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 25&#13;  wordValue: 0.2&#13;  result: 2.4&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>30.38</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574724902\" target=\"_blank\" rel=\"noopener\">I assumed BigInt only handles integers, and we manipulate a lot &hellip;</a></h6></td><td><details><summary>3.34</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 24&#13;  wordValue: 0.2&#13;  result: 2.34&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>22.288</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574767984\" target=\"_blank\" rel=\"noopener\">There is one permit generated per participating user, last run:&hellip;</a></h6></td><td><details><summary>3.28</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 10&#13;  wordValue: 0.2&#13;  result: 1.28&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>23.1</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575659438\" target=\"_blank\" rel=\"noopener\">I made it according to the previous version:- Issue Specificat&hellip;</a></h6></td><td><details><summary>8.72</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    ul:&#13;      score: 1&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 2&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 6&#13;regex:&#13;  wordCount: 31&#13;  wordValue: 0.2&#13;  result: 2.72&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>60.032</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575675704\" target=\"_blank\" rel=\"noopener\">Wouldn't that lead to precision loss in JS and after the divisio&hellip;</a></h6></td><td><details><summary>4.67</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 30&#13;  wordValue: 0.2&#13;  result: 2.67&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>31.892</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576567583\" target=\"_blank\" rel=\"noopener\">That is correct. I understand now why you're confused:The va&hellip;</a></h6></td><td><details><summary>14.63</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 4&#13;    code:&#13;      score: 1&#13;      elementCount: 7&#13;  result: 11&#13;regex:&#13;  wordCount: 65&#13;  wordValue: 0.2&#13;  result: 3.63&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>104.552</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1577477616\" target=\"_blank\" rel=\"noopener\">I don't think is it relevant in this scenario because we are not&hellip;</a></h6></td><td><details><summary>4.32</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 48&#13;  wordValue: 0.2&#13;  result: 3.32&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>30.604</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578162024\" target=\"_blank\" rel=\"noopener\">@whilefoo you are correct, these were wrongly used. I corrected &hellip;</a></h6></td><td><details><summary>12.3</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 3&#13;    code:&#13;      score: 1&#13;      elementCount: 5&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 9&#13;regex:&#13;  wordCount: 47&#13;  wordValue: 0.2&#13;  result: 3.3&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>85.792</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2056635516\" target=\"_blank\" rel=\"noopener\">Example of successful comment posting with results:[https://gi&hellip;</a></h6></td><td><details><summary>2.97</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 7&#13;  wordValue: 0.2&#13;  result: 0.97&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>20.636</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063348339\" target=\"_blank\" rel=\"noopener\">@0x4007 I believe that if I had all the tests in this PR it will&hellip;</a></h6></td><td><details><summary>3.51</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 27&#13;  wordValue: 0.2&#13;  result: 2.51&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>24.612</td></tr></tbody></table></details>",
     "events": {
       "issue.closed": {
         "count": 1,
@@ -2827,7 +2827,7 @@
       }
     },
     "payoutMode": "permit",
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4NWZmMjkyZmU4ZmRiNjAwMDAwIn19LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6eyJ0eXBlIjoiQmlnTnVtYmVyIiwiaGV4IjoiMHg1ZmYyOTJmZThmZGI2MDAwMDAifX0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHhjNDRhNmVjYzc0NTdjN2UwZjBkZDVlMDBlNGQ0MTMyZjk3OTQ4ZTZjOTFkOTczOGNhNWZhMjZiMDBkMDZjYzM3MDNjZjA1MGIwZThkMzVlYmIyMTdlOTllOTBjMGEzYjcyNWRjNjliZjljZWFjZDViMTgzMjRkYTFkOWZhM2ZiNDFjIiwibmV0d29ya0lkIjoxMDB9XQ==",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4NTdmNDY3YzhiZTNlM2IwMDAwIn19LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6eyJ0eXBlIjoiQmlnTnVtYmVyIiwiaGV4IjoiMHg1N2Y0NjdjOGJlM2UzYjAwMDAifX0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg1OTNkNDgyOWE5MzcyN2FmZTMwNmEwODM5MzU3MWE3ZDgwNDhjZDU5YjE5MmRhYWNlYTBiNjVmYjZmY2NkMzMyMDkyODIzYmJiZTAxNDNhMjA1YzFlMDg5NGU1YjU4ZGY3MjNiNzYyNzUxMTQxNTcwOWM3NjgxYTY4MWI4NjVlNzFiIiwibmV0d29ya0lkIjoxMDB9XQ==",
     "reviewRewards": [],
     "task": {
       "multiplier": 1,
@@ -2835,7 +2835,7 @@
       "timestamp": "2024-04-25T14:29:35Z",
       "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#event-12609679506"
     },
-    "total": 1769.92,
+    "total": 1622.478,
     "userId": 9807008,
     "walletAddress": "0x1"
   },
@@ -2873,9 +2873,9 @@
             "syllables": 263
           },
           "relevance": 0.8,
-          "reward": 6.848,
+          "reward": 6.272,
           "words": {
-            "result": 2,
+            "result": 1.42,
             "wordCount": 173,
             "wordValue": 0.1
           }
@@ -2916,9 +2916,9 @@
             "syllables": 22
           },
           "relevance": 0.7,
-          "reward": 2.884,
+          "reward": 2.576,
           "words": {
-            "result": 1.16,
+            "result": 0.82,
             "wordCount": 14,
             "wordValue": 0.1
           }
@@ -2951,9 +2951,9 @@
             "syllables": 33
           },
           "relevance": 0.7,
-          "reward": 2.408,
+          "reward": 1.96,
           "words": {
-            "result": 1.7,
+            "result": 1.2,
             "wordCount": 25,
             "wordValue": 0.1
           }
@@ -2986,9 +2986,9 @@
             "syllables": 13
           },
           "relevance": 0.7,
-          "reward": 1.596,
+          "reward": 1.372,
           "words": {
-            "result": 0.9,
+            "result": 0.64,
             "wordCount": 10,
             "wordValue": 0.1
           }
@@ -3021,9 +3021,9 @@
             "syllables": 20
           },
           "relevance": 0.7,
-          "reward": 1.876,
+          "reward": 1.596,
           "words": {
-            "result": 1.1,
+            "result": 0.78,
             "wordCount": 13,
             "wordValue": 0.1
           }
@@ -3056,9 +3056,9 @@
             "syllables": 38
           },
           "relevance": 0.7,
-          "reward": 2.408,
+          "reward": 1.96,
           "words": {
-            "result": 1.66,
+            "result": 1.17,
             "wordCount": 24,
             "wordValue": 0.1
           }
@@ -3091,9 +3091,9 @@
             "syllables": 26
           },
           "relevance": 0.7,
-          "reward": 2.184,
+          "reward": 1.792,
           "words": {
-            "result": 1.48,
+            "result": 1.04,
             "wordCount": 20,
             "wordValue": 0.1
           }
@@ -3126,9 +3126,9 @@
             "syllables": 11
           },
           "relevance": 0.7,
-          "reward": 1.54,
+          "reward": 1.344,
           "words": {
-            "result": 0.84,
+            "result": 0.59,
             "wordCount": 9,
             "wordValue": 0.1
           }
@@ -3165,9 +3165,9 @@
             "syllables": 111
           },
           "relevance": 0.7,
-          "reward": 3.976,
+          "reward": 3.332,
           "words": {
-            "result": 2.55,
+            "result": 1.8,
             "wordCount": 63,
             "wordValue": 0.1
           }
@@ -3200,9 +3200,9 @@
             "syllables": 26
           },
           "relevance": 0.7,
-          "reward": 2.1,
+          "reward": 1.764,
           "words": {
-            "result": 1.32,
+            "result": 0.94,
             "wordCount": 17,
             "wordValue": 0.1
           }
@@ -3239,9 +3239,9 @@
             "syllables": 49
           },
           "relevance": 0.7,
-          "reward": 5.264,
+          "reward": 4.76,
           "words": {
-            "result": 2.07,
+            "result": 1.47,
             "wordCount": 36,
             "wordValue": 0.1
           }
@@ -3274,9 +3274,9 @@
             "syllables": 4
           },
           "relevance": 0.7,
-          "reward": 1.316,
+          "reward": 1.204,
           "words": {
-            "result": 0.44,
+            "result": 0.31,
             "wordCount": 4,
             "wordValue": 0.1
           }
@@ -3285,7 +3285,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "evaluationCommentHtml": "<details><summary><b><h3>&nbsp;<a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MDIxNGU4MzQ4YzRmMDAwMDAwIn19LCJub25jZSI6IjYyOTcwNTkwNjE1ODgxMjIxMjc0MzE2OTEwNTY3NzAxOTUzNDM1MDg1NjAzMDk5NzUxMjI0MzE2OTA5MTgzMDc5NTM5ODkzODYzOTE0IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6Ilttb2NrXSBDb3VsZCBub3QgZmluZCB3YWxsZXQgZm9yIHVzZXIgMTM5MjYyNjY3IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDAyMTRlODM0OGM0ZjAwMDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGEwNTgxMjY3NjBhNzdjOGM5OTc1OWZlY2Y0MDY2MDBhM2RkYWY0NTZiODM5OGRkNDJiNDAxNWFmZjlhNzVhYTE3ZDA5NGFkMTEyNmQ0ODgzNjI1ODUwYjQ3NWU5MjRlZTAwY2M2Yzg2NTNhZjg0MDU2MmU3Y2M2OTI4MDliMTRlMWMiLCJuZXR3b3JrSWQiOjEwMH1d\" target=\"_blank\" rel=\"noopener\">[ 38.4 WXDAI ]</a>&nbsp;</h3><h6>@whilefoo</h6></b></summary><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Review</td><td>Code Review</td><td>4</td><td>4</td></tr><tr><td>Issue</td><td>Comment</td><td>1</td><td>6.848</td></tr><tr><td>Review</td><td>Comment</td><td>11</td><td>27.552</td></tr></tbody></table><h6>Review Details for&nbsp;<a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078\" target=\"_blank\" rel=\"noopener\">#12#issue-1822452078</a></h6><table><thead><tr><th>Changes</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2035427134\" target=\"_blank\" rel=\"noopener\">there are a couple of options:1. we let the conversation-rewar&hellip;</a></h6></td><td><details><summary>7</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    ol:&#13;      score: 0&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 3&#13;  result: 5&#13;regex:&#13;  wordCount: 173&#13;  wordValue: 0.1&#13;  result: 2&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>6.848</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574427305\" target=\"_blank\" rel=\"noopener\">&#96;&#96;&#96;suggestionreturn result;&#96;&#96;&#96;&hellip;</a></h6></td><td><details><summary>3.16</summary><pre>content:&#13;  content:&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 14&#13;  wordValue: 0.1&#13;  result: 1.16&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>2.884</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574441918\" target=\"_blank\" rel=\"noopener\">I'm not sure if it's a good idea to rely on logs for testing, is&hellip;</a></h6></td><td><details><summary>2.7</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 25&#13;  wordValue: 0.1&#13;  result: 1.7&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>2.408</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574458540\" target=\"_blank\" rel=\"noopener\">why so many nested functions? it becomes hard to read</a></h6></td><td><details><summary>1.9</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 10&#13;  wordValue: 0.1&#13;  result: 0.9&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.596</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574460099\" target=\"_blank\" rel=\"noopener\">is there a reason we are using Decimal.js instead of native BigI&hellip;</a></h6></td><td><details><summary>2.1</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 13&#13;  wordValue: 0.1&#13;  result: 1.1&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.876</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574487172\" target=\"_blank\" rel=\"noopener\">Shouldn't task be issue opening item and specification is pull r&hellip;</a></h6></td><td><details><summary>2.66</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 24&#13;  wordValue: 0.1&#13;  result: 1.66&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>2.408</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574492061\" target=\"_blank\" rel=\"noopener\">I assume this is a permit for task assignee, but where are other&hellip;</a></h6></td><td><details><summary>2.48</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 20&#13;  wordValue: 0.1&#13;  result: 1.48&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>2.184</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575851470\" target=\"_blank\" rel=\"noopener\">gotcha, I thought this html is for all users</a></h6></td><td><details><summary>1.84</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 9&#13;  wordValue: 0.1&#13;  result: 0.84&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.54</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576482609\" target=\"_blank\" rel=\"noopener\">I can see from the example that it works correctly but when read&hellip;</a></h6></td><td><details><summary>4.55</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 63&#13;  wordValue: 0.1&#13;  result: 2.55&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>3.976</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578040543\" target=\"_blank\" rel=\"noopener\">Ok so we need it for precise floating point calculations, in tha&hellip;</a></h6></td><td><details><summary>2.32</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 17&#13;  wordValue: 0.1&#13;  result: 1.32&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>2.1</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578050965\" target=\"_blank\" rel=\"noopener\">why is it &#96;ISSUER&#96; which is meant for author of issue/re&hellip;</a></h6></td><td><details><summary>6.07</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 4&#13;regex:&#13;  wordCount: 36&#13;  wordValue: 0.1&#13;  result: 2.07&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>5.264</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333\" target=\"_blank\" rel=\"noopener\">this makes more sense!</a></h6></td><td><details><summary>1.44</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 4&#13;  wordValue: 0.1&#13;  result: 0.44&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.316</td></tr></tbody></table></details>",
+    "evaluationCommentHtml": "<details><summary><b><h3>&nbsp;<a href=\"https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MDFkNmU2YWUzODc2OGUwMDAwIn19LCJub25jZSI6IjYyOTcwNTkwNjE1ODgxMjIxMjc0MzE2OTEwNTY3NzAxOTUzNDM1MDg1NjAzMDk5NzUxMjI0MzE2OTA5MTgzMDc5NTM5ODkzODYzOTE0IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6Ilttb2NrXSBDb3VsZCBub3QgZmluZCB3YWxsZXQgZm9yIHVzZXIgMTM5MjYyNjY3IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDAxZDZlNmFlMzg3NjhlMDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDQ5OTlkNDk0NzE1M2JhNWY1OTFhNTE4NWI1ZjE1YzUwMDcyZDZlNTZkOWUxOTgzNzc3ZTM5ZWI0NjdiYmMzNmE1MGIzODBjYWQ1ZjI1NTMzNTU1NTRlMWRlMWIwODM3NWQ2ZTZmZTg5NGJhOGY0OTA2NTE0OTNhMjdlYWNhYTZkMWIiLCJuZXR3b3JrSWQiOjEwMH1d\" target=\"_blank\" rel=\"noopener\">[ 33.932 WXDAI ]</a>&nbsp;</h3><h6>@whilefoo</h6></b></summary><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Review</td><td>Code Review</td><td>4</td><td>4</td></tr><tr><td>Issue</td><td>Comment</td><td>1</td><td>6.272</td></tr><tr><td>Review</td><td>Comment</td><td>11</td><td>23.66</td></tr></tbody></table><h6>Review Details for&nbsp;<a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078\" target=\"_blank\" rel=\"noopener\">#12#issue-1822452078</a></h6><table><thead><tr><th>Changes</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr><tr><td>+50 -50</td><td>1</td><td>1</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/issues/5#issuecomment-2035427134\" target=\"_blank\" rel=\"noopener\">there are a couple of options:1. we let the conversation-rewar&hellip;</a></h6></td><td><details><summary>6.42</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    ol:&#13;      score: 0&#13;      elementCount: 1&#13;    li:&#13;      score: 1&#13;      elementCount: 3&#13;  result: 5&#13;regex:&#13;  wordCount: 173&#13;  wordValue: 0.1&#13;  result: 1.42&#13;authorship: 1&#13;</pre></details></td><td>0.8</td><td>4</td><td>6.272</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574427305\" target=\"_blank\" rel=\"noopener\">&#96;&#96;&#96;suggestionreturn result;&#96;&#96;&#96;&hellip;</a></h6></td><td><details><summary>2.82</summary><pre>content:&#13;  content:&#13;    pre:&#13;      score: 0&#13;      elementCount: 1&#13;    code:&#13;      score: 1&#13;      elementCount: 1&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 14&#13;  wordValue: 0.1&#13;  result: 0.82&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>2.576</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574441918\" target=\"_blank\" rel=\"noopener\">I'm not sure if it's a good idea to rely on logs for testing, is&hellip;</a></h6></td><td><details><summary>2.2</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 25&#13;  wordValue: 0.1&#13;  result: 1.2&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.96</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574458540\" target=\"_blank\" rel=\"noopener\">why so many nested functions? it becomes hard to read</a></h6></td><td><details><summary>1.64</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 10&#13;  wordValue: 0.1&#13;  result: 0.64&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.372</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574460099\" target=\"_blank\" rel=\"noopener\">is there a reason we are using Decimal.js instead of native BigI&hellip;</a></h6></td><td><details><summary>1.78</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 13&#13;  wordValue: 0.1&#13;  result: 0.78&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.596</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574487172\" target=\"_blank\" rel=\"noopener\">Shouldn't task be issue opening item and specification is pull r&hellip;</a></h6></td><td><details><summary>2.17</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 24&#13;  wordValue: 0.1&#13;  result: 1.17&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.96</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1574492061\" target=\"_blank\" rel=\"noopener\">I assume this is a permit for task assignee, but where are other&hellip;</a></h6></td><td><details><summary>2.04</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 20&#13;  wordValue: 0.1&#13;  result: 1.04&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.792</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1575851470\" target=\"_blank\" rel=\"noopener\">gotcha, I thought this html is for all users</a></h6></td><td><details><summary>1.59</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 9&#13;  wordValue: 0.1&#13;  result: 0.59&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.344</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1576482609\" target=\"_blank\" rel=\"noopener\">I can see from the example that it works correctly but when read&hellip;</a></h6></td><td><details><summary>3.8</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 63&#13;  wordValue: 0.1&#13;  result: 1.8&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>3.332</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578040543\" target=\"_blank\" rel=\"noopener\">Ok so we need it for precise floating point calculations, in tha&hellip;</a></h6></td><td><details><summary>1.94</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 17&#13;  wordValue: 0.1&#13;  result: 0.94&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.764</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1578050965\" target=\"_blank\" rel=\"noopener\">why is it &#96;ISSUER&#96; which is meant for author of issue/re&hellip;</a></h6></td><td><details><summary>5.47</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    code:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 4&#13;regex:&#13;  wordCount: 36&#13;  wordValue: 0.1&#13;  result: 1.47&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>4.76</td></tr><tr><td><h6><a href=\"https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333\" target=\"_blank\" rel=\"noopener\">this makes more sense!</a></h6></td><td><details><summary>1.31</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 4&#13;  wordValue: 0.1&#13;  result: 0.31&#13;authorship: 1&#13;</pre></details></td><td>0.7</td><td>4</td><td>1.204</td></tr></tbody></table></details>",
     "events": {
       "issue.commented": {
         "count": 1,
@@ -3325,7 +3325,7 @@
       }
     },
     "payoutMode": "permit",
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MDIxNGU4MzQ4YzRmMDAwMDAwIn19LCJub25jZSI6IjYyOTcwNTkwNjE1ODgxMjIxMjc0MzE2OTEwNTY3NzAxOTUzNDM1MDg1NjAzMDk5NzUxMjI0MzE2OTA5MTgzMDc5NTM5ODkzODYzOTE0IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6Ilttb2NrXSBDb3VsZCBub3QgZmluZCB3YWxsZXQgZm9yIHVzZXIgMTM5MjYyNjY3IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDAyMTRlODM0OGM0ZjAwMDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGEwNTgxMjY3NjBhNzdjOGM5OTc1OWZlY2Y0MDY2MDBhM2RkYWY0NTZiODM5OGRkNDJiNDAxNWFmZjlhNzVhYTE3ZDA5NGFkMTEyNmQ0ODgzNjI1ODUwYjQ3NWU5MjRlZTAwY2M2Yzg2NTNhZjg0MDU2MmU3Y2M2OTI4MDliMTRlMWMiLCJuZXR3b3JrSWQiOjEwMH1d",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MDFkNmU2YWUzODc2OGUwMDAwIn19LCJub25jZSI6IjYyOTcwNTkwNjE1ODgxMjIxMjc0MzE2OTEwNTY3NzAxOTUzNDM1MDg1NjAzMDk5NzUxMjI0MzE2OTA5MTgzMDc5NTM5ODkzODYzOTE0IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6Ilttb2NrXSBDb3VsZCBub3QgZmluZCB3YWxsZXQgZm9yIHVzZXIgMTM5MjYyNjY3IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDAxZDZlNmFlMzg3NjhlMDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDQ5OTlkNDk0NzE1M2JhNWY1OTFhNTE4NWI1ZjE1YzUwMDcyZDZlNTZkOWUxOTgzNzc3ZTM5ZWI0NjdiYmMzNmE1MGIzODBjYWQ1ZjI1NTMzNTU1NTRlMWRlMWIwODM3NWQ2ZTZmZTg5NGJhOGY0OTA2NTE0OTNhMjdlYWNhYTZkMWIiLCJuZXR3b3JrSWQiOjEwMH1d",
     "reviewRewards": [
       {
         "reviews": [
@@ -3369,7 +3369,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
       }
     ],
-    "total": 38.4,
+    "total": 33.932,
     "userId": 139262667,
     "walletAddress": "0x1"
   }

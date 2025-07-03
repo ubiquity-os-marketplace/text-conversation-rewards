@@ -119,6 +119,9 @@ describe("Content Evaluator Module Test", () => {
             login: "developer-1",
           },
         ],
+        user: {
+          login: "test-user",
+        },
       },
       repository: {
         name: "conversation-rewards",
@@ -160,7 +163,7 @@ describe("Content Evaluator Module Test", () => {
       node_id: "IC_kwDOKzVPS89fGhiO",
       url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/1571243461",
       html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/71#issuecomment-1571243461",
-      body: "_Originally posted by @reviewer in [#69](https://github.com/ubiquity/work.ubq.fi/issues/69)_\n\nThe implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments.",
+      body: "_Originally posted by @reviewer in [#69](https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-1234)_\n\nThe implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments.",
       user: {
         login: "test-user",
         id: 12345678,
@@ -178,21 +181,31 @@ describe("Content Evaluator Module Test", () => {
       performed_via_github_app: null,
     };
 
-    const extractedInfo = extractOriginalAuthor(originalAuthorComment.body);
+    // Issue reference test
+    let extractedInfo = extractOriginalAuthor(originalAuthorComment.body);
     expect(extractedInfo).not.toBeNull();
     expect(extractedInfo?.username).toBe("reviewer");
-    expect(extractedInfo?.url).toBe("https://github.com/ubiquity/work.ubq.fi/issues/69");
+    expect(extractedInfo?.url).toBe("https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-1234");
 
+    // Pull-request reference test
+    originalAuthorComment.body =
+      "_Originally posted by @reviewer in https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-1234_\n\nThe implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments.";
+    extractedInfo = extractOriginalAuthor(originalAuthorComment.body);
+    expect(extractedInfo).not.toBeNull();
+    expect(extractedInfo?.username).toBe("reviewer");
+    expect(extractedInfo?.url).toBe("https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-1234");
+
+    const commentWithAuthor = [...activity.comments, originalAuthorComment];
     server.use(
       http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/comments", () => {
-        const modifiedComments = [...activity.comments, originalAuthorComment];
+        const modifiedComments = commentWithAuthor;
         return HttpResponse.json(modifiedComments);
       })
     );
 
     await activity.init();
 
-    const processor = new Processor(ctx);
+    let processor = new Processor(ctx);
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -202,15 +215,37 @@ describe("Content Evaluator Module Test", () => {
 
     await processor.run(activity);
 
-    const result = JSON.parse(processor.dump()) as Result;
+    let result = JSON.parse(processor.dump()) as Result;
 
+    // Test with different original author and issue author
     const users = Object.keys(result);
     const hasOriginalAuthor = users.some((user) => user === "reviewer");
     expect(hasOriginalAuthor).toBeTruthy();
-    expect(result["reviewer"].total).toEqual(9.7684);
+    expect(result["reviewer"].total).toEqual(8.7868);
     // "reviewer" should also be credited for the spec even though it didn't write it, due to the "originally posted by"
     expect(result["reviewer"].comments).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: activity.self?.id })])
     );
+
+    // Test with the same original author and issue author
+    originalAuthorComment.body =
+      "_Originally posted by @test-user in https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-1234_\n\nThe implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments.";
+    await activity.init();
+    processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+    ];
+    await processor.run(activity);
+    result = JSON.parse(processor.dump()) as Result;
+    const comments = result["test-user"].comments?.filter((comment) =>
+      comment.content.includes("_Originally posted by @test-user")
+    );
+    expect(comments).toHaveLength(1);
+    comments?.forEach((comment) => {
+      expect(comment.score?.authorship).toEqual(1);
+    });
   }, 120000);
 });
