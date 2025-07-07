@@ -3,12 +3,11 @@ import { Value } from "@sinclair/typebox/value";
 import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
-import ms, { StringValue } from "ms";
 import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { extractOriginalAuthor } from "../helpers/original-author";
-import { retry } from "../helpers/retry";
+import { checkLlmRetryableState, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -124,7 +123,9 @@ export class ContentEvaluatorModule extends BaseModule {
    */
   private async _handleRewardsForOriginalAuthor(body: string, result: Result) {
     const originalComment = extractOriginalAuthor(body);
-    if (!originalComment) return;
+    const issueAuthor = this.context.payload.issue.user?.login;
+
+    if (!originalComment || !issueAuthor || issueAuthor === originalComment.username) return;
 
     const specReward = this._extractAndAdjustSpecReward(result);
     if (!specReward) return;
@@ -224,22 +225,11 @@ export class ContentEvaluatorModule extends BaseModule {
           this.context.logger.error(String(error), { err: error });
         },
         isErrorRetryable: (error) => {
-          if (error instanceof OpenAI.APIError && error.status) {
-            if ([500, 503].includes(error.status)) {
-              return true;
-            }
-            if (error.status === 429 && error.headers) {
-              const retryAfterTokens = error.headers["x-ratelimit-reset-tokens"];
-              const retryAfterRequests = error.headers["x-ratelimit-reset-requests"];
-              if (!retryAfterTokens || !retryAfterRequests) {
-                return true;
-              }
-              const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
-              return Number.isFinite(retryAfter) ? retryAfter : true;
-            }
-          }
+          const llmRetryable = checkLlmRetryableState(error);
           // Retry if there is a SyntaxError caused by malformed JSON or TypeBoxError caused by incorrect JSON from OpenAI
-          return error instanceof SyntaxError || error instanceof TypeBoxError || error instanceof LogReturn;
+          return (
+            llmRetryable || error instanceof SyntaxError || error instanceof TypeBoxError || error instanceof LogReturn
+          );
         },
       }
     );

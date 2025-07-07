@@ -26,6 +26,7 @@ import paymentResults from "./__mocks__/results/permit-generation-results.json";
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import simplificationIncentivizerResults from "./__mocks__/results/simplification-incentivizer.results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
+import externalContentResults from "./__mocks__/results/external-content-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
@@ -149,6 +150,14 @@ const { UserExtractorModule } = await import("../src/parser/user-extractor-modul
 const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
 const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
+const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
+
+function getExternalContentProcessor(context: ContextPlugin) {
+  const instance = new ExternalContentProcessor(context);
+  Reflect.set(instance, "_llmWebsite", { chat: { completions: { create: jest.fn() } } });
+  Reflect.set(instance, "_llmImage", { chat: { completions: { create: jest.fn() } } });
+  return instance;
+}
 
 beforeAll(() => {
   server.listen();
@@ -230,11 +239,24 @@ describe("Modules tests", () => {
     expect(result).toEqual(dataPurgeResults);
   });
 
+  it("Should evaluate external content", async () => {
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
+    ];
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    expect(result).toEqual(externalContentResults);
+  });
+
   it("Should evaluate formatting", async () => {
     const processor = new Processor(ctx);
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
     ];
     await processor.run(activity);
@@ -247,6 +269,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
     ];
@@ -264,6 +287,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
     ];
@@ -282,6 +306,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
@@ -296,6 +321,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
@@ -311,6 +337,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
@@ -327,6 +354,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
@@ -343,6 +371,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
@@ -377,6 +406,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new PaymentModule(ctx),
       new GithubCommentModule(ctx),
@@ -442,6 +472,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
       new ReviewIncentivizerModule(ctx),
@@ -499,6 +530,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
     ];
@@ -542,7 +574,7 @@ describe("Modules tests", () => {
         total: 400,
       },
       whilefoo: {
-        total: 40.068,
+        total: 29.932,
       },
     });
   });
@@ -568,6 +600,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(context),
       new DataPurgeModule(context),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(context),
       new PaymentModule(context),
       new GithubCommentModule(context),
@@ -600,6 +633,7 @@ describe("Modules tests", () => {
     processor["_transformers"] = [
       new UserExtractorModule(context),
       new DataPurgeModule(context),
+      getExternalContentProcessor(ctx),
       new FormattingEvaluatorModule(context),
       new PaymentModule(context),
       new GithubCommentModule(context),
