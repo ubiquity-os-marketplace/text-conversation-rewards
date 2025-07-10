@@ -1,5 +1,79 @@
 # Changelog
 
+## [1.7.3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.2.0...v1.7.3) (2025-07-10)
+
+
+### Features
+
+* add auto transfer mode ([0de443b](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0de443b86b023c6cc348c567f095e9f0721a6da8))
+* add user creation fallback and improve logging ([a1902a8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a1902a8327044aa0d21473a4917047ade0fea7d2))
+* display warning if wallet is not set ([5a515e4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/5a515e4b32fdc51eb7e413b048433c754a5adbbd))
+* external content relevance module ([41959c6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/41959c6d4319a26b7f0b4a2acfc0d1d3fd532e21))
+* extract human edits from comments ([e008cc8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/e008cc81b876d3fddc50e3cc029761c1e027c990))
+* log inputs ([bd387be](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bd387be619382f121122394f3be9398739464a02))
+* run on all orgs, repos, issues ([7511ce8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7511ce826a9a0eb99099cdf535c626824a934915))
+* simplification incentives ([d215a7e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d215a7ecd483820fd898a0c4af15ba84bcb883d4))
+* skip posting reward if it's claimed ([9076ea7](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/9076ea750fe6fe1653df5e3ea8bd37333ef293d7))
+* use new permit2 address ([d99a25e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d99a25e4c150ccecb3fc4f17869205a57dfbeaa0))
+
+
+### Bug Fixes
+
+* add auto mode for fetching price labels ([4377763](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/4377763a4fd696af5a720638695e6dd93d08ba83))
+* add manual issue close and command check handlers ([aa38ab3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/aa38ab3438351ab16beb294af22fb40f93c629af))
+* add reward mechanism for original comment authors ([f6835f2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/f6835f2b289f1f6da0046854981270a01de2909d))
+* add reward mechanism for original comment authors ([7c377bf](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7c377bf47a36bee0ca3a9b8327d62fffb8e38a9a))
+* add support for issue comment event and finish command ([d8e819c](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d8e819c33ea979be8c3f80ab2b2c10ffb4fbecb1))
+* add walletAddress in all payout modes ([602e14e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/602e14e2a13803816f7e086e5fb6595f6247eb05))
+* added missing tags to default configuration ([2f2d458](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2f2d4588a6e11746923a9facf54142090c214d5f))
+* anchor urls for pull-request comment body now points to the proper comment ([c11b070](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c11b0704dd622f6723c2bc9b1564a682261995c2))
+* **api, build:** correct repo filter logic and bun commands ([acf1814](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/acf18143e00575833e677183ddc1e3c995241137))
+* **api:** filter out DevPool directory from repositories ([5996cd5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/5996cd5bf17f9b91eb0eb872dca0509539b5f30f))
+* cap display is disabled on XP mode ([db34140](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/db341406407c2951c56c7051d1a4538bb09cb3e9))
+* change RPC generation ([2836963](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/283696362971109620a8cdd34991dd624f3a1ef8))
+* change to err ([168cbcc](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/168cbcc3c1eb555f514b25099aac26a7b31ab102))
+* check all permits ([26ce105](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/26ce105dd423163452176cb13ff3d08fc7e70f31))
+* check for claimed permit in stripped content ([a09182b](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a09182bba46aff75651fe92f8cddf44d4c7f8fbf))
+* finish command ([e61ded4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/e61ded4f0632161bfd7b600673d612f806710018))
+* formatting elements ([29341af](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/29341afd08e0c7d3a1a2ad727ea7a258f553b884))
+* gitattributes gets defaults if no file is found ([722733c](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/722733c5180c6bc1d7e19baacc3d0e378fc7ae74))
+* handle deleted user accounts in linked PR filters ([1a2e25f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1a2e25f720d7f22ac067723a65d9dd3d9bcbd33c))
+* if the issue's author is the same as the original author, no duplicate ([33825ce](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/33825ce465d818671fa314cdd4351f60aa0a4e8e))
+* images are properly handled if they are provided in a Markdown link format ([f1ba888](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/f1ba8882b18f532f709d58da53880965e78a25e6))
+* log inputs ([71032a8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/71032a88f7b035900d5a23ad95cad0abfea578ea))
+* original author "Originally posted by" now matches both issues and PRs ([3e856ee](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/3e856ee7991d27f02ba00d7bfc5242b50a5c294b))
+* original author issues ([bfd3af1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bfd3af11e0ade0b77ce12b036d4f707543b9a641))
+* **parser:** clarify JSON output format and response guidelines ([cf0d1ce](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/cf0d1ce897d1afe6c5eaf604f7c9b43823bcb75e))
+* **parser:** ensure LLM responses are raw JSON without Markdown ([1041a5e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1041a5ef4d59b9b426ffdb896d70ea9f2fbdf0c7))
+* **parser:** ensure LLM responses are raw JSON without Markdown ([bea494d](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bea494d98eb083ef8bde68d50e6cca04764fe7df))
+* **parser:** prevent rewards for bot accounts ([31ad77f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/31ad77f81349109c350e17188aa203e591c6b15d))
+* **parser:** refactor PR file processing and error handling ([af55159](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/af5515969affb6e1edb2745c7ffc6f74350526f4))
+* **parser:** refactor PR file processing and error handling ([86dbad0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/86dbad0217983edff3f69111460a6212a31b82a3))
+* payment log severity ([ab9b2c1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ab9b2c1c5b3393c96d233c6f69a38b1cc8f06f2e))
+* prompt improvement ([ad6c16b](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ad6c16b53394ac810d8f7ba0b4450510eea977b8))
+* replace eth-chains with dynamic RPC fetching ([7a7e1b4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7a7e1b40d69d7793bae91afcbe5b98e8b4b76718))
+* set environment main for main branch and tags ([70118e6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/70118e65d7b191d69c6debeac862dc58066a938d))
+* set environment main for main branch and tags ([ebb81b0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ebb81b032d60c15a16efb0dca476d52839e91d5f))
+* tests ([8ae660e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8ae660e15e574afbcacff3d323c8358260217042))
+* **tests:** signature ([059baaf](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/059baafd14ec34a5f34d693c1797b95358885de3))
+* the content of the external elements is added to the elements ([4218222](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/4218222d68fb8739e1ee06b22b4d7815736c942d))
+* the location entry contains the hash in the URL ([7e0c9f5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7e0c9f5879cddffa100dfede7b24c0be8252484e))
+* the Md package has been changed for a more performant one ([85e8b9c](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/85e8b9cdf9762f847f894ba67e4aae617b61174c))
+* the pull-request file comparison is now done through the `base` ([536bfb8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/536bfb806d2f0d27fad5a4d7c1af5215248649ee))
+* the timestamp is now added for review comments (submitted_at) ([55410dc](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/55410dc6f1afdfd52e6e74a534922fc7ae6fae50))
+* the wallet fetch warning is not display on XP mode ([18165d9](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/18165d99a9a2c0033f6fc33fb3eed21bbb397d8d))
+* url always contain anchors to the comment they refer to ([f1aca99](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/f1aca99a1fc0e915a91334d7ac7ec559eb6b85ab))
+
+
+### Performance Improvements
+
+* remove zipping of results folder and adjust artifact upload path ([f1610bc](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/f1610bc84ac74b593158cad1c69cd6f40146a2ee))
+
+
+### Miscellaneous Chores
+
+* release 1.7.3 ([c16a0d8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c16a0d8bc6938087410c2c3abd6d5995a9d80fc4))
+
 ## [1.2.0](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.1.0...v1.2.0) (2025-07-10)
 
 
