@@ -119,9 +119,14 @@ export class ExternalContentProcessor extends BaseModule {
         async () => {
           const linkResponse = await fetch(url);
           if (!linkResponse.ok) {
-            throw this.context.logger.error("Failed to fetch the content of an external element.", {
-              url,
-            });
+            if (linkResponse.status === 404) {
+              this.context.logger.warn("The external element was not found.", { url });
+              return null;
+            } else {
+              throw this.context.logger.error("Failed to fetch the content of an external element.", {
+                url,
+              });
+            }
           }
           const contentType = linkResponse.headers.get("content-type");
           if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
