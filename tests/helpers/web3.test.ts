@@ -1,5 +1,5 @@
-import { describe, expect, it, jest } from "@jest/globals";
 import { MaxUint256 } from "@uniswap/permit2-sdk";
+import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { BigNumber, ethers, utils } from "ethers";
 import { Interface } from "ethers/lib/utils";
 import {
@@ -21,10 +21,10 @@ class MockProvider extends ethers.providers.BaseProvider {
 const mockProvider = new MockProvider(100);
 
 const mockErc20Contract = {
-  balanceOf: jest.fn().mockReturnValue(BigNumber.from("1000")),
-  symbol: jest.fn().mockReturnValue("WXDAI"),
-  decimals: jest.fn().mockReturnValue(18),
-  allowance: jest.fn().mockReturnValue(BigNumber.from("100")),
+  balanceOf: mock().mockReturnValue(BigNumber.from("1000")),
+  symbol: mock().mockReturnValue("WXDAI"),
+  decimals: mock().mockReturnValue(18),
+  allowance: mock().mockReturnValue(BigNumber.from("100")),
   provider: mockProvider,
 };
 
@@ -33,7 +33,7 @@ const permit2Wrapper = new Permit2Wrapper(mockErc20Contract as unknown as ethers
 
 describe("web3.ts", () => {
   beforeEach(async () => {
-    jest.clearAllMocks();
+    mock.restore();
   });
   it("Should return correct ERC20 token contract", async () => {
     const networkId = 100; // gnosis

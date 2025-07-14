@@ -1,18 +1,18 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { OctokitResponse, RequestParameters } from "@octokit/types";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock, Mock, spyOn } from "bun:test";
 import { getExcludedFiles } from "../src/helpers/excluded-files";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 
-type MockGetContent = jest.Mock<
+type MockGetContent = Mock<
   (
     params?: RequestParameters & { ref?: string; owner: string; repo: string; path: string }
   ) => Promise<OctokitResponse<unknown>>
 >;
 
-const mockGetContent: MockGetContent = jest.fn();
+const mockGetContent: MockGetContent = mock();
 const mockOctokit = {
   rest: {
     repos: {
@@ -41,7 +41,7 @@ describe("ReviewIncentivizerModule file exclusion", () => {
   const reviewIncentivizer = new ReviewIncentivizerModule(ctx);
 
   beforeEach(() => {
-    jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockResolvedValue({
+    spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockResolvedValue({
       "src/index.ts": { addition: 50, deletion: 50 },
       "src/helpers/utils.ts": { addition: 50, deletion: 50 },
       "dist/generated.ts": { addition: 50, deletion: 50 },

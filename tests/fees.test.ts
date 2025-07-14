@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { IssueActivity } from "../src/issue-activity";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
@@ -9,7 +9,7 @@ const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+mock.module("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -77,7 +77,7 @@ describe("GithubCommentModule Fee Tests", () => {
       },
     };
 
-    jest.spyOn(githubCommentModule, "_generateHtml");
+    spyOn(githubCommentModule, "_generateHtml");
 
     const bodyContent = await githubCommentModule.getBodyContent({} as unknown as IssueActivity, result);
 

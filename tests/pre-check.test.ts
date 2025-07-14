@@ -1,7 +1,7 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from "bun:test";
 import { http, HttpResponse } from "msw";
 import { isUserAllowedToGenerateRewards } from "../src/helpers/permissions";
 import { ContextPlugin } from "../src/types/plugin-input";
@@ -13,7 +13,7 @@ import "./helpers/permit-mock";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.unstable_mockModule("@actions/github", () => {
+mock.module("@actions/github", () => {
   const context = {
     runId: "1",
     payload: {
@@ -43,13 +43,12 @@ describe("Pre-check tests", () => {
         db[tableName].create(row);
       }
     }
-    jest.resetModules();
-    jest.resetAllMocks();
+    mock.restore();
   });
 
   it("Should reopen the issue and not generate rewards if linked pull-requests are still open", async () => {
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => [
+    mock.module("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: mock(() => [
         {
           id: "PR_kwDOKzVPS85zXUoj",
           title: "fix: add state to sorting manager for bottom and top",
@@ -86,7 +85,7 @@ describe("Pre-check tests", () => {
         },
       ]),
     }));
-    const patchMock = jest.fn(() => HttpResponse.json({}));
+    const patchMock = mock(() => HttpResponse.json({}));
     server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
     const { run } = await import("../src/run");
     const result = await run({
@@ -119,7 +118,7 @@ describe("Pre-check tests", () => {
       logger: new Logs("debug"),
       octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
       commentHandler: {
-        postComment: jest.fn(),
+        postComment: mock(),
       },
     } as unknown as ContextPlugin);
     expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
@@ -127,10 +126,10 @@ describe("Pre-check tests", () => {
   });
 
   it("Should not generate a permit if non-collaborator user is merging / closing the issue", async () => {
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => []),
+    mock.module("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: mock(() => []),
     }));
-    const patchMock = jest.fn(() => HttpResponse.json({}));
+    const patchMock = mock(() => HttpResponse.json({}));
     server.use(
       http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }),
       http.get(
@@ -178,7 +177,7 @@ describe("Pre-check tests", () => {
       logger: new Logs("debug"),
       octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
       commentHandler: {
-        postComment: jest.fn(),
+        postComment: mock(),
       },
     } as unknown as ContextPlugin);
 
@@ -186,11 +185,11 @@ describe("Pre-check tests", () => {
   });
 
   it("Should post a warning message that bots cannot trigger reward generation", async () => {
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => []),
+    mock.module("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedMergedPulls: mock(() => []),
     }));
-    jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
-      postComment: jest.fn(),
+    mock.module("@ubiquity-os/plugin-sdk", () => ({
+      postComment: mock(),
     }));
     const { run } = await import("../src/run");
 
@@ -225,19 +224,19 @@ describe("Pre-check tests", () => {
       octokit: {
         rest: {
           orgs: {
-            getMembershipForUser: jest.fn(() => {
+            getMembershipForUser: mock(() => {
               throw new Error();
             }),
           },
           repos: {
-            getCollaboratorPermissionLevel: jest.fn(() => {
+            getCollaboratorPermissionLevel: mock(() => {
               return { data: { role_name: "read" } };
             }),
           },
         },
       },
       commentHandler: {
-        postComment: jest.fn(),
+        postComment: mock(),
       },
     } as unknown as ContextPlugin);
 
@@ -245,8 +244,8 @@ describe("Pre-check tests", () => {
   });
 
   it("Should deny a user to generate rewards if non-admin and allow admins", async () => {
-    const getMembershipForUser = jest.fn(() => ({}));
-    const getCollaboratorPermissionLevel = jest.fn(() => ({
+    const getMembershipForUser = mock(() => ({}));
+    const getCollaboratorPermissionLevel = mock(() => ({
       data: {
         role_name: "read",
       },
@@ -289,7 +288,7 @@ describe("Pre-check tests", () => {
         },
       },
       commentHandler: {
-        postComment: jest.fn(),
+        postComment: mock(),
       },
     } as unknown as ContextPlugin;
 
@@ -308,9 +307,9 @@ describe("Pre-check tests", () => {
   });
 
   it("Should deny unknown commands and accept know commands", async () => {
-    jest.unstable_mockModule("../src/issue-activity", () => ({
-      IssueActivity: jest.fn(() => ({
-        init: jest.fn(),
+    mock.module("../src/issue-activity", () => ({
+      IssueActivity: mock(() => ({
+        init: mock(),
       })),
     }));
     const { run } = await import("../src/run");
@@ -351,7 +350,7 @@ describe("Pre-check tests", () => {
       logger: new Logs("debug"),
       octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
       commentHandler: {
-        postComment: jest.fn(),
+        postComment: mock(),
       },
     } as unknown as ContextPlugin;
 

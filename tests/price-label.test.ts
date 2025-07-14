@@ -1,33 +1,33 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
-import { server } from "./__mocks__/node";
-import { afterAll, afterEach, beforeAll, expect, it, jest } from "@jest/globals";
-import cfg from "./__mocks__/results/valid-configuration.json";
-import { ContextPlugin } from "../src/types/plugin-input";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, describe, expect, it, mock, spyOn } from "bun:test";
+import { ContextPlugin } from "../src/types/plugin-input";
+import { server } from "./__mocks__/node";
+import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 
 beforeAll(() => server.listen());
 afterEach(() => {
   server.resetHandlers();
-  jest.resetModules();
+  mock.restore();
 });
 afterAll(() => server.close());
 
 describe("Price tests", () => {
   it("Should skip when no price label is set", async () => {
-    jest.unstable_mockModule("../src/helpers/label-price-extractor", () => {
+    mock.module("../src/helpers/label-price-extractor", () => {
       return {
-        getSortedPrices: jest.fn(() => []),
-        getTaskReward: jest.fn(() => 0),
+        getSortedPrices: mock(() => []),
+        getTaskReward: mock(() => 0),
       };
     });
 
-    jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-      getMinimizedCommentStatus: jest.fn(),
+    mock.module("../src/helpers/get-comment-details", () => ({
+      getMinimizedCommentStatus: mock(),
     }));
 
-    jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
+    mock.module("@octokit/plugin-paginate-graphql", () => ({
       paginateGraphQL() {
         return {
           graphql: {
@@ -78,7 +78,7 @@ describe("Price tests", () => {
       logger: new Logs("debug"),
       octokit: new octokit({ auth: process.env.GITHUB_TOKEN }),
       commentHandler: {
-        postComment: jest.fn(),
+        postComment: mock(),
       },
     } as unknown as ContextPlugin);
 
@@ -86,20 +86,18 @@ describe("Price tests", () => {
   });
 
   it("Should throw a warning when a Price: 0 label is detected", async () => {
-    jest.resetModules();
-
-    jest.unstable_mockModule("../src/helpers/label-price-extractor", () => {
+    mock.module("../src/helpers/label-price-extractor", () => {
       return {
-        getSortedPrices: jest.fn(() => [0]),
-        getTaskReward: jest.fn(() => 0),
+        getSortedPrices: mock(() => [0]),
+        getTaskReward: mock(() => 0),
       };
     });
 
-    jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-      getMinimizedCommentStatus: jest.fn(),
+    mock.module("../src/helpers/get-comment-details", () => ({
+      getMinimizedCommentStatus: mock(),
     }));
 
-    jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
+    mock.module("@octokit/plugin-paginate-graphql", () => ({
       paginateGraphQL() {
         return {
           graphql: {
@@ -123,7 +121,7 @@ describe("Price tests", () => {
     const { run } = await import("../src/run");
 
     const mockLogger = new Logs("debug");
-    const mockWarn = jest.spyOn(mockLogger, "warn").mockImplementation((message) => {
+    const mockWarn = spyOn(mockLogger, "warn").mockImplementation((message) => {
       return {
         logMessage: {
           raw: message,
@@ -135,10 +133,10 @@ describe("Price tests", () => {
     });
 
     const mockCommentHandler = {
-      postComment: jest.fn(),
+      postComment: mock(),
     };
 
-    await expect(
+    expect(
       run({
         eventName: "issues.closed",
         payload: {

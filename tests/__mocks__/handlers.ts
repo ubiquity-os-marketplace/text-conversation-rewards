@@ -160,7 +160,7 @@ export const handlers = [
     const user = db.users.findFirst({
       where: {
         login: {
-          equals: login.toString(),
+          equals: login?.toString(),
         },
       },
     });

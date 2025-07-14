@@ -1,17 +1,16 @@
 /*
  ** Import this file in your tests if you want to mock permits generation
  */
-import { jest } from "@jest/globals";
-import { customEncodePermits, generatePermitUrlPayload } from "../__mocks__/local-permits";
+import type { Context } from "@ubiquity-os/permit-generation";
+import * as permitGeneration from "@ubiquity-os/permit-generation";
+import { mock } from "bun:test";
 import { db as mockDb } from "../__mocks__/db";
-import { Context } from "@ubiquity-os/permit-generation";
+import { customEncodePermits, generatePermitUrlPayload } from "../__mocks__/local-permits";
 
-jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
-  const originalModule: object = jest.requireActual("@ubiquity-os/permit-generation");
-
+mock.module("@ubiquity-os/permit-generation", async () => {
   return {
     __esModule: true,
-    ...originalModule,
+    ...permitGeneration,
     generatePayoutPermit: (
       context: Context,
       permitRequests: {
@@ -22,11 +21,11 @@ jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
       }[]
     ) => generatePermitUrlPayload(context, permitRequests),
     encodePermits: (obj: object) => customEncodePermits(obj),
-    createAdapters: jest.fn(() => {
+    createAdapters: mock(() => {
       return {
         supabase: {
           wallet: {
-            getWalletByUserId: jest.fn((userId: number) => {
+            getWalletByUserId: mock((userId: number) => {
               const wallet = mockDb.wallets.findFirst({
                 where: {
                   userId: {

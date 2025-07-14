@@ -1,5 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
 import { Value } from "@sinclair/typebox/value";
+import { describe, expect, it } from "bun:test";
 import { formattingEvaluatorConfigurationType } from "../src/configuration/formatting-evaluator-config";
 import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-module";
 import { ContextPlugin, pluginSettingsSchema } from "../src/types/plugin-input";

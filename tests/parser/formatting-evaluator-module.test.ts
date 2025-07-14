@@ -1,7 +1,7 @@
+import { beforeEach, describe, expect, it, mock } from "bun:test";
+import { CommentType } from "../../src/configuration/comment-types";
 import { FormattingEvaluatorModule } from "../../src/parser/formatting-evaluator-module";
 import { ContextPlugin } from "../../src/types/plugin-input";
-import { CommentType } from "../../src/configuration/comment-types";
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
 describe("FormattingEvaluatorModule", () => {
   let module: FormattingEvaluatorModule;
@@ -38,10 +38,10 @@ describe("FormattingEvaluatorModule", () => {
       },
     },
     logger: {
-      debug: jest.fn(),
-      error: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
+      debug: mock(),
+      error: mock(),
+      info: mock(),
+      warn: mock(),
     },
   } as unknown as ContextPlugin;
 
@@ -77,7 +77,7 @@ describe("FormattingEvaluatorModule", () => {
       const text = "The sun is bright. I can see it shine. Birds fly high.";
       const result = module["_calculateFleschKincaid"](text);
 
-      expect(result).toMatchObject({
+      expect({ ...result }).toMatchObject({
         sentences: 3,
         syllables: expect.any(Number),
         fleschKincaid: expect.any(Number),
@@ -93,7 +93,7 @@ describe("FormattingEvaluatorModule", () => {
       const text = "This is a very complex sentence. It has many words and syllables. The score should be low.";
       const result = module["_calculateFleschKincaid"](text);
 
-      expect(result).toMatchObject({
+      expect({ ...result }).toMatchObject({
         sentences: 3,
         syllables: expect.any(Number),
         fleschKincaid: expect.any(Number),
@@ -118,7 +118,7 @@ describe("FormattingEvaluatorModule", () => {
         "Incomprehensible multisyllabic anthropomorphization characteristically demonstrates philosophical conceptualization through metaphysical manifestations";
       const result = module["_calculateFleschKincaid"](text);
 
-      expect(result).toMatchObject({
+      expect({ ...result }).toMatchObject({
         sentences: 1,
         syllables: expect.any(Number),
         fleschKincaid: expect.any(Number),

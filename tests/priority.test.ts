@@ -1,5 +1,5 @@
+import { describe, expect, it } from "bun:test";
 import { GitHubIssue } from "../src/github-types";
-import { describe, expect, it } from "@jest/globals";
 import { parsePriorityLabel } from "../src/helpers/github";
 
 describe("FormattingEvaluatorModule", () => {

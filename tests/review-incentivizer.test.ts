@@ -1,15 +1,14 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it, jest } from "@jest/globals";
-import { parseGitHubUrl } from "../src/start";
-import cfg from "./__mocks__/results/valid-configuration.json";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
-import { ContextPlugin } from "../src/types/plugin-input";
-import dbSeed from "./__mocks__/db-seed.json";
-import { db, db as mockDb } from "./__mocks__/db";
-import { server } from "./__mocks__/node";
-import Mock = jest.Mock;
 import { drop } from "@mswjs/data";
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock, Mock, spyOn } from "bun:test";
+import { parseGitHubUrl } from "../src/start";
+import { ContextPlugin } from "../src/types/plugin-input";
+import { db, db as mockDb } from "./__mocks__/db";
+import dbSeed from "./__mocks__/db-seed.json";
+import { server } from "./__mocks__/node";
+import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 
 const ctx = {
@@ -51,15 +50,13 @@ afterAll(() => server.close());
 
 describe("Review Incentivizer", () => {
   beforeEach(async () => {
-    jest.clearAllMocks();
-    jest.resetAllMocks();
-    jest.resetModules();
+    mock.restore();
     drop(db);
   });
 
   it("Should not run when no PR is linked to this issue", async () => {
-    const collectLinkedMergedPulls: Mock<() => Array<object>> = jest.fn(() => []);
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    const collectLinkedMergedPulls: Mock<() => Array<object>> = mock(() => []);
+    mock.module("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedMergedPulls: collectLinkedMergedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
@@ -78,7 +75,7 @@ describe("Review Incentivizer", () => {
     const { Processor } = await import("../src/parser/processor");
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
-    const spy = jest.spyOn(console, "warn");
+    const spy = spyOn(console, "warn");
     const processor = new Processor(ctx);
     processor["_transformers"] = [new ReviewIncentivizerModule(ctx)];
     await processor.run(activity);
@@ -90,7 +87,7 @@ describe("Review Incentivizer", () => {
   });
 
   it("Should run on the linked pull-request", async () => {
-    const collectLinkedMergedPulls: Mock<() => Array<object>> = jest.fn(() => [
+    const collectLinkedMergedPulls: Mock<() => Array<object>> = mock(() => [
       {
         id: "PR_kwDOLUK0B85soGlu",
         title: "feat: github comment generation and posting",
@@ -109,7 +106,7 @@ describe("Review Incentivizer", () => {
         },
       },
     ]);
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    mock.module("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedMergedPulls: collectLinkedMergedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
@@ -128,7 +125,7 @@ describe("Review Incentivizer", () => {
     const { Processor } = await import("../src/parser/processor");
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
-    const spy = jest.spyOn(console, "warn");
+    const spy = spyOn(console, "warn");
     const processor = new Processor(ctx);
     processor["_transformers"] = [new ReviewIncentivizerModule(ctx)];
     await processor.run(activity);
@@ -137,7 +134,7 @@ describe("Review Incentivizer", () => {
   });
 
   it("Should skip removed files in review incentives diff calculation", async () => {
-    jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementationOnce(async () => {
+    ctx.octokit.rest.repos.compareCommits = mock(async () => {
       return {
         data: {
           files: [
@@ -162,7 +159,7 @@ describe("Review Incentivizer", () => {
           ],
         },
       } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
-    });
+    }) as unknown as typeof ctx.octokit.rest.repos.compareCommits;
 
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
     const reviewIncentivizerModule = new ReviewIncentivizerModule(ctx);
@@ -177,6 +174,6 @@ describe("Review Incentivizer", () => {
     expect(Object.keys(diff).length).toBe(2);
     expect(diff["added.txt"]).toEqual({ addition: 10, deletion: 5 });
     expect(diff["modified.txt"]).toEqual({ addition: 20, deletion: 10 });
-    expect(diff["removed.txt"]).toEqual(undefined);
+    expect(diff["removed.txt"]).toBeUndefined();
   });
 });
