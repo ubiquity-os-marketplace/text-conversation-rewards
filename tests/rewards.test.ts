@@ -16,6 +16,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
 import { Result } from "../src/types/results";
+import { ExternalContentProcessor } from "../src/parser/external-content-module";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -305,5 +306,58 @@ describe("Rewards tests", () => {
     expect(Object.values(result)?.[0].evaluationCommentHtml).toMatch(
       `Your rewards have been limited to the task price of ${taskPrice} WXDAI`
     );
+  });
+
+  it("Should ignore invalid links", async () => {
+    ctx.config.incentives.externalContent = {
+      llmWebsiteModel: {
+        model: "model",
+        tokenCountLimit: 1000,
+        endpoint: "endopint",
+        maxRetries: 1,
+      },
+      llmImageModel: {
+        model: "model",
+        tokenCountLimit: 1000,
+        endpoint: "endpoint",
+        maxRetries: 1,
+      },
+    };
+    const originalBody = activity.self?.body;
+    const originalActivity = {
+      comments: activity.comments,
+      events: activity.events,
+      linkedReviews: activity.linkedReviews,
+    };
+    const processor = new Processor(ctx);
+    processor["_transformers"] = [
+      new UserExtractorModule(ctx),
+      new DataPurgeModule(ctx),
+      new ExternalContentProcessor(ctx),
+      new FormattingEvaluatorModule(ctx),
+      new ContentEvaluatorModule(ctx),
+    ];
+    if (activity.self) {
+      activity.self.body =
+        "### Getting Started\n" +
+        "- Try out the commands you see. Feel free to experiment with different tasks and features.\n" +
+        "- Create a [new issue](new) at any time to reset and begin anew.\n" +
+        "- Use `/help` if you’d like to see additional commands.\n" +
+        "\n" +
+        "https://123-not-valid-url.com";
+      activity.comments = [];
+      activity.events = [];
+      activity.linkedReviews = [];
+    }
+    await processor.run(activity);
+    const result = JSON.parse(processor.dump());
+    ctx.config.incentives.externalContent = null;
+    if (activity.self) {
+      activity.self.body = originalBody;
+      activity.comments = originalActivity.comments;
+      activity.events = originalActivity.events;
+      activity.linkedReviews = originalActivity.linkedReviews;
+    }
+    expect(result).not.toBeUndefined();
   });
 });
