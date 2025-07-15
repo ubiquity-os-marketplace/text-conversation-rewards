@@ -117,7 +117,13 @@ export class ExternalContentProcessor extends BaseModule {
 
       const altContent = await retry(
         async () => {
-          const linkResponse = await fetch(url);
+          let linkResponse: Response;
+          try {
+            linkResponse = await fetch(url);
+          } catch (e) {
+            this.context.logger.warn(`The URL [${url}] could not be processed.`, { e });
+            return null;
+          }
           if (!linkResponse.ok) {
             if (linkResponse.status === 404) {
               this.context.logger.warn("The external element was not found.", { url });
@@ -151,7 +157,7 @@ export class ExternalContentProcessor extends BaseModule {
             return llmRetryable || error instanceof LogReturn;
           },
           onError: (e) => {
-            this.context.logger.warn("Failed to run the LLM.", { e });
+            this.context.logger.warn("Failed to run the LLM.", { url, e });
           },
         }
       );
