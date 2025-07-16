@@ -350,7 +350,7 @@ export class GithubCommentModule extends BaseModule {
         </tr>
       </thead>
       <tbody>
-        ${rows.join()}
+        ${rows.join("")}
       </tbody>
     </table>`;
   }
@@ -478,7 +478,9 @@ export class GithubCommentModule extends BaseModule {
       ${!stripComments ? this._createSimplificationRows(result) : ""}
       ${!stripComments ? this._createReviewRows(result) : ""}
       ${
-        !stripComments
+        !stripComments &&
+        sortedTasks &&
+        (sortedTasks.issues.comments.length || sortedTasks.reviews.length || sortedTasks.issues.specification)
           ? `<h6>Conversation Incentives</h6>
       <table>
         <thead>
