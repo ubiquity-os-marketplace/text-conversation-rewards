@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.5...v1.7.6) (2025-07-17)
+
+
+### Bug Fixes
+
+* rpc url ([7199013](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7199013f1d725ffd173fe9ad97ef9fdda72fe6f2))
+
 ## [1.7.5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.4...v1.7.5) (2025-07-17)
 
 
