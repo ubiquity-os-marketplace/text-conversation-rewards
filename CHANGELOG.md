@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.4...v1.7.5) (2025-07-17)
+
+
+### Bug Fixes
+
+* bumped permit SDK ([1c0d562](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1c0d5621e3657e7cec75875609cb89a1b3d5775a))
+* no more commas are displayed for the rows, conversation hidden if empty ([95abd8d](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/95abd8dc46f6a87ad0bb88744c59d1bb8ea4cbbf))
+* no more commas are displayed for the rows, conversation hidden if empty ([64cb8c1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/64cb8c10ec7918103b5f9bf45f6ef55479babbf9))
+
 ## [1.7.4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.3...v1.7.4) (2025-07-12)
 
 
