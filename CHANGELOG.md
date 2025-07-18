@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.3...v1.7.4) (2025-07-12)
+
+
+### Bug Fixes
+
+* external elements that yield a 404 are ignored ([ce33dbc](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ce33dbc6df23388db0d5bb2bbf6f853040642426))
+
 ## [1.7.3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.2.0...v1.7.3) (2025-07-10)
 
 
