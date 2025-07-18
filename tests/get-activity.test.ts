@@ -1,6 +1,6 @@
-import { beforeAll, describe, expect, it, jest } from "@jest/globals";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { beforeAll, describe, expect, it, mock } from "bun:test";
 import { IssueActivity } from "../src/issue-activity";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
@@ -9,8 +9,8 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 const issueUrl =
   process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/issues/22";
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-  getMinimizedCommentStatus: jest.fn(),
+mock.module("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: mock(),
 }));
 
 describe("GetActivity class", () => {

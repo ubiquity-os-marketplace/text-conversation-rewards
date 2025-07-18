@@ -24,7 +24,7 @@
         "endpoint": "https://api.openai.com/v1",
         "model": "gpt-4o",
         "tokenCountLimit": 124000,
-        "maxRetries": 5
+        "maxRetries": 3
       },
       "originalAuthorWeight": 0.37
     },

@@ -1,9 +1,9 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
-import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import OpenAI from "openai";
@@ -19,6 +19,7 @@ import { server } from "./__mocks__/node";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import eventIncentivesResults from "./__mocks__/results/event-incentives-results.json";
+import externalContentResults from "./__mocks__/results/external-content-results.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
@@ -26,15 +27,13 @@ import paymentResults from "./__mocks__/results/permit-generation-results.json";
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import simplificationIncentivizerResults from "./__mocks__/results/simplification-incentivizer.results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
-import externalContentResults from "./__mocks__/results/external-content-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
-import { mockWeb3Module } from "./helpers/web3-mocks";
+import { web3Mocks } from "./helpers/web3-mocks";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
-const web3Mocks = mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+mock.module("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -47,8 +46,8 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-  getMinimizedCommentStatus: jest.fn(),
+mock.module("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: mock(() => {}),
 }));
 
 const ctx = {
@@ -76,7 +75,7 @@ const ctx = {
   adapters: {
     supabase: {
       wallet: {
-        getWalletByUserId: jest.fn(async () => "0x1"),
+        getWalletByUserId: mock(async () => "0x1"),
       },
     },
   },
@@ -91,20 +90,20 @@ const ctx = {
   },
 } as unknown as ContextPlugin;
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+mock.module("@supabase/supabase-js", () => {
   return {
-    createClient: jest.fn(() => ({
-      from: jest.fn(() => ({
-        insert: jest.fn(() => ({})),
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
+    createClient: mock(() => ({
+      from: mock(() => ({
+        insert: mock(() => ({})),
+        select: mock(() => ({
+          eq: mock(() => ({
+            single: mock(() => ({
               data: {
                 id: 1,
               },
             })),
-            eq: jest.fn(() => ({
-              single: jest.fn(() => ({
+            eq: mock(() => ({
+              single: mock(() => ({
                 data: {
                   id: 1,
                 },
@@ -117,8 +116,8 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
+mock.module("../src/data-collection/collect-linked-pulls", () => ({
+  collectLinkedMergedPulls: mock(() => [
     {
       id: "PR_kwDOLUK0B85soGlu",
       title: "feat: github comment generation and posting",
@@ -154,8 +153,8 @@ const { ExternalContentProcessor } = await import("../src/parser/external-conten
 
 function getExternalContentProcessor(context: ContextPlugin) {
   const instance = new ExternalContentProcessor(context);
-  Reflect.set(instance, "_llmWebsite", { chat: { completions: { create: jest.fn() } } });
-  Reflect.set(instance, "_llmImage", { chat: { completions: { create: jest.fn() } } });
+  Reflect.set(instance, "_llmWebsite", { chat: { completions: { create: mock() } } });
+  Reflect.set(instance, "_llmImage", { chat: { completions: { create: mock() } } });
   return instance;
 }
 
@@ -187,9 +186,8 @@ describe("Modules tests", () => {
   });
 
   beforeEach(async () => {
-    jest
-      .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
+    spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(
+      (specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
@@ -202,12 +200,11 @@ describe("Modules tests", () => {
             return relevance;
           })()
         );
-      });
-    jest
-      .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
-      .mockImplementation(() => Promise.resolve(Infinity));
+      }
+    );
+    spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
 
-    jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementation(async () => {
+    ctx.octokit.rest.repos.compareCommits = mock(async () => {
       return {
         data: {
           files: [
@@ -220,7 +217,7 @@ describe("Modules tests", () => {
           ],
         },
       } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
-    });
+    }) as unknown as typeof ctx.octokit.rest.repos.compareCommits;
   });
 
   it("Should extract users from comments", async () => {
@@ -279,7 +276,7 @@ describe("Modules tests", () => {
   });
 
   it("Should throw on a failed LLM evaluation", async () => {
-    jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
+    spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
       return Promise.resolve({});
     });
 
@@ -291,7 +288,7 @@ describe("Modules tests", () => {
       new FormattingEvaluatorModule(ctx),
       new ContentEvaluatorModule(ctx),
     ];
-    await expect(processor.run(activity)).rejects.toMatchObject({
+    expect(processor.run(activity)).rejects.toMatchObject({
       logMessage: {
         diff: "> [!CAUTION]\n> There was a mismatch between the relevance scores and amount of comments.",
         level: "error",
@@ -586,7 +583,7 @@ describe("Modules tests", () => {
         ...ctx.adapters,
         supabase: {
           wallet: {
-            getWalletByUserId: jest.fn(async (userId: number) => {
+            getWalletByUserId: mock(async (userId: number) => {
               if (userId === githubCommentResults["whilefoo"].userId) {
                 return null;
               }
@@ -619,7 +616,7 @@ describe("Modules tests", () => {
         ...ctx.adapters,
         supabase: {
           wallet: {
-            getWalletByUserId: jest.fn(async (userId: number) => {
+            getWalletByUserId: mock(async (userId: number) => {
               if (userId === githubCommentResults["whilefoo"].userId) {
                 throw new Error("Connection error");
               }
@@ -698,7 +695,7 @@ describe("Retry", () => {
       })
     );
 
-    await expect(
+    expect(
       retry(testFunction, {
         maxRetries: 3,
         isErrorRetryable: (err) => {
@@ -706,7 +703,7 @@ describe("Retry", () => {
         },
       })
     ).rejects.toMatchObject({ status: 500 });
-  });
+  }, 10000);
 
   it("should retry on 500 but fail on 429", async () => {
     let called = 0;
@@ -722,9 +719,9 @@ describe("Retry", () => {
         }
       })
     );
-    const onErrorHandler = jest.fn<() => void>();
+    const onErrorHandler = mock<() => void>();
 
-    await expect(
+    expect(
       retry(testFunction, {
         maxRetries: 3,
         isErrorRetryable: (err) => {

@@ -1,9 +1,9 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
-import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
 import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock, Mock, spyOn } from "bun:test";
 import { http, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
@@ -14,13 +14,11 @@ import { server } from "./__mocks__/node";
 import originalpaymentResults from "./__mocks__/results/permit-generation-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
-import { mockWeb3Module } from "./helpers/web3-mocks";
+import "./helpers/web3-mocks";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 
-mockWeb3Module();
-
-jest.unstable_mockModule("@actions/github", () => ({
+mock.module("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -33,19 +31,19 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-  getMinimizedCommentStatus: jest.fn(),
+mock.module("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: mock(),
 }));
 
-jest.unstable_mockModule("../src/helpers/checkers", () => ({
-  isAdmin: jest.fn(),
-  isCollaborative: jest.fn(),
+mock.module("../src/helpers/checkers", () => ({
+  isAdmin: mock(),
+  isCollaborative: mock(),
 }));
 
 const { isAdmin, isCollaborative } = await import("../src/helpers/checkers");
 
-const isAdminMocked = isAdmin as jest.Mock;
-const isCollaborativeMocked = isCollaborative as jest.Mock;
+const isAdminMocked = isAdmin as Mock<typeof isAdmin>;
+const isCollaborativeMocked = isCollaborative as Mock<typeof isCollaborative>;
 
 const ctx = {
   stateId: 1,
@@ -75,7 +73,7 @@ const ctx = {
   adapters: {
     supabase: {
       wallet: {
-        getWalletByUserId: jest.fn(async () => "0x1"),
+        getWalletByUserId: mock(async () => "0x1"),
       },
     },
   },
@@ -89,24 +87,24 @@ const ctx = {
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
   },
   commentHandler: {
-    postComment: jest.fn(),
+    postComment: mock(),
   },
 } as unknown as ContextPlugin;
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+mock.module("@supabase/supabase-js", () => {
   return {
-    createClient: jest.fn(() => ({
-      from: jest.fn(() => ({
-        insert: jest.fn(() => ({})),
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
+    createClient: mock(() => ({
+      from: mock(() => ({
+        insert: mock(() => ({})),
+        select: mock(() => ({
+          eq: mock(() => ({
+            single: mock(() => ({
               data: {
                 id: 1,
               },
             })),
-            eq: jest.fn(() => ({
-              single: jest.fn(() => ({
+            eq: mock(() => ({
+              single: mock(() => ({
                 data: {
                   id: 1,
                 },
@@ -119,8 +117,8 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
+mock.module("../src/data-collection/collect-linked-pulls", () => ({
+  collectLinkedMergedPulls: mock(() => [
     {
       id: "PR_kwDOLUK0B85soGlu",
       title: "feat: github comment generation and posting",
@@ -141,13 +139,13 @@ jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
   ]),
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+mock.module("@supabase/supabase-js", () => {
   return {
-    createClient: jest.fn(() => ({
-      from: jest.fn(() => ({
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
+    createClient: mock(() => ({
+      from: mock(() => ({
+        select: mock(() => ({
+          eq: mock(() => ({
+            single: mock(() => ({
               data: {
                 wallets: {
                   address: "0xAddress",
@@ -197,7 +195,6 @@ beforeAll(async () => {
 
 afterEach(() => {
   server.resetHandlers();
-  jest.clearAllMocks();
 });
 
 afterAll(() => {
@@ -231,11 +228,9 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
     }
   });
 
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    jest
-      .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
+  beforeEach(() => {
+    spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(
+      (specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
@@ -248,11 +243,10 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
             return relevance;
           })()
         );
-      });
-    jest
-      .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
-      .mockImplementation(() => Promise.resolve(Infinity));
-    jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+      }
+    );
+    spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
+    spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
       return {
         "test.txt": {
           addition: 50,

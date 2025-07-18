@@ -1,9 +1,11 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
-import "./helpers/permit-mock";
 import { drop } from "@mswjs/data";
+import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { GitHubIssueComment } from "../src/github-types";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
+import { DataPurgeModule } from "../src/parser/data-purge-module";
+import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
@@ -11,13 +13,11 @@ import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import hiddenCommentPurged from "./__mocks__/results/hidden-comment-purged.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { Octokit } from "@octokit/rest";
-import { UserExtractorModule } from "../src/parser/user-extractor-module";
-import { DataPurgeModule } from "../src/parser/data-purge-module";
+import "./helpers/permit-mock";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
+spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
   return Promise.resolve(
     (() => {
       const relevance: { [k: string]: number } = {};
@@ -29,7 +29,7 @@ jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementa
   );
 });
 
-jest.unstable_mockModule("@actions/github", () => ({
+mock.module("@actions/github", () => ({
   context: {
     runId: "1",
     payload: {
@@ -40,8 +40,8 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => []),
+mock.module("../src/data-collection/collect-linked-pulls", () => ({
+  collectLinkedMergedPulls: mock(() => []),
 }));
 
 const ctx = {
@@ -70,12 +70,12 @@ const ctx = {
     SUPABASE_KEY: "1234",
   },
   commentHandler: {
-    postComment: jest.fn(),
+    postComment: mock(),
   },
 } as unknown as ContextPlugin;
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-  getMinimizedCommentStatus: jest.fn((comments: GitHubIssueComment[]) => {
+mock.module("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: mock((comments: GitHubIssueComment[]) => {
     for (let i = 0; i < comments.length; i++) {
       const comment = comments[i];
       comment.isMinimized = i === 0;
@@ -83,9 +83,9 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   }),
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+mock.module("@supabase/supabase-js", () => {
   return {
-    createClient: jest.fn(() => ({})),
+    createClient: mock(() => ({})),
   };
 });
 

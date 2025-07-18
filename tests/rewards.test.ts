@@ -1,12 +1,13 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import fs from "fs";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
+import { Result } from "../src/types/results";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
@@ -15,13 +16,12 @@ import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
-import { Result } from "../src/types/results";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+mock.module("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -34,20 +34,20 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+mock.module("@supabase/supabase-js", () => {
   return {
-    createClient: jest.fn(() => ({
-      from: jest.fn(() => ({
-        insert: jest.fn(() => ({})),
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
+    createClient: mock(() => ({
+      from: mock(() => ({
+        insert: mock(() => ({})),
+        select: mock(() => ({
+          eq: mock(() => ({
+            single: mock(() => ({
               data: {
                 id: 1,
               },
             })),
-            eq: jest.fn(() => ({
-              single: jest.fn(() => ({
+            eq: mock(() => ({
+              single: mock(() => ({
                 data: {
                   id: 1,
                 },
@@ -60,7 +60,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-const collectLinkedMergedPulls = jest.fn(() => [
+const collectLinkedMergedPulls = mock(() => [
   {
     id: "PR_kwDOKzVPS85zXUoj",
     title: "fix: add state to sorting manager for bottom and top",
@@ -80,11 +80,11 @@ const collectLinkedMergedPulls = jest.fn(() => [
   },
 ]);
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-  getMinimizedCommentStatus: jest.fn(),
+mock.module("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: mock(),
 }));
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+mock.module("../src/data-collection/collect-linked-pulls", () => ({
   collectLinkedMergedPulls: collectLinkedMergedPulls,
 }));
 
@@ -107,9 +107,8 @@ const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
-jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, comments, allComments, prComments) => {
+spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(
+  (specificationBody, comments, allComments, prComments) => {
     return Promise.resolve(
       (() => {
         const relevance: { [k: string]: number } = {};
@@ -122,9 +121,10 @@ jest
         return relevance;
       })()
     );
-  });
+  }
+);
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
+spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
 
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);
@@ -157,7 +157,7 @@ describe("Rewards tests", () => {
     adapters: {
       supabase: {
         wallet: {
-          getWalletByUserId: jest.fn(async () => "0x1"),
+          getWalletByUserId: mock(async () => "0x1"),
         },
       },
     },

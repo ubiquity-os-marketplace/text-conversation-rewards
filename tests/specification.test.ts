@@ -1,26 +1,26 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { http, HttpResponse } from "msw";
 import { extractOriginalAuthor } from "../src/helpers/original-author";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
+import { Result } from "../src/types/results";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
-import { Result } from "../src/types/results";
 
 const issueUrl = "https://github.com/ubiquity-os/conversation-rewards/issues/71";
 
 mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+mock.module("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -33,20 +33,20 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+mock.module("@supabase/supabase-js", () => {
   return {
-    createClient: jest.fn(() => ({
-      from: jest.fn(() => ({
-        insert: jest.fn(() => ({})),
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
+    createClient: mock(() => ({
+      from: mock(() => ({
+        insert: mock(() => ({})),
+        select: mock(() => ({
+          eq: mock(() => ({
+            single: mock(() => ({
               data: {
                 id: 1,
               },
             })),
-            eq: jest.fn(() => ({
-              single: jest.fn(() => ({
+            eq: mock(() => ({
+              single: mock(() => ({
                 data: {
                   id: 1,
                 },
@@ -59,12 +59,12 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-  getMinimizedCommentStatus: jest.fn(),
+mock.module("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: mock(),
 }));
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => []),
+mock.module("../src/data-collection/collect-linked-pulls", () => ({
+  collectLinkedMergedPulls: mock(() => []),
 }));
 
 beforeAll(() => {
@@ -85,11 +85,10 @@ const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
+spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
 
-jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, comments, allComments, prComments) => {
+spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(
+  (specificationBody, comments, allComments, prComments) => {
     return Promise.resolve(
       (() => {
         const relevance: { [k: string]: number } = {};
@@ -102,7 +101,8 @@ jest
         return relevance;
       })()
     );
-  });
+  }
+);
 
 describe("Content Evaluator Module Test", () => {
   const issue = parseGitHubUrl(issueUrl);
@@ -134,7 +134,7 @@ describe("Content Evaluator Module Test", () => {
     adapters: {
       supabase: {
         wallet: {
-          getWalletByUserId: jest.fn(async () => "0x1"),
+          getWalletByUserId: mock(async () => "0x1"),
         },
       },
     },

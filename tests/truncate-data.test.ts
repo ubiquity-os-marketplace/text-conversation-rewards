@@ -1,18 +1,18 @@
 /* eslint-disable sonarjs/no-nested-functions */
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from "bun:test";
 import { GitHubIssueComment } from "../src/github-types";
+import { areBaseUrlsEqual } from "../src/helpers/urls";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { areBaseUrlsEqual } from "../src/helpers/urls";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.unstable_mockModule("@actions/github", () => ({
+mock.module("@actions/github", () => ({
   context: {
     runId: "1",
     payload: {
@@ -23,11 +23,11 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
-  postComment: jest.fn(),
+mock.module("@ubiquity-os/plugin-sdk", () => ({
+  postComment: mock(),
 }));
 
-jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
+mock.module("@octokit/plugin-paginate-graphql", () => ({
   paginateGraphQL() {
     return {
       graphql: {
@@ -83,9 +83,9 @@ describe("Payload truncate tests", () => {
   });
 
   it("Should truncate the returned data if the payload is too large", async () => {
-    jest.unstable_mockModule("../src/parser/processor", () => ({
-      Processor: jest.fn(() => ({
-        dump: jest.fn(() =>
+    mock.module("../src/parser/processor", () => ({
+      Processor: mock(() => ({
+        dump: mock(() =>
           JSON.stringify({
             user: {
               total: 1,
@@ -96,11 +96,11 @@ describe("Payload truncate tests", () => {
             },
           })
         ),
-        run: jest.fn(),
+        run: mock(),
       })),
     }));
-    jest.unstable_mockModule("../src/issue-activity", () => {
-      return { IssueActivity: jest.fn(() => ({ init: jest.fn() })) };
+    mock.module("../src/issue-activity", () => {
+      return { IssueActivity: mock(() => ({ init: mock() })) };
     });
     const module = await import("../src/run");
     const result = await module.run({
@@ -136,11 +136,11 @@ describe("Payload truncate tests", () => {
       octokit: {
         rest: {
           orgs: {
-            getMembershipForUser: jest.fn(() => ({ status: 200 })),
+            getMembershipForUser: mock(() => ({ status: 200 })),
           },
         },
         graphql: {
-          paginate: jest.fn(() => ({
+          paginate: mock(() => ({
             repository: {
               issue: {
                 closedByPullRequestsReferences: {
@@ -180,7 +180,7 @@ describe("Payload truncate tests", () => {
         },
       },
       commentHandler: {
-        postComment: jest.fn(),
+        postComment: mock(),
       },
     } as unknown as ContextPlugin);
     const expectedResult = {
@@ -196,7 +196,7 @@ describe("Payload truncate tests", () => {
 
   it("Should split the node retrieval into chunks to avoid crashing GraphQL API", async () => {
     const { getMinimizedCommentStatus } = await import("../src/helpers/get-comment-details");
-    const gql = jest.fn();
+    const gql = mock();
     const context = {
       octokit: {
         graphql: gql,

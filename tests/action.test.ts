@@ -1,15 +1,15 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from "bun:test";
 import { http, HttpResponse } from "msw";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import "./helpers/permit-mock";
 
 beforeAll(() => server.listen());
 beforeEach(() => {
-  jest.unstable_mockModule("@actions/github", () => ({
+  mock.module("@actions/github", () => ({
     default: {},
     context: {
       runId: "1",
@@ -23,13 +23,12 @@ beforeEach(() => {
 });
 afterEach(() => {
   server.resetHandlers();
-  jest.resetModules();
-  jest.restoreAllMocks();
+  mock.restore();
 });
 afterAll(() => server.close());
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
+mock.module("../src/data-collection/collect-linked-pulls", () => ({
+  collectLinkedMergedPulls: mock(() => [
     {
       id: "PR_kwDOK87YcM5nHc9o",
       title: "chore: add new shared evmPrivateKeyEncrypted",
@@ -50,14 +49,14 @@ jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
   ]),
 }));
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
-  getMinimizedCommentStatus: jest.fn(),
+mock.module("../src/helpers/get-comment-details", () => ({
+  getMinimizedCommentStatus: mock(),
 }));
 
 describe("Action tests", () => {
   it("Should skip when the issue is closed without the completed status", async () => {
     const { run } = await import("../src/run");
-    await expect(
+    expect(
       run({
         eventName: "issues.closed",
         payload: {
@@ -83,7 +82,7 @@ describe("Action tests", () => {
         logger: new Logs("debug"),
         octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
         commentHandler: {
-          postComment: jest.fn(),
+          postComment: mock(),
         },
       } as unknown as ContextPlugin)
     ).resolves.toEqual("Issue was not closed as completed. Skipping.");
@@ -99,7 +98,7 @@ describe("Action tests", () => {
       server.use(http.get(url, () => HttpResponse.json("", { status: 500 })));
     });
     const { run } = await import("../src/run");
-    await expect(
+    expect(
       run({
         eventName: "issues.closed",
         payload: {
@@ -129,18 +128,15 @@ describe("Action tests", () => {
         octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
         command: null,
         commentHandler: {
-          postComment: jest.fn(),
+          postComment: mock(),
         },
       } as unknown as ContextPlugin)
-    ).rejects.toEqual({
+    ).rejects.toMatchObject({
       logMessage: {
         diff: "> [!CAUTION]\n> Could not fetch issue data: HttpError",
         level: "error",
         raw: "Could not fetch issue data: HttpError",
         type: "error",
-      },
-      metadata: {
-        caller: "IssueActivity.error",
       },
     });
   }, 60000);

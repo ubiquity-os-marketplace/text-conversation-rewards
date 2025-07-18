@@ -1,7 +1,8 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock, Mock, spyOn } from "bun:test";
+import { Wallet } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { IssueActivity } from "../../src/issue-activity";
@@ -10,7 +11,7 @@ import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
-import { mockWeb3Module } from "../helpers/web3-mocks";
+import { web3Mocks } from "../helpers/web3-mocks";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -55,13 +56,11 @@ const ctx = {
   },
 } as unknown as ContextPlugin;
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+mock.module("@supabase/supabase-js", () => {
   return {
-    createClient: jest.fn(),
+    createClient: mock(),
   };
 });
-
-const web3Mocks = mockWeb3Module("../../src/helpers/web3");
 
 // original rewards object before fees are applied
 function getResultOriginal() {
@@ -119,14 +118,14 @@ function getResultOriginal() {
   };
 }
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+mock.module("@supabase/supabase-js", () => {
   return {
-    createClient: jest.fn(() => ({
-      from: jest.fn(() => ({
-        select: jest.fn(() => ({
+    createClient: mock(() => ({
+      from: mock(() => ({
+        select: mock(() => ({
           // eslint-disable-next-line sonarjs/no-nested-functions
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
+          eq: mock(() => ({
+            single: mock(() => ({
               data: {
                 wallets: { address: "0xAddress" },
               },
@@ -167,13 +166,13 @@ describe("payment-module.ts", () => {
 
     afterEach(() => {
       // restore the spy created with spyOn
-      jest.restoreAllMocks();
+      mock.restore();
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
       ctx.env.PERMIT_FEE_RATE = "";
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
@@ -183,7 +182,7 @@ describe("payment-module.ts", () => {
     it("Should not apply fees if PERMIT_FEE_RATE is 0", async () => {
       ctx.env.PERMIT_FEE_RATE = "0";
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
@@ -194,7 +193,7 @@ describe("payment-module.ts", () => {
       process.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
       ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation/);
@@ -203,7 +202,7 @@ describe("payment-module.ts", () => {
 
     it("Should not apply fees if ERC20 reward token is included in PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), DOLLAR_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(
@@ -231,7 +230,7 @@ describe("payment-module.ts", () => {
 
   describe("_getNetworkExplorer()", () => {
     afterEach(() => {
-      jest.restoreAllMocks();
+      mock.restore();
     });
 
     it("Should return a network explorer url", async () => {
@@ -254,7 +253,7 @@ describe("payment-module.ts", () => {
     });
 
     afterEach(() => {
-      jest.restoreAllMocks();
+      mock.restore();
     });
 
     it("Should return the correct total payable amount", async () => {
@@ -295,7 +294,7 @@ describe("payment-module.ts", () => {
       expect(paymentModule._autoTransferMode).toEqual(true);
     });
     afterEach(() => {
-      jest.restoreAllMocks();
+      mock.restore();
     });
   });
   describe("_getPayoutMode()", () => {
@@ -311,7 +310,7 @@ describe("payment-module.ts", () => {
     });
 
     afterEach(() => {
-      jest.restoreAllMocks();
+      mock.restore();
     });
 
     it("Should return null if the `payoutMode` was already set to `direct`", async () => {
@@ -376,12 +375,12 @@ describe("payment-module.ts", () => {
     });
 
     afterEach(() => {
-      jest.restoreAllMocks();
+      mock.restore();
     });
 
     it("Should return a transferInfo when the funding wallet has enough reward tokens and gas", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(ctx.logger, "info");
+      const spyConsoleLog = spyOn(ctx.logger, "info");
 
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
       const directTransferInfo = await paymentModule._getDirectTransferInfo(
@@ -413,16 +412,17 @@ describe("payment-module.ts", () => {
     it("Should reject if the funding wallet has enough reward tokens but insufficient gas", async () => {
       const { getEvmWallet } = await import("../../src/helpers/web3");
 
-      const mockedGetEvmWallet = getEvmWallet as jest.Mock;
-      mockedGetEvmWallet.mockImplementationOnce(() => ({
-        address: "0xOverriddenAddress",
-        getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
-      }));
+      const mockedGetEvmWallet = getEvmWallet as Mock<typeof getEvmWallet>;
+      mockedGetEvmWallet.mockImplementationOnce(
+        async () =>
+          ({
+            address: "0xOverriddenAddress",
+            getBalance: mock().mockReturnValue(parseUnits("0.004", 18)),
+          }) as unknown as Wallet
+      );
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
-      await expect(
-        paymentModule._getDirectTransferInfo(beneficiaries, fundingWalletPrivateKey, "0")
-      ).rejects.toMatchObject({
+      expect(paymentModule._getDirectTransferInfo(beneficiaries, fundingWalletPrivateKey, "0")).rejects.toMatchObject({
         logMessage: {
           raw: "The funding wallet lacks sufficient gas to perform direct transfers",
         },
@@ -443,15 +443,13 @@ describe("payment-module.ts", () => {
     it("Should reject if the funding wallet has insufficient reward tokens", async () => {
       web3Mocks.getEvmWallet.mockImplementationOnce(() => ({
         address: "0xOverriddenAddress",
-        getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
+        getBalance: mock().mockReturnValue(parseUnits("0.004", 18)),
       }));
       web3Mocks.Erc20Wrapper.getBalance.mockReturnValueOnce(parseUnits("50", 18));
 
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
-      await expect(
-        paymentModule._getDirectTransferInfo(beneficiaries, fundingWalletPrivateKey, "0")
-      ).rejects.toMatchObject({
+      expect(paymentModule._getDirectTransferInfo(beneficiaries, fundingWalletPrivateKey, "0")).rejects.toMatchObject({
         logMessage: {
           raw: "The funding wallet lacks sufficient reward tokens to perform direct transfers",
         },
@@ -478,7 +476,7 @@ describe("payment-module.ts", () => {
 
     it("Should return false if private key could not be decrypted", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "warn");
+      const spyConsoleLog = spyOn(console, "warn");
 
       // format: "PRIVATE_KEY"
       // encrypted value: ""
@@ -514,7 +512,7 @@ describe("payment-module.ts", () => {
 
     it("Should return false if private key is used in unallowed organization", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1"
@@ -558,7 +556,7 @@ describe("payment-module.ts", () => {
 
     it("Should return false if private key is used in un-allowed organization and allowed repository", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
@@ -584,7 +582,7 @@ describe("payment-module.ts", () => {
 
     it("Should return false if private key is used in allowed organization and unallowed repository", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = spyOn(console, "info");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:1:2"
@@ -630,7 +628,7 @@ describe("payment-module.ts", () => {
 
     it("Should return false if private key format is invalid", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "warn");
+      const spyConsoleLog = spyOn(console, "warn");
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
       // encrypted value: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80:0:2"
