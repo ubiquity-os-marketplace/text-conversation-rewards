@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.5...v1.7.6) (2025-07-23)
+
+
+### Bug Fixes
+
+* handle fetch errors in external content module ([c84f53e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c84f53e2e73f6c48ed14a6278fdb48f66961cc62))
+* rpc url ([7199013](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7199013f1d725ffd173fe9ad97ef9fdda72fe6f2))
+
 ## [1.7.5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.4...v1.7.5) (2025-07-17)
 
 
