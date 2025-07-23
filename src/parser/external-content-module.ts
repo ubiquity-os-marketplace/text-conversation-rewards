@@ -117,16 +117,19 @@ export class ExternalContentProcessor extends BaseModule {
 
       const altContent = await retry(
         async () => {
-          const linkResponse = await fetch(url);
-          if (!linkResponse.ok) {
-            if (linkResponse.status === 404) {
-              this.context.logger.warn("The external element was not found.", { url });
-              return null;
-            } else {
-              throw this.context.logger.error("Failed to fetch the content of an external element.", {
+          let linkResponse: Response;
+          try {
+            linkResponse = await fetch(url);
+            if (!linkResponse.ok) {
+              this.context.logger.warn("Failed to fetch the content of an external element.", {
                 url,
+                status: linkResponse.status,
               });
+              return null;
             }
+          } catch (e) {
+            this.context.logger.warn(`The URL [${url}] could not be processed.`, { e });
+            return null;
           }
           const contentType = linkResponse.headers.get("content-type");
           if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
@@ -151,7 +154,7 @@ export class ExternalContentProcessor extends BaseModule {
             return llmRetryable || error instanceof LogReturn;
           },
           onError: (e) => {
-            this.context.logger.warn("Failed to run the LLM.", { e });
+            this.context.logger.warn("Failed to run the LLM.", { url, e });
           },
         }
       );
