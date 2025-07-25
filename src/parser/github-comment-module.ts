@@ -309,7 +309,10 @@ export class GithubCommentModule extends BaseModule {
               <pre>${formatting}</pre>
              </details>
             </td>
-            <td>${commentScore.score?.relevance === undefined ? "-" : commentScore.score.relevance}</td>
+            <td>
+              Relevance: ${commentScore.score?.relevance === undefined ? "-" : commentScore.score.relevance}<br/>
+              Flesch: ${commentScore.score?.readability?.fleschKincaid === undefined ? "-" : commentScore.score.readability.fleschKincaid.toFixed(1)}
+            </td>
             <td>${commentScore.score?.priority === undefined ? "-" : commentScore.score.priority}</td>
             <td>${commentScore.score?.reward === undefined ? "-" : commentScore.score.reward}</td>
           </tr>`;
@@ -487,7 +490,7 @@ export class GithubCommentModule extends BaseModule {
           <tr>
             <th>Comment</th>
             <th>Formatting</th>
-            <th>Relevance</th>
+            <th>Clarity</th>
             <th>Priority</th>
             <th>Reward</th>
           </tr>
