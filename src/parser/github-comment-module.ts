@@ -311,7 +311,7 @@ export class GithubCommentModule extends BaseModule {
             </td>
             <td>
               Relevance: ${commentScore.score?.relevance === undefined ? "-" : commentScore.score.relevance}<br/>
-              Readability <span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">❓</span>: ${commentScore.score?.readability?.fleschKincaid === undefined ? "-" : commentScore.score.readability.fleschKincaid.toFixed(1)}
+              <span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: ${commentScore.score?.readability?.fleschKincaid === undefined ? "-" : commentScore.score.readability.fleschKincaid.toFixed(1)}
             </td>
             <td>${commentScore.score?.priority === undefined ? "-" : commentScore.score.priority}</td>
             <td>${commentScore.score?.reward === undefined ? "-" : commentScore.score.reward}</td>
