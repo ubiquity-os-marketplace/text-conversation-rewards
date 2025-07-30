@@ -5,7 +5,7 @@ import { UserContentEdits } from "../types/comment-edits";
 export function getCharacterContributionPercentages(edits: UserContentEdits["nodes"]): Record<string, number> {
   if (edits.length === 0) return {};
 
-  let prevText = edits[0].diff;
+  let prevText = edits[0].diff ?? "";
   const firstUser = edits[0].editor;
   let attribution = Array.from(prevText, () => firstUser);
 
