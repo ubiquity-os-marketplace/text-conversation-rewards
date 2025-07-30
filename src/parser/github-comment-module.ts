@@ -490,7 +490,7 @@ export class GithubCommentModule extends BaseModule {
           <tr>
             <th>Comment</th>
             <th>Formatting</th>
-            <th>Clarity</th>
+            <th>Relevance</th>
             <th>Priority</th>
             <th>Reward</th>
           </tr>
