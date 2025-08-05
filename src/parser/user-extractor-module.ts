@@ -94,6 +94,21 @@ export class UserExtractorModule extends BaseModule {
         };
       }
     }
+    // Pull-request reviewers can also potentially be rewarded
+    const linkedReviews = data.linkedReviews;
+    for (const review of linkedReviews) {
+      if (review.self?.requested_reviewers?.length) {
+        for (const reviewer of review.self.requested_reviewers) {
+          if (reviewer.type === "User" && reviewer.login) {
+            result[reviewer.login] = {
+              ...result[reviewer.login],
+              total: 0,
+              userId: reviewer.id,
+            };
+          }
+        }
+      }
+    }
     return result;
   }
 }
