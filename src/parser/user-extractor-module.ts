@@ -79,8 +79,10 @@ export class UserExtractorModule extends BaseModule {
   }
 
   _addUserToResult(result: Result, login: string, userId: number, task?: ReturnType<typeof this._createTaskReward>) {
+    if (result[login]) {
+      return;
+    }
     result[login] = {
-      ...result[login],
       userId,
       total: 0,
       task,
@@ -92,7 +94,9 @@ export class UserExtractorModule extends BaseModule {
 
     data.self?.assignees?.forEach((assignee) => {
       const task = data.self ? this._createTaskReward(data.self, taskTimestamp, taskUrl) : undefined;
+      console.log("++++ task", task);
       this._addUserToResult(result, assignee.login, assignee.id, task);
+      console.log(result);
     });
 
     const allComments = await data.getAllComments();
@@ -106,6 +110,11 @@ export class UserExtractorModule extends BaseModule {
       review.reviews?.forEach((o) => {
         if (o.user && o.user.type === "User") {
           this._addUserToResult(result, o.user.login, o.user.id);
+        }
+      });
+      review.self?.requested_reviewers?.forEach((reviewer) => {
+        if (reviewer.type === "User" && reviewer.login) {
+          this._addUserToResult(result, reviewer.login, reviewer.id);
         }
       });
     }
