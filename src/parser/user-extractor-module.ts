@@ -103,9 +103,9 @@ export class UserExtractorModule extends BaseModule {
     }
 
     for (const review of data.linkedReviews) {
-      review.self?.requested_reviewers?.forEach((reviewer) => {
-        if (reviewer.type === "User" && reviewer.login) {
-          this._addUserToResult(result, reviewer.login, reviewer.id);
+      review.reviews?.forEach((o) => {
+        if (o.user && o.user.type === "User") {
+          this._addUserToResult(result, o.user.login, o.user.id);
         }
       });
     }
