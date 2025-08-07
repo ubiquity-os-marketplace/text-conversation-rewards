@@ -54,71 +54,67 @@ export class UserExtractorModule extends BaseModule {
     return `${baseUrl}#event-${id}`;
   }
 
-  _getTaskTimestampAndUrl(data: Readonly<IssueActivity>) {
+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const closedEvents = data.events?.filter((event) => event.event === "closed") ?? [];
+    let taskTimestamp: string;
+    let taskUrl: string;
     if (closedEvents.length > 0) {
       closedEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      return {
-        timestamp: closedEvents[0].created_at,
-        url: this._addEventAnchorToHtmlUrl(`${data.self?.html_url}`, closedEvents[0].id.toString()),
-      };
+      taskTimestamp = closedEvents[0].created_at;
+      taskUrl = this._addEventAnchorToHtmlUrl(`${data.self?.html_url}`, closedEvents[0].id.toString());
+    } else {
+      taskTimestamp = new Date().toISOString();
+      taskUrl = `${data.self?.html_url}`;
     }
-    return {
-      timestamp: new Date().toISOString(),
-      url: `${data.self?.html_url}`,
-    };
-  }
 
-  _createTaskReward(issue: GitHubIssue, timestamp: string, url: string) {
-    return {
-      reward: new Decimal(this._extractTaskPrice(issue)).mul(this._getTaskMultiplier(issue)).toNumber(),
-      multiplier: this._getTaskMultiplier(issue).toNumber(),
-      timestamp,
-      url,
-    };
-  }
-
-  _addUserToResult(result: Result, login: string, userId: number, task?: ReturnType<typeof this._createTaskReward>) {
-    if (result[login]) {
-      return;
-    }
-    result[login] = {
-      userId,
-      total: 0,
-      task,
-    };
-  }
-
-  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const { timestamp: taskTimestamp, url: taskUrl } = this._getTaskTimestampAndUrl(data);
-
+    // First, try to add all assignees as they didn't necessarily add a comment but should receive a reward
     data.self?.assignees?.forEach((assignee) => {
-      const task = data.self ? this._createTaskReward(data.self, taskTimestamp, taskUrl) : undefined;
-      console.log("++++ task", task);
-      this._addUserToResult(result, assignee.login, assignee.id, task);
-      console.log(result);
+      const task = data.self
+        ? {
+            reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getTaskMultiplier(data.self)).toNumber(),
+            multiplier: this._getTaskMultiplier(data.self).toNumber(),
+            timestamp: taskTimestamp,
+            url: taskUrl,
+          }
+        : undefined;
+      result[assignee.login] = {
+        ...result[assignee.login],
+        userId: assignee.id,
+        total: 0,
+        task,
+      };
     });
-
     const allComments = await data.getAllComments();
     for (const comment of allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
-        this._addUserToResult(result, comment.user.login, comment.user.id);
+        result[comment.user.login] = {
+          ...result[comment.user.login],
+          total: 0,
+          userId: comment.user.id,
+        };
       }
     }
-
+    // Pull-request reviewers can also potentially be rewarded
     for (const review of data.linkedReviews) {
       review.reviews?.forEach((o) => {
         if (o.user && o.user.type === "User") {
-          this._addUserToResult(result, o.user.login, o.user.id);
+          result[o.user.login] = {
+            ...result[o.user.login],
+            total: 0,
+            userId: o.user.id,
+          };
         }
       });
       review.self?.requested_reviewers?.forEach((reviewer) => {
         if (reviewer.type === "User" && reviewer.login) {
-          this._addUserToResult(result, reviewer.login, reviewer.id);
+          result[reviewer.login] = {
+            ...result[reviewer.login],
+            total: 0,
+            userId: reviewer.id,
+          };
         }
       });
     }
-
     return result;
   }
 }
