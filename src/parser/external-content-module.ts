@@ -81,6 +81,8 @@ export class ExternalContentProcessor extends BaseModule {
             ],
           },
         ],
+        // @ts-expect-error Supported by OpenRouter: https://openrouter.ai/docs/features/message-transforms
+        transforms: ["middle-out"],
       };
     }
     const linkContent = await linkResponse.text();
@@ -102,6 +104,8 @@ export class ExternalContentProcessor extends BaseModule {
           content: `Provide a direct factual summary in one paragraph, written in a single line. Start immediately with the key information without introductory phrases. Focus on factual information and avoid subjective language or emotional adjectives. Do not use bullet points or numbering, only plain sentences. The content is provided as "${contentType}" content.\n\n${linkContent}`,
         },
       ],
+      // @ts-expect-error Supported by OpenRouter: https://openrouter.ai/docs/features/message-transforms
+      transforms: ["middle-out"],
     };
   }
 
@@ -139,13 +143,14 @@ export class ExternalContentProcessor extends BaseModule {
           if (!prompt) return null;
           const llmResponse =
             await this[contentType.startsWith("image/") ? "_llmImage" : "_llmWebsite"].chat.completions.create(prompt);
-          if (!llmResponse.choices[0]?.message?.content) {
+          if (!llmResponse.choices?.length || !llmResponse.choices[0]?.message?.content) {
             throw this.context.logger.error("Failed to generate a description for the given external element.", {
               url,
               contentType,
+              llmResponse,
             });
           }
-          return llmResponse.choices[0]?.message?.content;
+          return llmResponse.choices[0].message.content;
         },
         {
           maxRetries: this._configuration[isImage ? "llmImageModel" : "llmWebsiteModel"].maxRetries,
