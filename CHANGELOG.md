@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.7.7](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.6...v1.7.7) (2025-08-08)
+
+
+### Bug Fixes
+
+* add OpenRouter transforms to external content module ([f2e3bb3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/f2e3bb35ba9ae6d3422c9026a7cd8fe49cf90797))
+* add OpenRouter transforms to external content module ([34aa8f2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/34aa8f28a87956cb099240c89d4194a5abdd2281))
+* display Flesch Kincaid in the results ([789e627](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/789e6273fe0a66f626ebcd79b073a04185968d9f))
+* improve handling of empty diffs and comment clarity ([0295f04](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0295f0478982f2d00a264c206f25b61a57561980))
+
 ## [1.7.6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.5...v1.7.6) (2025-07-23)
 
 
