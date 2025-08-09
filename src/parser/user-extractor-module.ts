@@ -94,6 +94,27 @@ export class UserExtractorModule extends BaseModule {
         };
       }
     }
+    // Pull-request reviewers can also potentially be rewarded
+    for (const review of data.linkedReviews) {
+      review.reviews?.forEach((o) => {
+        if (o.user && o.user.type === "User") {
+          result[o.user.login] = {
+            ...result[o.user.login],
+            total: 0,
+            userId: o.user.id,
+          };
+        }
+      });
+      review.self?.requested_reviewers?.forEach((reviewer) => {
+        if (reviewer.type === "User" && reviewer.login) {
+          result[reviewer.login] = {
+            ...result[reviewer.login],
+            total: 0,
+            userId: reviewer.id,
+          };
+        }
+      });
+    }
     return result;
   }
 }

@@ -2837,6 +2837,24 @@
     "userId": 9807008,
     "walletAddress": "0x1"
   },
+  "gitcoindev": {
+    "events": {
+      "pull_request.received.review_requested": {
+        "count": 1,
+        "reward": 0
+      }
+    },
+    "payoutMode": "permit",
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MDAifX0sIm5vbmNlIjoiNTY1NTM0OTQ0NTQwOTcwMTg3NzIyMTY2MTk1Mjc1OTkyMTU3NTA0NDU2MjgyNjY2OTYyMDczNzE2MTUzNzU1MTMyMzk2MzYwMzIwMTgiLCJkZWFkbGluZSI6IjAifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDAwIn19LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4YzE0YjNkODI4ODg3NGFkZTQ0NDc2NzRkMTIwYWUxY2EwMzdiMGUwYzA5ZGRkZmQ1MmNlY2FiNDg2ODBjZDRlZTM2MTI2YWQ3ZjY0MTg5MTIwODgyOWZiZWQ4OTQwOGMzMDFkMTkxNTFlMGMzYjBkYmMzN2M5OGEzZjVhMjdkZGUxYyIsIm5ldHdvcmtJZCI6MTAwfV0=",
+    "reviewRewards": [
+      {
+        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
+      }
+    ],
+    "total": 0,
+    "userId": 88761781,
+    "walletAddress": "0x1"
+  },
   "whilefoo": {
     "comments": [
       {
