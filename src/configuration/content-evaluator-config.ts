@@ -324,7 +324,7 @@ export const contentEvaluatorConfigurationType = Type.Object({
    * "Originally posted by @username in URL" is detected
    */
   originalAuthorWeight: Type.Number({
-    default: 0.5,
+    default: 0,
     description:
       "Percentage of reward given to original comment author when detected via 'Originally posted by' pattern. Value between 0.0 and 1.0.",
     minimum: 0.0,
@@ -346,7 +346,7 @@ export const contentEvaluatorConfigurationType = Type.Object({
       default: [
         {
           role: ["ISSUE_SPECIFICATION"],
-          relevance: 1,
+          relevance: 0,
         },
       ],
       description: "Multipliers applied to different types of comments",
