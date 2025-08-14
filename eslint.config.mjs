@@ -3,11 +3,13 @@ import eslint from "@eslint/js";
 import checkFile from "eslint-plugin-check-file";
 import sonarjs from "eslint-plugin-sonarjs";
 import tsEslint from "typescript-eslint";
+import noEmptyStrings from "@ubiquity-os/eslint-plugin-no-empty-strings";
 
 export default tsEslint.config({
   plugins: {
     "@typescript-eslint": tsEslint.plugin,
     "check-file": checkFile,
+    "@ubiquity-os": noEmptyStrings,
   },
   ignores: [
     ".github/knip.ts",
@@ -30,6 +32,7 @@ export default tsEslint.config({
     },
   },
   rules: {
+    "@ubiquity-os/no-empty-strings": "warn",
     "check-file/filename-naming-convention": [
       "error",
       {
