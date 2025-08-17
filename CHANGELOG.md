@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.7...v1.7.8) (2025-08-17)
+
+
+### Bug Fixes
+
+* release please issue permission ([ad23fe3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ad23fe35709d2a15275455cce15e936bdbc68168))
+* release please issue permission ([da93b57](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/da93b5728b8a7248f43e14995f9660c9d3e34625))
+
 ## [1.7.7](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.6...v1.7.7) (2025-08-08)
 
 
