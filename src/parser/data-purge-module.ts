@@ -39,7 +39,8 @@ export class DataPurgeModule extends BaseModule {
       )
     ) {
       this.context.logger.debug("Skipping comment during assignment", {
-        comment,
+        body: comment.body?.replace(/(.{100})..+/, "$1…"),
+        url: comment.html_url,
       });
       return true;
     }
