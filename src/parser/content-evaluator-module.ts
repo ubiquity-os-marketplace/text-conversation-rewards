@@ -164,6 +164,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const userId = await this._fetchGithubUserId(username);
       if (!userId) return;
       result[username] = {
+        ...result[username],
         total: 0,
         userId,
         comments: [specReward],
