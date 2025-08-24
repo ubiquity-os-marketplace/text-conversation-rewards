@@ -17,6 +17,7 @@ import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
+import { Result } from "../../types/results";
 
 function githubUrlToFileName(url: string): string {
   const repoMatch = RegExp(/github\.com\/([^/]+)\/([^/?#]+)/).exec(url);
@@ -62,9 +63,45 @@ async function getRepositoryList(context: ContextPlugin, orgName: string) {
   );
 }
 
+async function parseIssues(
+  pluginContext: ContextPlugin,
+  issues: RestEndpointMethodTypes["issues"]["listForRepo"]["response"]["data"],
+  repo: Repository
+) {
+  const { logger, payload, config } = pluginContext;
+  const results: Result[] = [];
+  for (const issue of issues) {
+    logger.info(issue.html_url);
+    const filePath = githubUrlToFileName(issue.html_url);
+    if (existsSync(filePath) && !payload.issue?.id) {
+      logger.warn(`File ${filePath} already exists, skipping.`);
+    } else {
+      config.incentives.file = filePath;
+      const ctx = {
+        ...pluginContext,
+        payload: { ...pluginContext.payload, issue, repository: repo },
+      } as typeof pluginContext;
+      const issueElem = parseGitHubUrl(issue.html_url);
+      const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
+      await activity.init();
+
+      const shouldProceed = await handlePriceLabelValidation(ctx, activity);
+      if (!shouldProceed) {
+        continue;
+      }
+
+      const processor = new Processor(ctx);
+      await processor.run(activity);
+      const result = processor.dump();
+      results.push(JSON.parse(result));
+    }
+  }
+  return results;
+}
+
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
-    const { payload, config, octokit, logger } = context;
+    const { payload, octokit, logger } = context;
     const supabaseClient = new SupabaseClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY);
     const adapters = createAdapters(supabaseClient, context as ContextPlugin);
     const pluginContext = { ...context, adapters };
@@ -99,34 +136,9 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
       if (!issues.length) {
         logger.warn("No issues found, skipping.");
       }
-      for (const issue of issues) {
-        logger.info(issue.html_url);
-        const filePath = githubUrlToFileName(issue.html_url);
-        if (existsSync(filePath) && !payload.issue?.id) {
-          logger.warn(`File ${filePath} already exists, skipping.`);
-        } else {
-          config.incentives.file = filePath;
-          const ctx = {
-            ...pluginContext,
-            payload: { ...context.payload, issue, repository: repo },
-          } as typeof pluginContext;
-          const issueElem = parseGitHubUrl(issue.html_url);
-          const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
-          await activity.init();
-
-          const shouldProceed = await handlePriceLabelValidation(ctx, activity);
-          if (!shouldProceed) {
-            continue;
-          }
-
-          const processor = new Processor(ctx);
-          await processor.run(activity);
-          const result = processor.dump();
-          results.push(JSON.parse(result));
-        }
-      }
+      results.push(...(await parseIssues(pluginContext, issues, repo)));
     }
-    return results;
+    return results as unknown as Record<string, unknown>;
   },
   manifest as Manifest,
   {
