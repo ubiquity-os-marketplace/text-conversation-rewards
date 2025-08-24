@@ -102,7 +102,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
       for (const issue of issues) {
         logger.info(issue.html_url);
         const filePath = githubUrlToFileName(issue.html_url);
-        if (existsSync(filePath)) {
+        if (existsSync(filePath) && !payload.issue?.id) {
           logger.warn(`File ${filePath} already exists, skipping.`);
         } else {
           config.incentives.file = filePath;
