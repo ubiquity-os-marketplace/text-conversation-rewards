@@ -130,7 +130,7 @@ export class GithubCommentModule extends BaseModule {
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/--/g, "&#45;&#45;")
-            .replace("`", "&#96;")
+            .replace(/`/g, "&#96;")
         ),
       })
     );
