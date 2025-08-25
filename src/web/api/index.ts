@@ -154,7 +154,8 @@ baseApp.use("*", cors());
 
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
-    if (request.method === "POST" && new URL(request.url).pathname === "/") {
+    const url = new URL(request.url);
+    if (request.method === "POST" && url.pathname === "/" && url.host?.includes("localhost")) {
       try {
         const originalBody = await request.json();
         const modifiedBody = await getPayload(
