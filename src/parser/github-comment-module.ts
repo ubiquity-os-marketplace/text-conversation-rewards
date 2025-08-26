@@ -125,7 +125,13 @@ export class GithubCommentModule extends BaseModule {
     bodyArray.push(
       createStructuredMetadata("GithubCommentModule", {
         workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        output: JSON.parse(JSON.stringify(metadataResult, commentTypeReplacer, 2)),
+        output: JSON.parse(
+          JSON.stringify(metadataResult, commentTypeReplacer, 2)
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/--/g, "&#45;&#45;")
+            .replace(/`/g, "&#96;")
+        ),
       })
     );
 
@@ -175,7 +181,7 @@ export class GithubCommentModule extends BaseModule {
           await this.context.commentHandler.postComment(this.context, errorLog);
         }
       } catch (e) {
-        this.context.logger.error(`Could not post GitHub comment: ${e}`);
+        this.context.logger.error(`Could not post GitHub comment`, { e });
       }
     }
     return result;
