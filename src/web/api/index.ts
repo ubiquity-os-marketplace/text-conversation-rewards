@@ -105,6 +105,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
     const supabaseClient = new SupabaseClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY);
     const adapters = createAdapters(supabaseClient, context as ContextPlugin);
     const pluginContext = { ...context, adapters };
+    const isSingleIssueMode = !!payload.issue?.id;
 
     mkdirSync("results", { recursive: true });
 
@@ -122,7 +123,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
         await octokit.paginate(octokit.rest.issues.listForRepo, {
           owner: orgName,
           repo: repo.name,
-          state: payload.issue?.id ? "all" : "closed",
+          state: isSingleIssueMode ? "all" : "closed",
         })
       ).filter((o) => {
         if (payload.issue && o.id !== payload.issue.id) {
@@ -131,7 +132,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           );
           return false;
         }
-        return !o.pull_request && (payload.issue?.id || o.state_reason === "completed");
+        return !o.pull_request && (isSingleIssueMode || o.state_reason === "completed");
       });
       if (!issues.length) {
         logger.warn("No issues found, skipping.");
