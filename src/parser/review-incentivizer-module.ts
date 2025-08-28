@@ -68,11 +68,10 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async getTripleDotDiffAsObject(owner: string, repo: string, baseSha: string, headSha: string): Promise<CommitDiff> {
-    const response = await this.context.octokit.rest.repos.compareCommits({
+    const response = await this.context.octokit.rest.repos.compareCommitsWithBasehead({
       owner,
       repo,
-      base: baseSha,
-      head: headSha,
+      basehead: `${baseSha}...${headSha}`,
     });
 
     const files = response.data.files || [];
@@ -159,6 +158,13 @@ export class ReviewIncentivizerModule extends BaseModule {
             headSha,
             excludedFilePatterns
           );
+          this.context.logger.debug("Fetched diff between commits", {
+            baseOwner,
+            baseRepo,
+            baseSha,
+            headSha,
+            reviewEffect,
+          });
           reviews.push({
             reviewId: currentReview.id,
             effect: reviewEffect,
