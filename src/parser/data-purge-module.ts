@@ -4,7 +4,8 @@ import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
-import { Result, GithubCommentScore as ResultComment } from "../types/results";
+import { GithubCommentScore as ResultComment, Result } from "../types/results";
+import { CommentAssociation } from "../configuration/comment-types";
 
 type CommentType = Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
 
@@ -32,6 +33,7 @@ export class DataPurgeModule extends BaseModule {
       this._configuration?.skipCommentsWhileAssigned &&
       this._configuration.skipCommentsWhileAssigned !== "none" &&
       comment.user?.login &&
+      !(comment.commentType & CommentAssociation.SPECIFICATION) &&
       isCommentDuringAssignment(
         comment,
         this._assignmentPeriods[comment.user?.login],
