@@ -33,17 +33,19 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!data.self?.assignees) {
+    const pullRequest = data.self && "issue" in data.self ? data.self.pull_request : data.self;
+    if (!data.self?.assignees || !pullRequest) {
+      this.context.logger.debug("No assignees or pull request found, won't run review incentivizer module");
       return result;
     }
 
-    const prNumbers = data.linkedReviews.map((review) => review.self?.number);
-    if (!prNumbers.length) {
-      this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
-      return result;
-    }
-
-    this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
+    // const prNumbers = data.linkedReviews.map((review) => review.self?.number);
+    // if (!prNumbers.length) {
+    //   this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
+    //   return result;
+    // }
+    //
+    // this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
 
     for (const username of Object.keys(result)) {
       const reward = result[username];
@@ -203,10 +205,6 @@ export class ReviewIncentivizerModule extends BaseModule {
       this.context.logger.warn(
         "The configuration for the module ReviewIncentivizerModule is invalid or missing, disabling."
       );
-      return false;
-    }
-    if (!isPullRequestEvent(this.context)) {
-      this.context.logger.warn("ReviewIncentivizerModule is only available for pull_request events, skipping.");
       return false;
     }
     return true;

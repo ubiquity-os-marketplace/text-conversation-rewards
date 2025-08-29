@@ -81,19 +81,22 @@ export async function run(context: ContextPlugin) {
   const activity = new IssueActivity(context, issue);
   await activity.init();
 
-  const shouldProceed = await handlePriceLabelValidation(context, activity);
-  if (!shouldProceed) {
-    const errorMsg = "No price label has been set. Skipping permit generation.";
-    const result = logger.error(errorMsg);
-    await commentHandler.postComment(context, result);
-    return result.logMessage.raw;
-  }
+  // Only check price labels for issues
+  if (!activity.self?.pull_request) {
+    const shouldProceed = await handlePriceLabelValidation(context, activity); // should ignore on PR
+    if (!shouldProceed) {
+      const errorMsg = "No price label has been set. Skipping permit generation.";
+      const result = logger.error(errorMsg);
+      await commentHandler.postComment(context, result);
+      return result.logMessage.raw;
+    }
 
-  const sortedPriceLabels = getSortedPrices(activity.self?.labels);
-  if (sortedPriceLabels.length > 0 && sortedPriceLabels[0] === 0) {
-    throw logger.warn(
-      "No rewards have been distributed for this task because it was explicitly marked with a Price: 0 label."
-    );
+    const sortedPriceLabels = getSortedPrices(activity.self?.labels);
+    if (sortedPriceLabels.length > 0 && sortedPriceLabels[0] === 0) {
+      throw logger.warn(
+        "No rewards have been distributed for this task because it was explicitly marked with a Price: 0 label."
+      );
+    }
   }
 
   if (isIssueCommentedEvent(context)) {

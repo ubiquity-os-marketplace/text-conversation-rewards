@@ -101,10 +101,6 @@ export class SimplificationIncentivizerModule extends BaseModule {
       );
       return false;
     }
-    if (!isPullRequestEvent(this.context)) {
-      this.context.logger.warn("This module is only available for pull request events, skipping.");
-      return false;
-    }
     return true;
   }
 }
