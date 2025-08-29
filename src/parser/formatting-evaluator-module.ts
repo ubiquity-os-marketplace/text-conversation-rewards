@@ -120,7 +120,11 @@ export class FormattingEvaluatorModule extends BaseModule {
     if (!(comment.commentType & CommentAssociation.SPECIFICATION)) {
       return 1;
     }
-    const { owner, repo, issue_number } = parseGitHubUrl(this.context.payload.issue.html_url);
+    const htmlUrl =
+      "issue" in this.context.payload
+        ? this.context.payload.issue.html_url
+        : this.context.payload.pull_request.html_url;
+    const { owner, repo, issue_number } = parseGitHubUrl(htmlUrl);
     const data = await this.context.octokit.graphql.paginate<IssueEdits>(QUERY_ISSUE_EDITS, {
       owner,
       repo,

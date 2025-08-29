@@ -11,6 +11,7 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result } from "../types/results";
+import { isPullRequestEvent } from "../helpers/type-assertions";
 
 type GitHubPullRequestFile = RestEndpointMethodTypes["pulls"]["listFiles"]["response"]["data"][0];
 
@@ -27,6 +28,7 @@ export class SimplificationIncentivizerModule extends BaseModule {
   async transform(data: Readonly<IssueActivity>, result: Result) {
     const linkedPullRequests = data.linkedReviews.map((review) => review.self);
     if (!linkedPullRequests.length) {
+      // should be changed to read the actual issue
       this.context.logger.warn("No pull request is linked to this issue, won't run SimplificationIncentivizer");
       return result;
     }
@@ -97,6 +99,10 @@ export class SimplificationIncentivizerModule extends BaseModule {
       this.context.logger.warn(
         "Invalid / missing configuration detected for SimplificationIncentivizerModule, disabling."
       );
+      return false;
+    }
+    if (!isPullRequestEvent(this.context)) {
+      this.context.logger.warn("This module is only available for pull request events, skipping.");
       return false;
     }
     return true;

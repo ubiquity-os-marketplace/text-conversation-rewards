@@ -10,17 +10,10 @@ import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
 import { logInvalidIssue } from "./helpers/log-invalid-issue";
 import { handlePriceLabelValidation } from "./helpers/price-label-handler";
-
-function isIssueClosedEvent(context: ContextPlugin): context is ContextPlugin<"issues.closed"> {
-  return context.eventName === "issues.closed";
-}
-
-function isIssueCommentedEvent(context: ContextPlugin): context is ContextPlugin<"issue_comment.created"> {
-  return context.eventName === "issue_comment.created";
-}
+import { isIssueClosedEvent, isIssueCommentedEvent, isPullRequestEvent } from "./helpers/type-assertions";
 
 async function handleEventTypeChecks(context: ContextPlugin) {
-  const { eventName, payload, logger, commentHandler } = context;
+  const { eventName, logger, commentHandler } = context;
 
   if (context.command) {
     if (context.command.name === "finish") {
@@ -30,15 +23,15 @@ async function handleEventTypeChecks(context: ContextPlugin) {
   }
 
   if (isIssueClosedEvent(context)) {
-    if (payload.issue.state_reason !== "completed") {
-      await logInvalidIssue(logger, payload.issue.html_url);
+    if (context.payload.issue.state_reason !== "completed") {
+      await logInvalidIssue(logger, context.payload.issue.html_url);
       return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
     }
     if (await checkIfClosedByCommand(context)) {
       return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
     }
     if (!(await preCheck(context))) {
-      await logInvalidIssue(logger, payload.issue.html_url);
+      await logInvalidIssue(logger, context.payload.issue.html_url);
       const result = logger.error("All linked pull requests must be closed to generate rewards.");
       await commentHandler.postComment(context, result);
       return result.logMessage.raw;
@@ -46,6 +39,10 @@ async function handleEventTypeChecks(context: ContextPlugin) {
   } else if (isIssueCommentedEvent(context)) {
     if (!context.payload.comment.body.trim().startsWith("/finish")) {
       return logger.error(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
+    }
+  } else if (isPullRequestEvent(context)) {
+    if (!context.payload.pull_request.merged) {
+      return logger.error("Pull requests must be merged to generate rewards.").logMessage.raw;
     }
   } else {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
@@ -62,8 +59,10 @@ export async function run(context: ContextPlugin) {
     return eventCheckResult;
   }
 
+  const issueItem = "issue" in payload ? payload.issue : payload.pull_request;
+
   if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {
-    await logInvalidIssue(logger, payload.issue.html_url);
+    await logInvalidIssue(logger, issueItem.html_url);
     const result =
       payload.sender.type === "Bot"
         ? logger.warn("Bots can not generate rewards.")
@@ -78,7 +77,7 @@ export async function run(context: ContextPlugin) {
     await commentHandler.postComment(context, logger.ok("Evaluating results. Please wait..."));
   }
 
-  const issue = parseGitHubUrl(payload.issue.html_url);
+  const issue = parseGitHubUrl(issueItem.html_url);
   const activity = new IssueActivity(context, issue);
   await activity.init();
 
@@ -125,9 +124,12 @@ async function generateResults(context: ContextPlugin, activity: IssueActivity) 
 }
 
 async function preCheck(context: ContextPlugin) {
-  const { payload, octokit, logger } = context;
+  const { octokit, logger } = context;
 
-  const issue = parseGitHubUrl(payload.issue.html_url);
+  if (!isIssueClosedEvent(context)) {
+    return true;
+  }
+  const issue = parseGitHubUrl(context.payload.issue.html_url);
   const linkedPulls = (await collectLinkedMergedPulls(context, issue)).filter((pullRequest) => {
     // This can happen when a user deleted its account
     if (!pullRequest?.author?.login) {

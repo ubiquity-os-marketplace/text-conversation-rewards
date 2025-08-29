@@ -17,6 +17,7 @@ export interface Result {
     payoutMode?: PayoutMode;
     userId: number;
     walletAddress?: string | null;
+    // review rewards and simplification should go on their own object
     reviewRewards?: {
       reviews?: ReviewScore[];
       url: string;
@@ -60,7 +61,7 @@ export interface ReviewScore {
     addition: number;
     deletion: number;
   };
-  reward: number;
+  reward: number; // To be renamed not to count in the final results
 }
 
 export interface GithubCommentScore {

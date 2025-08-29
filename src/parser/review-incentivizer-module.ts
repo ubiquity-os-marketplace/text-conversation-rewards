@@ -12,6 +12,8 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result, ReviewScore } from "../types/results";
 import { PullRequestData } from "../helpers/pull-request-data";
+import { isPullRequestEvent } from "../helpers/type-assertions";
+import { parseGitHubUrl } from "../start";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -136,7 +138,16 @@ export class ReviewIncentivizerModule extends BaseModule {
       return;
     }
     const reviews: ReviewScore[] = [];
-    const priority = parsePriorityLabel(this.context.payload.issue.labels);
+    if (!isPullRequestEvent(this.context)) {
+      return;
+    }
+    const { owner, repo, issue_number } = parseGitHubUrl(this.context.payload.pull_request.issue_url);
+    const linkedIssue = await this.context.octokit.rest.issues.get({
+      owner,
+      repo,
+      issue_number,
+    });
+    const priority = parsePriorityLabel(linkedIssue.data.labels);
     const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
 
     const prData = new PullRequestData(this.context, baseOwner, baseRepo, pullNumber);
@@ -192,6 +203,10 @@ export class ReviewIncentivizerModule extends BaseModule {
       this.context.logger.warn(
         "The configuration for the module ReviewIncentivizerModule is invalid or missing, disabling."
       );
+      return false;
+    }
+    if (!isPullRequestEvent(this.context)) {
+      this.context.logger.warn("ReviewIncentivizerModule is only available for pull_request events, skipping.");
       return false;
     }
     return true;

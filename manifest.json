@@ -1,7 +1,7 @@
 {
   "name": "Conversation rewards",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
-  "ubiquity:listeners": ["issues.closed"],
+  "ubiquity:listeners": ["issues.closed", "pull_request.closed"],
   "skipBotEvents": false,
   "commands": {
     "finish": {

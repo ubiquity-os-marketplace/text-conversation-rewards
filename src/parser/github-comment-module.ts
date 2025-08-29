@@ -156,7 +156,7 @@ export class GithubCommentModule extends BaseModule {
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const isIssueCollaborative = isCollaborative(data);
     const isUserAdmin = data.self?.user ? await isAdmin(data.self.user.login, this.context) : false;
-    const body = await this.getBodyContent(data, result);
+    const body = await this.getBodyContent(data, result); // also run for PRs
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, body);
     }
@@ -168,9 +168,11 @@ export class GithubCommentModule extends BaseModule {
             updateComment: true,
           });
           if (comment) {
+            const issue =
+              "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
             await this.context.adapters.supabase.location.upsert({
-              issue_id: this.context.payload.issue.id,
-              node_url: `${this.context.payload.issue.html_url}#issuecomment-${comment.id}`,
+              issue_id: issue.id,
+              node_url: `${issue.html_url}#issuecomment-${comment.id}`,
               repository_id: this.context.payload.repository.id,
               comment_id: comment.id,
               node_type: "Issue",
@@ -230,6 +232,7 @@ export class GithubCommentModule extends BaseModule {
     }
 
     if (result.reviewRewards) {
+      // Should post to its own pull-request
       const reviewCount = result.reviewRewards.reduce(
         (total, reviewReward) => total + (reviewReward.reviews?.length ?? 0),
         0
