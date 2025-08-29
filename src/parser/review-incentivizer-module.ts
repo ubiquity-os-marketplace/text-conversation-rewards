@@ -11,6 +11,7 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result, ReviewScore } from "../types/results";
+import { RestEndpointMethodTypes } from "@octokit/rest";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -67,7 +68,28 @@ export class ReviewIncentivizerModule extends BaseModule {
     return result;
   }
 
-  async getTripleDotDiffAsObject(owner: string, repo: string, baseSha: string, headSha: string): Promise<CommitDiff> {
+  async getTripleDotDiffAsObject(
+    owner: string,
+    repo: string,
+    baseSha: string,
+    headSha: string,
+    pullCommits: RestEndpointMethodTypes["pulls"]["listCommits"]["response"]["data"]
+  ): Promise<CommitDiff> {
+    const fileList = new Set<RestEndpointMethodTypes["repos"]["getCommit"]["response"]["data"]["files"][0]>();
+
+    for (const commit of pullCommits) {
+      if (commit.parents?.length < 2) {
+        const changes = await this.context.octokit.rest.repos.getCommit({
+          owner,
+          repo,
+          ref: commit.sha,
+        });
+        changes.data.files?.forEach((file) => {
+          fileList.add(file);
+        });
+      }
+    }
+
     const response = await this.context.octokit.rest.repos.compareCommitsWithBasehead({
       owner,
       repo,
@@ -75,10 +97,11 @@ export class ReviewIncentivizerModule extends BaseModule {
     });
 
     const files = response.data.files || [];
+    const allowedFiles = [...fileList];
     const diff: CommitDiff = {};
 
     for (const file of files) {
-      if (file.status === "removed") continue;
+      if (file.status === "removed" || !allowedFiles.some((o) => o.filename === file.filename)) continue;
       diff[file.filename] = {
         addition: file.additions || 0,
         deletion: file.deletions || 0,
@@ -93,9 +116,10 @@ export class ReviewIncentivizerModule extends BaseModule {
     repo: string,
     baseSha: string,
     headSha: string,
+    pullCommits: RestEndpointMethodTypes["pulls"]["listCommits"]["response"]["data"],
     excludedFilePatterns?: string[] | null
   ) {
-    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
+    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha, pullCommits);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
       if (
@@ -137,7 +161,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     ).data;
 
     // Get the first commit of the PR
-    const firstCommitSha = pullCommits[0]?.parents[0]?.sha || pullCommits[0]?.sha;
+    const firstCommitSha = pullCommits[0]?.parents[0]?.sha || pullCommits[0]?.sha; // send these
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
@@ -156,6 +180,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             baseRepo,
             baseSha,
             headSha,
+            pullCommits,
             excludedFilePatterns
           );
           this.context.logger.debug("Fetched diff between commits", {
