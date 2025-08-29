@@ -11,6 +11,7 @@ import Mock = jest.Mock;
 import { drop } from "@mswjs/data";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import "./helpers/permit-mock";
+import { PullRequestData } from "../src/helpers/pull-request-data";
 
 const ctx = {
   eventName: "issues.closed",
@@ -171,7 +172,8 @@ describe("Review Incentivizer", () => {
       "ubiquity-os",
       "conversation-rewards",
       "base",
-      "head"
+      "head",
+      new PullRequestData({} as never, "", "", 0)
     );
 
     expect(Object.keys(diff).length).toBe(2);
