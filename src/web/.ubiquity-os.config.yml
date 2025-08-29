@@ -41,19 +41,18 @@ tcrHtmlConfig: &tcrHtmlConfig
 evmPrivateEncrypted: "0x00"
 rewards:
   evmNetworkId: 100
-#  evmPrivateEncrypted: "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ"
-  evmPrivateEncrypted: "N3nUc6hto8g_5Y-mxsJTCaXD_sH49lHFGgkR4ReYNlywXumOH74e6R9xoj9GtD2FN5YQJAVh1mHM15lxoxPP2YO-Ahdz3ydbtvcTgIQ2xdvg7UAb060eDYDvZc_JEhNwJy1kROL237Ge8eDB1wvAWNObCejAqHPIYp8"
+  evmPrivateEncrypted: "kmpTKq5Wh9r9x5j3U9GqZr3NYnjK2g0HtbzeUBOuLC2y3x8ja_SKBNlB2AZ6LigXHP_HeMitftVUtzmoj8CFfVP9SqjWoL6IPku1hVTWkdTn97g1IxzmjydFxjdcf0wuDW1hvVtoq3Uw5yALABqxcQ"
   erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
 
 incentives:
   payment:
     automaticTransferMode: false
   requirePriceLabel: "auto"
-#  externalContent:
-#    llmImageModel:
-#      model: meta-llama/llama-3.2-11b-vision-instruct:free
-#    llmWebsiteModel:
-#      model: deepseek/deepseek-chat-v3-0324:free
+  externalContent:
+    llmImageModel:
+      model: meta-llama/llama-3.2-11b-vision-instruct:free
+    llmWebsiteModel:
+      model: deepseek/deepseek-chat-v3-0324:free
   contentEvaluator:
     openAi:
       endpoint: https://openrouter.ai/api/v1
