@@ -86,7 +86,7 @@ export const pluginSettingsSchema = T.Object(
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
-export type SupportedEvents = "issues.closed" | "issue_comment.created";
+export type SupportedEvents = "issues.closed" | "issue_comment.created" | "pull_request.closed";
 export type ContextPlugin<T extends SupportedEvents = SupportedEvents> = Context<
   PluginSettings,
   EnvConfig,

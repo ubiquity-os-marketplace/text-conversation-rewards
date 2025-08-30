@@ -11,6 +11,9 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result, ReviewScore } from "../types/results";
+import { PullRequestData } from "../helpers/pull-request-data";
+import { isPullRequestEvent } from "../helpers/type-assertions";
+import { parseGitHubUrl } from "../start";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -30,17 +33,19 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!data.self?.assignees) {
+    const pullRequest = data.self && "issue" in data.self ? data.self.pull_request : data.self;
+    if (!data.self?.assignees || !pullRequest) {
+      this.context.logger.debug("No assignees or pull request found, won't run review incentivizer module");
       return result;
     }
 
-    const prNumbers = data.linkedReviews.map((review) => review.self?.number);
-    if (!prNumbers.length) {
-      this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
-      return result;
-    }
-
-    this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
+    // const prNumbers = data.linkedReviews.map((review) => review.self?.number);
+    // if (!prNumbers.length) {
+    //   this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
+    //   return result;
+    // }
+    //
+    // this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
 
     for (const username of Object.keys(result)) {
       const reward = result[username];
@@ -67,19 +72,27 @@ export class ReviewIncentivizerModule extends BaseModule {
     return result;
   }
 
-  async getTripleDotDiffAsObject(owner: string, repo: string, baseSha: string, headSha: string): Promise<CommitDiff> {
-    const response = await this.context.octokit.rest.repos.compareCommits({
+  async getTripleDotDiffAsObject(
+    owner: string,
+    repo: string,
+    baseSha: string,
+    headSha: string,
+    prData: PullRequestData
+  ): Promise<CommitDiff> {
+    const fileList = prData.fileList;
+
+    const response = await this.context.octokit.rest.repos.compareCommitsWithBasehead({
       owner,
       repo,
-      base: baseSha,
-      head: headSha,
+      basehead: `${baseSha}...${headSha}`,
     });
 
     const files = response.data.files || [];
+    const allowedFiles = [...fileList];
     const diff: CommitDiff = {};
 
     for (const file of files) {
-      if (file.status === "removed") continue;
+      if (file.status === "removed" || !allowedFiles.some((o) => o.filename === file.filename)) continue;
       diff[file.filename] = {
         addition: file.additions || 0,
         deletion: file.deletions || 0,
@@ -94,9 +107,10 @@ export class ReviewIncentivizerModule extends BaseModule {
     repo: string,
     baseSha: string,
     headSha: string,
+    prData: PullRequestData,
     excludedFilePatterns?: string[] | null
   ) {
-    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
+    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha, prData);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
       if (
@@ -123,22 +137,38 @@ export class ReviewIncentivizerModule extends BaseModule {
     reviewsByUser: GitHubPullRequestReviewState[]
   ) {
     if (reviewsByUser.length == 0) {
+      this.context.logger.debug("No reviews found for this pull request", { baseOwner, baseRepo, baseRef });
       return;
     }
     const reviews: ReviewScore[] = [];
-    const priority = parsePriorityLabel(this.context.payload.issue.labels);
+    if (
+      !isPullRequestEvent(this.context) &&
+      "issue" in this.context.payload &&
+      !this.context.payload.issue.pull_request
+    ) {
+      this.context.logger.debug("Not a pull request event, won't run review incentivizer module.", {
+        event: this.context.eventName,
+      });
+      return;
+    }
+    const { owner, repo, issue_number } = parseGitHubUrl(
+      "issue" in this.context.payload
+        ? this.context.payload.issue.html_url
+        : this.context.payload.pull_request.issue_url
+    );
+    const linkedIssue = await this.context.octokit.rest.issues.get({
+      owner,
+      repo,
+      issue_number,
+    });
+    const priority = parsePriorityLabel(linkedIssue.data.labels);
     const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
 
-    const pullCommits = (
-      await this.context.octokit.rest.pulls.listCommits({
-        owner: baseOwner,
-        repo: baseRepo,
-        pull_number: pullNumber,
-      })
-    ).data;
+    const prData = new PullRequestData(this.context, baseOwner, baseRepo, pullNumber);
+    await prData.fetchData();
 
     // Get the first commit of the PR
-    const firstCommitSha = pullCommits[0]?.parents[0]?.sha || pullCommits[0]?.sha;
+    const firstCommitSha = prData.pullCommits[0]?.parents[0]?.sha || prData.pullCommits[0]?.sha;
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
@@ -157,8 +187,16 @@ export class ReviewIncentivizerModule extends BaseModule {
             baseRepo,
             baseSha,
             headSha,
+            prData,
             excludedFilePatterns
           );
+          this.context.logger.debug("Fetched diff between commits", {
+            baseOwner,
+            baseRepo,
+            baseSha,
+            headSha,
+            reviewEffect,
+          });
           reviews.push({
             reviewId: currentReview.id,
             effect: reviewEffect,

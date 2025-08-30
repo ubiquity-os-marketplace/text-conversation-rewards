@@ -44,11 +44,11 @@ export class Processor {
     return this;
   }
 
-  _getRewardsLimit(issue: GitHubIssue | null) {
+  async _getRewardsLimit(issue: GitHubIssue | null) {
     if (!this._configuration.limitRewards) {
       return Infinity;
     }
-    const priceTagReward = getTaskReward(issue);
+    const priceTagReward = await getTaskReward(this._context, issue);
     return priceTagReward ?? Infinity;
   }
 
@@ -60,11 +60,14 @@ export class Processor {
       // Aggregate total result
       for (const username of Object.keys(this._result)) {
         if (data.self?.assignees?.map((v) => v.login).includes(username)) {
-          this._result[username].total = this._sumRewards(this._result[username], this._getRewardsLimit(data.self));
+          this._result[username].total = this._sumRewards(
+            this._result[username],
+            await this._getRewardsLimit(data.self)
+          );
         } else {
           this._result[username].total = Math.min(
-            this._sumRewards(this._result[username], this._getRewardsLimit(data.self)),
-            this._getRewardsLimit(data.self)
+            this._sumRewards(this._result[username], await this._getRewardsLimit(data.self)),
+            await this._getRewardsLimit(data.self)
           );
         }
       }
