@@ -66,14 +66,15 @@ async function getRepositoryList(context: ContextPlugin, orgName: string) {
 async function parseIssues(
   pluginContext: ContextPlugin,
   issues: RestEndpointMethodTypes["issues"]["listForRepo"]["response"]["data"],
-  repo: Repository
+  repo: Repository,
+  isSingleIssueMode: boolean
 ) {
-  const { logger, payload, config } = pluginContext;
+  const { logger, config } = pluginContext;
   const results: Result[] = [];
   for (const issue of issues) {
     logger.info(issue.html_url);
     const filePath = githubUrlToFileName(issue.html_url);
-    if (existsSync(filePath) && !payload.issue?.id) {
+    if (existsSync(filePath) && !isSingleIssueMode) {
       logger.warn(`File ${filePath} already exists, skipping.`);
     } else {
       config.incentives.file = filePath;
@@ -137,7 +138,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
       if (!issues.length) {
         logger.warn("No issues found, skipping.");
       }
-      results.push(...(await parseIssues(pluginContext, issues, repo)));
+      results.push(...(await parseIssues(pluginContext, issues, repo, isSingleIssueMode)));
     }
     return results as unknown as Record<string, unknown>;
   },
