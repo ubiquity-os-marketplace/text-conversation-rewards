@@ -3,10 +3,16 @@ import { IssueParams } from "../start";
 import { ContextPlugin } from "../types/plugin-input";
 import { LINKED_PULL_REQUESTS } from "../types/requests";
 
-type ClosedByPullRequestsReferences = {
+export type ClosedByPullRequestsReferences = {
   node: Pick<PullRequest, "url" | "title" | "number" | "state" | "body"> & {
     author: Pick<User, "login" | "id">;
     repository: Pick<Repository, "owner" | "name">;
+    labels?: {
+      nodes: {
+        name: string;
+        description: string;
+      }[];
+    };
   };
 };
 

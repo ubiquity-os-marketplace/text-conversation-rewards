@@ -97,7 +97,7 @@ export class GithubCommentModule extends BaseModule {
   }
 
   async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
-    const taskReward = getTaskReward(data.self);
+    const taskReward = await getTaskReward(this.context, data.self);
 
     if (stripContent) {
       return this._getStrippedContent(result, taskReward);

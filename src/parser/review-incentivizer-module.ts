@@ -137,13 +137,25 @@ export class ReviewIncentivizerModule extends BaseModule {
     reviewsByUser: GitHubPullRequestReviewState[]
   ) {
     if (reviewsByUser.length == 0) {
+      this.context.logger.debug("No reviews found for this pull request", { baseOwner, baseRepo, baseRef });
       return;
     }
     const reviews: ReviewScore[] = [];
-    if (!isPullRequestEvent(this.context)) {
+    if (
+      !isPullRequestEvent(this.context) &&
+      "issue" in this.context.payload &&
+      !this.context.payload.issue.pull_request
+    ) {
+      this.context.logger.debug("Not a pull request event, won't run review incentivizer module.", {
+        event: this.context.eventName,
+      });
       return;
     }
-    const { owner, repo, issue_number } = parseGitHubUrl(this.context.payload.pull_request.issue_url);
+    const { owner, repo, issue_number } = parseGitHubUrl(
+      "issue" in this.context.payload
+        ? this.context.payload.issue.html_url
+        : this.context.payload.pull_request.issue_url
+    );
     const linkedIssue = await this.context.octokit.rest.issues.get({
       owner,
       repo,
