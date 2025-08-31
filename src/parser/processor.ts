@@ -21,7 +21,7 @@ import { ExternalContentProcessor } from "./external-content-module";
 export class Processor {
   private _transformers: Module[] = [];
   private _result: Result = {};
-  private _context: ContextPlugin;
+  private readonly _context: ContextPlugin;
   private readonly _configuration;
 
   constructor(context: ContextPlugin) {

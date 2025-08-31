@@ -195,7 +195,11 @@ export class IssueActivity {
       return {
         ...comment,
         timestamp: comment.created_at,
-        commentType: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
+        commentType: this._getTypeFromComment(
+          this.self?.pull_request ? CommentKind.PULL : CommentKind.ISSUE,
+          comment,
+          this.self
+        ),
       };
     });
     if (this.self) {
@@ -204,7 +208,11 @@ export class IssueActivity {
       comments.push({
         ...c,
         timestamp: c.created_at,
-        commentType: this._getTypeFromComment(CommentKind.ISSUE, this.self, this.self),
+        commentType: this._getTypeFromComment(
+          this.self?.pull_request ? CommentKind.PULL : CommentKind.ISSUE,
+          this.self,
+          this.self
+        ),
       });
     }
     if (this.linkedReviews) {
