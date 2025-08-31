@@ -152,9 +152,7 @@ export class ReviewIncentivizerModule extends BaseModule {
       return;
     }
     const { owner, repo, issue_number } = parseGitHubUrl(
-      "issue" in this.context.payload
-        ? this.context.payload.issue.html_url
-        : this.context.payload.pull_request.issue_url
+      "issue" in this.context.payload ? this.context.payload.issue.html_url : this.context.payload.pull_request.html_url
     );
     const linkedIssue = await this.context.octokit.rest.issues.get({
       owner,
