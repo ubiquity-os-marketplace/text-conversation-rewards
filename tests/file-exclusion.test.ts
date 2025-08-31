@@ -5,7 +5,6 @@ import { getExcludedFiles } from "../src/helpers/excluded-files";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { PullRequestData } from "../src/helpers/pull-request-data";
 
 type MockGetContent = jest.Mock<
   (
@@ -52,25 +51,15 @@ describe("ReviewIncentivizerModule file exclusion", () => {
   });
 
   it("should calculate total diff when no patterns are excluded", async () => {
-    const result = await reviewIncentivizer.getReviewableDiff(
-      "owner",
-      "repo",
-      "baseSha",
-      "headSha",
-      new PullRequestData({} as never, "", "", 0)
-    );
+    const result = await reviewIncentivizer.getReviewableDiff("owner", "repo", "baseSha", "headSha");
     expect(result).toEqual({ addition: 250, deletion: 250 });
   });
 
   it("should exclude files matching ANY of the patterns", async () => {
-    const result = await reviewIncentivizer.getReviewableDiff(
-      "owner",
-      "repo",
-      "baseSha",
-      "headSha",
-      new PullRequestData({} as never, "", "", 0),
-      ["dist/**", "tests/**"]
-    );
+    const result = await reviewIncentivizer.getReviewableDiff("owner", "repo", "baseSha", "headSha", [
+      "dist/**",
+      "tests/**",
+    ]);
     expect(result).toEqual({ addition: 100, deletion: 100 });
   });
 });

@@ -11,7 +11,6 @@ import Mock = jest.Mock;
 import { drop } from "@mswjs/data";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import "./helpers/permit-mock";
-import { PullRequestData } from "../src/helpers/pull-request-data";
 
 const ctx = {
   eventName: "issues.closed",
@@ -138,7 +137,7 @@ describe("Review Incentivizer", () => {
   });
 
   it("Should skip removed files in review incentives diff calculation", async () => {
-    jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementationOnce(async () => {
+    jest.spyOn(ctx.octokit.rest.repos, "compareCommitsWithBasehead").mockImplementationOnce(async () => {
       return {
         data: {
           files: [
@@ -162,7 +161,7 @@ describe("Review Incentivizer", () => {
             },
           ],
         },
-      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
+      } as unknown as RestEndpointMethodTypes["repos"]["compareCommitsWithBasehead"]["response"];
     });
 
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
@@ -172,8 +171,7 @@ describe("Review Incentivizer", () => {
       "ubiquity-os",
       "conversation-rewards",
       "base",
-      "head",
-      new PullRequestData({} as never, "", "", 0)
+      "head"
     );
 
     expect(Object.keys(diff).length).toBe(2);
