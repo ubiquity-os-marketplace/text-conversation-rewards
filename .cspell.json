@@ -48,7 +48,8 @@
     "issuecomment",
     "qwen",
     "deepseek",
-    "summarise"
+    "summarise",
+    "basehead"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

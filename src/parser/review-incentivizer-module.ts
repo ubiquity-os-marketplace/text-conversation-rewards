@@ -68,11 +68,11 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async getTripleDotDiffAsObject(owner: string, repo: string, baseSha: string, headSha: string): Promise<CommitDiff> {
-    const response = await this.context.octokit.rest.repos.compareCommits({
+    // Use three-dot comparison to exclude changes from the base branch
+    const response = await this.context.octokit.rest.repos.compareCommitsWithBasehead({
       owner,
       repo,
-      base: baseSha,
-      head: headSha,
+      basehead: `${baseSha}...${headSha}`,
     });
 
     const files = response.data.files || [];
