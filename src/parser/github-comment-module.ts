@@ -58,7 +58,7 @@ export class GithubCommentModule extends BaseModule {
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
-      if (result[key].total <= 0 || (await this.isRewardClaimed(value))) continue;
+      if (result[key].total <= 0) continue;
       result[key].evaluationCommentHtml = await this._generateHtml(key, value, taskReward, true);
       bodyArray.push(result[key].evaluationCommentHtml);
     }
@@ -108,7 +108,7 @@ export class GithubCommentModule extends BaseModule {
 
     for (const [key, value] of Object.entries(result)) {
       // Remove result with 0 total from being displayed
-      if (result[key].total <= 0 || (await this.isRewardClaimed(value))) {
+      if (result[key].total <= 0) {
         keysToRemove.push(key);
         continue;
       }
@@ -415,11 +415,12 @@ export class GithubCommentModule extends BaseModule {
     return "";
   }
 
-  _createRewardLink(result: Result[0], tokenSymbol: string) {
+  async _createRewardLink(result: Result[0], tokenSymbol: string) {
     if (result.permitUrl || result.explorerUrl) {
       return `<a href="${result.permitUrl || result.explorerUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
     }
-    return `[ ${result.total} ${tokenSymbol} ]`;
+    const isRewardClaimed = await this.isRewardClaimed(result);
+    return `[ ${result.total} ${tokenSymbol} ]${isRewardClaimed ? " ☑️" : ""}`;
   }
 
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
@@ -459,7 +460,7 @@ export class GithubCommentModule extends BaseModule {
         <b>
           <h3>
             &nbsp;
-            ${this._createRewardLink(result, tokenSymbol)}
+            ${await this._createRewardLink(result, tokenSymbol)}
             &nbsp;
           </h3>
           <h6>
