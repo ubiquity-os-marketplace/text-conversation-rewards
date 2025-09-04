@@ -420,7 +420,7 @@ export class GithubCommentModule extends BaseModule {
       return `<a href="${result.permitUrl || result.explorerUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
     }
     const isRewardClaimed = await this.isRewardClaimed(result);
-    return `[ ${result.total} ${tokenSymbol} ]${isRewardClaimed ? " (CLAIMED)" : ""}`;
+    return `[ ${result.total} ${tokenSymbol} ]${isRewardClaimed ? " ☑️" : ""}`;
   }
 
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
