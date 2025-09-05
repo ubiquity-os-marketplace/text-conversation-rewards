@@ -75,7 +75,7 @@ export async function run(context: ContextPlugin) {
   logger.debug("Will use the following configuration:", { config });
 
   if (config.incentives.githubComment?.post) {
-    await commentHandler.postComment(context, logger.ok("Evaluating results. Please wait..."));
+    await commentHandler.postComment(context, logger.info("Evaluating results. Please wait..."));
   }
 
   const issue = parseGitHubUrl(payload.issue.html_url);
