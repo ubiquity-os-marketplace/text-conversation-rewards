@@ -56,11 +56,11 @@ incentives:
   contentEvaluator:
     openAi:
       endpoint: https://openrouter.ai/api/v1
-      model: deepseek/deepseek-chat-v3-0324
+      model: deepseek/deepseek-chat-v3-0324:free
   userExtractor:
     redeemTask: true
   dataPurge:
-    skipCommentsWhileAssigned: none
+    skipCommentsWhileAssigned: all
   formattingEvaluator:
     multipliers:
       - role:
@@ -68,7 +68,6 @@ incentives:
           - ISSUE_COLLABORATOR
           - ISSUE_SPECIFICATION
           - PULL_COLLABORATOR
-          - PULL_SPECIFICATION
         multiplier: 1
         rewards:
           wordValue: 0.1
@@ -77,15 +76,16 @@ incentives:
       - role:
           - ISSUE_ASSIGNEE
           - ISSUE_CONTRIBUTOR
-          - PULL_CONTRIBUTOR
         multiplier: 0.25
         rewards:
           wordValue: 0.1
           html: *tcrHtmlConfig
 
       - role:
-          - PULL_ASSIGNEE
           - PULL_AUTHOR
+          - PULL_CONTRIBUTOR
+          - PULL_ASSIGNEE
+          - PULL_SPECIFICATION
         multiplier: 0
         rewards:
           wordValue: 0
