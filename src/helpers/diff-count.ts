@@ -1,16 +1,52 @@
 import { diffChars } from "diff";
 import Decimal from "decimal.js";
 import { UserContentEdits } from "../types/comment-edits";
+import { marked, TokensList } from "marked";
+
+/**
+ * Sanitize a Markdown body by removing HTML comments that would not be rendered,
+ * while preserving those inside code fences and inline code spans where they are
+ * meant to appear verbatim.
+ */
+export function sanitizeMarkdownBody(markdown: string): string {
+  if (!markdown) return markdown;
+
+  const tokens: TokensList = marked.lexer(markdown, { gfm: true });
+  const resultParts: string[] = [];
+
+  for (const token of tokens) {
+    if (token.type === "code" || token.type === "codespan") {
+      resultParts.push(token.raw);
+      continue;
+    }
+    if (token.type === "html") {
+      const trimmed = token.raw.trim();
+      if (/^<!--[\s\S]*?-->$/.test(trimmed)) {
+        continue;
+      }
+      resultParts.push(token.raw);
+      continue;
+    }
+    resultParts.push(token.raw);
+  }
+
+  return resultParts.join("");
+}
 
 export function getCharacterContributionPercentages(edits: UserContentEdits["nodes"]): Record<string, number> {
   if (edits.length === 0) return {};
 
-  let prevText = edits[0].diff ?? "";
-  const firstUser = edits[0].editor;
+  const sanitized = edits.map((e) => ({
+    ...e,
+    diff: sanitizeMarkdownBody(e.diff ?? ""),
+  }));
+
+  let prevText = sanitized[0].diff ?? "";
+  const firstUser = sanitized[0].editor;
   let attribution = Array.from(prevText, () => firstUser);
 
-  for (let i = 1; i < edits.length; i++) {
-    const edit = edits[i];
+  for (let i = 1; i < sanitized.length; i++) {
+    const edit = sanitized[i];
     const { editor, diff: currText } = edit;
     const currUser = editor;
     const diff = diffChars(prevText, currText);

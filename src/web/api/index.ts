@@ -17,6 +17,7 @@ import envConfigSchema, { EnvConfig } from "../../types/env-type";
 import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } from "../../types/plugin-input";
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
+import { Result } from "../../types/results";
 
 function githubUrlToFileName(url: string): string {
   const repoMatch = RegExp(/github\.com\/([^/]+)\/([^/?#]+)/).exec(url);
@@ -62,12 +63,50 @@ async function getRepositoryList(context: ContextPlugin, orgName: string) {
   );
 }
 
+async function parseIssues(
+  pluginContext: ContextPlugin,
+  issues: RestEndpointMethodTypes["issues"]["listForRepo"]["response"]["data"],
+  repo: Repository,
+  isSingleIssueMode: boolean
+) {
+  const { logger, config } = pluginContext;
+  const results: Result[] = [];
+  for (const issue of issues) {
+    logger.info(issue.html_url);
+    const filePath = githubUrlToFileName(issue.html_url);
+    if (existsSync(filePath) && !isSingleIssueMode) {
+      logger.warn(`File ${filePath} already exists, skipping.`);
+    } else {
+      config.incentives.file = filePath;
+      const ctx = {
+        ...pluginContext,
+        payload: { ...pluginContext.payload, issue, repository: repo },
+      } as typeof pluginContext;
+      const issueElem = parseGitHubUrl(issue.html_url);
+      const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
+      await activity.init();
+
+      const shouldProceed = await handlePriceLabelValidation(ctx, activity);
+      if (!shouldProceed) {
+        continue;
+      }
+
+      const processor = new Processor(ctx);
+      await processor.run(activity);
+      const result = processor.dump();
+      results.push(JSON.parse(result));
+    }
+  }
+  return results;
+}
+
 const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
   async (context) => {
-    const { payload, config, octokit, logger } = context;
+    const { payload, octokit, logger } = context;
     const supabaseClient = new SupabaseClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY);
     const adapters = createAdapters(supabaseClient, context as ContextPlugin);
     const pluginContext = { ...context, adapters };
+    const isSingleIssueMode = !!payload.issue?.id;
 
     mkdirSync("results", { recursive: true });
 
@@ -85,7 +124,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
         await octokit.paginate(octokit.rest.issues.listForRepo, {
           owner: orgName,
           repo: repo.name,
-          state: "closed",
+          state: isSingleIssueMode ? "all" : "closed",
         })
       ).filter((o) => {
         if (payload.issue && o.id !== payload.issue.id) {
@@ -94,39 +133,14 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           );
           return false;
         }
-        return !o.pull_request && o.state_reason === "completed";
+        return !o.pull_request && (isSingleIssueMode || o.state_reason === "completed");
       });
       if (!issues.length) {
         logger.warn("No issues found, skipping.");
       }
-      for (const issue of issues) {
-        logger.info(issue.html_url);
-        const filePath = githubUrlToFileName(issue.html_url);
-        if (existsSync(filePath)) {
-          logger.warn(`File ${filePath} already exists, skipping.`);
-        } else {
-          config.incentives.file = filePath;
-          const ctx = {
-            ...pluginContext,
-            payload: { ...context.payload, issue, repository: repo },
-          } as typeof pluginContext;
-          const issueElem = parseGitHubUrl(issue.html_url);
-          const activity = new IssueActivityCache(ctx, issueElem, "useCache" in config);
-          await activity.init();
-
-          const shouldProceed = await handlePriceLabelValidation(ctx, activity);
-          if (!shouldProceed) {
-            continue;
-          }
-
-          const processor = new Processor(ctx);
-          await processor.run(activity);
-          const result = processor.dump();
-          results.push(JSON.parse(result));
-        }
-      }
+      results.push(...(await parseIssues(pluginContext, issues, repo, isSingleIssueMode)));
     }
-    return results;
+    return results as unknown as Record<string, unknown>;
   },
   manifest as Manifest,
   {
@@ -142,7 +156,8 @@ baseApp.use("*", cors());
 
 const app = {
   fetch: async (request: Request, env: object, ctx: ExecutionContext) => {
-    if (request.method === "POST" && new URL(request.url).pathname === "/") {
+    const url = new URL(request.url);
+    if (request.method === "POST" && url.pathname === "/" && url.host?.includes("localhost")) {
       try {
         const originalBody = await request.json();
         const modifiedBody = await getPayload(

@@ -38,7 +38,7 @@ export class UserExtractorModule extends BaseModule {
     }
     const sortedPriceLabels = getSortedPrices(issue.labels);
     if (!sortedPriceLabels.length) {
-      console.warn("There are no price labels in this repository.");
+      this.context.logger.warn("There are no price labels in this repository.");
       return 0;
     }
     return sortedPriceLabels[0];
@@ -83,6 +83,11 @@ export class UserExtractorModule extends BaseModule {
         total: 0,
         task,
       };
+      this.context.logger.debug("Added entry for assignee", {
+        login: assignee.login,
+        task,
+        result: result[assignee.login],
+      });
     });
     const allComments = await data.getAllComments();
     for (const comment of allComments) {
