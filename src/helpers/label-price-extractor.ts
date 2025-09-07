@@ -36,7 +36,6 @@ export async function getTaskReward(context: ContextPlugin, issue: GitHubIssue |
         repo: context.payload.repository.name,
         pull_number: issue.number,
       });
-      console.log(JSON.stringify(linkedIssues, null, 2));
       labels.push(
         ...linkedIssues.repository.pullRequest.closingIssuesReferences.edges
           .map((issue) => issue.node.labels?.nodes)

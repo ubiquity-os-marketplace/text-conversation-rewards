@@ -11,7 +11,6 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result } from "../types/results";
-import { isPullRequestEvent } from "../helpers/type-assertions";
 
 type GitHubPullRequestFile = RestEndpointMethodTypes["pulls"]["listFiles"]["response"]["data"][0];
 
@@ -26,19 +25,23 @@ export class SimplificationIncentivizerModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    const linkedPullRequests = data.linkedReviews.map((review) => review.self);
-    if (!linkedPullRequests.length) {
-      // should be changed to read the actual issue
-      this.context.logger.warn("No pull request is linked to this issue, won't run SimplificationIncentivizer");
+    let pullRequest;
+    if ("issue" in this.context.payload) {
+      const pull = await this.context.octokit.rest.pulls.get({
+        owner: this.context.payload.repository.owner.login,
+        repo: this.context.payload.repository.name,
+        pull_number: this.context.payload.issue.number,
+      });
+      pullRequest = pull.data;
+    } else {
+      pullRequest = this.context.payload.pull_request;
+    }
+    if (!pullRequest) {
+      this.context.logger.warn("This is not a pull-request, won't run SimplificationIncentivizer module.");
       return result;
     }
-    const prNumbers = linkedPullRequests.map((pull) => pull?.number);
 
-    this.context.logger.info("Pull requests linked to this issue", { prNumbers });
-    for (const pull of linkedPullRequests) {
-      if (!pull?.head.repo) continue;
-      result = await this._processPullRequest(pull as GitHubPullRequest, result);
-    }
+    result = await this._processPullRequest(pullRequest as GitHubPullRequest, result);
     return result;
   }
 
