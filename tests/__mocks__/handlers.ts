@@ -48,6 +48,30 @@ export const handlers = [
     }
     return HttpResponse.json({});
   }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/compare/base...head", () => {
+    return HttpResponse.json({
+      files: [
+        {
+          filename: "added.txt",
+          status: "added",
+          additions: 10,
+          deletions: 5,
+          changes: 15,
+          blob_url: "https://github.com/ubiquity-os/conversation-rewards/blob/base/added.txt",
+          patch: "@@ -0,0 +1,10 @@\n+line1\n+line2\n+line3\n+line4\n+line5\n+line6\n+line7\n+line8\n+line9\n+line10",
+        },
+        {
+          filename: "modified.txt",
+          status: "modified",
+          additions: 2,
+          deletions: 1,
+          changes: 3,
+          blob_url: "https://github.com/ubiquity-os/conversation-rewards/blob/base/modified.txt",
+          patch: "@@ -1,2 +1,2 @@\n-hello\n+hello world",
+        },
+      ],
+    });
+  }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5", () => {
     return HttpResponse.json(issue5Get);
   }),

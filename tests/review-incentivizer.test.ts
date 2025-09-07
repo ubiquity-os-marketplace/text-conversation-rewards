@@ -1,17 +1,17 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, jest } from "@jest/globals";
-import { parseGitHubUrl } from "../src/start";
-import cfg from "./__mocks__/results/valid-configuration.json";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
-import { ContextPlugin } from "../src/types/plugin-input";
-import dbSeed from "./__mocks__/db-seed.json";
-import { db, db as mockDb } from "./__mocks__/db";
-import { server } from "./__mocks__/node";
-import Mock = jest.Mock;
 import { drop } from "@mswjs/data";
 import { RestEndpointMethodTypes } from "@octokit/rest";
-import "./helpers/permit-mock";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { PullRequestData } from "../src/helpers/pull-request-data";
+import { parseGitHubUrl } from "../src/start";
+import { ContextPlugin } from "../src/types/plugin-input";
+import { db, db as mockDb } from "./__mocks__/db";
+import dbSeed from "./__mocks__/db-seed.json";
+import { server } from "./__mocks__/node";
+import cfg from "./__mocks__/results/valid-configuration.json";
+import "./helpers/permit-mock";
+import Mock = jest.Mock;
 
 const ctx = {
   eventName: "issues.closed",
@@ -167,18 +167,39 @@ describe("Review Incentivizer", () => {
 
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
     const reviewIncentivizerModule = new ReviewIncentivizerModule(ctx);
+    const prData = new PullRequestData({} as never, "owner", "repo", 0);
+    jest.spyOn(PullRequestData.prototype, "fileList", "get").mockReturnValue([
+      {
+        filename: "added.txt",
+        additions: 10,
+        deletions: 5,
+        sha: "sha-added",
+        status: "added",
+        blob_url: "blob/added",
+        raw_url: "raw/added",
+      } as unknown as NonNullable<RestEndpointMethodTypes["repos"]["getCommit"]["response"]["data"]["files"]>[number],
+      {
+        filename: "modified.txt",
+        additions: 20,
+        deletions: 10,
+        sha: "sha-modified",
+        status: "modified",
+        blob_url: "blob/modified",
+        raw_url: "raw/modified",
+      } as unknown as NonNullable<RestEndpointMethodTypes["repos"]["getCommit"]["response"]["data"]["files"]>[number],
+    ]);
 
     const diff = await reviewIncentivizerModule.getTripleDotDiffAsObject(
       "ubiquity-os",
       "conversation-rewards",
       "base",
       "head",
-      new PullRequestData({} as never, "", "", 0)
+      prData
     );
 
     expect(Object.keys(diff).length).toBe(2);
     expect(diff["added.txt"]).toEqual({ addition: 10, deletion: 5 });
-    expect(diff["modified.txt"]).toEqual({ addition: 20, deletion: 10 });
+    expect(diff["modified.txt"]).toEqual({ addition: 2, deletion: 1 });
     expect(diff["removed.txt"]).toEqual(undefined);
   });
 });
