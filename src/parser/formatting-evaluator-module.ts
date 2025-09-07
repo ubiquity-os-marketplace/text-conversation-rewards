@@ -1,7 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
-import { CommentAssociation, commentEnum, CommentType } from "../configuration/comment-types";
+import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import {
   FormattingEvaluatorConfiguration,
   formattingEvaluatorConfigurationType,
@@ -149,7 +149,7 @@ export class FormattingEvaluatorModule extends BaseModule {
     for (const key of Object.keys(result)) {
       const currentElement = result[key];
       const comments = currentElement.comments ?? [];
-      for (const comment of comments) {
+      for (const comment of comments.filter((comment) => comment.commentType & CommentKind.ISSUE)) {
         const { formatting, words, readability } = await this._getFormattingScore(comment);
         const multiplierFactor = this._multipliers?.[comment.commentType] ?? { multiplier: 0 };
         const formattingTotal = this._calculateFormattingTotal(

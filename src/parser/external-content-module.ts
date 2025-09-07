@@ -9,6 +9,7 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
+import { CommentKind } from "../configuration/comment-types";
 import ChatCompletionCreateParamsNonStreaming = OpenAI.ChatCompletionCreateParamsNonStreaming;
 
 export class ExternalContentProcessor extends BaseModule {
@@ -201,7 +202,7 @@ export class ExternalContentProcessor extends BaseModule {
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     for (const data of Object.values(result)) {
       if (data.comments?.length) {
-        for (const comment of data.comments) {
+        for (const comment of data.comments.filter((comment) => comment.commentType & CommentKind.ISSUE)) {
           await this.evaluateExternalElements(comment);
         }
       }

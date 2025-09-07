@@ -92,7 +92,9 @@ export class ContentEvaluatorModule extends BaseModule {
     for (const [user, data] of Object.entries(result)) {
       if (data.comments?.length) {
         allComments.push(
-          ...data.comments.map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
+          ...data.comments
+            .filter((comment) => comment.commentType & CommentKind.ISSUE)
+            .map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
         );
       }
     }
