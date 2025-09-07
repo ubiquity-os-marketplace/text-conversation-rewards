@@ -23,31 +23,19 @@ export class PullRequestData {
       })
     ).data.filter((commit) => commit.parents.length < 2); // This ignores merged commits
 
-    const files = await this._context.octokit.rest.pulls.listFiles({
-      owner: this._owner,
-      repo: this._repo,
-      pull_number: this._pullNumber,
-    });
-    files?.data.forEach((file) => {
-      if (!file.filename) return;
-      if (!this._fileMap.has(file.filename)) {
-        this._fileMap.set(file.filename, file);
-      }
-    });
-    // for (const commit of this._pullCommits) {
-    //   const changes = await this._context.octokit.rest.repos.getCommit({
-    //     owner: this._owner,
-    //     repo: this._repo,
-    //     ref: commit.sha,
-    //   });
-    //
-    //   files?.data.forEach((file) => {
-    //     if (!file.filename) return;
-    //     if (!this._fileMap.has(file.filename)) {
-    //       this._fileMap.set(file.filename, file);
-    //     }
-    //   });
-    // }
+    for (const commit of this._pullCommits) {
+      const changes = await this._context.octokit.rest.repos.getCommit({
+        owner: this._owner,
+        repo: this._repo,
+        ref: commit.sha,
+      });
+      changes.data.files?.forEach((file) => {
+        if (!file.filename) return;
+        if (!this._fileMap.has(file.filename)) {
+          this._fileMap.set(file.filename, file);
+        }
+      });
+    }
   }
 
   public get fileList(): ReadonlyArray<CommitFile> {
