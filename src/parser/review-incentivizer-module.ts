@@ -84,7 +84,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     });
 
     const files = response.data.files || [];
-    const allowedFiles = [...fileList];
+    const allowedFiles = fileList;
     const diff: CommitDiff = {};
 
     for (const file of files) {

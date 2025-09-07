@@ -1,10 +1,10 @@
-import { ContextPlugin } from "../types/plugin-input";
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import { ContextPlugin } from "../types/plugin-input";
 
 type CommitFile = NonNullable<RestEndpointMethodTypes["repos"]["getCommit"]["response"]["data"]["files"]>[number];
 
 export class PullRequestData {
-  private readonly _fileList = new Set<CommitFile>();
+  private readonly _fileMap = new Map<string, CommitFile>();
   private _pullCommits: RestEndpointMethodTypes["pulls"]["listCommits"]["response"]["data"] = [];
 
   constructor(
@@ -30,13 +30,16 @@ export class PullRequestData {
         ref: commit.sha,
       });
       changes.data.files?.forEach((file) => {
-        this._fileList.add(file);
+        if (!file.filename) return;
+        if (!this._fileMap.has(file.filename)) {
+          this._fileMap.set(file.filename, file);
+        }
       });
     }
   }
 
-  public get fileList() {
-    return this._fileList;
+  public get fileList(): ReadonlyArray<CommitFile> {
+    return Object.freeze(Array.from(this._fileMap.values()));
   }
 
   public get pullCommits() {
