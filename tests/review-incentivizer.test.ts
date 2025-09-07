@@ -12,6 +12,7 @@ import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import Mock = jest.Mock;
+import { http, HttpResponse } from "msw";
 
 const ctx = {
   eventName: "issues.closed",
@@ -168,6 +169,38 @@ describe("Review Incentivizer", () => {
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
     const reviewIncentivizerModule = new ReviewIncentivizerModule(ctx);
     const prData = new PullRequestData({} as never, "owner", "repo", 0);
+
+    server.use(
+      http.get(
+        "https://api.github.com/repos/ubiquity-os/conversation-rewards/compare/:baseHead",
+        () => {
+          return HttpResponse.json({
+            files: [
+              {
+                filename: "added.txt",
+                status: "added",
+                additions: 10,
+                deletions: 5,
+                changes: 15,
+                blob_url: "https://github.com/ubiquity-os/conversation-rewards/blob/base/added.txt",
+                patch:
+                  "@@ -0,0 +1,10 @@\n+line1\n+line2\n+line3\n+line4\n+line5\n+line6\n+line7\n+line8\n+line9\n+line10",
+              },
+              {
+                filename: "modified.txt",
+                status: "modified",
+                additions: 2,
+                deletions: 1,
+                changes: 3,
+                blob_url: "https://github.com/ubiquity-os/conversation-rewards/blob/base/modified.txt",
+                patch: "@@ -1,2 +1,2 @@\n-hello\n+hello world",
+              },
+            ],
+          });
+        },
+        { once: true }
+      )
+    );
     jest.spyOn(PullRequestData.prototype, "fileList", "get").mockReturnValue([
       {
         filename: "added.txt",
