@@ -63,13 +63,16 @@ export class PullRequestData {
   private async fetchCommitFiles(sha: string) {
     let page = 1;
     let hasSeenFiles = false;
-    while (true) {
+    let shouldLoop: boolean;
+    do {
       const { files, link } = await this.fetchCommitPage(sha, page);
       if (files.length) hasSeenFiles = true;
       for (const file of files) this.addFileIfNew(file);
-      if (!this.shouldContinue(link, files.length, hasSeenFiles)) break;
-      page += 1;
-    }
+      shouldLoop = this.shouldContinue(link, files.length, hasSeenFiles);
+      if (shouldLoop) {
+        page += 1;
+      }
+    } while (shouldLoop);
   }
 
   private addFileIfNew(file: PullRequestFile) {
