@@ -7,9 +7,10 @@ export interface PullRequestCommitsQuery {
             oid: string;
             commit: {
               parents: {
-                nodes: Array<{
+                totalCount: number;
+                nodes?: {
                   oid: string;
-                }>;
+                }[];
               };
             };
           };

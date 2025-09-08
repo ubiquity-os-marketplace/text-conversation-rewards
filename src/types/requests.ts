@@ -67,35 +67,12 @@ export const QUERY_PULL_REQUEST_COMMITS = /* GraphQL */ `
                 }
                 committedDate
                 parents(first: 100) {
+                  totalCount
                   nodes {
-                    id
                     oid
                   }
                 }
               }
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const QUERY_PULL_REQUEST_FILES = /* GraphQL */ `
-  query PullRequestFiles($owner: String!, $repo: String!, $pull_number: Int!, $cursor: String) {
-    repository(owner: $owner, name: $repo) {
-      pullRequest(number: $pull_number) {
-        files(first: 100, after: $cursor) {
-          edges {
-            node {
-              path
-              additions
-              deletions
-              changeType
             }
           }
           pageInfo {
