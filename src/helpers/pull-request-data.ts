@@ -1,14 +1,25 @@
-import { RestEndpointMethodTypes } from "@octokit/rest";
 import { ContextPlugin } from "../types/plugin-input";
 import { PullRequestCommitsQuery } from "../types/pull-request-commits";
 import { PullRequestFilesQuery } from "../types/pull-request-files";
 import { QUERY_PULL_REQUEST_COMMITS, QUERY_PULL_REQUEST_FILES } from "../types/requests";
 
-type CommitFile = NonNullable<RestEndpointMethodTypes["repos"]["getCommit"]["response"]["data"]["files"]>[number];
+interface LightweightCommitParent {
+  sha: string;
+}
+interface LightweightCommit {
+  sha: string;
+  parents: LightweightCommitParent[];
+}
+interface PullRequestFile {
+  filename: string;
+  additions: number;
+  deletions: number;
+  changeType: string;
+}
 
 export class PullRequestData {
-  private readonly _fileMap = new Map<string, CommitFile>();
-  private _pullCommits: RestEndpointMethodTypes["pulls"]["listCommits"]["response"]["data"] = [];
+  private readonly _fileMap = new Map<string, PullRequestFile>();
+  private _pullCommits: LightweightCommit[] = [];
 
   constructor(
     private _context: ContextPlugin,
@@ -32,9 +43,7 @@ export class PullRequestData {
         sha: edge.node.oid,
         parents: edge.node.commit.parents.nodes.map((n) => ({ sha: n.oid })),
       }))
-      .filter(
-        (commit) => commit.parents.length < 2
-      ) as unknown as RestEndpointMethodTypes["pulls"]["listCommits"]["response"]["data"];
+      .filter((commit) => commit.parents.length < 2);
 
     const filesData = await this._context.octokit.graphql.paginate<PullRequestFilesQuery>(QUERY_PULL_REQUEST_FILES, {
       owner: this._owner,
@@ -50,31 +59,16 @@ export class PullRequestData {
           filename: f.path,
           additions: f.additions,
           deletions: f.deletions,
-          status: mapChangeTypeToStatus(f.changeType),
-        } as CommitFile);
+          changeType: f.changeType,
+        });
       }
     }
   }
-  public get fileList(): ReadonlyArray<CommitFile> {
+  public get fileList(): ReadonlyArray<PullRequestFile> {
     return Object.freeze(Array.from(this._fileMap.values()));
   }
 
-  public get pullCommits() {
+  public get pullCommits(): ReadonlyArray<LightweightCommit> {
     return this._pullCommits;
-  }
-}
-
-function mapChangeTypeToStatus(changeType: string | undefined): string | undefined {
-  switch (changeType) {
-    case "ADDED":
-      return "added";
-    case "MODIFIED":
-      return "modified";
-    case "REMOVED":
-      return "removed";
-    case "RENAMED":
-      return "renamed";
-    default:
-      return changeType?.toLowerCase();
   }
 }
