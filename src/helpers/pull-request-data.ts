@@ -46,31 +46,56 @@ export class PullRequestData {
       .filter((commit) => commit.parentCount < 2);
 
     for (const commit of this._pullCommits) {
-      const changes = await this._context.octokit.rest.repos.getCommit({
-        owner: this._owner,
-        repo: this._repo,
-        ref: commit.sha,
-      });
-      if (changes.headers.link) {
-        console.log("paginate");
-      }
-      this._context.logger.debug("Fetched changes for commit", {
-        url: changes.data.url,
-        files: changes.data.files?.map((o) => o.filename),
-      });
-      changes.data.files?.forEach((file) => {
-        if (!file.filename) return;
-        if (!this._fileMap.has(file.filename)) {
-          this._fileMap.set(file.filename, file);
-        }
-      });
+      // We need to manually paginate because the API acts differently for getCommits.
+      // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#get-a-commit
+      await this.fetchCommitFiles(commit.sha);
     }
   }
+
   public get fileList(): ReadonlyArray<PullRequestFile> {
     return Object.freeze(Array.from(this._fileMap.values()));
   }
 
   public get pullCommits(): ReadonlyArray<LightweightCommit> {
     return this._pullCommits;
+  }
+
+  private async fetchCommitFiles(sha: string) {
+    let page = 1;
+    let hasSeenFiles = false;
+    while (true) {
+      const { files, link } = await this.fetchCommitPage(sha, page);
+      if (files.length) hasSeenFiles = true;
+      for (const file of files) this.addFileIfNew(file);
+      if (!this.shouldContinue(link, files.length, hasSeenFiles)) break;
+      page += 1;
+    }
+  }
+
+  private addFileIfNew(file: PullRequestFile) {
+    if (!file.filename) return;
+    if (!this._fileMap.has(file.filename)) this._fileMap.set(file.filename, file);
+  }
+
+  private async fetchCommitPage(sha: string, page: number) {
+    const response = await this._context.octokit.rest.repos.getCommit({
+      owner: this._owner,
+      repo: this._repo,
+      ref: sha,
+      per_page: 100,
+      page,
+    });
+    const files = response.data.files || [];
+    this._context.logger.debug("Fetched changes page for commit", {
+      sha,
+      page,
+      fileCount: files.length,
+      url: response.data.url,
+    });
+    return { files, link: response.headers.link };
+  }
+
+  private shouldContinue(link: string | undefined, fileCount: number, hasSeenFiles: boolean) {
+    return !!(link && /rel="next"/.test(link) && (fileCount || !hasSeenFiles));
   }
 }

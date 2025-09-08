@@ -4,8 +4,8 @@ export interface PullRequestCommitsQuery {
       commits: {
         edges: Array<{
           node: {
-            oid: string;
             commit: {
+              oid: string;
               parents: {
                 totalCount: number;
                 nodes?: {
