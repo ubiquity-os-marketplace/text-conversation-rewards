@@ -397,7 +397,7 @@ describe("Modules tests", () => {
     expect(postBody).not.toContain("whilefoo");
   });
 
-  it("Should generate GitHub comment skipping claimed permits", async () => {
+  it("Should generate GitHub comment marking claimed permits", async () => {
     web3Mocks.Permit2Wrapper.isNonceClaimed
       .mockImplementationOnce(async () => true)
       .mockImplementationOnce(async () => false)
@@ -413,7 +413,9 @@ describe("Modules tests", () => {
     ];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
-    expect(result["gentlementlegen"].evaluationCommentHtml).toEqual(undefined);
+    expect(result["gentlementlegen"].evaluationCommentHtml).toEqual(
+      `<details><summary><b><h3>&nbsp;<a href="https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MmQwZGIwY2ZiMjRiNjUwMDAwIn19LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6eyJ0eXBlIjoiQmlnTnVtYmVyIiwiaGV4IjoiMHgyZDBkYjBjZmIyNGI2NTAwMDAifX0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHhkZmE1OTJiODA1M2I2NzdlNTQ4NTY0MzIzYjc1OGM1ODMzZTU2OTM5MDBmOTkyOTg5YzExYjIxNjNiZDI2MDg1MGYzNGJhNDBjMWI5NDA0ZDI5Yzk5MGE1OWIxMDEyZGYyNjEzNWQ0MDgyZDJiNDgxNzZiOGJhZmY0YmIzNTg4OTFjIiwibmV0d29ya0lkIjoxMDB9XQ==" target="_blank" rel="noopener">[ 831.09 WXDAI ]</a>&nbsp;</h3><h6>@gentlementlegen</h6></b></summary><h6>⚠️ Your rewards have been limited to the task price of 400 WXDAI.</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Issue</td><td>Task</td><td>1</td><td>400</td></tr><tr><td>Issue</td><td>Specification</td><td>1</td><td>12.11</td></tr><tr><td>Issue</td><td>Comment</td><td>9</td><td>93.06</td></tr><tr><td>Review</td><td>Comment</td><td>25</td><td>325.92</td></tr></tbody></table></details>`
+    );
   });
 
   describe("Reward limits", () => {
