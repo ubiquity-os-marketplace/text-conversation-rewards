@@ -1282,90 +1282,90 @@
         "reviews": [
           {
             "effect": {
-              "addition": 50,
+              "addition": 331,
               "deletion": 50
             },
             "priority": 1,
             "reviewId": 2007841578,
-            "reward": 1
+            "reward": 3.81
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 44,
+              "deletion": 7
             },
             "priority": 1,
             "reviewId": 2008041757,
-            "reward": 1
+            "reward": 0.51
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 74,
+              "deletion": 35
             },
             "priority": 1,
             "reviewId": 2008690769,
-            "reward": 1
+            "reward": 1.09
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 0,
+              "deletion": 0
             },
             "priority": 1,
             "reviewId": 2013381647,
-            "reward": 1
+            "reward": 0
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 117,
+              "deletion": 41
             },
             "priority": 1,
             "reviewId": 2013381967,
-            "reward": 1
+            "reward": 1.58
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 3,
+              "deletion": 2
             },
             "priority": 1,
             "reviewId": 2013708154,
-            "reward": 1
+            "reward": 0.05
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 109,
+              "deletion": 107
             },
             "priority": 1,
             "reviewId": 2016111656,
-            "reward": 1
+            "reward": 2.16
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 0,
+              "deletion": 0
             },
             "priority": 1,
             "reviewId": 2017922720,
-            "reward": 1
+            "reward": 0
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 108,
+              "deletion": 106
             },
             "priority": 1,
             "reviewId": 2018784615,
-            "reward": 1
+            "reward": 2.14
           }
         ],
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
       }
     ],
-    "total": 501.18,
+    "total": 503.52,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -3335,45 +3335,45 @@
         "reviews": [
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 414,
+              "deletion": 56
             },
             "priority": 1,
             "reviewId": 2014236289,
-            "reward": 1
+            "reward": 4.7
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 108,
+              "deletion": 106
             },
             "priority": 1,
             "reviewId": 2017635547,
-            "reward": 1
+            "reward": 2.14
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 0,
+              "deletion": 0
             },
             "priority": 1,
             "reviewId": 2020125850,
-            "reward": 1
+            "reward": 0
           },
           {
             "effect": {
-              "addition": 50,
-              "deletion": 50
+              "addition": 108,
+              "deletion": 106
             },
             "priority": 1,
             "reviewId": 2020144465,
-            "reward": 1
+            "reward": 2.14
           }
         ],
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
       }
     ],
-    "total": 33.932,
+    "total": 38.912,
     "userId": 139262667
   }
 }
