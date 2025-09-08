@@ -152,6 +152,15 @@ const { EventIncentivesModule } = await import("../src/parser/event-incentives-m
 const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
 const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
 
+jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+  return {
+    "test.txt": {
+      addition: 50,
+      deletion: 50,
+    },
+  };
+});
+
 function getExternalContentProcessor(context: ContextPlugin) {
   const instance = new ExternalContentProcessor(context);
   Reflect.set(instance, "_llmWebsite", { chat: { completions: { create: jest.fn() } } });
