@@ -66,8 +66,12 @@ export class PullRequestData {
     let shouldLoop: boolean;
     do {
       const { files, link } = await this.fetchCommitPage(sha, page);
-      if (files.length) hasSeenFiles = true;
-      for (const file of files) this.addFileIfNew(file);
+      if (files.length) {
+        hasSeenFiles = true;
+      }
+      for (const file of files) {
+        this.addFileIfNew(file);
+      }
       shouldLoop = this.shouldContinue(link, files.length, hasSeenFiles);
       if (shouldLoop) {
         page += 1;
