@@ -11,6 +11,7 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result, ReviewScore } from "../types/results";
+import { PullRequestData } from "../helpers/pull-request-data";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -67,19 +68,27 @@ export class ReviewIncentivizerModule extends BaseModule {
     return result;
   }
 
-  async getTripleDotDiffAsObject(owner: string, repo: string, baseSha: string, headSha: string): Promise<CommitDiff> {
-    const response = await this.context.octokit.rest.repos.compareCommits({
+  async getTripleDotDiffAsObject(
+    owner: string,
+    repo: string,
+    baseSha: string,
+    headSha: string,
+    prData: PullRequestData
+  ): Promise<CommitDiff> {
+    const fileList = prData.fileList;
+
+    const response = await this.context.octokit.rest.repos.compareCommitsWithBasehead({
       owner,
       repo,
-      base: baseSha,
-      head: headSha,
+      basehead: `${baseSha}...${headSha}`,
     });
 
     const files = response.data.files || [];
+    const allowedFiles = fileList;
     const diff: CommitDiff = {};
 
     for (const file of files) {
-      if (file.status === "removed") continue;
+      if (file.status === "removed" || !allowedFiles.some((o) => o.filename === file.filename)) continue;
       diff[file.filename] = {
         addition: file.additions || 0,
         deletion: file.deletions || 0,
@@ -94,9 +103,10 @@ export class ReviewIncentivizerModule extends BaseModule {
     repo: string,
     baseSha: string,
     headSha: string,
+    prData: PullRequestData,
     excludedFilePatterns?: string[] | null
   ) {
-    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
+    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha, prData);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
       if (
@@ -129,16 +139,11 @@ export class ReviewIncentivizerModule extends BaseModule {
     const priority = parsePriorityLabel(this.context.payload.issue.labels);
     const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
 
-    const pullCommits = (
-      await this.context.octokit.rest.pulls.listCommits({
-        owner: baseOwner,
-        repo: baseRepo,
-        pull_number: pullNumber,
-      })
-    ).data;
+    const prData = new PullRequestData(this.context, baseOwner, baseRepo, pullNumber);
+    await prData.fetchData();
 
     // Get the first commit of the PR
-    const firstCommitSha = pullCommits[0]?.parents[0]?.sha || pullCommits[0]?.sha;
+    const firstCommitSha = prData.pullCommits[0]?.parents[0]?.sha || prData.pullCommits[0]?.sha;
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
@@ -157,8 +162,16 @@ export class ReviewIncentivizerModule extends BaseModule {
             baseRepo,
             baseSha,
             headSha,
+            prData,
             excludedFilePatterns
           );
+          this.context.logger.debug("Fetched diff between commits", {
+            baseOwner,
+            baseRepo,
+            baseSha,
+            headSha,
+            reviewEffect,
+          });
           reviews.push({
             reviewId: currentReview.id,
             effect: reviewEffect,
