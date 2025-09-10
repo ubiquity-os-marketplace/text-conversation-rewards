@@ -111,3 +111,39 @@ export const QUERY_COMMENT_DETAILS = /* GraphQL */ `
     }
   }
 `;
+
+export const QUERY_PULL_REQUEST_COMMITS = /* GraphQL */ `
+  query PullRequestCommits($owner: String!, $repo: String!, $pull_number: Int!, $cursor: String) {
+    repository(owner: $owner, name: $repo) {
+      pullRequest(number: $pull_number) {
+        commits(first: 100, after: $cursor) {
+          edges {
+            node {
+              id
+              commit {
+                id
+                oid
+                messageHeadline
+                author {
+                  name
+                  email
+                }
+                committedDate
+                parents(first: 100) {
+                  totalCount
+                  nodes {
+                    oid
+                  }
+                }
+              }
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    }
+  }
+`;

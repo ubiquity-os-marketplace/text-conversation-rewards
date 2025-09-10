@@ -88,7 +88,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     });
 
     const files = response.data.files || [];
-    const allowedFiles = [...fileList];
+    const allowedFiles = fileList;
     const diff: CommitDiff = {};
 
     for (const file of files) {
@@ -166,7 +166,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     await prData.fetchData();
 
     // Get the first commit of the PR
-    const firstCommitSha = prData.pullCommits[0]?.parents[0]?.sha || prData.pullCommits[0]?.sha;
+    const firstCommitSha = prData.pullCommits[0]?.parents?.[0]?.sha || prData.pullCommits[0]?.sha;
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
