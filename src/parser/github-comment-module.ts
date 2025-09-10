@@ -199,6 +199,13 @@ export class GithubCommentModule extends BaseModule {
     return true;
   }
 
+  _isPullRequest(): boolean {
+    return (
+      "pull_request" in this.context.payload ||
+      ("issue" in this.context.payload && !!this.context.payload.issue.pull_request)
+    );
+  }
+
   _createContributionRows(result: Result[0], sortedTasks: SortedTasks | undefined) {
     const content: string[] = [];
     function buildContributionRow(
@@ -231,8 +238,7 @@ export class GithubCommentModule extends BaseModule {
       );
     }
 
-    if (result.reviewRewards) {
-      // Should post to its own pull-request
+    if (result.reviewRewards && this._isPullRequest()) {
       const reviewCount = result.reviewRewards.reduce(
         (total, reviewReward) => total + (reviewReward.reviews?.length ?? 0),
         0
@@ -269,7 +275,7 @@ export class GithubCommentModule extends BaseModule {
         )
       );
     }
-    if (sortedTasks.reviews.length) {
+    if (sortedTasks.reviews.length && this._isPullRequest()) {
       content.push(
         buildContributionRow(
           "Review",
@@ -333,8 +339,10 @@ export class GithubCommentModule extends BaseModule {
     for (const issueComment of sortedTasks.issues.comments) {
       content.push(buildIncentiveRow(issueComment));
     }
-    for (const reviewComment of sortedTasks.reviews) {
-      content.push(buildIncentiveRow(reviewComment));
+    if (this._isPullRequest()) {
+      for (const reviewComment of sortedTasks.reviews) {
+        content.push(buildIncentiveRow(reviewComment));
+      }
     }
     return content.join("");
   }
@@ -489,7 +497,7 @@ export class GithubCommentModule extends BaseModule {
         </tbody>
       </table>
       ${!stripComments ? this._createSimplificationRows(result) : ""}
-      ${!stripComments ? this._createReviewRows(result) : ""}
+      ${!stripComments && this._isPullRequest() ? this._createReviewRows(result) : ""}
       ${
         !stripComments &&
         sortedTasks &&
