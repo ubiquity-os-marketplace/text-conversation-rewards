@@ -204,7 +204,10 @@ export class ContentEvaluatorModule extends BaseModule {
           prCommentsToEvaluate
         );
 
-        if (Object.keys(relevances).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
+        if (
+          Object.keys(relevances).length !==
+          (!this.isPullRequest() ? commentsToEvaluate.length : prCommentsToEvaluate.length)
+        ) {
           throw this.context.logger.error("There was a mismatch between the relevance scores and amount of comments.", {
             expectedRelevances: commentsToEvaluate.length + prCommentsToEvaluate.length,
             receivedRelevances: Object.keys(relevances).length,
@@ -404,7 +407,7 @@ export class ContentEvaluatorModule extends BaseModule {
     let commentRelevances: Relevances = {};
     let prCommentRelevances: Relevances = {};
 
-    if (userIssueComments.length) {
+    if (userIssueComments.length && !this.isPullRequest()) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
@@ -420,7 +423,7 @@ export class ContentEvaluatorModule extends BaseModule {
       }
     }
 
-    if (userPrComments.length) {
+    if (userPrComments.length && this.isPullRequest()) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userPrComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
@@ -433,8 +436,8 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     if (
-      userIssueComments.length !== Object.keys(commentRelevances).length ||
-      userPrComments.length !== Object.keys(prCommentRelevances).length
+      (userIssueComments.length !== Object.keys(commentRelevances).length && !this.isPullRequest()) ||
+      (userPrComments.length !== Object.keys(prCommentRelevances).length && this.isPullRequest())
     ) {
       this.context.logger.warn(
         `[_evaluateComments]: Result mismatch. Evaluated ${userIssueComments.length} user issue comments that gave ${Object.keys(commentRelevances).length} comment relevance, and ${userPrComments.length} that gave ${Object.keys(prCommentRelevances).length} pr comment relevance.`

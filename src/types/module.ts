@@ -17,4 +17,11 @@ export abstract class BaseModule implements Module {
   abstract get enabled(): boolean;
 
   abstract transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
+
+  protected isPullRequest(): boolean {
+    return (
+      "pull_request" in this.context.payload ||
+      ("issue" in this.context.payload && !!this.context.payload.issue.pull_request)
+    );
+  }
 }
