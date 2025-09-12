@@ -204,13 +204,13 @@ export class ContentEvaluatorModule extends BaseModule {
           prCommentsToEvaluate
         );
 
-        if (
-          Object.keys(relevances).length !==
-          (!this.isPullRequest() ? commentsToEvaluate.length : prCommentsToEvaluate.length)
-        ) {
+        const expectedRelevances = this.isPullRequest() ? prCommentsToEvaluate.length : commentsToEvaluate.length;
+        if (Object.keys(relevances).length !== expectedRelevances) {
           throw this.context.logger.error("There was a mismatch between the relevance scores and amount of comments.", {
-            expectedRelevances: commentsToEvaluate.length + prCommentsToEvaluate.length,
+            expectedRelevances,
             receivedRelevances: Object.keys(relevances).length,
+            prComments: prCommentsToEvaluate.length,
+            issueComments: commentsToEvaluate.length,
             relevances,
             commentsToEvaluate,
             prCommentsToEvaluate,

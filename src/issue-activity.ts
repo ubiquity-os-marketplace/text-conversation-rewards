@@ -21,6 +21,7 @@ import {
   PullParams,
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
+import { isPullRequestEvent } from "./helpers/type-assertions";
 
 export class IssueActivity {
   protected readonly _context: ContextPlugin;
@@ -53,35 +54,32 @@ export class IssueActivity {
   }
 
   private async _getLinkedReviews(): Promise<Review[]> {
-    if (
-      ("issue" in this._context.payload && this._context.payload.issue.pull_request) ||
-      "pull_request" in this._context.payload
-    ) {
-      this._context.logger.debug("The issue is a pull-request, won't try to fetch linked prs.", this._issueParams);
-      return [];
-    }
-
     this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
 
     const pulls: string[] = [];
-
-    pulls.push(
-      ...(await collectLinkedMergedPulls(this._context, this._issueParams))
-        .filter((pullRequest) => {
-          // This can happen when a user deleted its account
-          if (!pullRequest?.author?.login) {
-            return false;
-          }
-          return (
-            "issue" in this._context.payload &&
-            this._context.payload.issue.assignees
-              .map((assignee) => assignee?.login)
-              .includes(pullRequest.author.login) &&
-            pullRequest.state === "MERGED"
-          );
-        })
-        .map((pullRequest) => pullRequest.url)
-    );
+    if (isPullRequestEvent(this._context)) {
+      pulls.push(this._context.payload.pull_request.html_url);
+    } else if ("issue" in this._context.payload && this._context.payload.issue.pull_request?.html_url) {
+      pulls.push(this._context.payload.issue.pull_request.html_url);
+    } else {
+      pulls.push(
+        ...(await collectLinkedMergedPulls(this._context, this._issueParams))
+          .filter((pullRequest) => {
+            // This can happen when a user deleted its account
+            if (!pullRequest?.author?.login) {
+              return false;
+            }
+            return (
+              "issue" in this._context.payload &&
+              this._context.payload.issue.assignees
+                .map((assignee) => assignee?.login)
+                .includes(pullRequest.author.login) &&
+              pullRequest.state === "MERGED"
+            );
+          })
+          .map((pullRequest) => pullRequest.url)
+      );
+    }
     this._context.logger.debug(`Collected linked pull-requests: ${pulls.join(", ")}`);
 
     const promises = pulls
@@ -164,18 +162,26 @@ export class IssueActivity {
           timestamp: value.submitted_at ?? value.created_at,
           commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
         };
-        // Special case for anchoring with pull-request bodies, that have to be retrieved differently
-        if (c.commentType & CommentAssociation.SPECIFICATION && c.html_url) {
-          const { owner, repo, issue_number } = parseGitHubUrl(c.html_url);
-          const { data } = await this._context.octokit.rest.issues.get({
-            owner,
-            repo,
-            issue_number: issue_number,
-          });
-          c.id = data.id;
-          this._addAnchorToUrl(c);
+        // We avoid adding the body if we already are evaluating a pull-request as it would be contained in the issue
+        if (
+          !(
+            "pull_Request" in this._context.payload ||
+            ("issue" in this._context.payload && this._context.payload.issue.pull_request)
+          )
+        ) {
+          // Special case for anchoring with pull-request bodies that have to be retrieved differently
+          if (c.commentType & CommentAssociation.SPECIFICATION && c.html_url) {
+            const { owner, repo, issue_number } = parseGitHubUrl(c.html_url);
+            const { data } = await this._context.octokit.rest.issues.get({
+              owner,
+              repo,
+              issue_number: issue_number,
+            });
+            c.id = data.id;
+            this._addAnchorToUrl(c);
+          }
+          comments.push(c);
         }
-        comments.push(c);
       }
     }
     return comments;

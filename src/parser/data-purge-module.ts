@@ -1,11 +1,11 @@
+import { CommentAssociation } from "../configuration/comment-types";
 import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
 import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespan";
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
-import { GithubCommentScore as ResultComment, Result } from "../types/results";
-import { CommentAssociation } from "../configuration/comment-types";
+import { Result, GithubCommentScore as ResultComment } from "../types/results";
 
 type CommentType = Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
 
