@@ -1,5 +1,6 @@
 import { ContextPlugin } from "../types/plugin-input";
 import { minimatch } from "minimatch";
+import { basename } from "path";
 
 interface GitAttributes {
   pattern: string;
@@ -78,6 +79,16 @@ function parseTsConfigExclude(content: string): string[] {
   return patterns;
 }
 
+function matchesGitPattern(filePath: string, pattern: string): boolean {
+  if (!pattern) return false;
+
+  if (pattern.includes("/")) {
+    return minimatch(filePath, pattern, { matchBase: false });
+  } else {
+    return minimatch(basename(filePath), pattern) || minimatch(filePath, `**/${pattern}`);
+  }
+}
+
 export async function getExcludedFiles(
   context: ContextPlugin,
   owner: string,
@@ -148,14 +159,20 @@ async function getFileContent(
 export function isExcluded(filePath: string, patterns?: string[] | null): boolean {
   if (!patterns || patterns.length === 0) return false;
   let isExcluded = false;
+
   for (const original of patterns) {
     if (!original) continue;
     const isNeg = original.startsWith("!");
     let pattern = isNeg ? original.slice(1) : original;
-    if (pattern.endsWith("/")) pattern = `${pattern}**`;
-    if (minimatch(filePath, pattern)) {
+
+    if (pattern.endsWith("/")) {
+      pattern = `${pattern}**`;
+    }
+
+    if (matchesGitPattern(filePath, pattern)) {
       isExcluded = !isNeg;
     }
   }
+
   return isExcluded;
 }
