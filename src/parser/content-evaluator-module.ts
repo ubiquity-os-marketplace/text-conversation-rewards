@@ -92,7 +92,9 @@ export class ContentEvaluatorModule extends BaseModule {
     for (const [user, data] of Object.entries(result)) {
       if (data.comments?.length) {
         allComments.push(
-          ...data.comments.map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
+          ...data.comments
+            .filter((comment) => comment.commentType & CommentKind.ISSUE)
+            .map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
         );
       }
     }
@@ -123,7 +125,10 @@ export class ContentEvaluatorModule extends BaseModule {
    */
   private async _handleRewardsForOriginalAuthor(body: string, result: Result) {
     const originalComment = extractOriginalAuthor(body);
-    const issueAuthor = this.context.payload.issue.user?.login;
+    const issueAuthor =
+      "issue" in this.context.payload
+        ? this.context.payload.issue.user?.login
+        : this.context.payload.pull_request?.user?.login;
 
     if (!originalComment || !issueAuthor || issueAuthor === originalComment.username) return;
 
@@ -199,10 +204,13 @@ export class ContentEvaluatorModule extends BaseModule {
           prCommentsToEvaluate
         );
 
-        if (Object.keys(relevances).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
+        const expectedRelevances = this.isPullRequest() ? prCommentsToEvaluate.length : commentsToEvaluate.length;
+        if (Object.keys(relevances).length !== expectedRelevances) {
           throw this.context.logger.error("There was a mismatch between the relevance scores and amount of comments.", {
-            expectedRelevances: commentsToEvaluate.length + prCommentsToEvaluate.length,
+            expectedRelevances,
             receivedRelevances: Object.keys(relevances).length,
+            prComments: prCommentsToEvaluate.length,
+            issueComments: commentsToEvaluate.length,
             relevances,
             commentsToEvaluate,
             prCommentsToEvaluate,
@@ -399,7 +407,7 @@ export class ContentEvaluatorModule extends BaseModule {
     let commentRelevances: Relevances = {};
     let prCommentRelevances: Relevances = {};
 
-    if (userIssueComments.length) {
+    if (userIssueComments.length && !this.isPullRequest()) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
@@ -415,7 +423,7 @@ export class ContentEvaluatorModule extends BaseModule {
       }
     }
 
-    if (userPrComments.length) {
+    if (userPrComments.length && this.isPullRequest()) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userPrComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
@@ -428,8 +436,8 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     if (
-      userIssueComments.length !== Object.keys(commentRelevances).length ||
-      userPrComments.length !== Object.keys(prCommentRelevances).length
+      (userIssueComments.length !== Object.keys(commentRelevances).length && !this.isPullRequest()) ||
+      (userPrComments.length !== Object.keys(prCommentRelevances).length && this.isPullRequest())
     ) {
       this.context.logger.warn(
         `[_evaluateComments]: Result mismatch. Evaluated ${userIssueComments.length} user issue comments that gave ${Object.keys(commentRelevances).length} comment relevance, and ${userPrComments.length} that gave ${Object.keys(prCommentRelevances).length} pr comment relevance.`

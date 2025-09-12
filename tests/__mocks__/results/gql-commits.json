@@ -1,0 +1,643 @@
+{
+  "data": {
+    "repository": {
+      "pullRequest": {
+        "commits": {
+          "edges": [
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoZTdiNTU1ZGE4MmJmMzc4ZDhiOTc0NzhiMjRlNDM2MTRkMDNlYjgxZg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGU3YjU1NWRhODJiZjM3OGQ4Yjk3NDc4YjI0ZTQzNjE0ZDAzZWI4MWY",
+                  "oid": "e7b555da82bf378d8b97478b24e43614d03eb81f",
+                  "messageHeadline": "chore: comment html generation (WIP)",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-12T06:51:49Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "02b9c96541cedd508b18936a5bde76921e62d4fc"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoN2U3MWUzMDNlZDg2YzBhNjQzMTBlMjczZmMzZDg2OGFiYzVjNTkxZg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDdlNzFlMzAzZWQ4NmMwYTY0MzEwZTI3M2ZjM2Q4NjhhYmM1YzU5MWY",
+                  "oid": "7e71e303ed86c0a64310e273fc3d868abc5c591f",
+                  "messageHeadline": "chore: added missing types for comments",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-15T02:51:11Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "e7b555da82bf378d8b97478b24e43614d03eb81f"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoOGRlYTIxZDZlYjA4Y2JlNmMwZTgwZWM4NzQ0YWI1MTEwOTBlMDAzYw",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDhkZWEyMWQ2ZWIwOGNiZTZjMGU4MGVjODc0NGFiNTExMDkwZTAwM2M",
+                  "oid": "8dea21d6eb08cbe6c0e80ec8744ab511090e003c",
+                  "messageHeadline": "chore: debug mode and review comments for github comment module",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-15T03:30:20Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "7e71e303ed86c0a64310e273fc3d868abc5c591f"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoZGYyYzM0ZjE3MmI5ZTRlYjNjZmQxYTIwZGRlN2ZjYjE0MjEwMjA1Mw",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGRmMmMzNGYxNzJiOWU0ZWIzY2ZkMWEyMGRkZTdmY2IxNDIxMDIwNTM",
+                  "oid": "df2c34f172b9e4eb3cfd1a20dde7fcb142102053",
+                  "messageHeadline": "chore: comment incentive rows (WIP)",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-15T04:18:55Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "8dea21d6eb08cbe6c0e80ec8744ab511090e003c"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoYzk4OTdlMmNkYjAxMDg0OGU3N2Y2ZmQ2ZWI0NWEwOWY0YTYzOWE2Yg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGM5ODk3ZTJjZGIwMTA4NDhlNzdmNmZkNmViNDVhMDlmNGE2MzlhNmI",
+                  "oid": "c9897e2cdb010848e77f6fd6eb45a09f4a639a6b",
+                  "messageHeadline": "chore: incentive rows generation",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-15T05:29:31Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "df2c34f172b9e4eb3cfd1a20dde7fcb142102053"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoMjljZTNjMzg2MDM2MWYwODhmNjMyY2JhN2UxMmFmNjk1ZjA5MzQxMg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDI5Y2UzYzM4NjAzNjFmMDg4ZjYzMmNiYTdlMTJhZjY5NWYwOTM0MTI",
+                  "oid": "29ce3c3860361f088f632cba7e12af695f093412",
+                  "messageHeadline": "chore: comment posting to github",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-15T06:37:36Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "c9897e2cdb010848e77f6fd6eb45a09f4a639a6b"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoZDI5NDI3YWUyZTVhMjUzZjNhYzdhNTc5Nzk4ODZlOGRjYWI4YTlhZA",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGQyOTQyN2FlMmU1YTI1M2YzYWM3YTU3OTc5ODg2ZThkY2FiOGE5YWQ",
+                  "oid": "d29427ae2e5a253f3ac7a57979886e8dcab8a9ad",
+                  "messageHeadline": "chore: fix pre div formatting",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-15T11:14:54Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "29ce3c3860361f088f632cba7e12af695f093412"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoYWQxNDFmZDUzYzRiYjkxMjE2NGQ1NGFhMzhmMTBkODRlYTA3ZmYwZg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGFkMTQxZmQ1M2M0YmI5MTIxNjRkNTRhYTM4ZjEwZDg0ZWEwN2ZmMGY",
+                  "oid": "ad141fd53c4bb912164d54aa38f10d84ea07ff0f",
+                  "messageHeadline": "Merge branch 'feat/permit-generation' into feat/github-comment",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-16T00:25:15Z",
+                  "parents": {
+                    "totalCount": 2,
+                    "nodes": [
+                      {
+                        "oid": "d29427ae2e5a253f3ac7a57979886e8dcab8a9ad"
+                      },
+                      {
+                        "oid": "1eb86bdd615d7e290aebee408640c35a44611e6d"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoOTZmNDEwNDJjMTZkYmMxNGJkZTBjZWFmNzY3MzM4NGIzZDFkNzQ2NQ",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDk2ZjQxMDQyYzE2ZGJjMTRiZGUwY2VhZjc2NzMzODRiM2QxZDc0NjU",
+                  "oid": "96f41042c16dbc14bde0ceaf7673384b3d1d7465",
+                  "messageHeadline": "chore: update package version",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-16T10:59:02Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "ad141fd53c4bb912164d54aa38f10d84ea07ff0f"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoNDNiMTkxMmJkZTJhMTY4OWI1ZmU1YjBmNDQzNTkzZDNjN2RlNmY5Mg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDQzYjE5MTJiZGUyYTE2ODliNWZlNWIwZjQ0MzU5M2QzYzdkZTZmOTI",
+                  "oid": "43b1912bde2a1689b5fe5b0f443593d3c7de6f92",
+                  "messageHeadline": "chore: updated .gitignore",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-16T10:59:40Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "96f41042c16dbc14bde0ceaf7673384b3d1d7465"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoMWY5YjA1MDMyZjNlZGI4NDkyNTY3ZjAwOTg2MGU0ZjI3N2JjM2ZmYQ",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDFmOWIwNTAzMmYzZWRiODQ5MjU2N2YwMDk4NjBlNGYyNzdiYzNmZmE",
+                  "oid": "1f9b05032f3edb8492567f009860e4f277bc3ffa",
+                  "messageHeadline": "chore: updated permit generation package",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-17T04:24:09Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "43b1912bde2a1689b5fe5b0f443593d3c7de6f92"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoM2JhYjMxYTdiYzQ4ZDg2ODE3NmU5ODJjNmRiYjAwODdmZGYyNzVmNA",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDNiYWIzMWE3YmM0OGQ4NjgxNzZlOTgyYzZkYmIwMDg3ZmRmMjc1ZjQ",
+                  "oid": "3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+                  "messageHeadline": "chore: env check for permit generation module",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-17T05:09:00Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "1f9b05032f3edb8492567f009860e4f277bc3ffa"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoMDNmYWM2YzhlYzE1ODVlMjZjNzhlMDFlNjUzYzg1NTQyOTdlOGY0Nw",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDAzZmFjNmM4ZWMxNTg1ZTI2Yzc4ZTAxZTY1M2M4NTU0Mjk3ZThmNDc",
+                  "oid": "03fac6c8ec1585e26c78e01e653c8554297e8f47",
+                  "messageHeadline": "chore: added ignore words to cspell",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-17T07:24:44Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "3bab31a7bc48d868176e982c6dbb0087fdf275f4"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoZWZlMTdjYjcwMThlMWE0NWJjNDhmYmNjNjZmMTIxNWQ0ODg3MTQ3Ng",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGVmZTE3Y2I3MDE4ZTFhNDViYzQ4ZmJjYzY2ZjEyMTVkNDg4NzE0NzY",
+                  "oid": "efe17cb7018e1a45bc48fbcc66f1215d48871476",
+                  "messageHeadline": "Merge branch 'refs/heads/development' into feat/github-comment",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-17T08:40:38Z",
+                  "parents": {
+                    "totalCount": 2,
+                    "nodes": [
+                      {
+                        "oid": "03fac6c8ec1585e26c78e01e653c8554297e8f47"
+                      },
+                      {
+                        "oid": "dd6b3eec24252b3b2ed5a5008f0632cc3a7f417f"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoMTE5YzYzM2JiNDk5YTk3ZGZkMjcyZDlhM2E4MzZkMTQxN2Y2MDRiYg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDExOWM2MzNiYjQ5OWE5N2RmZDI3MmQ5YTNhODM2ZDE0MTdmNjA0YmI",
+                  "oid": "119c633bb499a97dfd272d9a3a836d1417f604bb",
+                  "messageHeadline": "chore: simplified code github comment module",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-17T09:01:50Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "efe17cb7018e1a45bc48fbcc66f1215d48871476"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoMjRjNzQ4ZGMyY2RmNGNkOTRmODE1NDAxNjdkYTJlNmZkMDlhYTVlMg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDI0Yzc0OGRjMmNkZjRjZDk0ZjgxNTQwMTY3ZGEyZTZmZDA5YWE1ZTI",
+                  "oid": "24c748dc2cdf4cd94f81540167da2e6fd09aa5e2",
+                  "messageHeadline": "chore: always return content on empty string",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-18T05:34:34Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "119c633bb499a97dfd272d9a3a836d1417f604bb"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoNWVhYTMwM2IwODQyNGUwN2U4MzRjOTVmYzZhZDEyZWJiMGM3YjRjNQ",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDVlYWEzMDNiMDg0MjRlMDdlODM0Yzk1ZmM2YWQxMmViYjBjN2I0YzU",
+                  "oid": "5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5",
+                  "messageHeadline": "chore: changed rpc for DAI",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-18T05:44:20Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "24c748dc2cdf4cd94f81540167da2e6fd09aa5e2"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoNjU2N2ZlYjk2ZTY1MmRmNjg4ODc3NDRiMGRhYjJhNTJkZGVkZmFmMg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDY1NjdmZWI5NmU2NTJkZjY4ODg3NzQ0YjBkYWIyYTUyZGRlZGZhZjI",
+                  "oid": "6567feb96e652df68887744b0dab2a52ddedfaf2",
+                  "messageHeadline": "chore: testing suite for modules (WIP)",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-18T06:33:27Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoNTU5YzEzYzlhN2Q1NDg1MTlhNjQzNGUxYjgzOTNmZDBkNWM4ZjNkYg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDU1OWMxM2M5YTdkNTQ4NTE5YTY0MzRlMWI4MzkzZmQwZDVjOGYzZGI",
+                  "oid": "559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+                  "messageHeadline": "chore: fix knip and change COMMENT to COMMENTED, added jsdocs on enum",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-18T07:44:05Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "6567feb96e652df68887744b0dab2a52ddedfaf2"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoYWJiY2YzMzY1Y2Y4NDAxMDMzNDQyMTIwYjQ2MzlkNWIyYmRjZWM2Nw",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGFiYmNmMzM2NWNmODQwMTAzMzQ0MjEyMGI0NjM5ZDViMmJkY2VjNjc",
+                  "oid": "abbcf3365cf8401033442120b4639d5b2bdcec67",
+                  "messageHeadline": "chore: changed content to be an array of strings instead of a single …",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-18T07:55:43Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "559c13c9a7d548519a6434e1b8393fd0d5c8f3db"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoMDJiZjk5NDU3ZmRmNjFmZDg4OWZkMzFkNjc0ZjcyZWM2M2I1MjhmMw",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDAyYmY5OTQ1N2ZkZjYxZmQ4ODlmZDMxZDY3NGY3MmVjNjNiNTI4ZjM",
+                  "oid": "02bf99457fdf61fd889fd31d674f72ec63b528f3",
+                  "messageHeadline": "chore: tests for data purge module",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-18T08:35:26Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "abbcf3365cf8401033442120b4639d5b2bdcec67"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoNWJmNDMyZjYxYjAzNWZlZTg0M2I3Yzk4Y2E3Njc1NzRiZjBjYjI5OA",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDViZjQzMmY2MWIwMzVmZWU4NDNiN2M5OGNhNzY3NTc0YmYwY2IyOTg",
+                  "oid": "5bf432f61b035fee843b7c98ca767574bf0cb298",
+                  "messageHeadline": "chore: removed invalid type check",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-19T08:29:34Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "02bf99457fdf61fd889fd31d674f72ec63b528f3"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoM2JhYjJiOGZlOGQ2NDhmYWNjM2Y2Mjc0YmJhZDYwODQxZjU5ZGI2YQ",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDNiYWIyYjhmZThkNjQ4ZmFjYzNmNjI3NGJiYWQ2MDg0MWY1OWRiNmE",
+                  "oid": "3bab2b8fe8d648facc3f6274bbad60841f59db6a",
+                  "messageHeadline": "chore: set comment type to contributor if author_association is none",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-20T21:20:52Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "5bf432f61b035fee843b7c98ca767574bf0cb298"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoZTYxNDM2Yjk3ZTQyNWQyY2Q2Zjk2OTZjZGEyNzlhMTRjNWU0NzFjYw",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGU2MTQzNmI5N2U0MjVkMmNkNmY5Njk2Y2RhMjc5YTE0YzVlNDcxY2M",
+                  "oid": "e61436b97e425d2cd6f9696cda279a14c5e471cc",
+                  "messageHeadline": "chore: changed body type to an array of string",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-21T12:39:40Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "3bab2b8fe8d648facc3f6274bbad60841f59db6a"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoNzNjNjUwZmZiNjhiYTUyMWM3M2I3MTdkZDY2ZWJhNjM5YWJmYmE3MA",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKDczYzY1MGZmYjY4YmE1MjFjNzNiNzE3ZGQ2NmViYTYzOWFiZmJhNzA",
+                  "oid": "73c650ffb68ba521c73b717dd66eba639abfba70",
+                  "messageHeadline": "chore: changed RPC for mainnet",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-22T04:35:53Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "e61436b97e425d2cd6f9696cda279a14c5e471cc"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoYTIyY2VjMjY1NWFhMzU1Y2I1MGNiNjljMzkzOGE5YmI5NDg2MDc3Nw",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGEyMmNlYzI2NTVhYTM1NWNiNTBjYjY5YzM5MzhhOWJiOTQ4NjA3Nzc",
+                  "oid": "a22cec2655aa355cb50cb69c3938a9bb94860777",
+                  "messageHeadline": "chore: removed spurious Promise resolves",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-22T11:44:03Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "73c650ffb68ba521c73b717dd66eba639abfba70"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "node": {
+                "id": "PURC_lADOLUK0B85soGlu2gAoYTEyMzE4ZTBhNDJkZTc0ODExNTRiODE2MjE3MGU0YTY0NDE5OWZjMg",
+                "commit": {
+                  "id": "C_kwDOLUK0B9oAKGExMjMxOGUwYTQyZGU3NDgxMTU0YjgxNjIxNzBlNGE2NDQxOTlmYzI",
+                  "oid": "a12318e0a42de7481154b8162170e4a644199fc2",
+                  "messageHeadline": "chore: un-nested GitHub comment module functions to reduce reading co…",
+                  "author": {
+                    "name": "gentlementlegen",
+                    "email": "fernand.veyrier@epitech.eu"
+                  },
+                  "committedDate": "2024-04-22T12:48:30Z",
+                  "parents": {
+                    "totalCount": 1,
+                    "nodes": [
+                      {
+                        "oid": "a22cec2655aa355cb50cb69c3938a9bb94860777"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": false,
+            "endCursor": "Mjc"
+          }
+        }
+      }
+    }
+  }
+}

@@ -57,10 +57,14 @@ incentives:
     openAi:
       endpoint: https://openrouter.ai/api/v1
       model: deepseek/deepseek-chat-v3-0324:free
+    multipliers:
+      - role:
+          - ISSUE_SPECIFICATION
+        relevance: 1
   userExtractor:
     redeemTask: true
   dataPurge:
-    skipCommentsWhileAssigned: all
+    skipCommentsWhileAssigned: exact
   formattingEvaluator:
     multipliers:
       - role:

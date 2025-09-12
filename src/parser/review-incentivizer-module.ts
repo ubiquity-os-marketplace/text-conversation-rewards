@@ -12,6 +12,8 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result, ReviewScore } from "../types/results";
 import { PullRequestData } from "../helpers/pull-request-data";
+import { isPullRequestEvent } from "../helpers/type-assertions";
+import { parseGitHubUrl } from "../start";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -31,17 +33,19 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!data.self?.assignees) {
+    const pullRequest = data.self && "issue" in data.self ? data.self.pull_request : data.self;
+    if (!data.self?.assignees || !pullRequest) {
+      this.context.logger.debug("No assignees or pull request found, won't run review incentivizer module");
       return result;
     }
 
-    const prNumbers = data.linkedReviews.map((review) => review.self?.number);
-    if (!prNumbers.length) {
-      this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
-      return result;
-    }
-
-    this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
+    // const prNumbers = data.linkedReviews.map((review) => review.self?.number);
+    // if (!prNumbers.length) {
+    //   this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
+    //   return result;
+    // }
+    //
+    // this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
 
     for (const username of Object.keys(result)) {
       const reward = result[username];
@@ -133,17 +137,36 @@ export class ReviewIncentivizerModule extends BaseModule {
     reviewsByUser: GitHubPullRequestReviewState[]
   ) {
     if (reviewsByUser.length == 0) {
+      this.context.logger.debug("No reviews found for this pull request", { baseOwner, baseRepo, baseRef });
       return;
     }
     const reviews: ReviewScore[] = [];
-    const priority = parsePriorityLabel(this.context.payload.issue.labels);
+    if (
+      !isPullRequestEvent(this.context) &&
+      "issue" in this.context.payload &&
+      !this.context.payload.issue.pull_request
+    ) {
+      this.context.logger.debug("Not a pull request event, won't run review incentivizer module.", {
+        event: this.context.eventName,
+      });
+      return;
+    }
+    const { owner, repo, issue_number } = parseGitHubUrl(
+      "issue" in this.context.payload ? this.context.payload.issue.html_url : this.context.payload.pull_request.html_url
+    );
+    const linkedIssue = await this.context.octokit.rest.issues.get({
+      owner,
+      repo,
+      issue_number,
+    });
+    const priority = parsePriorityLabel(linkedIssue.data.labels);
     const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
 
     const prData = new PullRequestData(this.context, baseOwner, baseRepo, pullNumber);
     await prData.fetchData();
 
     // Get the first commit of the PR
-    const firstCommitSha = prData.pullCommits[0]?.parents[0]?.sha || prData.pullCommits[0]?.sha;
+    const firstCommitSha = prData.pullCommits[0]?.parents?.[0]?.sha || prData.pullCommits[0]?.sha;
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }

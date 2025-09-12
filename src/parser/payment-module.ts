@@ -84,16 +84,17 @@ export class PaymentModule extends BaseModule {
       return this._handleXpRecording(result);
     }
 
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
-      issueUrl: this.context.payload.issue.html_url,
+      issueUrl: issue.html_url,
       evmPrivateEncrypted: this.context.config.rewards.evmPrivateEncrypted,
       evmNetworkId: this.context.config.rewards.evmNetworkId,
       erc20RewardToken: this.context.config.rewards.erc20RewardToken,
     };
     const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
-      node_id: this.context.payload.issue.node_id,
+      node_id: issue.node_id,
     };
     const env = this.context.env;
 
@@ -180,6 +181,7 @@ export class PaymentModule extends BaseModule {
     if (payoutMode === "permit" || directTransferError) {
       this.context.logger.info("Transitioning to permit generation.");
       for (const [username, reward] of Object.entries(result)) {
+        // should also loop within PR rewards
         this.context.logger.debug(`Updating result for user ${username}`);
         const config: Context["config"] = {
           evmNetworkId: payload.evmNetworkId,
@@ -371,6 +373,7 @@ export class PaymentModule extends BaseModule {
   async _getBeneficiaries(result: Result): Promise<Beneficiary[]> {
     return Object.entries(result)
       .map(([username, reward]) => {
+        // Should also loop within PR rewards
         if (!reward.walletAddress) {
           return null;
         }
@@ -725,7 +728,8 @@ export class PaymentModule extends BaseModule {
   }
 
   async _handleXpRecording(result: Result): Promise<Result> {
-    const issueUrl = this.context.payload.issue.html_url;
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
+    const issueUrl = issue.html_url;
     const { issue_number: issueId } = parseGitHubUrl(issueUrl);
     if (!issueId) {
       this.context.logger.error("[PaymentModule] Could not extract issue ID from URL for XP recording.", {

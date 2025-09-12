@@ -82,7 +82,8 @@ export async function handlePriceLabelValidation(
       }
       return true;
     } else {
-      await logInvalidIssue(logger, payload.issue.html_url);
+      const issue = "issue" in payload ? payload.issue : payload.pull_request;
+      await logInvalidIssue(logger, issue.html_url);
       logger.error("No price label has been set. Skipping permit generation.");
       return false;
     }
