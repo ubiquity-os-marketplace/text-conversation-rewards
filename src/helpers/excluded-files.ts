@@ -33,8 +33,7 @@ function parseGitAttributes(content: string): GitAttributes[] {
         if (attr.includes("=")) {
           const [rawKey, rawValue] = attr.split("=");
           const key = rawKey.trim();
-          const valueStr = rawValue.trim().toLowerCase();
-          attributes[key] = valueStr === "true" ? true : valueStr === "false" ? false : rawValue.trim();
+          attributes[key] = rawValue.trim();
         } else {
           const key = attr.trim();
           attributes[key] = !isNegated;
