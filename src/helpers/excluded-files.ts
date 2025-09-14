@@ -156,13 +156,13 @@ async function getFileContent(
 }
 
 export function isExcluded(filePath: string, patterns?: string[] | null): boolean {
-  if (!patterns || patterns.length === 0) return false;
+  if (!patterns?.length) return false;
   let isExcluded = false;
 
-  for (const original of patterns) {
-    if (!original) continue;
-    const isNeg = original.startsWith("!");
-    let pattern = isNeg ? original.slice(1) : original;
+  for (const originalPattern of patterns) {
+    if (!originalPattern) continue;
+    const isNeg = originalPattern.startsWith("!");
+    let pattern = isNeg ? originalPattern.slice(1) : originalPattern;
 
     if (pattern.endsWith("/")) {
       pattern = `${pattern}**`;

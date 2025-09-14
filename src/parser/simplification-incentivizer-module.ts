@@ -74,7 +74,7 @@ export class SimplificationIncentivizerModule extends BaseModule {
     pull: GitHubPullRequest,
     result: Result
   ) {
-  if (!isExcluded(file.filename, excludedFilePatterns)) {
+    if (!isExcluded(file.filename, excludedFilePatterns)) {
       result[prAuthor].simplificationReward = result[prAuthor].simplificationReward ?? {
         files: [],
         url: pull.html_url,
