@@ -93,7 +93,7 @@ function mockNotFoundError(): Promise<never> {
 describe("getExcludedFiles tests", () => {
   const owner = "test-owner";
   const repo = "test-repo";
-  const defaults = ["dist/**", "*.lockb", "*.lock", "tests/__mocks__/", "bin/", "package-lock.json"];
+  const defaults = ["*", "!*.ts"];
 
   it("should return defaults if no files are found", async () => {
     mockGetContent.mockImplementation(mockNotFoundError);
@@ -145,7 +145,8 @@ describe("getExcludedFiles tests", () => {
         "exclude": [
           "node_modules", // more comments
           "dist",
-          "**/*.spec.ts"
+          "**/*.spec.ts",
+          "bin/"
         ]
       }
     `;
@@ -155,7 +156,7 @@ describe("getExcludedFiles tests", () => {
     });
     const result = await getExcludedFiles(ctx, owner, repo);
     expect(new Set(result)).toEqual(new Set([...defaults, "node_modules", "dist", "**/*.spec.ts", "bin/"]));
-    expect(result).toHaveLength(defaults.length + 3);
+    expect(result).toHaveLength(defaults.length + 4);
   });
 
   it("should merge and deduplicate patterns from all sources", async () => {
@@ -171,7 +172,7 @@ describe("getExcludedFiles tests", () => {
     });
 
     const result = await getExcludedFiles(ctx, owner, repo);
-    const expected = [...new Set([...defaults, "*.gen.ts", "build/", "coverage"])];
+    const expected = [...new Set([...defaults, "*.gen.ts", "build/", "coverage", "*.lock", "dist/**"])];
     expect(new Set(result)).toEqual(new Set(expected));
     expect(result).toHaveLength(expected.length);
   });

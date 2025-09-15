@@ -102,7 +102,10 @@ export async function getExcludedFiles(
     getFileContent(context, owner, repo, "tsconfig.json", ref),
   ]);
 
-  const parsed = parseGitAttributes(gitAttributesContent ?? DEFAULT_GITATTRIBUTES);
+  const parsed = [
+    ...parseGitAttributes(DEFAULT_GITATTRIBUTES),
+    ...(gitAttributesContent ? parseGitAttributes(gitAttributesContent) : []),
+  ];
   for (const entry of parsed) {
     if (Object.prototype.hasOwnProperty.call(entry.attributes, "linguist-generated")) {
       const val = entry.attributes["linguist-generated"];
