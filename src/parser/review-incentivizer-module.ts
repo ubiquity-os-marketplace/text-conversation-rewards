@@ -4,7 +4,7 @@ import {
   reviewIncentivizerConfigurationType,
 } from "../configuration/review-incentivizer-config";
 import { GitHubPullRequestReviewState } from "../github-types";
-import { getExcludedFiles, isExcluded } from "../helpers/excluded-files";
+import { getExcludedFiles, shouldExcludeFile } from "../helpers/excluded-files";
 import { parsePriorityLabel } from "../helpers/github";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
@@ -108,7 +108,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha, prData);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
-      if (!isExcluded(fileName, excludedFilePatterns)) {
+      if (!shouldExcludeFile(fileName, excludedFilePatterns)) {
         reviewEffect.addition += changes.addition;
         reviewEffect.deletion += changes.deletion;
       }

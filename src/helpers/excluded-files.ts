@@ -158,7 +158,7 @@ async function getFileContent(
   }
 }
 
-export function isExcluded(filePath: string, patterns?: string[] | null): boolean {
+export function shouldExcludeFile(filePath: string, patterns?: string[] | null): boolean {
   if (!patterns?.length) return false;
   let isExcluded = false;
 

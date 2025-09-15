@@ -5,7 +5,7 @@ import {
   simplificationIncentivizerConfigurationType,
 } from "../configuration/simplification-incentivizer-config";
 import { GitHubPullRequest } from "../github-types";
-import { getExcludedFiles, isExcluded } from "../helpers/excluded-files";
+import { getExcludedFiles, shouldExcludeFile } from "../helpers/excluded-files";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
@@ -74,7 +74,7 @@ export class SimplificationIncentivizerModule extends BaseModule {
     pull: GitHubPullRequest,
     result: Result
   ) {
-    if (!isExcluded(file.filename, excludedFilePatterns)) {
+    if (!shouldExcludeFile(file.filename, excludedFilePatterns)) {
       result[prAuthor].simplificationReward = result[prAuthor].simplificationReward ?? {
         files: [],
         url: pull.html_url,
