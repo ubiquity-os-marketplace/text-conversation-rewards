@@ -107,7 +107,7 @@ export async function getExcludedFiles(
     ...(gitAttributesContent ? parseGitAttributes(gitAttributesContent) : []),
   ];
   for (const entry of parsed) {
-    if (Object.prototype.hasOwnProperty.call(entry.attributes, "linguist-generated")) {
+    if ("linguist-generated" in entry.attributes) {
       const val = entry.attributes["linguist-generated"];
       const isTrue = typeof val === "boolean" ? val : String(val).toLowerCase() === "true";
       allPatterns.push(isTrue ? entry.pattern : `!${entry.pattern}`);
