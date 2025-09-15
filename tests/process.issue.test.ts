@@ -154,7 +154,7 @@ const { ExternalContentProcessor } = await import("../src/parser/external-conten
 
 jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
   return {
-    "test.txt": {
+    "test.ts": {
       addition: 50,
       deletion: 50,
     },
