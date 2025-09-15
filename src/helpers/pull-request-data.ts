@@ -62,17 +62,13 @@ export class PullRequestData {
 
   private async fetchCommitFiles(sha: string) {
     let page = 1;
-    let hasSeenFiles = false;
     let shouldLoop: boolean;
     do {
       const { files, link } = await this.fetchCommitPage(sha, page);
-      if (files.length) {
-        hasSeenFiles = true;
-      }
       for (const file of files) {
         this.addFileIfNew(file);
       }
-      shouldLoop = this.shouldContinue(link, files.length, hasSeenFiles);
+      shouldLoop = this.shouldContinue(link, files.length);
       if (shouldLoop) {
         page += 1;
       }
@@ -102,7 +98,7 @@ export class PullRequestData {
     return { files, link: response.headers.link };
   }
 
-  private shouldContinue(link: string | undefined, fileCount: number, hasSeenFiles: boolean) {
-    return !!(link && /rel="next"/.test(link) && (fileCount || !hasSeenFiles));
+  private shouldContinue(link: string | undefined, fileCount: number) {
+    return !!(link && fileCount);
   }
 }
