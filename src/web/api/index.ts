@@ -18,6 +18,7 @@ import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } 
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 import { Result } from "../../types/results";
+import { run } from "../../run";
 
 function githubUrlToFileName(url: string): string {
   const repoMatch = RegExp(/github\.com\/([^/]+)\/([^/?#]+)/).exec(url);
@@ -107,6 +108,8 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
     const adapters = createAdapters(supabaseClient, context as ContextPlugin);
     const pluginContext = { ...context, adapters };
     const isSingleIssueMode = !!payload.issue?.id;
+
+    return run(pluginContext);
 
     mkdirSync("results", { recursive: true });
 

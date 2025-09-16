@@ -49,7 +49,10 @@ export class GithubCommentModule extends BaseModule {
   /**
    * Generates content when it needs to be stripped due to length limits
    */
-  private async _getStrippedContent(result: Result, taskReward: number): Promise<string> {
+  private async _getStrippedContent(
+    result: Result,
+    taskReward: number
+  ): Promise<{ body: string; metadata: string; raw: string }> {
     const bodyArray: (string | undefined)[] = [];
 
     this.context.logger.info("Stripping content due to excessive length.");
@@ -63,14 +66,14 @@ export class GithubCommentModule extends BaseModule {
       bodyArray.push(result[key].evaluationCommentHtml);
     }
 
-    bodyArray.push(
-      createStructuredMetadata("GithubCommentModule", {
-        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        payoutMode: this._getPayoutMode(result),
-      })
-    );
+    const metadata = createStructuredMetadata("GithubCommentModule", {
+      workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+      payoutMode: this._getPayoutMode(result),
+    });
 
-    return bodyArray.join("");
+    const body = bodyArray.join("");
+    const raw = `${body}${metadata}`;
+    return { body, metadata, raw };
   }
 
   async isRewardClaimed(reward: Result[0]) {
@@ -96,7 +99,11 @@ export class GithubCommentModule extends BaseModule {
     return true;
   }
 
-  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
+  async getBodyContent(
+    data: Readonly<IssueActivity>,
+    result: Result,
+    stripContent = false
+  ): Promise<{ body: string; metadata: string; raw: string }> {
     const taskReward = await getTaskReward(this.context, data.self);
 
     if (stripContent) {
@@ -145,28 +152,36 @@ export class GithubCommentModule extends BaseModule {
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
-        return newBody;
+        const metadata = bodyArray[bodyArray.length - 1] as string;
+        const bodyOnly = bodyArray.slice(0, -1).join("");
+        return { body: bodyOnly, metadata, raw: newBody };
       } else {
         return this.getBodyContent(data, result, true);
       }
     }
-    return body;
+    const metadata = bodyArray[bodyArray.length - 1] as string;
+    const bodyOnly = bodyArray.slice(0, -1).join("");
+    return { body: bodyOnly, metadata, raw: body };
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const isIssueCollaborative = isCollaborative(data);
     const isUserAdmin = data.self?.user ? await isAdmin(data.self.user.login, this.context) : false;
-    const body = await this.getBodyContent(data, result); // also run for PRs
+    const content = await this.getBodyContent(data, result);
     if (this._configuration?.debug) {
-      fs.writeFileSync(this._debugFilePath, body);
+      fs.writeFileSync(this._debugFilePath, content.raw);
     }
     if (this._configuration?.post) {
       try {
         if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
-          const comment = await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
-            raw: true,
-            updateComment: true,
-          });
+          const comment = await this.context.commentHandler.postComment(
+            this.context,
+            this.context.logger.info(!content.body ? `_No user got rewards at this time._` : content.raw),
+            {
+              raw: true,
+              updateComment: true,
+            }
+          );
           if (comment) {
             const issue =
               "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
