@@ -74,7 +74,11 @@ export async function handlePriceLabelValidation(
   const requiresPriceLabel = config.incentives.requirePriceLabel;
   const hasPriceLabel = getSortedPrices(activity.self?.labels).length > 0;
 
-  if (requiresPriceLabel && !hasPriceLabel) {
+  if (
+    requiresPriceLabel &&
+    !hasPriceLabel &&
+    !("pull_request" in context.payload || ("issue" in context.payload && !!context.payload.issue.pull_request))
+  ) {
     if (requiresPriceLabel === "auto") {
       await tryAutoFetchingPrice(logger, activity);
       if (!getSortedPrices(activity.self?.labels).length) {
