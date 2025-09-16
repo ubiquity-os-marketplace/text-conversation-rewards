@@ -32,6 +32,7 @@ export class ContentEvaluatorModule extends BaseModule {
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
   private readonly _originalAuthorWeight: number = 0.5;
+  private _basePriority: number = 1;
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -87,6 +88,7 @@ export class ContentEvaluatorModule extends BaseModule {
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
+    this._basePriority = await this.computePriority(data);
     const allComments: { id: number; comment: string; author: string }[] = [];
 
     for (const [user, data] of Object.entries(result)) {
@@ -252,11 +254,10 @@ export class ContentEvaluatorModule extends BaseModule {
       }
 
       const currentReward = new Decimal(currentComment.score?.reward ?? 0);
+      const basePriority = this._basePriority;
       const priority =
         // We do not apply priority multiplier on issue specification
-        currentComment.score?.priority && !(currentComment.commentType & CommentAssociation.SPECIFICATION)
-          ? currentComment.score.priority
-          : 1;
+        !(currentComment.commentType & CommentAssociation.SPECIFICATION) ? basePriority : 1;
 
       currentComment.score = {
         ...(currentComment.score || { multiplier: 0 }),

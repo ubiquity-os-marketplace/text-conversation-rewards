@@ -1,6 +1,7 @@
 import { Value } from "@sinclair/typebox/value";
 import Decimal from "decimal.js";
 import { JSDOM } from "jsdom";
+import { marked } from "marked";
 import { CommentAssociation, commentEnum, CommentType } from "../configuration/comment-types";
 import {
   FormattingEvaluatorConfiguration,
@@ -8,17 +9,15 @@ import {
   urlRegex,
   wordRegex,
 } from "../configuration/formatting-evaluator-config";
-import { IssueActivity } from "../issue-activity";
-import { BaseModule } from "../types/module";
-import { GithubCommentScore, ReadabilityScore, Result, WordResult } from "../types/results";
+import { getCharacterContributionPercentages } from "../helpers/diff-count";
 import { commentTypeReplacer } from "../helpers/result-replacer";
-import { ContextPlugin } from "../types/plugin-input";
-import { parsePriorityLabel } from "../helpers/github";
 import { areBaseUrlsEqual } from "../helpers/urls";
+import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { IssueEdits, QUERY_ISSUE_EDITS } from "../types/comment-edits";
-import { getCharacterContributionPercentages } from "../helpers/diff-count";
-import { marked } from "marked";
+import { BaseModule } from "../types/module";
+import { ContextPlugin } from "../types/plugin-input";
+import { GithubCommentScore, ReadabilityScore, Result, WordResult } from "../types/results";
 
 interface Multiplier {
   multiplier: number;
@@ -158,7 +157,7 @@ export class FormattingEvaluatorModule extends BaseModule {
           multiplierFactor,
           readability
         ).toDecimalPlaces(2);
-        const priority = parsePriorityLabel(data.self?.labels);
+        const priority = await this.computePriority(data);
         const authorship = await this._getOriginalAuthorshipPercentage(key, comment);
         const reward = (comment.score?.reward ? formattingTotal.add(comment.score.reward) : formattingTotal)
           .mul(authorship)

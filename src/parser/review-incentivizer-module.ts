@@ -6,14 +6,12 @@ import {
 } from "../configuration/review-incentivizer-config";
 import { GitHubPullRequestReviewState } from "../github-types";
 import { getExcludedFiles } from "../helpers/excluded-files";
-import { parsePriorityLabel } from "../helpers/github";
+import { PullRequestData } from "../helpers/pull-request-data";
+import { isPullRequestEvent } from "../helpers/type-assertions";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result, ReviewScore } from "../types/results";
-import { PullRequestData } from "../helpers/pull-request-data";
-import { isPullRequestEvent } from "../helpers/type-assertions";
-import { parseGitHubUrl } from "../start";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -33,20 +31,12 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    const pullRequest = data.self && "issue" in data.self ? data.self.pull_request : data.self;
-    if (!data.self?.assignees || !pullRequest) {
+    if (!data.self?.assignees || !this.isPullRequest()) {
       this.context.logger.debug("No assignees or pull request found, won't run review incentivizer module");
       return result;
     }
 
-    // const prNumbers = data.linkedReviews.map((review) => review.self?.number);
-    // if (!prNumbers.length) {
-    //   this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
-    //   return result;
-    // }
-    //
-    // this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
-
+    const priority = await this.computePriority(data);
     for (const username of Object.keys(result)) {
       const reward = result[username];
       reward.reviewRewards = [];
@@ -63,7 +53,8 @@ export class ReviewIncentivizerModule extends BaseModule {
             baseRepo,
             baseRef,
             headOwnerRepo ?? "",
-            reviewsByUser
+            reviewsByUser,
+            priority
           );
           reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url });
         }
@@ -134,7 +125,8 @@ export class ReviewIncentivizerModule extends BaseModule {
     baseRepo: string,
     baseRef: string,
     headOwnerRepo: string,
-    reviewsByUser: GitHubPullRequestReviewState[]
+    reviewsByUser: GitHubPullRequestReviewState[],
+    priority: number
   ) {
     if (reviewsByUser.length == 0) {
       this.context.logger.debug("No reviews found for this pull request", { baseOwner, baseRepo, baseRef });
@@ -151,15 +143,6 @@ export class ReviewIncentivizerModule extends BaseModule {
       });
       return;
     }
-    const { owner, repo, issue_number } = parseGitHubUrl(
-      "issue" in this.context.payload ? this.context.payload.issue.html_url : this.context.payload.pull_request.html_url
-    );
-    const linkedIssue = await this.context.octokit.rest.issues.get({
-      owner,
-      repo,
-      issue_number,
-    });
-    const priority = parsePriorityLabel(linkedIssue.data.labels);
     const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
 
     const prData = new PullRequestData(this.context, baseOwner, baseRepo, pullNumber);
