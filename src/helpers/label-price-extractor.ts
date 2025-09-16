@@ -29,24 +29,26 @@ export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
  */
 export async function getTaskReward(context: ContextPlugin, issue: GitHubIssue | null) {
   if (issue) {
-    const labels = [];
     if (issue.pull_request) {
       const linkedIssues = await context.octokit.graphql.paginate<PullRequestClosingIssue>(LINKED_ISSUES, {
         owner: context.payload.repository.owner.login,
         repo: context.payload.repository.name,
         pull_number: issue.number,
       });
-      labels.push(
-        ...linkedIssues.repository.pullRequest.closingIssuesReferences.edges
-          .map((issue) => issue.node.labels?.nodes)
-          .flat()
-      );
+
+      const perIssueMinimums = linkedIssues.repository.pullRequest.closingIssuesReferences.edges
+        .map((edge) => getSortedPrices(edge.node.labels?.nodes))
+        .filter((prices) => prices.length)
+        .map((prices) => prices[0]);
+
+      if (perIssueMinimums.length) {
+        return Math.max(...perIssueMinimums);
+      }
     } else {
-      labels.push(...issue.labels);
-    }
-    const sortedPriceLabels = getSortedPrices(labels);
-    if (sortedPriceLabels.length) {
-      return sortedPriceLabels[0];
+      const sortedPriceLabels = getSortedPrices(issue.labels);
+      if (sortedPriceLabels.length) {
+        return sortedPriceLabels[0];
+      }
     }
   }
 
