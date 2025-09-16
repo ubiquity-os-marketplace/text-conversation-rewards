@@ -133,7 +133,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           );
           return false;
         }
-        return !o.pull_request && (isSingleIssueMode || o.state_reason === "completed");
+        return isSingleIssueMode || o.state_reason === "completed";
       });
       if (!issues.length) {
         logger.warn("No issues found, skipping.");
