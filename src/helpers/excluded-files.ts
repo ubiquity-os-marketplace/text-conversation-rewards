@@ -1,6 +1,6 @@
-import { ContextPlugin } from "../types/plugin-input";
 import { minimatch } from "minimatch";
 import { basename } from "path";
+import { ContextPlugin } from "../types/plugin-input";
 
 interface GitAttributes {
   pattern: string;
@@ -24,9 +24,9 @@ function parseGitAttributes(content: string): GitAttributes[] {
         let attr = parts[i].trim();
         if (!attr) continue;
 
-        let isNegated = false;
+        let isSelected = true;
         if (attr.startsWith("!") || attr.startsWith("-")) {
-          isNegated = true;
+          isSelected = false;
           attr = attr.slice(1);
         }
 
@@ -36,7 +36,7 @@ function parseGitAttributes(content: string): GitAttributes[] {
           attributes[key] = rawValue.trim();
         } else {
           const key = attr.trim();
-          attributes[key] = !isNegated;
+          attributes[key] = isSelected;
         }
       }
 
