@@ -23,6 +23,15 @@ import {
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 
+type BaseComment = GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest;
+
+type AugmentedComment = BaseComment & {
+  commentType: CommentKind | CommentAssociation;
+  timestamp: string;
+  html_url?: string;
+  id?: number;
+};
+
 export class IssueActivity {
   protected readonly _context: ContextPlugin;
   readonly _configuration: DataCollectionConfiguration;
@@ -162,29 +171,31 @@ export class IssueActivity {
           timestamp: value.submitted_at ?? value.created_at,
           commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
         };
-        // We avoid adding the body if we already are evaluating a pull-request as it would be contained in the issue
-        if (
-          !(
-            "pull_Request" in this._context.payload ||
-            ("issue" in this._context.payload && this._context.payload.issue.pull_request)
-          )
-        ) {
-          // Special case for anchoring with pull-request bodies that have to be retrieved differently
-          if (c.commentType & CommentAssociation.SPECIFICATION && c.html_url) {
-            const { owner, repo, issue_number } = parseGitHubUrl(c.html_url);
-            const { data } = await this._context.octokit.rest.issues.get({
-              owner,
-              repo,
-              issue_number: issue_number,
-            });
-            c.id = data.id;
-            this._addAnchorToUrl(c);
-          }
-          comments.push(c);
-        }
+        await this._tryAddLinkedComment(c, comments);
       }
     }
     return comments;
+  }
+
+  private async _tryAddLinkedComment(comment: AugmentedComment, comments: Array<AugmentedComment>) {
+    if (
+      !(
+        "pull_Request" in this._context.payload ||
+        ("issue" in this._context.payload && this._context.payload.issue.pull_request)
+      )
+    ) {
+      if (comment.commentType & CommentAssociation.SPECIFICATION && comment.html_url) {
+        const { owner, repo, issue_number } = parseGitHubUrl(comment.html_url);
+        const { data } = await this._context.octokit.rest.issues.get({
+          owner,
+          repo,
+          issue_number: issue_number,
+        });
+        comment.id = data.id;
+        this._addAnchorToUrl(comment);
+      }
+      comments.push(comment);
+    }
   }
 
   async _getLinkedReviewComments() {
