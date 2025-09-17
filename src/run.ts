@@ -2,15 +2,15 @@ import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
 import { getSortedPrices } from "./helpers/label-price-extractor";
+import { logInvalidIssue } from "./helpers/log-invalid-issue";
 import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
+import { handlePriceLabelValidation } from "./helpers/price-label-handler";
+import { isIssueClosedEvent, isIssueCommentedEvent, isPullRequestEvent } from "./helpers/type-assertions";
 import { IssueActivity } from "./issue-activity";
 import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
-import { logInvalidIssue } from "./helpers/log-invalid-issue";
-import { handlePriceLabelValidation } from "./helpers/price-label-handler";
-import { isIssueClosedEvent, isIssueCommentedEvent, isPullRequestEvent } from "./helpers/type-assertions";
 
 async function handleEventTypeChecks(context: ContextPlugin) {
   const { eventName, logger } = context;
