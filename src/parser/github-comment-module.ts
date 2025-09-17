@@ -24,6 +24,12 @@ interface SortedTasks {
   reviews: GithubCommentScore[];
 }
 
+interface BodyComment {
+  body: string;
+  metadata: string;
+  raw: string;
+}
+
 /**
  * Posts a GitHub comment according to the given results.
  */
@@ -49,10 +55,7 @@ export class GithubCommentModule extends BaseModule {
   /**
    * Generates content when it needs to be stripped due to length limits
    */
-  private async _getStrippedContent(
-    result: Result,
-    taskReward: number
-  ): Promise<{ body: string; metadata: string; raw: string }> {
+  private async _getStrippedContent(result: Result, taskReward: number): Promise<BodyComment> {
     const bodyArray: (string | undefined)[] = [];
 
     this.context.logger.info("Stripping content due to excessive length.");
@@ -99,11 +102,7 @@ export class GithubCommentModule extends BaseModule {
     return true;
   }
 
-  async getBodyContent(
-    data: Readonly<IssueActivity>,
-    result: Result,
-    stripContent = false
-  ): Promise<{ body: string; metadata: string; raw: string }> {
+  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<BodyComment> {
     const taskReward = await getTaskReward(this.context, data.self);
 
     if (stripContent) {
@@ -164,42 +163,46 @@ export class GithubCommentModule extends BaseModule {
     return { body: bodyOnly, metadata, raw: body };
   }
 
-  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+  private async _handlePostComment(data: Readonly<IssueActivity>, result: Result, content: BodyComment) {
     const isIssueCollaborative = isCollaborative(data);
     const isUserAdmin = data.self?.user ? await isAdmin(data.self.user.login, this.context) : false;
+    try {
+      if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
+        const comment = await this.context.commentHandler.postComment(
+          this.context,
+          this.context.logger.info(!content.body ? `_No user got rewards at this time._` : content.raw),
+          {
+            raw: true,
+            updateComment: true,
+          }
+        );
+        if (comment) {
+          const issue =
+            "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
+          await this.context.adapters.supabase.location.upsert({
+            issue_id: issue.id,
+            node_url: `${issue.html_url}#issuecomment-${comment.id}`,
+            repository_id: this.context.payload.repository.id,
+            comment_id: comment.id,
+            node_type: "Issue",
+          });
+        }
+      } else {
+        const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
+        await this.context.commentHandler.postComment(this.context, errorLog);
+      }
+    } catch (e) {
+      this.context.logger.error(`Could not post GitHub comment`, { e });
+    }
+  }
+
+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
     const content = await this.getBodyContent(data, result);
     if (this._configuration?.debug) {
       fs.writeFileSync(this._debugFilePath, content.raw);
     }
     if (this._configuration?.post) {
-      try {
-        if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
-          const comment = await this.context.commentHandler.postComment(
-            this.context,
-            this.context.logger.info(!content.body ? `_No user got rewards at this time._` : content.raw),
-            {
-              raw: true,
-              updateComment: true,
-            }
-          );
-          if (comment) {
-            const issue =
-              "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
-            await this.context.adapters.supabase.location.upsert({
-              issue_id: issue.id,
-              node_url: `${issue.html_url}#issuecomment-${comment.id}`,
-              repository_id: this.context.payload.repository.id,
-              comment_id: comment.id,
-              node_type: "Issue",
-            });
-          }
-        } else {
-          const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
-          await this.context.commentHandler.postComment(this.context, errorLog);
-        }
-      } catch (e) {
-        this.context.logger.error(`Could not post GitHub comment`, { e });
-      }
+      await this._handlePostComment(data, result, content);
     }
     return result;
   }
