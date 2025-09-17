@@ -35,6 +35,7 @@ import pull12ReviewsGet from "./routes/pull-12-conversation-rewards/pull-12-revi
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
+import gqlPullCommits from "./results/gql-commits.json";
 
 /**
  * Intercepts the routes and returns a custom payload
@@ -46,7 +47,7 @@ export const handlers = [
     if (body.includes("IssueEdits") && body.includes("userContentEdits")) {
       return HttpResponse.json({ data: issue100Edits });
     }
-    return HttpResponse.json({});
+    return HttpResponse.json(gqlPullCommits);
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5", () => {
     return HttpResponse.json(issue5Get);
