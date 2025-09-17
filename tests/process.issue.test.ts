@@ -19,6 +19,7 @@ import { server } from "./__mocks__/node";
 import contentEvaluatorResults from "./__mocks__/results/content-evaluator-results.json";
 import dataPurgeResults from "./__mocks__/results/data-purge-result.json";
 import eventIncentivesResults from "./__mocks__/results/event-incentives-results.json";
+import externalContentResults from "./__mocks__/results/external-content-results.json";
 import formattingEvaluatorResults from "./__mocks__/results/formatting-evaluator-results.json";
 import githubCommentResults from "./__mocks__/results/github-comment-results.json";
 import githubCommentAltResults from "./__mocks__/results/github-comment-zero-results.json";
@@ -26,7 +27,6 @@ import paymentResults from "./__mocks__/results/permit-generation-results.json";
 import reviewIncentivizerResult from "./__mocks__/results/review-incentivizer-results.json";
 import simplificationIncentivizerResults from "./__mocks__/results/simplification-incentivizer.results.json";
 import userCommentResults from "./__mocks__/results/user-comment-results.json";
-import externalContentResults from "./__mocks__/results/external-content-results.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
@@ -403,7 +403,7 @@ describe("Modules tests", () => {
       {},
       githubCommentAltResults as unknown as Result
     );
-    expect(postBody).not.toContain("whilefoo");
+    expect(postBody.raw).not.toContain("whilefoo");
   });
 
   it("Should generate GitHub comment marking claimed permits", async () => {

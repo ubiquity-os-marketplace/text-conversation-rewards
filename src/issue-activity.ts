@@ -9,6 +9,7 @@ import {
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
 } from "./github-types";
+import { isPullRequestEvent } from "./helpers/type-assertions";
 import {
   getIssue,
   getIssueComments,
@@ -21,7 +22,6 @@ import {
   PullParams,
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
-import { isPullRequestEvent } from "./helpers/type-assertions";
 
 export class IssueActivity {
   protected readonly _context: ContextPlugin;
@@ -228,7 +228,16 @@ export class IssueActivity {
       const linkedComments = await this._getLinkedReviewComments();
       comments.push(...linkedComments);
     }
-    return comments;
+    const seen = new Set<string>();
+    return comments.filter((c) => {
+      const htmlUrl = c.html_url;
+      if (!htmlUrl) return false;
+      const { owner, repo, issue_number } = parseGitHubUrl(htmlUrl);
+      const key = `${owner}/${repo}/${issue_number}/${c.id}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }
 }
 
