@@ -13,7 +13,7 @@ import { handlePriceLabelValidation } from "./helpers/price-label-handler";
 import { isIssueClosedEvent, isIssueCommentedEvent, isPullRequestEvent } from "./helpers/type-assertions";
 
 async function handleEventTypeChecks(context: ContextPlugin) {
-  const { eventName, logger, commentHandler } = context;
+  const { eventName, logger } = context;
 
   if (context.command) {
     if (context.command.name === "finish") {
@@ -23,18 +23,9 @@ async function handleEventTypeChecks(context: ContextPlugin) {
   }
 
   if (isIssueClosedEvent(context)) {
-    if (context.payload.issue.state_reason !== "completed") {
-      await logInvalidIssue(logger, context.payload.issue.html_url);
-      return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
-    }
-    if (await checkIfClosedByCommand(context)) {
-      return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
-    }
-    if (!(await preCheck(context))) {
-      await logInvalidIssue(logger, context.payload.issue.html_url);
-      const result = logger.error("All linked pull requests must be closed to generate rewards.");
-      await commentHandler.postComment(context, result);
-      return result.logMessage.raw;
+    const closedIssueCheckResult = await handleClosedIssueEventChecks(context as ContextPlugin<"issues.closed">);
+    if (closedIssueCheckResult) {
+      return closedIssueCheckResult;
     }
   } else if (isIssueCommentedEvent(context)) {
     if (!context.payload.comment.body.trim().startsWith("/finish")) {
@@ -48,6 +39,24 @@ async function handleEventTypeChecks(context: ContextPlugin) {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }
 
+  return null;
+}
+
+async function handleClosedIssueEventChecks(context: ContextPlugin<"issues.closed">) {
+  const { logger, commentHandler } = context;
+  if (context.payload.issue.state_reason !== "completed") {
+    await logInvalidIssue(logger, context.payload.issue.html_url);
+    return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
+  }
+  if (await checkIfClosedByCommand(context)) {
+    return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
+  }
+  if (!(await preCheck(context))) {
+    await logInvalidIssue(logger, context.payload.issue.html_url);
+    const result = logger.error("All linked pull requests must be closed to generate rewards.");
+    await commentHandler.postComment(context, result);
+    return result.logMessage.raw;
+  }
   return null;
 }
 
