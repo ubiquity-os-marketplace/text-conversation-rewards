@@ -64,6 +64,7 @@ export const LINKED_ISSUES = /* GraphQL */ `
             node {
               id
               title
+              body
               number
               url
               state
