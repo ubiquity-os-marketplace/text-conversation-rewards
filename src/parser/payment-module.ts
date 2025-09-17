@@ -144,34 +144,7 @@ export class PaymentModule extends BaseModule {
     let directTransferError;
     if (payoutMode === "transfer") {
       try {
-        const beneficiaries = await this._getBeneficiaries(result);
-        // Avoid empty transactions and gas wasting, maybe we should move this logic
-        // before this block to avoid any extra works
-        if (beneficiaries.length === 0) {
-          throw this.context.logger.warn("Beneficiary list is empty, skipping the direct transfer of rewards...");
-        }
-
-        const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
-        // Check if a funding wallet has enough reward tokens and gas to transfer rewards directly
-        const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
-        this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
-        const [tx, permits] = await this._transferReward(directTransferInfo);
-        this.context.logger.info("Rewards have been transferred.");
-        await Promise.all(
-          beneficiaries.map(async (beneficiary, idx) => {
-            result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
-            result[beneficiary.username].payoutMode = "transfer";
-            try {
-              await this._savePermitsToDatabase(
-                result[beneficiary.username].userId,
-                { issueUrl: payload.issueUrl, issueId },
-                [permits[idx]]
-              );
-            } catch (e) {
-              this.context.logger.warn(`Failed to save permits to the database`, { e });
-            }
-          })
-        );
+        await this._tryDirectTransfer(result, networkExplorer, issueId, payload.issueUrl, privateKey);
       } catch (e) {
         this.context.logger.warn(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
@@ -229,6 +202,36 @@ export class PaymentModule extends BaseModule {
     // remove treasury item from the final result in order not to display the permit fee in GitHub comments
     this._removeTreasuryItem(result);
     return result;
+  }
+
+  private async _tryDirectTransfer(
+    result: Result,
+    networkExplorer: string,
+    issueId: number,
+    issueUrl: string,
+    privateKey: string
+  ): Promise<void> {
+    const beneficiaries = await this._getBeneficiaries(result);
+    if (beneficiaries.length === 0) {
+      throw this.context.logger.warn("Beneficiary list is empty, skipping the direct transfer of rewards...");
+    }
+
+    const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
+    const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
+    this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
+    const [tx, permits] = await this._transferReward(directTransferInfo);
+    this.context.logger.info("Rewards have been transferred.");
+    await Promise.all(
+      beneficiaries.map(async (beneficiary, idx) => {
+        result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
+        result[beneficiary.username].payoutMode = "transfer";
+        try {
+          await this._savePermitsToDatabase(result[beneficiary.username].userId, { issueUrl, issueId }, [permits[idx]]);
+        } catch (e) {
+          this.context.logger.warn(`Failed to save permits to the database`, { e });
+        }
+      })
+    );
   }
 
   private _removeTreasuryItem(result: Result) {
