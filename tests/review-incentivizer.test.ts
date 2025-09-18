@@ -82,6 +82,7 @@ describe("Review Incentivizer", () => {
 
     const spy = jest.spyOn(console, "warn");
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [new ReviewIncentivizerModule(ctx)];
     await processor.run(activity);
     expect(spy).toHaveBeenCalledWith(
@@ -137,6 +138,7 @@ describe("Review Incentivizer", () => {
 
     const spy = jest.spyOn(console, "warn");
     const processor = new Processor(newCtx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [new ReviewIncentivizerModule(newCtx)];
     await processor.run(activity);
     expect(spy).not.toHaveBeenCalledWith(

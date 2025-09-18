@@ -231,6 +231,7 @@ describe("Modules tests", () => {
 
   it("Should extract users from comments", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [new UserExtractorModule(ctx)];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
@@ -239,6 +240,7 @@ describe("Modules tests", () => {
 
   it("Should purge data", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [new UserExtractorModule(ctx), new DataPurgeModule(ctx)];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
@@ -247,6 +249,7 @@ describe("Modules tests", () => {
 
   it("Should evaluate external content", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -259,6 +262,7 @@ describe("Modules tests", () => {
 
   it("Should evaluate formatting", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -272,6 +276,7 @@ describe("Modules tests", () => {
 
   it("Should evaluate content", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -290,6 +295,7 @@ describe("Modules tests", () => {
     });
 
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -309,6 +315,7 @@ describe("Modules tests", () => {
 
   it("Should incentivize reviews", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -324,6 +331,7 @@ describe("Modules tests", () => {
 
   it("Should incentivize events", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -340,6 +348,7 @@ describe("Modules tests", () => {
 
   it("Should incentivize simplifications", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -357,6 +366,7 @@ describe("Modules tests", () => {
 
   it("Should generate permits", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -374,6 +384,7 @@ describe("Modules tests", () => {
 
   it("Should generate GitHub comment", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -409,6 +420,7 @@ describe("Modules tests", () => {
       .mockImplementationOnce(async () => false)
       .mockImplementationOnce(async () => false);
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -477,6 +489,7 @@ describe("Modules tests", () => {
         },
       },
     });
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -537,6 +550,7 @@ describe("Modules tests", () => {
         },
       },
     });
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -609,6 +623,7 @@ describe("Modules tests", () => {
       },
     } as unknown as ContextPlugin;
     const processor = new Processor(context);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(context),
       new DataPurgeModule(context),
@@ -642,6 +657,7 @@ describe("Modules tests", () => {
       },
     } as unknown as ContextPlugin;
     const processor = new Processor(context);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(context),
       new DataPurgeModule(context),

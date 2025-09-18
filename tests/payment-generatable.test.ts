@@ -271,6 +271,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
+      // @ts-expect-error just for testing
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
         new DataPurgeModule(ctx),
@@ -293,6 +294,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
+      // @ts-expect-error just for testing
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
         new DataPurgeModule(ctx),
@@ -321,6 +323,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
+      // @ts-expect-error just for testing
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
         new DataPurgeModule(ctx),
@@ -343,6 +346,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
+      // @ts-expect-error just for testing
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
         new DataPurgeModule(ctx),
