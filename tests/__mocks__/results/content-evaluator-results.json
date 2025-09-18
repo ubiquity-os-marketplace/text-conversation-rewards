@@ -398,8 +398,8 @@
             "sentences": 1,
             "syllables": 8
           },
-          "relevance": 0.7,
-          "reward": 4.9,
+          "relevance": 1,
+          "reward": 7,
           "words": {
             "result": 0.37,
             "wordCount": 5,
@@ -433,8 +433,8 @@
             "sentences": 1,
             "syllables": 11
           },
-          "relevance": 0.7,
-          "reward": 5.348,
+          "relevance": 1,
+          "reward": 7.64,
           "words": {
             "result": 0.49,
             "wordCount": 7,
@@ -468,8 +468,8 @@
             "sentences": 4,
             "syllables": 79
           },
-          "relevance": 0.7,
-          "reward": 13.3,
+          "relevance": 1,
+          "reward": 19,
           "words": {
             "result": 1.67,
             "wordCount": 49,
@@ -503,8 +503,8 @@
             "sentences": 1,
             "syllables": 8
           },
-          "relevance": 0.7,
-          "reward": 4.872,
+          "relevance": 1,
+          "reward": 6.96,
           "words": {
             "result": 0.43,
             "wordCount": 6,
@@ -542,8 +542,8 @@
             "sentences": 1,
             "syllables": 33
           },
-          "relevance": 0.7,
-          "reward": 21.868,
+          "relevance": 1,
+          "reward": 31.24,
           "words": {
             "result": 1.28,
             "wordCount": 28,
@@ -581,8 +581,8 @@
             "sentences": 2,
             "syllables": 17
           },
-          "relevance": 0.7,
-          "reward": 9.38,
+          "relevance": 1,
+          "reward": 13.4,
           "words": {
             "result": 0.82,
             "wordCount": 14,
@@ -624,8 +624,8 @@
             "sentences": 2,
             "syllables": 43
           },
-          "relevance": 0.7,
-          "reward": 14.588,
+          "relevance": 1,
+          "reward": 20.84,
           "words": {
             "result": 1.17,
             "wordCount": 24,
@@ -659,8 +659,8 @@
             "sentences": 1,
             "syllables": 6
           },
-          "relevance": 0.7,
-          "reward": 4.984,
+          "relevance": 1,
+          "reward": 7.12,
           "words": {
             "result": 0.37,
             "wordCount": 5,
@@ -694,8 +694,8 @@
             "sentences": 1,
             "syllables": 12
           },
-          "relevance": 0.7,
-          "reward": 5.46,
+          "relevance": 1,
+          "reward": 7.8,
           "words": {
             "result": 0.54,
             "wordCount": 8,
@@ -737,8 +737,8 @@
             "sentences": 5,
             "syllables": 88
           },
-          "relevance": 0.7,
-          "reward": 23.688,
+          "relevance": 1,
+          "reward": 33.84,
           "words": {
             "result": 1.81,
             "wordCount": 65,
@@ -772,8 +772,8 @@
             "sentences": 2,
             "syllables": 32
           },
-          "relevance": 0.7,
-          "reward": 7.476,
+          "relevance": 1,
+          "reward": 10.68,
           "words": {
             "result": 1.14,
             "wordCount": 23,
@@ -807,8 +807,8 @@
             "sentences": 1,
             "syllables": 7
           },
-          "relevance": 0.7,
-          "reward": 4.732,
+          "relevance": 1,
+          "reward": 6.76,
           "words": {
             "result": 0.37,
             "wordCount": 5,
@@ -846,8 +846,8 @@
             "sentences": 3,
             "syllables": 26
           },
-          "relevance": 0.7,
-          "reward": 13.776,
+          "relevance": 1,
+          "reward": 19.68,
           "words": {
             "result": 1.01,
             "wordCount": 19,
@@ -881,8 +881,8 @@
             "sentences": 4,
             "syllables": 31
           },
-          "relevance": 0.7,
-          "reward": 7.364,
+          "relevance": 1,
+          "reward": 10.52,
           "words": {
             "result": 1.2,
             "wordCount": 25,
@@ -916,8 +916,8 @@
             "sentences": 1,
             "syllables": 10
           },
-          "relevance": 0.7,
-          "reward": 5.18,
+          "relevance": 1,
+          "reward": 7.4,
           "words": {
             "result": 0.49,
             "wordCount": 7,
@@ -951,8 +951,8 @@
             "sentences": 1,
             "syllables": 2
           },
-          "relevance": 0.7,
-          "reward": 4.284,
+          "relevance": 1,
+          "reward": 6.12,
           "words": {
             "result": 0.18,
             "wordCount": 2,
@@ -986,8 +986,8 @@
             "sentences": 1,
             "syllables": 14
           },
-          "relevance": 0.7,
-          "reward": 5.488,
+          "relevance": 1,
+          "reward": 7.84,
           "words": {
             "result": 0.54,
             "wordCount": 8,
@@ -1021,8 +1021,8 @@
             "sentences": 1,
             "syllables": 6
           },
-          "relevance": 0.7,
-          "reward": 3.304,
+          "relevance": 1,
+          "reward": 4.72,
           "words": {
             "result": 0.18,
             "wordCount": 2,
@@ -1060,8 +1060,8 @@
             "sentences": 3,
             "syllables": 42
           },
-          "relevance": 0.7,
-          "reward": 18.592,
+          "relevance": 1,
+          "reward": 26.56,
           "words": {
             "result": 1.33,
             "wordCount": 30,
@@ -1095,8 +1095,8 @@
             "sentences": 1,
             "syllables": 63
           },
-          "relevance": 0.7,
-          "reward": 8.792,
+          "relevance": 1,
+          "reward": 12.56,
           "words": {
             "result": 1.56,
             "wordCount": 41,
@@ -1130,8 +1130,8 @@
             "sentences": 5,
             "syllables": 143
           },
-          "relevance": 0.7,
-          "reward": 17.36,
+          "relevance": 1,
+          "reward": 24.8,
           "words": {
             "result": 1.84,
             "wordCount": 101,
@@ -1165,8 +1165,8 @@
             "sentences": 2,
             "syllables": 52
           },
-          "relevance": 0.7,
-          "reward": 7.84,
+          "relevance": 1,
+          "reward": 11.2,
           "words": {
             "result": 1.28,
             "wordCount": 28,
@@ -1199,8 +1199,8 @@
             "sentences": 2,
             "syllables": 25
           },
-          "relevance": 0.7,
-          "reward": 6.804,
+          "relevance": 1,
+          "reward": 9.72,
           "words": {
             "result": 0.9,
             "wordCount": 16,
@@ -1211,7 +1211,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issuecomment-2063712447"
       }
     ],
-    "total": 492.18,
+    "total": 586.2,
     "userId": 4975670
   },
   "gentlementlegen": {
@@ -1639,7 +1639,7 @@
             "sentences": 1,
             "syllables": 27
           },
-          "relevance": 0.7,
+          "relevance": 1,
           "reward": 0,
           "words": {
             "result": 0,
@@ -1678,8 +1678,8 @@
             "sentences": 3,
             "syllables": 82
           },
-          "relevance": 0.7,
-          "reward": 67.844,
+          "relevance": 1,
+          "reward": 96.92,
           "words": {
             "result": 3.56,
             "wordCount": 60,
@@ -1717,8 +1717,8 @@
             "sentences": 2,
             "syllables": 25
           },
-          "relevance": 0.7,
-          "reward": 27.244,
+          "relevance": 1,
+          "reward": 38.92,
           "words": {
             "result": 1.8,
             "wordCount": 16,
@@ -1756,8 +1756,8 @@
             "sentences": 4,
             "syllables": 25
           },
-          "relevance": 0.7,
-          "reward": 25.172,
+          "relevance": 1,
+          "reward": 35.96,
           "words": {
             "result": 1.72,
             "wordCount": 15,
@@ -1795,8 +1795,8 @@
             "sentences": 3,
             "syllables": 52
           },
-          "relevance": 0.7,
-          "reward": 35,
+          "relevance": 1,
+          "reward": 50,
           "words": {
             "result": 3.08,
             "wordCount": 40,
@@ -1838,8 +1838,8 @@
             "sentences": 3,
             "syllables": 43
           },
-          "relevance": 0.7,
-          "reward": 37.296,
+          "relevance": 1,
+          "reward": 53.28,
           "words": {
             "result": 1.28,
             "wordCount": 10,
@@ -1877,8 +1877,8 @@
             "sentences": 1,
             "syllables": 42
           },
-          "relevance": 0.7,
-          "reward": 39.76,
+          "relevance": 1,
+          "reward": 56.8,
           "words": {
             "result": 2.57,
             "wordCount": 28,
@@ -1912,8 +1912,8 @@
             "sentences": 1,
             "syllables": 27
           },
-          "relevance": 0.7,
-          "reward": 23.044,
+          "relevance": 1,
+          "reward": 32.92,
           "words": {
             "result": 2.4,
             "wordCount": 25,
@@ -1955,8 +1955,8 @@
             "sentences": 3,
             "syllables": 61
           },
-          "relevance": 0.7,
-          "reward": 43.82,
+          "relevance": 1,
+          "reward": 62.6,
           "words": {
             "result": 3.12,
             "wordCount": 41,
@@ -1994,8 +1994,8 @@
             "sentences": 5,
             "syllables": 56
           },
-          "relevance": 0.7,
-          "reward": 32.396,
+          "relevance": 1,
+          "reward": 46.28,
           "words": {
             "result": 2.57,
             "wordCount": 28,
@@ -2033,8 +2033,8 @@
             "sentences": 2,
             "syllables": 25
           },
-          "relevance": 0.7,
-          "reward": 21.7,
+          "relevance": 1,
+          "reward": 31,
           "words": {
             "result": 1.08,
             "wordCount": 8,
@@ -2076,8 +2076,8 @@
             "sentences": 6,
             "syllables": 55
           },
-          "relevance": 0.7,
-          "reward": 40.852,
+          "relevance": 1,
+          "reward": 58.36,
           "words": {
             "result": 3.05,
             "wordCount": 39,
@@ -2111,8 +2111,8 @@
             "sentences": 1,
             "syllables": 15
           },
-          "relevance": 0.7,
-          "reward": 16.772,
+          "relevance": 1,
+          "reward": 23.96,
           "words": {
             "result": 1.47,
             "wordCount": 12,
@@ -2146,8 +2146,8 @@
             "sentences": 2,
             "syllables": 45
           },
-          "relevance": 0.7,
-          "reward": 26.796,
+          "relevance": 1,
+          "reward": 38.28,
           "words": {
             "result": 2.81,
             "wordCount": 33,
@@ -2185,8 +2185,8 @@
             "sentences": 2,
             "syllables": 92
           },
-          "relevance": 0.7,
-          "reward": 40.992,
+          "relevance": 1,
+          "reward": 58.56,
           "words": {
             "result": 3.66,
             "wordCount": 68,
@@ -2224,8 +2224,8 @@
             "sentences": 2,
             "syllables": 33
           },
-          "relevance": 0.7,
-          "reward": 30.38,
+          "relevance": 1,
+          "reward": 43.4,
           "words": {
             "result": 2.4,
             "wordCount": 25,
@@ -2259,8 +2259,8 @@
             "sentences": 1,
             "syllables": 45
           },
-          "relevance": 0.7,
-          "reward": 22.288,
+          "relevance": 1,
+          "reward": 31.84,
           "words": {
             "result": 2.34,
             "wordCount": 24,
@@ -2298,8 +2298,8 @@
             "sentences": 2,
             "syllables": 34
           },
-          "relevance": 0.7,
-          "reward": 23.1,
+          "relevance": 1,
+          "reward": 33,
           "words": {
             "result": 1.28,
             "wordCount": 10,
@@ -2345,8 +2345,8 @@
             "sentences": 2,
             "syllables": 74
           },
-          "relevance": 0.7,
-          "reward": 60.032,
+          "relevance": 1,
+          "reward": 85.76,
           "words": {
             "result": 2.72,
             "wordCount": 31,
@@ -2384,8 +2384,8 @@
             "sentences": 3,
             "syllables": 39
           },
-          "relevance": 0.7,
-          "reward": 31.892,
+          "relevance": 1,
+          "reward": 45.56,
           "words": {
             "result": 2.67,
             "wordCount": 30,
@@ -2423,8 +2423,8 @@
             "sentences": 3,
             "syllables": 102
           },
-          "relevance": 0.7,
-          "reward": 104.552,
+          "relevance": 1,
+          "reward": 149.36,
           "words": {
             "result": 3.63,
             "wordCount": 65,
@@ -2458,8 +2458,8 @@
             "sentences": 2,
             "syllables": 76
           },
-          "relevance": 0.7,
-          "reward": 30.604,
+          "relevance": 1,
+          "reward": 43.72,
           "words": {
             "result": 3.32,
             "wordCount": 48,
@@ -2501,8 +2501,8 @@
             "sentences": 4,
             "syllables": 103
           },
-          "relevance": 0.7,
-          "reward": 85.792,
+          "relevance": 1,
+          "reward": 122.56,
           "words": {
             "result": 3.3,
             "wordCount": 47,
@@ -2539,8 +2539,8 @@
             "sentences": 2,
             "syllables": 30
           },
-          "relevance": 0.7,
-          "reward": 20.636,
+          "relevance": 1,
+          "reward": 29.48,
           "words": {
             "result": 0.97,
             "wordCount": 7,
@@ -2573,8 +2573,8 @@
             "sentences": 1,
             "syllables": 33
           },
-          "relevance": 0.7,
-          "reward": 24.612,
+          "relevance": 1,
+          "reward": 35.16,
           "words": {
             "result": 2.51,
             "wordCount": 27,
@@ -2591,7 +2591,7 @@
       "timestamp": "2024-04-25T14:29:35Z",
       "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#event-12609679506"
     },
-    "total": 1622.478,
+    "total": 2013.582,
     "userId": 9807008
   },
   "gitcoindev": {
@@ -2674,8 +2674,8 @@
             "sentences": 1,
             "syllables": 22
           },
-          "relevance": 0.7,
-          "reward": 2.576,
+          "relevance": 1,
+          "reward": 3.68,
           "words": {
             "result": 0.82,
             "wordCount": 14,
@@ -2709,8 +2709,8 @@
             "sentences": 1,
             "syllables": 33
           },
-          "relevance": 0.7,
-          "reward": 1.96,
+          "relevance": 1,
+          "reward": 2.8,
           "words": {
             "result": 1.2,
             "wordCount": 25,
@@ -2744,8 +2744,8 @@
             "sentences": 2,
             "syllables": 13
           },
-          "relevance": 0.7,
-          "reward": 1.372,
+          "relevance": 1,
+          "reward": 1.96,
           "words": {
             "result": 0.64,
             "wordCount": 10,
@@ -2779,8 +2779,8 @@
             "sentences": 2,
             "syllables": 20
           },
-          "relevance": 0.7,
-          "reward": 1.596,
+          "relevance": 1,
+          "reward": 2.28,
           "words": {
             "result": 0.78,
             "wordCount": 13,
@@ -2814,8 +2814,8 @@
             "sentences": 2,
             "syllables": 38
           },
-          "relevance": 0.7,
-          "reward": 1.96,
+          "relevance": 1,
+          "reward": 2.8,
           "words": {
             "result": 1.17,
             "wordCount": 24,
@@ -2849,8 +2849,8 @@
             "sentences": 1,
             "syllables": 26
           },
-          "relevance": 0.7,
-          "reward": 1.792,
+          "relevance": 1,
+          "reward": 2.56,
           "words": {
             "result": 1.04,
             "wordCount": 20,
@@ -2884,8 +2884,8 @@
             "sentences": 1,
             "syllables": 11
           },
-          "relevance": 0.7,
-          "reward": 1.344,
+          "relevance": 1,
+          "reward": 1.92,
           "words": {
             "result": 0.59,
             "wordCount": 9,
@@ -2923,8 +2923,8 @@
             "sentences": 2,
             "syllables": 111
           },
-          "relevance": 0.7,
-          "reward": 3.332,
+          "relevance": 1,
+          "reward": 4.76,
           "words": {
             "result": 1.8,
             "wordCount": 63,
@@ -2958,8 +2958,8 @@
             "sentences": 1,
             "syllables": 26
           },
-          "relevance": 0.7,
-          "reward": 1.764,
+          "relevance": 1,
+          "reward": 2.52,
           "words": {
             "result": 0.94,
             "wordCount": 17,
@@ -2997,8 +2997,8 @@
             "sentences": 3,
             "syllables": 49
           },
-          "relevance": 0.7,
-          "reward": 4.76,
+          "relevance": 1,
+          "reward": 6.8,
           "words": {
             "result": 1.47,
             "wordCount": 36,
@@ -3032,8 +3032,8 @@
             "sentences": 1,
             "syllables": 4
           },
-          "relevance": 0.7,
-          "reward": 1.204,
+          "relevance": 1,
+          "reward": 1.72,
           "words": {
             "result": 0.31,
             "wordCount": 4,
@@ -3044,7 +3044,7 @@
         "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#discussion_r1579556333"
       }
     ],
-    "total": 29.932,
+    "total": 40.072,
     "userId": 139262667
   }
 }

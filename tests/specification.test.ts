@@ -206,6 +206,7 @@ describe("Content Evaluator Module Test", () => {
     await activity.init();
 
     let processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -232,6 +233,7 @@ describe("Content Evaluator Module Test", () => {
       "_Originally posted by @test-user in https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-1234_\n\nThe implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments.";
     await activity.init();
     processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),

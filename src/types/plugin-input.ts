@@ -42,6 +42,10 @@ export const pluginSettingsSchema = T.Object(
     ),
     incentives: T.Object(
       {
+        shouldProcessUnlinkedPullRequests: T.Boolean({
+          default: false,
+          description: "Should pull-requests that are not linked to an issue be processed?",
+        }),
         /**
          * Optionally specify a file to write the results in
          */
@@ -86,7 +90,7 @@ export const pluginSettingsSchema = T.Object(
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
-export type SupportedEvents = "issues.closed" | "issue_comment.created";
+export type SupportedEvents = "issues.closed" | "issue_comment.created" | "pull_request.closed";
 export type ContextPlugin<T extends SupportedEvents = SupportedEvents> = Context<
   PluginSettings,
   EnvConfig,
