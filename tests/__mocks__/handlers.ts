@@ -21,6 +21,10 @@ import issue69Get from "./routes/issue-69-get.json";
 import issue69TimelineGet from "./routes/issue-69-timeline-get.json";
 import issue70CommentsGet from "./routes/issue-70-comments-get.json";
 import pulls70Get from "./routes/issue-70-get.json";
+import pull101Get from "./routes/pull-101-work-ubq-fi/pull-101-get.json";
+import pull101ReviewsGet from "./routes/pull-101-work-ubq-fi/pull-101-reviews-get.json";
+import pull101CommentsGet from "./routes/pull-101-work-ubq-fi/pull-101-comments-get.json";
+import issue101CommentsGet from "./routes/pull-101-work-ubq-fi/issue-101-comments-get.json";
 import issue71CommentsGet from "./routes/issue-71-comments-get.json";
 import issue71EventsGet from "./routes/issue-71-events-get.json";
 import issue71Get from "./routes/issue-71-get.json";
@@ -156,6 +160,18 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/70/comments", () => {
     return HttpResponse.json(issue70CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101", () => {
+    return HttpResponse.json(pull101Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/reviews", () => {
+    return HttpResponse.json(pull101ReviewsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/comments", () => {
+    return HttpResponse.json(pull101CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/101/comments", () => {
+    return HttpResponse.json(issue101CommentsGet);
   }),
   http.get("https://api.github.com/users/:login", ({ params: { login } }) => {
     const user = db.users.findFirst({
