@@ -50,6 +50,32 @@ export const handlers = [
     const body = await args.request.text();
     if (body.includes("IssueEdits") && body.includes("userContentEdits")) {
       return HttpResponse.json({ data: issue100Edits });
+    } else if (body.includes("collectLinkedIssues")) {
+      return HttpResponse.json({
+        data: {
+          repository: {
+            pullRequest: {
+              closingIssuesReferences: {
+                edges: [
+                  {
+                    node: {
+                      author: { login: "0x4007" },
+                      repository: { name: "conversation-rewards" },
+                      labels: {
+                        nodes: [{ name: "Time: <1 Hour" }, { name: "Priority: 3 (High)" }, { name: "Price: 150 USD" }],
+                      },
+                    },
+                  },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: "Y",
+                },
+              },
+            },
+          },
+        },
+      });
     }
     return HttpResponse.json(gqlPullCommits);
   }),

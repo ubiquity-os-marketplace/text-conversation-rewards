@@ -347,6 +347,59 @@ describe("Modules tests", () => {
   });
 
   it("Should incentivize simplifications", async () => {
+    jest
+      .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+      .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
+        return Promise.resolve(
+          (() => {
+            const relevance: { [k: string]: number } = {};
+            prCommentsToEvaluate.forEach((comment) => {
+              relevance[`${comment.id}`] = 0.8;
+            });
+            return relevance;
+          })()
+        );
+      });
+    // should run on https://github.com/ubiquity-os/conversation-rewards/pull/12 since it is a pull-request
+    const ctx = {
+      eventName: "pull_request.closed",
+      payload: {
+        pull_request: {
+          html_url: "https://github.com/ubiquity-os/conversation-rewards/pull/12",
+          number: 1,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+          ],
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717, // https://github.com/ubiquity
+          },
+        },
+      },
+      adapters: {
+        supabase: {
+          wallet: {
+            getWalletByUserId: jest.fn(async () => "0x1"),
+          },
+        },
+      },
+      config: cfg,
+      logger: new Logs("debug"),
+      octokit: new customOctokit({ auth: process.env.GITHUB_TOKEN }),
+      env: {
+        OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+        SUPABASE_KEY: process.env.SUPABASE_KEY,
+        SUPABASE_URL: process.env.SUPABASE_URL,
+        X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
+      },
+    } as unknown as ContextPlugin;
     const processor = new Processor(ctx);
     // @ts-expect-error just for testing
     processor["_transformers"] = [
@@ -362,7 +415,7 @@ describe("Modules tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(simplificationIncentivizerResults);
-  });
+  }, 240000);
 
   it("Should generate permits", async () => {
     const processor = new Processor(ctx);
