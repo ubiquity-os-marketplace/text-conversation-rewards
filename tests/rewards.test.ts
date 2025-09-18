@@ -195,16 +195,17 @@ describe("Rewards tests", () => {
   }, 120000);
 
   it("Should distribute rewards based on authorship percentages in issue body edits", async () => {
+    const author = {
+      login: "contributor1",
+      id: 4975670,
+    };
     collectLinkedMergedPulls.mockReturnValueOnce([
       {
         id: "PR_kwDOKzVPS85zXUoj",
         title: "fix: add authorship to issue body edits",
         number: 101,
         url: "https://github.com/ubiquity/work.ubq.fi/pull/101",
-        author: {
-          login: "contributor1",
-          id: 4975670,
-        },
+        author,
         state: "MERGED",
         repository: {
           owner: {
@@ -214,10 +215,20 @@ describe("Rewards tests", () => {
         },
       },
     ]);
-    const issue = parseGitHubUrl("https://github.com/ubiquity/work.ubq.fi/issues/100");
-    const activity = new IssueActivity(ctx, issue);
+    const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/100";
+    const issue = parseGitHubUrl(issueUrl);
+    const modifiedCtx = {
+      ...ctx,
+    };
+    modifiedCtx.payload = structuredClone(ctx.payload);
+    if ("issue" in modifiedCtx.payload) {
+      modifiedCtx.payload.issue.html_url = issueUrl;
+      modifiedCtx.payload.issue.id = 100;
+      modifiedCtx.payload.issue.assignees = [author] as typeof modifiedCtx.payload.issue.assignees;
+    }
+    const activity = new IssueActivity(modifiedCtx, issue);
     await activity.init();
-    const processor = new Processor(ctx);
+    const processor = new Processor(modifiedCtx);
     // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
