@@ -5,8 +5,6 @@ import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
-import { parseGitHubUrl } from "../src/start";
-import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
@@ -16,7 +14,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
 import { Result } from "../src/types/results";
-import { ExternalContentProcessor } from "../src/parser/external-content-module";
+import { ContextPlugin } from "../src/types/plugin-input";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -107,23 +105,20 @@ const { GithubCommentModule } = await import("../src/parser/github-comment-modul
 const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
+const { parseGitHubUrl } = await import("../src/start");
+const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
 
-jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, comments, allComments, prComments) => {
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        prComments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.7;
-        });
-        return relevance;
-      })()
-    );
-  });
+jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specificationBody, comments) => {
+  return Promise.resolve(
+    (() => {
+      const relevance: { [k: string]: number } = {};
+      comments.forEach((comment) => {
+        relevance[`${comment.id}`] = 0.8;
+      });
+      return relevance;
+    })()
+  );
+});
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
 
@@ -182,6 +177,7 @@ describe("Rewards tests", () => {
 
   it("Should split the rewards between multiple assignees", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -222,6 +218,7 @@ describe("Rewards tests", () => {
     const activity = new IssueActivity(ctx, issue);
     await activity.init();
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -247,6 +244,7 @@ describe("Rewards tests", () => {
     };
     modifiedCtx.config.rewards = undefined;
     const processor = new Processor(modifiedCtx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(modifiedCtx),
       new DataPurgeModule(modifiedCtx),
@@ -264,6 +262,7 @@ describe("Rewards tests", () => {
 
   it("Should not display a wallet warning on XP mode", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -290,6 +289,7 @@ describe("Rewards tests", () => {
       }
     }
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -330,6 +330,7 @@ describe("Rewards tests", () => {
       linkedReviews: activity.linkedReviews,
     };
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
