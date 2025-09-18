@@ -11,6 +11,26 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
+import { LINKED_ISSUES, PullRequestClosingIssue } from "./types/requests";
+
+async function handlePullRequestEvent(context: ContextPlugin<"pull_request.closed">) {
+  const { logger, octokit } = context;
+
+  if (!context.payload.pull_request.merged) {
+    return logger.error("Pull requests must be merged to generate rewards.").logMessage.raw;
+  }
+  if (!context.config.incentives.shouldProcessUnlinkedPullRequests) {
+    const pullRequest = parseGitHubUrl(context.payload.pull_request.html_url);
+    const linkedIssues = await octokit.graphql<PullRequestClosingIssue>(LINKED_ISSUES, {
+      owner: pullRequest.owner,
+      repo: pullRequest.repo,
+      pull_number: pullRequest.issue_number,
+    });
+    if (!linkedIssues.repository.pullRequest.closingIssuesReferences.edges.length) {
+      return logger.info("Unlinked pull-requests evaluation is disabled.").logMessage.raw;
+    }
+  }
+}
 
 async function handleEventTypeChecks(context: ContextPlugin) {
   const { eventName, logger } = context;
@@ -23,18 +43,13 @@ async function handleEventTypeChecks(context: ContextPlugin) {
   }
 
   if (isIssueClosedEvent(context)) {
-    const closedIssueCheckResult = await handleClosedIssueEventChecks(context as ContextPlugin<"issues.closed">);
-    if (closedIssueCheckResult) {
-      return closedIssueCheckResult;
-    }
+    return await handleClosedIssueEventChecks(context as ContextPlugin<"issues.closed">);
   } else if (isIssueCommentedEvent(context)) {
     if (!context.payload.comment.body.trim().startsWith("/finish")) {
       return logger.error(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
     }
   } else if (isPullRequestEvent(context)) {
-    if (!context.payload.pull_request.merged) {
-      return logger.error("Pull requests must be merged to generate rewards.").logMessage.raw;
-    }
+    return await handlePullRequestEvent(context);
   } else {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }

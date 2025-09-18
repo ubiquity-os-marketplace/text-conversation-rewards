@@ -42,6 +42,10 @@ export const pluginSettingsSchema = T.Object(
     ),
     incentives: T.Object(
       {
+        shouldProcessUnlinkedPullRequests: T.Boolean({
+          default: false,
+          description: "Should pull-requests that are not linked to an issue be processed?",
+        }),
         /**
          * Optionally specify a file to write the results in
          */
