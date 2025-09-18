@@ -42,6 +42,11 @@
         "default": {},
         "type": "object",
         "properties": {
+          "shouldProcessUnlinkedPullRequests": {
+            "default": false,
+            "description": "Should pull-requests that are not linked to an issue be processed?",
+            "type": "boolean"
+          },
           "file": {
             "description": "Specify a file to write the results in",
             "examples": ["./result.json"],
