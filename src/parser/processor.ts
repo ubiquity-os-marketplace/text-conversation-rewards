@@ -19,7 +19,7 @@ import { UserExtractorModule } from "./user-extractor-module";
 import { ExternalContentProcessor } from "./external-content-module";
 
 export class Processor {
-  private _transformers: Module[] = [];
+  private readonly _transformers: Module[] = [];
   private _result: Result = {};
   private readonly _context: ContextPlugin;
   private readonly _configuration;

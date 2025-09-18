@@ -154,7 +154,6 @@ export class PaymentModule extends BaseModule {
     if (payoutMode === "permit" || directTransferError) {
       this.context.logger.info("Transitioning to permit generation.");
       for (const [username, reward] of Object.entries(result)) {
-        // should also loop within PR rewards
         this.context.logger.debug(`Updating result for user ${username}`);
         const config: Context["config"] = {
           evmNetworkId: payload.evmNetworkId,
@@ -376,7 +375,6 @@ export class PaymentModule extends BaseModule {
   async _getBeneficiaries(result: Result): Promise<Beneficiary[]> {
     return Object.entries(result)
       .map(([username, reward]) => {
-        // Should also loop within PR rewards
         if (!reward.walletAddress) {
           return null;
         }
