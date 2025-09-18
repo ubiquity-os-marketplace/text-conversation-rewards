@@ -32,7 +32,7 @@ export class ReviewIncentivizerModule extends BaseModule {
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
     if (!data.self?.assignees || !this.isPullRequest()) {
-      this.context.logger.debug("No assignees or pull request found, won't run review incentivizer module");
+      this.context.logger.warn("No assignees or pull request found, won't run review incentivizer module");
       return result;
     }
 

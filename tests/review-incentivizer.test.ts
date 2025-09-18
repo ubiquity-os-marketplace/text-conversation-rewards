@@ -85,38 +85,43 @@ describe("Review Incentivizer", () => {
     processor["_transformers"] = [new ReviewIncentivizerModule(ctx)];
     await processor.run(activity);
     expect(spy).toHaveBeenCalledWith(
-      expect.stringMatching("No pull request is linked to this issue, won't run review incentivizer")
+      expect.stringMatching("No assignees or pull request found, won't run review incentivizer module")
     );
     spy.mockClear();
     spy.mockReset();
   });
 
   it("Should run on the linked pull-request", async () => {
-    const collectLinkedMergedPulls: Mock<() => Array<object>> = jest.fn(() => [
-      {
-        id: "PR_kwDOLUK0B85soGlu",
-        title: "feat: github comment generation and posting",
-        number: 12,
-        url: "https://github.com/ubiquity-os/conversation-rewards/pull/12",
-        author: {
-          login: "gentlementlegen",
-          id: 9807008,
-        },
-        state: "MERGED",
-        repository: {
-          owner: {
-            login: "ubiquity-os",
-          },
-          name: "conversation-rewards",
-        },
+    const pr = {
+      id: "PR_kwDOLUK0B85soGlu",
+      title: "feat: github comment generation and posting",
+      number: 12,
+      url: "https://github.com/ubiquity-os/conversation-rewards/pull/12",
+      author: {
+        login: "gentlementlegen",
+        id: 9807008,
       },
-    ]);
+      state: "MERGED",
+      repository: {
+        owner: {
+          login: "ubiquity-os",
+        },
+        name: "conversation-rewards",
+      },
+    };
+    const collectLinkedMergedPulls: Mock<() => Array<object>> = jest.fn(() => [pr]);
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedMergedPulls: collectLinkedMergedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
     const issue = parseGitHubUrl("https://github.com/ubiquity-os/conversation-rewards/issues/5");
-    const activity = new IssueActivity(ctx, issue);
+    const newCtx = { ...ctx };
+    newCtx.payload = {
+      ...structuredClone(ctx.payload),
+      // @ts-expect-error pull_request in context
+      pull_request: pr,
+    };
+    const activity = new IssueActivity(newCtx, issue);
     await activity.init();
     for (const item of dbSeed.users) {
       mockDb.users.create(item);
@@ -131,10 +136,12 @@ describe("Review Incentivizer", () => {
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
     const spy = jest.spyOn(console, "warn");
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [new ReviewIncentivizerModule(ctx)];
+    const processor = new Processor(newCtx);
+    processor["_transformers"] = [new ReviewIncentivizerModule(newCtx)];
     await processor.run(activity);
-    expect(spy).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringMatching("No assignees or pull request found, won't run review incentivizer module")
+    );
     spy.mockClear();
   });
 
