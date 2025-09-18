@@ -198,15 +198,12 @@ describe("Modules tests", () => {
   beforeEach(async () => {
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
+      .mockImplementation((specificationBody, commentsToEvaluate) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
             commentsToEvaluate.forEach((comment) => {
               relevance[`${comment.id}`] = 0.8;
-            });
-            prCommentsToEvaluate.forEach((comment) => {
-              relevance[`${comment.id}`] = 0.7;
             });
             return relevance;
           })()
