@@ -84,8 +84,8 @@ export async function run(context: ContextPlugin) {
 
   const shouldProceed = await handlePriceLabelValidation(context, activity);
   if (!shouldProceed) {
-    const errorMsg = "No price label has been set. Skipping permit generation.";
-    const result = logger.error(errorMsg);
+    const warnMsg = "No price label has been set. Skipping permit generation.";
+    const result = logger.warn(warnMsg);
     await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
