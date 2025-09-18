@@ -1,5 +1,5 @@
 import * as github from "@actions/github";
-import ms from "ms";
+import ms, { UnitAnyCase } from "ms";
 import { GitHubIssue } from "../github-types";
 
 export function getGithubWorkflowRunUrl() {
@@ -21,33 +21,24 @@ export function parsePriorityLabel(labels?: GitHubIssue["labels"] | ReadonlyArra
   return 1;
 }
 
-function mapUnit(u: string): "m" | "h" | "d" | "w" | undefined {
-  if (u.startsWith("min")) return "m";
-  if (u.startsWith("hour")) return "h";
-  if (u.startsWith("day")) return "d";
-  if (u.startsWith("week")) return "w";
-  return undefined;
-}
-
 export function parseDurationLabel(
   labels?: GitHubIssue["labels"] | ReadonlyArray<string | { name?: string | null }>
 ): number | undefined {
   if (!labels) return undefined;
 
-  const re = /^Time:\s*<\s*([\d.]+)\s*(minute|minutes|min|hour|hours|day|days|week|weeks)\b/i;
+  const re = /^Time\b\s*:?\s*<?\s*(\d+(?:\.\d+)?)\s*([a-z]+)\b/i;
 
   for (const label of labels as ReadonlyArray<string | { name?: string | null }>) {
     const name = (typeof label === "string" ? label : label.name) ?? "";
-    if (!name.startsWith("Time:")) continue;
+    if (!/^Time\b/i.test(name)) continue;
 
     const matched = re.exec(name);
     if (!matched) continue;
 
-    const value = Number(matched[1]);
-    const unit = mapUnit(matched[2].toLowerCase());
-    if (!(Number.isFinite(value) && value > 0 && unit)) continue;
-    const millis = ms(`${value}${unit}`);
-    if (typeof millis === "number" && millis > 0) return millis;
+    const number = Number(matched[1]);
+    const unit = matched[2] as UnitAnyCase;
+
+    return ms(`${number} ${unit}`);
   }
 
   return undefined;
