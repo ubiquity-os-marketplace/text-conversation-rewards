@@ -1,11 +1,10 @@
 import { Value } from "@sinclair/typebox/value";
-import { minimatch } from "minimatch";
 import {
   ReviewIncentivizerConfiguration,
   reviewIncentivizerConfigurationType,
 } from "../configuration/review-incentivizer-config";
 import { GitHubPullRequestReviewState } from "../github-types";
-import { getExcludedFiles } from "../helpers/excluded-files";
+import { getExcludedFiles, shouldExcludeFile } from "../helpers/excluded-files";
 import { parsePriorityLabel } from "../helpers/github";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
@@ -109,15 +108,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha, prData);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
-      if (
-        !excludedFilePatterns?.length ||
-        !excludedFilePatterns.some((pattern) => {
-          // Adjust pattern to handle directories: append '**' if pattern ends with '/' otherwise minimatch doesn't
-          // exclude the files within the subdirectories
-          const adjustedPattern = pattern.endsWith("/") ? `${pattern}**` : pattern;
-          return minimatch(fileName, adjustedPattern);
-        })
-      ) {
+      if (!shouldExcludeFile(fileName, excludedFilePatterns)) {
         reviewEffect.addition += changes.addition;
         reviewEffect.deletion += changes.deletion;
       }
