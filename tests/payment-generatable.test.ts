@@ -251,7 +251,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       .mockImplementation(() => Promise.resolve(Infinity));
     jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
       return {
-        "test.txt": {
+        "test.ts": {
           addition: 50,
           deletion: 50,
         },
