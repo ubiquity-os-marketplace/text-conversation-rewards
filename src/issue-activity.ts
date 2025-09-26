@@ -55,14 +55,14 @@ export class IssueActivity {
         getIssue(this._context, this._issueParams),
         getIssueEvents(this._context, this._issueParams),
         getIssueComments(this._context, this._issueParams),
-        this._getLinkedReviews(),
+        this._getLinkedPullRequests(),
       ]);
     } catch (error) {
       throw this._context.logger.error(`Could not fetch issue data: ${error}`);
     }
   }
 
-  private async _getLinkedReviews(): Promise<Review[]> {
+  private async _getLinkedPullRequests(): Promise<Review[]> {
     this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
 
     const pulls: string[] = [];
