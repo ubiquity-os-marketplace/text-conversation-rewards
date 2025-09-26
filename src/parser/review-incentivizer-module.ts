@@ -6,7 +6,6 @@ import {
 import { GitHubPullRequestReviewState } from "../github-types";
 import { getExcludedFiles, shouldExcludeFile } from "../helpers/excluded-files";
 import { PullRequestData } from "../helpers/pull-request-data";
-import { isPullRequestEvent } from "../helpers/type-assertions";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
@@ -124,16 +123,6 @@ export class ReviewIncentivizerModule extends BaseModule {
       return;
     }
     const reviews: ReviewScore[] = [];
-    if (
-      !isPullRequestEvent(this.context) &&
-      "issue" in this.context.payload &&
-      !this.context.payload.issue.pull_request
-    ) {
-      this.context.logger.debug("Not a pull request event, won't run review incentivizer module.", {
-        event: this.context.eventName,
-      });
-      return;
-    }
     const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
 
     const prData = new PullRequestData(this.context, baseOwner, baseRepo, pullNumber);
