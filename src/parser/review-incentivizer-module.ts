@@ -40,7 +40,7 @@ export class ReviewIncentivizerModule extends BaseModule {
       const reward = result[username];
       reward.reviewRewards = [];
 
-      for (const linkedPullReviews of data.linkedReviews) {
+      for (const linkedPullReviews of data.linkedPullRequests) {
         if (linkedPullReviews.reviews && linkedPullReviews.self && username !== linkedPullReviews.self.user.login) {
           const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;

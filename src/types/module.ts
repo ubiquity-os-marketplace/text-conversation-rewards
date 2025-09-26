@@ -2,7 +2,6 @@ import Decimal from "decimal.js";
 import { parseDurationLabel, parsePriorityLabel } from "../helpers/github";
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "./plugin-input";
-import { LINKED_ISSUES, PullRequestClosingIssue } from "./requests";
 import { Result } from "./results";
 
 export interface Module {
@@ -36,19 +35,11 @@ export abstract class BaseModule implements Module {
       }
 
       const pullNumber = data.self?.number;
-      const owner = this.context.payload.repository.owner.login;
-      const repo = this.context.payload.repository.name;
       if (!pullNumber) {
         return parsePriorityLabel(data?.self?.labels);
       }
 
-      const linked = await this.context.octokit.graphql.paginate<PullRequestClosingIssue>(LINKED_ISSUES, {
-        owner,
-        repo,
-        pull_number: pullNumber,
-      });
-
-      const issues = linked.repository.pullRequest.closingIssuesReferences.edges ?? [];
+      const issues = data.linkedIssues;
 
       let weightedSum = new Decimal(0);
       let weightTotal = new Decimal(0);

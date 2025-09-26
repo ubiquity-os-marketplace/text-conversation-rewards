@@ -1,6 +1,6 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
-import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
+import { ClosedByPullRequestsReferences, collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -23,6 +23,7 @@ import {
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { isPullRequest } from "./types/module";
+import { LINKED_ISSUES, PullRequestClosingIssue } from "./types/requests";
 
 type BaseComment = GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest;
 
@@ -48,19 +49,41 @@ export class IssueActivity {
   self: GitHubIssue | null = null;
   events: GitHubIssueEvent[] = [];
   comments: GitHubIssueComment[] = [];
-  linkedReviews: Review[] = [];
+  linkedPullRequests: Review[] = [];
+  linkedIssues: ClosedByPullRequestsReferences[] = [];
 
   async init() {
     try {
-      [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
+      [this.self, this.events, this.comments, this.linkedPullRequests, this.linkedIssues] = await Promise.all([
         getIssue(this._context, this._issueParams),
         getIssueEvents(this._context, this._issueParams),
         getIssueComments(this._context, this._issueParams),
         this._getLinkedPullRequests(),
+        this._getLinkedIssues(),
       ]);
     } catch (error) {
       throw this._context.logger.error(`Could not fetch issue data: ${error}`);
     }
+  }
+
+  private async _getLinkedIssues(): Promise<ClosedByPullRequestsReferences[]> {
+    if (!isPullRequest(this._context)) {
+      return [];
+    }
+
+    const pullNumber = this._issueParams.issue_number;
+    const owner = this._context.payload.repository.owner.login;
+    const repo = this._context.payload.repository.name;
+    if (!pullNumber) {
+      return [];
+    }
+    const linked = await this._context.octokit.graphql.paginate<PullRequestClosingIssue>(LINKED_ISSUES, {
+      owner,
+      repo,
+      pull_number: pullNumber,
+    });
+
+    return linked.repository.pullRequest.closingIssuesReferences.edges ?? [];
   }
 
   private async _getLinkedPullRequests(): Promise<Review[]> {
@@ -195,7 +218,9 @@ export class IssueActivity {
   }
 
   async _getLinkedReviewComments() {
-    const commentPromises = this.linkedReviews.map((linkedReview) => this._processSingleLinkedReview(linkedReview));
+    const commentPromises = this.linkedPullRequests.map((linkedReview) =>
+      this._processSingleLinkedReview(linkedReview)
+    );
     const commentsArrays = await Promise.all(commentPromises);
     return commentsArrays.flat();
   }
@@ -231,7 +256,7 @@ export class IssueActivity {
         ),
       });
     }
-    if (this.linkedReviews) {
+    if (this.linkedPullRequests) {
       const linkedComments = await this._getLinkedReviewComments();
       comments.push(...linkedComments);
     }

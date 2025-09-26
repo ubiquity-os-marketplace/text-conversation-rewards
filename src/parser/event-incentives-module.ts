@@ -68,7 +68,7 @@ export class EventIncentivesModule extends BaseModule {
       this.processReactions(comment.user?.login, issueCommentReactions, result);
     }
 
-    for (const pull of data.linkedReviews) {
+    for (const pull of data.linkedPullRequests) {
       if (!pull.self) {
         continue;
       }
