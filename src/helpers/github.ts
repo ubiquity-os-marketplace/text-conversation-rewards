@@ -6,7 +6,7 @@ export function getGithubWorkflowRunUrl() {
   return `${github.context.payload.repository?.html_url}/actions/runs/${github.context.runId}`;
 }
 
-export function parsePriorityLabel(labels?: GitHubIssue["labels"] | ReadonlyArray<string | { name?: string | null }>) {
+export function parsePriorityLabel(labels?: ReadonlyArray<string | { name?: string | null }>) {
   if (!labels) return 1;
 
   for (const label of labels as ReadonlyArray<string | { name?: string | null }>) {
