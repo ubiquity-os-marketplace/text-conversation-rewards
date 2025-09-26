@@ -1,15 +1,16 @@
 import * as github from "@actions/github";
 import ms, { UnitAnyCase } from "ms";
-import { GitHubIssue } from "../github-types";
+
+type Labels = ReadonlyArray<string | { name?: string | null }>;
 
 export function getGithubWorkflowRunUrl() {
   return `${github.context.payload.repository?.html_url}/actions/runs/${github.context.runId}`;
 }
 
-export function parsePriorityLabel(labels?: ReadonlyArray<string | { name?: string | null }>) {
+export function parsePriorityLabel(labels?: Labels) {
   if (!labels) return 1;
 
-  for (const label of labels as ReadonlyArray<string | { name?: string | null }>) {
+  for (const label of labels) {
     const priorityLabel = typeof label === "string" ? label : label.name;
     const matched = priorityLabel?.match(/^Priority:\s*(\d+)/i);
 
@@ -21,16 +22,13 @@ export function parsePriorityLabel(labels?: ReadonlyArray<string | { name?: stri
   return 1;
 }
 
-export function parseDurationLabel(
-  labels?: GitHubIssue["labels"] | ReadonlyArray<string | { name?: string | null }>
-): number | undefined {
+export function parseDurationLabel(labels?: Labels): number | undefined {
   if (!labels) return undefined;
 
   const re = /^Time\b\s*:?\s*<?\s*(\d+(?:\.\d+)?)\s*([a-z]+)\b/i;
 
-  for (const label of labels as ReadonlyArray<string | { name?: string | null }>) {
+  for (const label of labels) {
     const name = (typeof label === "string" ? label : label.name) ?? "";
-    if (!/^Time\b/i.test(name)) continue;
 
     const matched = re.exec(name);
     if (!matched) continue;
