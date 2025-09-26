@@ -22,6 +22,7 @@ import {
   PullParams,
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
+import { isPullRequest } from "./types/module";
 
 type BaseComment = GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest;
 
@@ -178,12 +179,7 @@ export class IssueActivity {
   }
 
   private async _tryAddLinkedComment(comment: AugmentedComment, comments: Array<AugmentedComment>) {
-    if (
-      !(
-        "pull_Request" in this._context.payload ||
-        ("issue" in this._context.payload && this._context.payload.issue.pull_request)
-      )
-    ) {
+    if (!isPullRequest(this._context)) {
       if (comment.commentType & CommentAssociation.SPECIFICATION && comment.html_url) {
         const { owner, repo, issue_number } = parseGitHubUrl(comment.html_url);
         const { data } = await this._context.octokit.rest.issues.get({

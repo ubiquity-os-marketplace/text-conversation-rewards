@@ -3,6 +3,7 @@ import { ContextPlugin } from "../types/plugin-input";
 import { IssueActivityCache } from "../web/db/issue-activity-cache";
 import { getSortedPrices } from "./label-price-extractor";
 import { logInvalidIssue } from "./log-invalid-issue";
+import { isPullRequest } from "../types/module";
 
 type ActivityType = IssueActivity | IssueActivityCache;
 type LoggerType = ContextPlugin["logger"];
@@ -74,11 +75,7 @@ export async function handlePriceLabelValidation(
   const requiresPriceLabel = config.incentives.requirePriceLabel;
   const hasPriceLabel = getSortedPrices(activity.self?.labels).length > 0;
 
-  if (
-    requiresPriceLabel &&
-    !hasPriceLabel &&
-    !("pull_request" in context.payload || ("issue" in context.payload && !!context.payload.issue.pull_request))
-  ) {
+  if (requiresPriceLabel && !hasPriceLabel && !isPullRequest(context)) {
     if (requiresPriceLabel === "auto") {
       await tryAutoFetchingPrice(logger, activity);
       if (!getSortedPrices(activity.self?.labels).length) {

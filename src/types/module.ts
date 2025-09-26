@@ -10,6 +10,10 @@ export interface Module {
   get enabled(): boolean;
 }
 
+export function isPullRequest(context: Pick<ContextPlugin, "payload">): boolean {
+  return "pull_request" in context.payload || ("issue" in context.payload && !!context.payload.issue.pull_request);
+}
+
 export abstract class BaseModule implements Module {
   protected context: ContextPlugin;
 
@@ -22,10 +26,7 @@ export abstract class BaseModule implements Module {
   abstract transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
 
   protected isPullRequest(): boolean {
-    return (
-      "pull_request" in this.context.payload ||
-      ("issue" in this.context.payload && !!this.context.payload.issue.pull_request)
-    );
+    return isPullRequest(this.context);
   }
 
   protected async computePriority(data: Readonly<IssueActivity>): Promise<number> {
