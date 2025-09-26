@@ -25,16 +25,14 @@ export class SimplificationIncentivizerModule extends BaseModule {
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
     let pullRequest;
-    if ("issue" in this.context.payload) {
-      if (this.context.payload.issue.pull_request) {
-        const pull = await this.context.octokit.rest.pulls.get({
-          owner: this.context.payload.repository.owner.login,
-          repo: this.context.payload.repository.name,
-          pull_number: this.context.payload.issue.number,
-        });
-        pullRequest = pull.data;
-      }
-    } else {
+    if ("issue" in this.context.payload && this.context.payload.issue.pull_request) {
+      const pull = await this.context.octokit.rest.pulls.get({
+        owner: this.context.payload.repository.owner.login,
+        repo: this.context.payload.repository.name,
+        pull_number: this.context.payload.issue.number,
+      });
+      pullRequest = pull.data;
+    } else if ("pull_request" in this.context.payload) {
       pullRequest = this.context.payload.pull_request;
     }
     if (!pullRequest) {
