@@ -482,8 +482,7 @@ export class ContentEvaluatorModule extends BaseModule {
       }
       return bodies;
     } catch (e) {
-      this.context.logger.warn("Failed to collect closing issue bodies for PR", { e });
-      return [];
+      throw this.context.logger.warn("Failed to collect the closing issue's body for a linked issue.", { e });
     }
   }
 
