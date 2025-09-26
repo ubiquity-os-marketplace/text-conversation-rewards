@@ -53,6 +53,8 @@ export class Processor {
   }
 
   async run(data: Readonly<IssueActivity>) {
+    const rewardLimit = await this._getRewardsLimit(data.self);
+
     for (const transformer of this._transformers) {
       if (transformer.enabled) {
         this._result = await transformer.transform(data, this._result);
@@ -65,10 +67,7 @@ export class Processor {
             await this._getRewardsLimit(data.self)
           );
         } else {
-          this._result[username].total = Math.min(
-            this._sumRewards(this._result[username], await this._getRewardsLimit(data.self)),
-            await this._getRewardsLimit(data.self)
-          );
+          this._result[username].total = Math.min(this._sumRewards(this._result[username], rewardLimit));
         }
       }
     }
