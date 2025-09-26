@@ -48,12 +48,12 @@ export abstract class BaseModule implements Module {
         pull_number: pullNumber,
       });
 
-      const edges = linked.repository.pullRequest.closingIssuesReferences.edges ?? [];
+      const issues = linked.repository.pullRequest.closingIssuesReferences.edges ?? [];
 
       let weightedSum = new Decimal(0);
       let weightTotal = new Decimal(0);
-      for (const edge of edges) {
-        const labels = edge.node.labels?.nodes;
+      for (const issue of issues) {
+        const labels = issue.node.labels?.nodes;
         const priority = parsePriorityLabel(labels);
         const durationHours = parseDurationLabel(labels); // hours
         if (durationHours && durationHours > 0) {
