@@ -11,28 +11,23 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
-import { LINKED_ISSUES, PullRequestClosingIssue } from "./types/requests";
 
-async function handlePullRequestEvent(context: ContextPlugin<"pull_request.closed">) {
-  const { logger, octokit } = context;
+async function handlePullRequestEvent(context: ContextPlugin<"pull_request.closed">, activity: IssueActivity) {
+  const { logger } = context;
 
   if (!context.payload.pull_request.merged) {
     return logger.error("Pull requests must be merged to generate rewards.").logMessage.raw;
   }
   if (!context.config.incentives.shouldProcessUnlinkedPullRequests) {
-    const pullRequest = parseGitHubUrl(context.payload.pull_request.html_url);
-    const linkedIssues = await octokit.graphql<PullRequestClosingIssue>(LINKED_ISSUES, {
-      owner: pullRequest.owner,
-      repo: pullRequest.repo,
-      pull_number: pullRequest.issue_number,
-    });
-    if (!linkedIssues.repository.pullRequest.closingIssuesReferences.edges.length) {
+    await activity.init();
+    const linkedIssues = activity.linkedIssues;
+    if (!linkedIssues.length) {
       return logger.info("Unlinked pull-requests evaluation is disabled.").logMessage.raw;
     }
   }
 }
 
-async function handleEventTypeChecks(context: ContextPlugin) {
+async function handleEventTypeChecks(context: ContextPlugin, activity: IssueActivity) {
   const { eventName, logger } = context;
 
   if (context.command) {
@@ -49,7 +44,7 @@ async function handleEventTypeChecks(context: ContextPlugin) {
       return logger.error(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
     }
   } else if (isPullRequestEvent(context)) {
-    return await handlePullRequestEvent(context);
+    return await handlePullRequestEvent(context, activity);
   } else {
     return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
   }
@@ -77,13 +72,14 @@ async function handleClosedIssueEventChecks(context: ContextPlugin<"issues.close
 
 export async function run(context: ContextPlugin) {
   const { payload, logger, config, commentHandler } = context;
+  const issueItem = "issue" in payload ? payload.issue : payload.pull_request;
+  const issue = parseGitHubUrl(issueItem.html_url);
+  const activity = new IssueActivity(context, issue);
 
-  const eventCheckResult = await handleEventTypeChecks(context);
+  const eventCheckResult = await handleEventTypeChecks(context, activity);
   if (eventCheckResult) {
     return eventCheckResult;
   }
-
-  const issueItem = "issue" in payload ? payload.issue : payload.pull_request;
 
   if (config.incentives.collaboratorOnlyPaymentInvocation && !(await isUserAllowedToGenerateRewards(context))) {
     await logInvalidIssue(logger, issueItem.html_url);
@@ -101,8 +97,6 @@ export async function run(context: ContextPlugin) {
     await commentHandler.postComment(context, logger.info("Evaluating results. Please wait..."));
   }
 
-  const issue = parseGitHubUrl(issueItem.html_url);
-  const activity = new IssueActivity(context, issue);
   await activity.init();
 
   // Only check price labels for issues

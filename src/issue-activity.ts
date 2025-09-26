@@ -53,6 +53,10 @@ export class IssueActivity {
   linkedIssues: ClosedByPullRequestsReferences[] = [];
 
   async init() {
+    if (this.self) {
+      this._context.logger.info("The Issue Activity is already initialized.");
+      return;
+    }
     try {
       [this.self, this.events, this.comments, this.linkedPullRequests, this.linkedIssues] = await Promise.all([
         getIssue(this._context, this._issueParams),
