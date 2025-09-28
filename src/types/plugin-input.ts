@@ -5,6 +5,7 @@ import { contentEvaluatorConfigurationType } from "../configuration/content-eval
 import { dataCollectionConfigurationType } from "../configuration/data-collection-config";
 import { dataPurgeConfigurationType } from "../configuration/data-purge-config";
 import { eventIncentivesConfigurationType } from "../configuration/event-incentives-config";
+import { externalContentConfigurationType } from "../configuration/external-content-config";
 import { formattingEvaluatorConfigurationType } from "../configuration/formatting-evaluator-config";
 import { githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { paymentConfigurationType } from "../configuration/payment-configuration";
@@ -13,7 +14,6 @@ import { simplificationIncentivizerConfigurationType } from "../configuration/si
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { Command } from "./command";
 import { EnvConfig } from "./env-type";
-import { externalContentConfigurationType } from "../configuration/external-content-config";
 
 export const pluginSettingsSchema = T.Object(
   {
@@ -79,6 +79,26 @@ export const pluginSettingsSchema = T.Object(
         formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()], { default: null }),
         payment: T.Union([paymentConfigurationType, T.Null()], { default: null }),
         githubComment: T.Union([githubCommentConfigurationType, T.Null()], { default: null }),
+        specialUsers: T.Array(
+          T.Array(
+            T.String({
+              minLength: 1,
+              description:
+                "GitHub login treated as equivalent to the other members of the same group when matching issue assignees to pull request authors.",
+              examples: ["Copilot", "copilot-swe-agent"],
+            }),
+            {
+              minItems: 1,
+              description:
+                "Logins that belong to the same group of interchangeable special users. Place all aliases for the same person or role in a single group.",
+            }
+          ),
+          {
+            default: [["Copilot", "copilot-swe-agent"]],
+            description:
+              "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests.",
+          }
+        ),
         externalContent: T.Union([externalContentConfigurationType, T.Null()], { default: null }),
       },
       { default: {} }

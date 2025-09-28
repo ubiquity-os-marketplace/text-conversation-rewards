@@ -9,6 +9,7 @@ import {
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
 } from "./github-types";
+import { areLoginsEquivalent } from "./helpers/github";
 import { isPullRequestEvent } from "./helpers/type-assertions";
 import {
   getIssue,
@@ -21,8 +22,8 @@ import {
   parseGitHubUrl,
   PullParams,
 } from "./start";
-import { ContextPlugin } from "./types/plugin-input";
 import { isPullRequest } from "./types/module";
+import { ContextPlugin } from "./types/plugin-input";
 import { LINKED_ISSUES, PullRequestClosingIssue } from "./types/requests";
 
 type BaseComment = GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest;
@@ -99,6 +100,12 @@ export class IssueActivity {
     } else if ("issue" in this._context.payload && this._context.payload.issue.pull_request?.html_url) {
       pulls.push(this._context.payload.issue.pull_request.html_url);
     } else {
+      const issueAssigneeLogins =
+        "issue" in this._context.payload
+          ? (this._context.payload.issue.assignees ?? [])
+              .map((assignee) => assignee?.login)
+              .filter((login): login is string => Boolean(login))
+          : [];
       pulls.push(
         ...(await collectLinkedMergedPulls(this._context, this._issueParams))
           .filter((pullRequest) => {
@@ -106,12 +113,13 @@ export class IssueActivity {
             if (!pullRequest?.author?.login) {
               return false;
             }
-            return (
-              "issue" in this._context.payload &&
-              this._context.payload.issue.assignees
-                .map((assignee) => assignee?.login)
-                .includes(pullRequest.author.login) &&
-              pullRequest.state === "MERGED"
+            if (pullRequest.state !== "MERGED") {
+              return false;
+            }
+
+            const specialUserGroups = this._context.config.incentives.specialUsers ?? [];
+            return issueAssigneeLogins.some((assigneeLogin) =>
+              areLoginsEquivalent(assigneeLogin, pullRequest.author.login, specialUserGroups)
             );
           })
           .map((pullRequest) => pullRequest.url)

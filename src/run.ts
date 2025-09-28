@@ -1,5 +1,6 @@
 import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
+import { areLoginsEquivalent } from "./helpers/github";
 import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
 import { getSortedPrices } from "./helpers/label-price-extractor";
 import { logInvalidIssue } from "./helpers/log-invalid-issue";
@@ -151,12 +152,17 @@ async function preCheck(context: ContextPlugin) {
     return true;
   }
   const issue = parseGitHubUrl(context.payload.issue.html_url);
+  const assigneeLogins = (context.payload.issue.assignees ?? [])
+    .map((assignee) => assignee?.login)
+    .filter((login): login is string => Boolean(login));
+  const specialUserGroups = context.config.incentives.specialUsers ?? [];
   const linkedPulls = (await collectLinkedMergedPulls(context, issue)).filter((pullRequest) => {
     // This can happen when a user deleted its account
-    if (!pullRequest?.author?.login) {
+    const authorLogin = pullRequest?.author?.login;
+    if (!authorLogin) {
       return false;
     }
-    return context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login);
+    return assigneeLogins.some((assigneeLogin) => areLoginsEquivalent(assigneeLogin, authorLogin, specialUserGroups));
   });
   logger.debug("Checking open linked pull-requests for", {
     issue,

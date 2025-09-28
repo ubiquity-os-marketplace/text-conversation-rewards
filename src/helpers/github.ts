@@ -41,3 +41,42 @@ export function parseDurationLabel(labels?: Labels): number | undefined {
 
   return undefined;
 }
+
+function normalizeLogin(login?: string | null) {
+  if (!login) return null;
+  const trimmed = login.trim();
+  if (!trimmed) return null;
+  return trimmed.toLowerCase();
+}
+
+export type SpecialUserGroup = ReadonlyArray<string>;
+
+export function areLoginsEquivalent(
+  loginA: string | null | undefined,
+  loginB: string | null | undefined,
+  specialUserGroups: ReadonlyArray<SpecialUserGroup> = []
+): boolean {
+  const normalizedA = normalizeLogin(loginA);
+  const normalizedB = normalizeLogin(loginB);
+
+  if (!normalizedA || !normalizedB) {
+    return false;
+  }
+
+  if (normalizedA === normalizedB) {
+    return true;
+  }
+
+  return specialUserGroups.some((group) => {
+    if (!Array.isArray(group) || group.length === 0) {
+      return false;
+    }
+    const normalizedMembers = group
+      .map((member) => normalizeLogin(member))
+      .filter((member): member is string => Boolean(member));
+    if (normalizedMembers.length < 2) {
+      return false;
+    }
+    return normalizedMembers.includes(normalizedA) && normalizedMembers.includes(normalizedB);
+  });
+}
