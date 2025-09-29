@@ -49,7 +49,7 @@ export class IssueActivity {
   self: GitHubIssue | null = null;
   events: GitHubIssueEvent[] = [];
   comments: GitHubIssueComment[] = [];
-  linkedPullRequests: Review[] = [];
+  linkedPullRequests: PullRequest[] = [];
   linkedIssues: ClosedByPullRequestsReferences[] = [];
 
   async init() {
@@ -90,7 +90,7 @@ export class IssueActivity {
     return linked.repository.pullRequest.closingIssuesReferences.edges ?? [];
   }
 
-  private async _getLinkedPullRequests(): Promise<Review[]> {
+  private async _getLinkedPullRequests(): Promise<PullRequest[]> {
     this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
 
     const pulls: string[] = [];
@@ -131,12 +131,12 @@ export class IssueActivity {
             repo: repo,
             pull_number: issue_number,
           };
-          const review = new Review(this._context, pullParams);
+          const review = new PullRequest(this._context, pullParams);
           await review.init();
           return review;
         }
       })
-      .filter((o) => o !== null) as Promise<Review>[];
+      .filter((o) => o !== null) as Promise<PullRequest>[];
     return Promise.all(promises);
   }
 
@@ -180,7 +180,7 @@ export class IssueActivity {
     }
   }
 
-  private async _processSingleLinkedReview(linkedReview: Review) {
+  private async _processSingleLinkedReview(linkedReview: PullRequest) {
     const comments = [];
     for (const value of Object.values(linkedReview)) {
       if (Array.isArray(value)) {
@@ -277,7 +277,7 @@ export class IssueActivity {
   }
 }
 
-export class Review {
+export class PullRequest {
   self: GitHubPullRequest | null = null;
   reviews: GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
   reviewComments: GitHubPullRequestReviewComment[] | null = null;

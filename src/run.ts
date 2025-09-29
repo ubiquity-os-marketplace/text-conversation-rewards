@@ -1,4 +1,3 @@
-import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
 import { getSortedPrices } from "./helpers/label-price-extractor";
@@ -38,7 +37,7 @@ async function handleEventTypeChecks(context: ContextPlugin, activity: IssueActi
   }
 
   if (isIssueClosedEvent(context)) {
-    return await handleClosedIssueEventChecks(context as ContextPlugin<"issues.closed">);
+    return await handleClosedIssueEventChecks(context as ContextPlugin<"issues.closed">, activity);
   } else if (isIssueCommentedEvent(context)) {
     if (!context.payload.comment.body.trim().startsWith("/finish")) {
       return logger.error(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
@@ -52,7 +51,7 @@ async function handleEventTypeChecks(context: ContextPlugin, activity: IssueActi
   return null;
 }
 
-async function handleClosedIssueEventChecks(context: ContextPlugin<"issues.closed">) {
+async function handleClosedIssueEventChecks(context: ContextPlugin<"issues.closed">, activity: IssueActivity) {
   const { logger, commentHandler } = context;
   if (context.payload.issue.state_reason !== "completed") {
     await logInvalidIssue(logger, context.payload.issue.html_url);
@@ -61,7 +60,7 @@ async function handleClosedIssueEventChecks(context: ContextPlugin<"issues.close
   if (await checkIfClosedByCommand(context)) {
     return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
   }
-  if (!(await preCheck(context))) {
+  if (!(await preCheck(context, activity))) {
     await logInvalidIssue(logger, context.payload.issue.html_url);
     const result = logger.error("All linked pull requests must be closed to generate rewards.");
     await commentHandler.postComment(context, result);
@@ -144,25 +143,20 @@ async function generateResults(context: ContextPlugin, activity: IssueActivity) 
   return JSON.parse(result);
 }
 
-async function preCheck(context: ContextPlugin) {
+async function preCheck(context: ContextPlugin, activity: IssueActivity) {
   const { octokit, logger } = context;
 
   if (!isIssueClosedEvent(context)) {
     return true;
   }
   const issue = parseGitHubUrl(context.payload.issue.html_url);
-  const linkedPulls = (await collectLinkedMergedPulls(context, issue)).filter((pullRequest) => {
-    // This can happen when a user deleted its account
-    if (!pullRequest?.author?.login) {
-      return false;
-    }
-    return context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login);
-  });
+  await activity.init();
+  const linkedPulls = activity.linkedPullRequests;
   logger.debug("Checking open linked pull-requests for", {
     issue,
     linkedPulls,
   });
-  if (linkedPulls.some((linkedPull) => linkedPull.state === "OPEN")) {
+  if (linkedPulls.some((linkedPull) => linkedPull.self?.state === "open")) {
     await octokit.rest.issues.update({
       owner: issue.owner,
       repo: issue.repo,
