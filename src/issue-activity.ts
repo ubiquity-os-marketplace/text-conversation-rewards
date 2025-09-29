@@ -180,16 +180,16 @@ export class IssueActivity {
     }
   }
 
-  private async _processSingleLinkedReview(linkedReview: PullRequest) {
+  private async _processSingleLinkedPullRequest(linkedPullRequest: PullRequest) {
     const comments = [];
-    for (const value of Object.values(linkedReview)) {
+    for (const value of Object.values(linkedPullRequest)) {
       if (Array.isArray(value)) {
         for (const review of value) {
           this._addAnchorToUrl(review);
           comments.push({
             ...review,
             timestamp: review.submitted_at ?? review.created_at,
-            commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
+            commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedPullRequest.self),
           });
         }
       } else if (value) {
@@ -221,9 +221,9 @@ export class IssueActivity {
     }
   }
 
-  async _getLinkedReviewComments() {
-    const commentPromises = this.linkedPullRequests.map((linkedReview) =>
-      this._processSingleLinkedReview(linkedReview)
+  async _getLinkedPullRequestComments() {
+    const commentPromises = this.linkedPullRequests.map((linkedPullRequest) =>
+      this._processSingleLinkedPullRequest(linkedPullRequest)
     );
     const commentsArrays = await Promise.all(commentPromises);
     return commentsArrays.flat();
@@ -261,8 +261,8 @@ export class IssueActivity {
       });
     }
     if (this.linkedPullRequests) {
-      const linkedComments = await this._getLinkedReviewComments();
-      comments.push(...linkedComments);
+      const linkedPrComments = await this._getLinkedPullRequestComments();
+      comments.push(...linkedPrComments);
     }
     const seen = new Set<string>();
     return comments.filter((c) => {
