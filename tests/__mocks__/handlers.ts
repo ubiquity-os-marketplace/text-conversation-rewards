@@ -26,6 +26,7 @@ import issue71CommentsGet from "./routes/issue-71-comments-get.json";
 import issue71EventsGet from "./routes/issue-71-events-get.json";
 import issue71Get from "./routes/issue-71-get.json";
 import issue71TimelineGet from "./routes/issue-71-timeline-get.json";
+import issue71WorkUbqFiCommentsGet from "./routes/issue-71-work-ubq-fi-comments-get.json";
 import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
 import issueTimelineGet from "./routes/issue-timeline-get.json";
@@ -37,6 +38,7 @@ import issue12CommentsGet from "./routes/pull-12-conversation-rewards/issue-12-c
 import pull12CommentsGet from "./routes/pull-12-conversation-rewards/pull-12-comments-get.json";
 import pull12Get from "./routes/pull-12-conversation-rewards/pull-12-get.json";
 import pull12ReviewsGet from "./routes/pull-12-conversation-rewards/pull-12-reviews-get.json";
+import pull71Get from "./routes/pull-71-work-ubq-fi/pull-71-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
@@ -186,6 +188,18 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/70/comments", () => {
     return HttpResponse.json(issue70CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71", () => {
+    return HttpResponse.json(pull71Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/reviews", () => {
+    return HttpResponse.json(pullsReviewsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/comments", () => {
+    return HttpResponse.json([]);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71/comments", () => {
+    return HttpResponse.json(issue71WorkUbqFiCommentsGet);
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101", () => {
     return HttpResponse.json(pull101Get);

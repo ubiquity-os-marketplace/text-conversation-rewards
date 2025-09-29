@@ -193,6 +193,11 @@ describe("Pre-check tests", () => {
       postComment: jest.fn(),
     }));
     const { run } = await import("../src/run");
+    const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+    jest.spyOn(octokit.rest.orgs, "getMembershipForUser").mockRejectedValue(new Error("Membership not found"));
+    jest
+      .spyOn(octokit.rest.repos, "getCollaboratorPermissionLevel")
+      .mockResolvedValue({ data: { role_name: "read" } } as never);
 
     const result = await run({
       eventName: "issues.closed",
@@ -222,20 +227,7 @@ describe("Pre-check tests", () => {
       },
       config: cfg,
       logger: new Logs("debug"),
-      octokit: {
-        rest: {
-          orgs: {
-            getMembershipForUser: jest.fn(() => {
-              throw new Error();
-            }),
-          },
-          repos: {
-            getCollaboratorPermissionLevel: jest.fn(() => {
-              return { data: { role_name: "read" } };
-            }),
-          },
-        },
-      },
+      octokit,
       commentHandler: {
         postComment: jest.fn(),
       },
