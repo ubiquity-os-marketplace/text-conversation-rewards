@@ -59,7 +59,7 @@ export abstract class BaseModule implements Module {
       }
       return parsePriorityLabel(data?.self?.labels);
     } catch (e) {
-      throw this.context.logger.warn("Failed to compute the averaged priority, using a fallback.", { e });
+      throw this.context.logger.warn("Failed to compute the averaged priority.", { e });
     }
   }
 }
