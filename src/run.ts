@@ -154,7 +154,7 @@ async function preCheck(context: ContextPlugin, activity: IssueActivity) {
   const linkedPulls = activity.linkedPullRequests;
   logger.debug("Checking open linked pull-requests for", {
     issue,
-    linkedPulls,
+    linkedPulls: linkedPulls.map((o) => o.self?.html_url),
   });
   if (linkedPulls.some((linkedPull) => linkedPull.self?.state === "open")) {
     await octokit.rest.issues.update({
