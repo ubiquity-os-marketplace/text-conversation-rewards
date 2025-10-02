@@ -1,6 +1,6 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
-import { ClosedByPullRequestsReferences, collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
+import { ClosedByPullRequestsReferences, collectLinkedPulls } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -49,7 +49,7 @@ export class IssueActivity {
   self: GitHubIssue | null = null;
   events: GitHubIssueEvent[] = [];
   comments: GitHubIssueComment[] = [];
-  linkedPullRequests: PullRequest[] = [];
+  linkedMergedPullRequests: PullRequest[] = [];
   linkedIssues: ClosedByPullRequestsReferences[] = [];
 
   async init() {
@@ -58,7 +58,7 @@ export class IssueActivity {
       return;
     }
     try {
-      [this.self, this.events, this.comments, this.linkedPullRequests, this.linkedIssues] = await Promise.all([
+      [this.self, this.events, this.comments, this.linkedMergedPullRequests, this.linkedIssues] = await Promise.all([
         getIssue(this._context, this._issueParams),
         getIssueEvents(this._context, this._issueParams),
         getIssueComments(this._context, this._issueParams),
@@ -100,7 +100,7 @@ export class IssueActivity {
       pulls.push(this._context.payload.issue.pull_request.html_url);
     } else {
       pulls.push(
-        ...(await collectLinkedMergedPulls(this._context, this._issueParams))
+        ...(await collectLinkedPulls(this._context, this._issueParams))
           .filter((pullRequest) => {
             // This can happen when a user deleted its account
             if (!pullRequest?.author?.login) {
@@ -222,7 +222,7 @@ export class IssueActivity {
   }
 
   async _getLinkedPullRequestComments() {
-    const commentPromises = this.linkedPullRequests.map((linkedPullRequest) =>
+    const commentPromises = this.linkedMergedPullRequests.map((linkedPullRequest) =>
       this._processSingleLinkedPullRequest(linkedPullRequest)
     );
     const commentsArrays = await Promise.all(commentPromises);
@@ -260,7 +260,7 @@ export class IssueActivity {
         ),
       });
     }
-    if (this.linkedPullRequests) {
+    if (this.linkedMergedPullRequests) {
       const linkedPrComments = await this._getLinkedPullRequestComments();
       comments.push(...linkedPrComments);
     }

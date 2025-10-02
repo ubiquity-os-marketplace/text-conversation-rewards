@@ -338,7 +338,7 @@ describe("Rewards tests", () => {
     const originalActivity = {
       comments: activity.comments,
       events: activity.events,
-      linkedPullRequests: activity.linkedPullRequests,
+      linkedPullRequests: activity.linkedMergedPullRequests,
     };
     const processor = new Processor(ctx);
     // @ts-expect-error just for testing
@@ -359,7 +359,7 @@ describe("Rewards tests", () => {
         "https://123-not-valid-url.com";
       activity.comments = [];
       activity.events = [];
-      activity.linkedPullRequests = [];
+      activity.linkedMergedPullRequests = [];
     }
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
@@ -368,7 +368,7 @@ describe("Rewards tests", () => {
       activity.self.body = originalBody;
       activity.comments = originalActivity.comments;
       activity.events = originalActivity.events;
-      activity.linkedPullRequests = originalActivity.linkedPullRequests;
+      activity.linkedMergedPullRequests = originalActivity.linkedPullRequests;
     }
     expect(result).not.toBeUndefined();
   });

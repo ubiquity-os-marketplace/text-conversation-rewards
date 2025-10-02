@@ -52,7 +52,7 @@ describe("GetActivity class", () => {
     expect(activity.self).toBeTruthy();
     expect(activity.events).toBeTruthy();
     expect(activity.comments).toBeTruthy();
-    expect(Array.isArray(activity.linkedPullRequests)).toBeTruthy();
+    expect(Array.isArray(activity.linkedMergedPullRequests)).toBeTruthy();
   });
 
   it("should create an instance of GetActivity", () => {
@@ -72,6 +72,6 @@ describe("GetActivity class", () => {
   });
 
   it("should initialize `activity.linkedReviews` as an array", () => {
-    expect(Array.isArray(activity.linkedPullRequests)).toBe(true);
+    expect(Array.isArray(activity.linkedMergedPullRequests)).toBe(true);
   });
 });
