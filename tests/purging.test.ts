@@ -41,7 +41,7 @@ jest.unstable_mockModule("@actions/github", () => ({
 }));
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => []),
+  collectLinkedPulls: jest.fn(() => []),
 }));
 
 const ctx = {

@@ -60,9 +60,9 @@ describe("Review Incentivizer", () => {
   });
 
   it("Should not run when no PR is linked to this issue", async () => {
-    const collectLinkedMergedPulls: Mock<() => Array<object>> = jest.fn(() => []);
+    const collectLinkedPulls: Mock<() => Array<object>> = jest.fn(() => []);
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: collectLinkedMergedPulls,
+      collectLinkedPulls: collectLinkedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
     const issue = parseGitHubUrl("https://github.com/ubiquity-os/conversation-rewards/issues/5");
@@ -110,9 +110,9 @@ describe("Review Incentivizer", () => {
         name: "conversation-rewards",
       },
     };
-    const collectLinkedMergedPulls: Mock<() => Array<object>> = jest.fn(() => [pr]);
+    const collectLinkedPulls: Mock<() => Array<object>> = jest.fn(() => [pr]);
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: collectLinkedMergedPulls,
+      collectLinkedPulls: collectLinkedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
     const issue = parseGitHubUrl("https://github.com/ubiquity-os/conversation-rewards/issues/5");

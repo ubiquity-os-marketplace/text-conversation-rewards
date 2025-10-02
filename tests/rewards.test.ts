@@ -59,7 +59,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-const collectLinkedMergedPulls = jest.fn(() => [
+const collectLinkedPulls = jest.fn(() => [
   {
     id: "PR_kwDOKzVPS85zXUoj",
     title: "fix: add state to sorting manager for bottom and top",
@@ -84,7 +84,7 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
 }));
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: collectLinkedMergedPulls,
+  collectLinkedPulls: collectLinkedPulls,
 }));
 
 beforeAll(() => {
@@ -199,7 +199,7 @@ describe("Rewards tests", () => {
       login: "contributor1",
       id: 4975670,
     };
-    collectLinkedMergedPulls.mockReturnValueOnce([
+    collectLinkedPulls.mockReturnValueOnce([
       {
         id: "PR_kwDOKzVPS85zXUoj",
         title: "fix: add authorship to issue body edits",

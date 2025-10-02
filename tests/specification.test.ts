@@ -64,7 +64,7 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
 }));
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => []),
+  collectLinkedPulls: jest.fn(() => []),
 }));
 
 beforeAll(() => {

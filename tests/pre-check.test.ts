@@ -49,7 +49,7 @@ describe("Pre-check tests", () => {
 
   it("Should reopen the issue and not generate rewards if linked pull-requests are still open", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => [
+      collectLinkedPulls: jest.fn(() => [
         {
           id: "PR_kwDOKzVPS85zXUoj",
           title: "fix: add state to sorting manager for bottom and top",
@@ -128,7 +128,7 @@ describe("Pre-check tests", () => {
 
   it("Should not generate a permit if non-collaborator user is merging / closing the issue", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => []),
+      collectLinkedPulls: jest.fn(() => []),
     }));
     const patchMock = jest.fn(() => HttpResponse.json({}));
     server.use(
@@ -187,7 +187,7 @@ describe("Pre-check tests", () => {
 
   it("Should post a warning message that bots cannot trigger reward generation", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => []),
+      collectLinkedPulls: jest.fn(() => []),
     }));
     jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
       postComment: jest.fn(),
