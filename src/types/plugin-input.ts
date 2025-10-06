@@ -42,12 +42,25 @@ export const pluginSettingsSchema = T.Object(
     ),
     incentives: T.Object(
       {
+        closeTaskReward: T.Object(
+          {
+            rewardAmount: T.Number({
+              default: 5,
+              description: "Reward amount in UUSD that the user should get on closing a task",
+            }),
+            durationThreshold: T.String({
+              default: "30 days",
+              description: "Duration threshold for the reward to be applied",
+            }),
+          },
+          { default: {} }
+        ),
         shouldProcessUnlinkedPullRequests: T.Boolean({
           default: false,
           description: "Should pull-requests that are not linked to an issue be processed?",
         }),
         /**
-         * Optionally specify a file to write the results in
+         * Optionally, specify a file to write the results in
          */
         file: T.Optional(
           T.String({ description: "Specify a file to write the results in", examples: ["./result.json"] })

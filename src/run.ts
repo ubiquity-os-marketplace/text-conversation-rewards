@@ -1,16 +1,17 @@
+import { collectLinkedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
 import { getSortedPrices } from "./helpers/label-price-extractor";
 import { logInvalidIssue } from "./helpers/log-invalid-issue";
 import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
 import { handlePriceLabelValidation } from "./helpers/price-label-handler";
+import { tryCreatingClosingReward } from "./helpers/reward-user";
 import { isIssueClosedEvent, isIssueCommentedEvent, isPullRequestEvent } from "./helpers/type-assertions";
 import { IssueActivity } from "./issue-activity";
 import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
-import { collectLinkedPulls } from "./data-collection/collect-linked-pulls";
 
 async function handlePullRequestEvent(context: ContextPlugin<"pull_request.closed">, activity: IssueActivity) {
   const { logger } = context;
@@ -38,7 +39,7 @@ async function handleEventTypeChecks(context: ContextPlugin, activity: IssueActi
   }
 
   if (isIssueClosedEvent(context)) {
-    return await handleClosedIssueEventChecks(context as ContextPlugin<"issues.closed">);
+    return await handleClosedIssueEventChecks(context as ContextPlugin<"issues.closed">, activity);
   } else if (isIssueCommentedEvent(context)) {
     if (!context.payload.comment.body.trim().startsWith("/finish")) {
       return logger.error(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
@@ -52,11 +53,11 @@ async function handleEventTypeChecks(context: ContextPlugin, activity: IssueActi
   return null;
 }
 
-async function handleClosedIssueEventChecks(context: ContextPlugin<"issues.closed">) {
+async function handleClosedIssueEventChecks(context: ContextPlugin<"issues.closed">, activity: IssueActivity) {
   const { logger, commentHandler } = context;
   if (context.payload.issue.state_reason !== "completed") {
     await logInvalidIssue(logger, context.payload.issue.html_url);
-    return logger.info("Issue was not closed as completed. Skipping.").logMessage.raw;
+    return tryCreatingClosingReward(context, activity);
   }
   if (await checkIfClosedByCommand(context)) {
     return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
