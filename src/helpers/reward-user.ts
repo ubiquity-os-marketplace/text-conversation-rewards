@@ -36,6 +36,20 @@ class CloseRewardModule extends BaseModule {
   }
 }
 
+class CustomProcessor extends Processor {
+  async run(data: Readonly<IssueActivity>): Promise<Result> {
+    for (const transformer of this._transformers) {
+      if (transformer.enabled) {
+        this._result = await transformer.transform(data, this._result);
+      }
+      for (const username of Object.keys(this._result)) {
+        this._result[username].total = this._sumRewards(this._result[username]);
+      }
+    }
+    return this._result;
+  }
+}
+
 export async function tryCreatingClosingReward(context: ContextPlugin<"issues.closed">, activity: IssueActivity) {
   const { logger, config } = context;
 
@@ -48,7 +62,7 @@ export async function tryCreatingClosingReward(context: ContextPlugin<"issues.cl
   }
   const dateDiff = new Date(closingDate).getTime() - new Date(creationDate).getTime();
   if (taskReward > 0 && dateDiff >= ms(config.incentives.closeTaskReward.durationThreshold as ms.StringValue)) {
-    const processor = new Processor(context, [
+    const processor = new CustomProcessor(context, [
       new UserExtractorModule(context),
       new CloseRewardModule(context),
       new PaymentModule(context),
