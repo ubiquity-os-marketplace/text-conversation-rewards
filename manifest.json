@@ -42,6 +42,22 @@
         "default": {},
         "type": "object",
         "properties": {
+          "closeTaskReward": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "rewardAmount": {
+                "default": 5,
+                "description": "Reward amount in UUSD that the user should get on closing a task",
+                "type": "number"
+              },
+              "durationThreshold": {
+                "default": "30 days",
+                "description": "Duration threshold for the reward to be applied",
+                "type": "string"
+              }
+            }
+          },
           "shouldProcessUnlinkedPullRequests": {
             "default": false,
             "description": "Should pull-requests that are not linked to an issue be processed?",
