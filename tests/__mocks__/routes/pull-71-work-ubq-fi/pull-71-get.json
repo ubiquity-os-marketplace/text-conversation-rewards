@@ -1,0 +1,123 @@
+{
+  "url": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71",
+  "id": 1935493777,
+  "node_id": "PR_kwDOKzVPS85zXUpx",
+  "html_url": "https://github.com/ubiquity/work.ubq.fi/pull/71",
+  "issue_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71",
+  "number": 71,
+  "state": "open",
+  "locked": false,
+  "title": "fix: add state to sorting manager follow up",
+  "user": {
+    "login": "0x4007",
+    "id": 4975670,
+    "node_id": "MDQ6VXNlcjQ5NzU2NzA=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/4975670?v=4",
+    "html_url": "https://github.com/0x4007",
+    "type": "User",
+    "site_admin": false
+  },
+  "body": "Follow up work for issue 69.",
+  "created_at": "2024-06-25T12:00:00Z",
+  "updated_at": "2024-06-26T08:30:00Z",
+  "merged_at": null,
+  "assignee": {
+    "login": "0x4007",
+    "id": 4975670,
+    "node_id": "MDQ6VXNlcjQ5NzU2NzA=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/4975670?v=4",
+    "html_url": "https://github.com/0x4007",
+    "type": "User",
+    "site_admin": false
+  },
+  "assignees": [
+    {
+      "login": "0x4007",
+      "id": 4975670,
+      "node_id": "MDQ6VXNlcjQ5NzU2NzA=",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4975670?v=4",
+      "html_url": "https://github.com/0x4007",
+      "type": "User",
+      "site_admin": false
+    }
+  ],
+  "requested_reviewers": [],
+  "requested_teams": [],
+  "labels": [],
+  "draft": false,
+  "comments_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71/comments",
+  "review_comments_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/comments",
+  "commits_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/commits",
+  "review_comment_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/comments{/number}",
+  "statuses_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/statuses/2d22259b2abe38d2f763893c29efa429113905b9",
+  "head": {
+    "ref": "feat/bottom-sorting-follow-up",
+    "sha": "2d22259b2abe38d2f763893c29efa429113905b9",
+    "user": {
+      "login": "0x4007",
+      "id": 4975670,
+      "node_id": "MDQ6VXNlcjQ5NzU2NzA=",
+      "type": "User",
+      "site_admin": false
+    },
+    "repo": {
+      "id": 758360913,
+      "name": "work.ubq.fi",
+      "full_name": "0x4007/work.ubq.fi"
+    }
+  },
+  "base": {
+    "ref": "development",
+    "sha": "c80e1c56cd8659ff95bf86d26fef1327c90448ac",
+    "user": {
+      "login": "ubiquity",
+      "id": 76412717,
+      "node_id": "MDEyOk9yZ2FuaXphdGlvbjc2NDEyNzE3",
+      "type": "Organization",
+      "site_admin": false
+    },
+    "repo": {
+      "id": 724913995,
+      "name": "work.ubq.fi",
+      "full_name": "ubiquity/work.ubq.fi"
+    }
+  },
+  "_links": {
+    "self": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71"
+    },
+    "html": {
+      "href": "https://github.com/ubiquity/work.ubq.fi/pull/71"
+    },
+    "issue": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71"
+    },
+    "comments": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71/comments"
+    },
+    "review_comments": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/comments"
+    },
+    "review_comment": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/comments{/number}"
+    },
+    "commits": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/commits"
+    },
+    "statuses": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/statuses/2d22259b2abe38d2f763893c29efa429113905b9"
+    }
+  },
+  "author_association": "MEMBER",
+  "merged": false,
+  "mergeable": null,
+  "rebaseable": null,
+  "mergeable_state": "unknown",
+  "maintainer_can_modify": true,
+  "commits": 5,
+  "comments": 2,
+  "review_comments": 0,
+  "additions": 25,
+  "deletions": 4,
+  "changed_files": 3
+}

@@ -3,6 +3,7 @@ import { ContextPlugin } from "../types/plugin-input";
 import { IssueActivityCache } from "../web/db/issue-activity-cache";
 import { getSortedPrices } from "./label-price-extractor";
 import { logInvalidIssue } from "./log-invalid-issue";
+import { isPullRequest } from "../types/module";
 
 type ActivityType = IssueActivity | IssueActivityCache;
 type LoggerType = ContextPlugin["logger"];
@@ -74,7 +75,7 @@ export async function handlePriceLabelValidation(
   const requiresPriceLabel = config.incentives.requirePriceLabel;
   const hasPriceLabel = getSortedPrices(activity.self?.labels).length > 0;
 
-  if (requiresPriceLabel && !hasPriceLabel) {
+  if (requiresPriceLabel && !hasPriceLabel && !isPullRequest(context)) {
     if (requiresPriceLabel === "auto") {
       await tryAutoFetchingPrice(logger, activity);
       if (!getSortedPrices(activity.self?.labels).length) {
@@ -82,7 +83,8 @@ export async function handlePriceLabelValidation(
       }
       return true;
     } else {
-      await logInvalidIssue(logger, payload.issue.html_url);
+      const issue = "issue" in payload ? payload.issue : payload.pull_request;
+      await logInvalidIssue(logger, issue.html_url);
       logger.error("No price label has been set. Skipping permit generation.");
       return false;
     }

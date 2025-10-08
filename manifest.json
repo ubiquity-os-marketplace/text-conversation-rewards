@@ -1,7 +1,7 @@
 {
   "name": "Conversation rewards",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
-  "ubiquity:listeners": ["issues.closed"],
+  "ubiquity:listeners": ["issues.closed", "pull_request.closed"],
   "skipBotEvents": false,
   "commands": {
     "finish": {
@@ -42,6 +42,11 @@
         "default": {},
         "type": "object",
         "properties": {
+          "shouldProcessUnlinkedPullRequests": {
+            "default": false,
+            "description": "Should pull-requests that are not linked to an issue be processed?",
+            "type": "boolean"
+          },
           "file": {
             "description": "Specify a file to write the results in",
             "examples": ["./result.json"],

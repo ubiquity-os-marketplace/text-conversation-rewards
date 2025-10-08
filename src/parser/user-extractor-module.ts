@@ -100,7 +100,7 @@ export class UserExtractorModule extends BaseModule {
       }
     }
     // Pull-request reviewers can also potentially be rewarded
-    for (const review of data.linkedReviews) {
+    for (const review of data.linkedMergedPullRequests) {
       review.reviews?.forEach((o) => {
         if (o.user && o.user.type === "User") {
           result[o.user.login] = {

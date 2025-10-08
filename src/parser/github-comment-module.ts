@@ -24,6 +24,12 @@ interface SortedTasks {
   reviews: GithubCommentScore[];
 }
 
+interface BodyComment {
+  body: string;
+  metadata: string;
+  raw: string;
+}
+
 /**
  * Posts a GitHub comment according to the given results.
  */
@@ -49,7 +55,7 @@ export class GithubCommentModule extends BaseModule {
   /**
    * Generates content when it needs to be stripped due to length limits
    */
-  private async _getStrippedContent(result: Result, taskReward: number): Promise<string> {
+  private async _getStrippedContent(result: Result, taskReward: number): Promise<BodyComment> {
     const bodyArray: (string | undefined)[] = [];
 
     this.context.logger.info("Stripping content due to excessive length.");
@@ -63,14 +69,14 @@ export class GithubCommentModule extends BaseModule {
       bodyArray.push(result[key].evaluationCommentHtml);
     }
 
-    bodyArray.push(
-      createStructuredMetadata("GithubCommentModule", {
-        workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
-        payoutMode: this._getPayoutMode(result),
-      })
-    );
+    const metadata = createStructuredMetadata("GithubCommentModule", {
+      workflowUrl: this._encodeHTML(getGithubWorkflowRunUrl()),
+      payoutMode: this._getPayoutMode(result),
+    });
 
-    return bodyArray.join("");
+    const body = bodyArray.join("");
+    const raw = `${body}${metadata}`;
+    return { body, metadata, raw };
   }
 
   async isRewardClaimed(reward: Result[0]) {
@@ -96,8 +102,8 @@ export class GithubCommentModule extends BaseModule {
     return true;
   }
 
-  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<string> {
-    const taskReward = getTaskReward(data.self);
+  async getBodyContent(data: Readonly<IssueActivity>, result: Result, stripContent = false): Promise<BodyComment> {
+    const taskReward = await getTaskReward(this.context, data.self);
 
     if (stripContent) {
       return this._getStrippedContent(result, taskReward);
@@ -145,44 +151,58 @@ export class GithubCommentModule extends BaseModule {
       })}`;
       const newBody = bodyArray.join("");
       if (newBody.length <= GITHUB_COMMENT_PAYLOAD_LIMIT) {
-        return newBody;
+        const metadata = bodyArray[bodyArray.length - 1] as string;
+        const bodyOnly = bodyArray.slice(0, -1).join("");
+        return { body: bodyOnly, metadata, raw: newBody };
       } else {
         return this.getBodyContent(data, result, true);
       }
     }
-    return body;
+    const metadata = bodyArray[bodyArray.length - 1] as string;
+    const bodyOnly = bodyArray.slice(0, -1).join("");
+    return { body: bodyOnly, metadata, raw: body };
+  }
+
+  private async _handlePostComment(data: Readonly<IssueActivity>, result: Result, content: BodyComment) {
+    const isIssueCollaborative = isCollaborative(data);
+    const isUserAdmin = data.self?.user ? await isAdmin(data.self.user.login, this.context) : false;
+    try {
+      if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
+        const comment = await this.context.commentHandler.postComment(
+          this.context,
+          this.context.logger.info(!content.body ? `_No user got rewards at this time._` : content.raw),
+          {
+            raw: true,
+            updateComment: true,
+          }
+        );
+        if (comment) {
+          const issue =
+            "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
+          await this.context.adapters.supabase.location.upsert({
+            issue_id: issue.id,
+            node_url: `${issue.html_url}#issuecomment-${comment.id}`,
+            repository_id: this.context.payload.repository.id,
+            comment_id: comment.id,
+            node_type: "Issue",
+          });
+        }
+      } else {
+        const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
+        await this.context.commentHandler.postComment(this.context, errorLog);
+      }
+    } catch (e) {
+      this.context.logger.error(`Could not post GitHub comment`, { e });
+    }
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const isIssueCollaborative = isCollaborative(data);
-    const isUserAdmin = data.self?.user ? await isAdmin(data.self.user.login, this.context) : false;
-    const body = await this.getBodyContent(data, result);
+    const content = await this.getBodyContent(data, result);
     if (this._configuration?.debug) {
-      fs.writeFileSync(this._debugFilePath, body);
+      fs.writeFileSync(this._debugFilePath, content.raw);
     }
     if (this._configuration?.post) {
-      try {
-        if (Object.values(result).some((v) => v.permitUrl ?? v.explorerUrl) || isIssueCollaborative || isUserAdmin) {
-          const comment = await this.context.commentHandler.postComment(this.context, this.context.logger.info(body), {
-            raw: true,
-            updateComment: true,
-          });
-          if (comment) {
-            await this.context.adapters.supabase.location.upsert({
-              issue_id: this.context.payload.issue.id,
-              node_url: `${this.context.payload.issue.html_url}#issuecomment-${comment.id}`,
-              repository_id: this.context.payload.repository.id,
-              comment_id: comment.id,
-              node_type: "Issue",
-            });
-          }
-        } else {
-          const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
-          await this.context.commentHandler.postComment(this.context, errorLog);
-        }
-      } catch (e) {
-        this.context.logger.error(`Could not post GitHub comment`, { e });
-      }
+      await this._handlePostComment(data, result, content);
     }
     return result;
   }
@@ -229,7 +249,7 @@ export class GithubCommentModule extends BaseModule {
       );
     }
 
-    if (result.reviewRewards) {
+    if (result.reviewRewards && this.isPullRequest()) {
       const reviewCount = result.reviewRewards.reduce(
         (total, reviewReward) => total + (reviewReward.reviews?.length ?? 0),
         0
@@ -266,7 +286,7 @@ export class GithubCommentModule extends BaseModule {
         )
       );
     }
-    if (sortedTasks.reviews.length) {
+    if (sortedTasks.reviews.length && this.isPullRequest()) {
       content.push(
         buildContributionRow(
           "Review",
@@ -330,8 +350,10 @@ export class GithubCommentModule extends BaseModule {
     for (const issueComment of sortedTasks.issues.comments) {
       content.push(buildIncentiveRow(issueComment));
     }
-    for (const reviewComment of sortedTasks.reviews) {
-      content.push(buildIncentiveRow(reviewComment));
+    if (this.isPullRequest()) {
+      for (const reviewComment of sortedTasks.reviews) {
+        content.push(buildIncentiveRow(reviewComment));
+      }
     }
     return content.join("");
   }
@@ -486,7 +508,7 @@ export class GithubCommentModule extends BaseModule {
         </tbody>
       </table>
       ${!stripComments ? this._createSimplificationRows(result) : ""}
-      ${!stripComments ? this._createReviewRows(result) : ""}
+      ${!stripComments && this.isPullRequest() ? this._createReviewRows(result) : ""}
       ${
         !stripComments &&
         sortedTasks &&

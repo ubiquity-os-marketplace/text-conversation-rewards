@@ -19,9 +19,9 @@ import { UserExtractorModule } from "./user-extractor-module";
 import { ExternalContentProcessor } from "./external-content-module";
 
 export class Processor {
-  private _transformers: Module[] = [];
+  private readonly _transformers: Module[] = [];
   private _result: Result = {};
-  private _context: ContextPlugin;
+  private readonly _context: ContextPlugin;
   private readonly _configuration;
 
   constructor(context: ContextPlugin) {
@@ -44,15 +44,17 @@ export class Processor {
     return this;
   }
 
-  _getRewardsLimit(issue: GitHubIssue | null) {
+  async _getRewardsLimit(issue: GitHubIssue | null) {
     if (!this._configuration.limitRewards) {
       return Infinity;
     }
-    const priceTagReward = getTaskReward(issue);
+    const priceTagReward = await getTaskReward(this._context, issue);
     return priceTagReward ?? Infinity;
   }
 
   async run(data: Readonly<IssueActivity>) {
+    const rewardLimit = await this._getRewardsLimit(data.self);
+
     for (const transformer of this._transformers) {
       if (transformer.enabled) {
         this._result = await transformer.transform(data, this._result);
@@ -60,12 +62,9 @@ export class Processor {
       // Aggregate total result
       for (const username of Object.keys(this._result)) {
         if (data.self?.assignees?.map((v) => v.login).includes(username)) {
-          this._result[username].total = this._sumRewards(this._result[username], this._getRewardsLimit(data.self));
+          this._result[username].total = this._sumRewards(this._result[username], rewardLimit);
         } else {
-          this._result[username].total = Math.min(
-            this._sumRewards(this._result[username], this._getRewardsLimit(data.self)),
-            this._getRewardsLimit(data.self)
-          );
+          this._result[username].total = Math.min(this._sumRewards(this._result[username], rewardLimit), rewardLimit);
         }
       }
     }

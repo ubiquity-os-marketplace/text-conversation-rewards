@@ -1,6 +1,6 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
-import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
+import { ClosedByPullRequestsReferences, collectLinkedPulls } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -9,6 +9,7 @@ import {
   GitHubPullRequestReviewComment,
   GitHubPullRequestReviewState,
 } from "./github-types";
+import { isPullRequestEvent } from "./helpers/type-assertions";
 import {
   getIssue,
   getIssueComments,
@@ -21,6 +22,17 @@ import {
   PullParams,
 } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
+import { isPullRequest } from "./types/module";
+import { LINKED_ISSUES, PullRequestClosingIssue } from "./types/requests";
+
+type BaseComment = GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest;
+
+type AugmentedComment = BaseComment & {
+  commentType: CommentKind | CommentAssociation;
+  timestamp: string;
+  html_url?: string;
+  id?: number;
+};
 
 export class IssueActivity {
   protected readonly _context: ContextPlugin;
@@ -37,54 +49,94 @@ export class IssueActivity {
   self: GitHubIssue | null = null;
   events: GitHubIssueEvent[] = [];
   comments: GitHubIssueComment[] = [];
-  linkedReviews: Review[] = [];
+  linkedMergedPullRequests: PullRequest[] = [];
+  linkedIssues: ClosedByPullRequestsReferences[] = [];
 
   async init() {
+    if (this.self) {
+      this._context.logger.info("The Issue Activity is already initialized.");
+      return;
+    }
     try {
-      [this.self, this.events, this.comments, this.linkedReviews] = await Promise.all([
+      [this.self, this.events, this.comments, this.linkedMergedPullRequests, this.linkedIssues] = await Promise.all([
         getIssue(this._context, this._issueParams),
         getIssueEvents(this._context, this._issueParams),
         getIssueComments(this._context, this._issueParams),
-        this._getLinkedReviews(),
+        this._getLinkedPullRequests(),
+        this._getLinkedIssues(),
       ]);
     } catch (error) {
       throw this._context.logger.error(`Could not fetch issue data: ${error}`);
     }
   }
 
-  private async _getLinkedReviews(): Promise<Review[]> {
-    this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
-    const pulls = (await collectLinkedMergedPulls(this._context, this._issueParams)).filter((pullRequest) => {
-      // This can happen when a user deleted its account
-      if (!pullRequest?.author?.login) {
-        return false;
-      }
-      return (
-        this._context.payload.issue.assignees.map((assignee) => assignee?.login).includes(pullRequest.author.login) &&
-        pullRequest.state === "MERGED"
-      );
+  private async _getLinkedIssues(): Promise<ClosedByPullRequestsReferences[]> {
+    if (!isPullRequest(this._context)) {
+      return [];
+    }
+
+    const pullNumber = this._issueParams.issue_number;
+    const owner = this._context.payload.repository.owner.login;
+    const repo = this._context.payload.repository.name;
+    if (!pullNumber) {
+      return [];
+    }
+    const linked = await this._context.octokit.graphql.paginate<PullRequestClosingIssue>(LINKED_ISSUES, {
+      owner,
+      repo,
+      pull_number: pullNumber,
     });
-    this._context.logger.debug(`Collected linked pull-requests: ${pulls.map((v) => v.number).join(", ")}`);
+
+    return linked.repository.pullRequest.closingIssuesReferences.edges ?? [];
+  }
+
+  private async _getLinkedPullRequests(): Promise<PullRequest[]> {
+    this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
+
+    const pulls: string[] = [];
+    if (isPullRequestEvent(this._context)) {
+      pulls.push(this._context.payload.pull_request.html_url);
+    } else if ("issue" in this._context.payload && this._context.payload.issue.pull_request?.html_url) {
+      pulls.push(this._context.payload.issue.pull_request.html_url);
+    } else {
+      pulls.push(
+        ...(await collectLinkedPulls(this._context, this._issueParams))
+          .filter((pullRequest) => {
+            // This can happen when a user deleted its account
+            if (!pullRequest?.author?.login) {
+              return false;
+            }
+            return (
+              "issue" in this._context.payload &&
+              this._context.payload.issue.assignees
+                .map((assignee) => assignee?.login)
+                .includes(pullRequest.author.login) &&
+              pullRequest.state === "MERGED"
+            );
+          })
+          .map((pullRequest) => pullRequest.url)
+      );
+    }
+    this._context.logger.debug(`Collected linked pull-requests: ${pulls.join(", ")}`);
 
     const promises = pulls
       .map(async (pull) => {
-        const repository = pull.repository;
-
-        if (!repository) {
-          this._context.logger.error(`No repository found for`, { ...pull.repository });
+        const { owner, repo, issue_number } = parseGitHubUrl(pull);
+        if (!owner) {
+          this._context.logger.error(`No repository found.`, { pull });
           return null;
         } else {
           const pullParams = {
-            owner: repository.owner.login,
-            repo: repository.name,
-            pull_number: pull.number,
+            owner: owner,
+            repo: repo,
+            pull_number: issue_number,
           };
-          const review = new Review(this._context, pullParams);
+          const review = new PullRequest(this._context, pullParams);
           await review.init();
           return review;
         }
       })
-      .filter((o) => o !== null) as Promise<Review>[];
+      .filter((o) => o !== null) as Promise<PullRequest>[];
     return Promise.all(promises);
   }
 
@@ -128,16 +180,16 @@ export class IssueActivity {
     }
   }
 
-  private async _processSingleLinkedReview(linkedReview: Review) {
+  private async _processSingleLinkedPullRequest(linkedPullRequest: PullRequest) {
     const comments = [];
-    for (const value of Object.values(linkedReview)) {
+    for (const value of Object.values(linkedPullRequest)) {
       if (Array.isArray(value)) {
         for (const review of value) {
           this._addAnchorToUrl(review);
           comments.push({
             ...review,
             timestamp: review.submitted_at ?? review.created_at,
-            commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
+            commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedPullRequest.self),
           });
         }
       } else if (value) {
@@ -147,25 +199,32 @@ export class IssueActivity {
           timestamp: value.submitted_at ?? value.created_at,
           commentType: this._getTypeFromComment(CommentKind.PULL, value, value),
         };
-        // Special case for anchoring with pull-request bodies, that have to be retrieved differently
-        if (c.commentType & CommentAssociation.SPECIFICATION && c.html_url) {
-          const { owner, repo, issue_number } = parseGitHubUrl(c.html_url);
-          const { data } = await this._context.octokit.rest.issues.get({
-            owner,
-            repo,
-            issue_number: issue_number,
-          });
-          c.id = data.id;
-          this._addAnchorToUrl(c);
-        }
-        comments.push(c);
+        await this._tryAddLinkedComment(c, comments);
       }
     }
     return comments;
   }
 
-  async _getLinkedReviewComments() {
-    const commentPromises = this.linkedReviews.map((linkedReview) => this._processSingleLinkedReview(linkedReview));
+  private async _tryAddLinkedComment(comment: AugmentedComment, comments: Array<AugmentedComment>) {
+    if (!isPullRequest(this._context)) {
+      if (comment.commentType & CommentAssociation.SPECIFICATION && comment.html_url) {
+        const { owner, repo, issue_number } = parseGitHubUrl(comment.html_url);
+        const { data } = await this._context.octokit.rest.issues.get({
+          owner,
+          repo,
+          issue_number: issue_number,
+        });
+        comment.id = data.id;
+        this._addAnchorToUrl(comment);
+      }
+      comments.push(comment);
+    }
+  }
+
+  async _getLinkedPullRequestComments() {
+    const commentPromises = this.linkedMergedPullRequests.map((linkedPullRequest) =>
+      this._processSingleLinkedPullRequest(linkedPullRequest)
+    );
     const commentsArrays = await Promise.all(commentPromises);
     return commentsArrays.flat();
   }
@@ -181,7 +240,11 @@ export class IssueActivity {
       return {
         ...comment,
         timestamp: comment.created_at,
-        commentType: this._getTypeFromComment(CommentKind.ISSUE, comment, this.self),
+        commentType: this._getTypeFromComment(
+          this.self?.pull_request ? CommentKind.PULL : CommentKind.ISSUE,
+          comment,
+          this.self
+        ),
       };
     });
     if (this.self) {
@@ -190,18 +253,31 @@ export class IssueActivity {
       comments.push({
         ...c,
         timestamp: c.created_at,
-        commentType: this._getTypeFromComment(CommentKind.ISSUE, this.self, this.self),
+        commentType: this._getTypeFromComment(
+          this.self?.pull_request ? CommentKind.PULL : CommentKind.ISSUE,
+          this.self,
+          this.self
+        ),
       });
     }
-    if (this.linkedReviews) {
-      const linkedComments = await this._getLinkedReviewComments();
-      comments.push(...linkedComments);
+    if (this.linkedMergedPullRequests) {
+      const linkedPrComments = await this._getLinkedPullRequestComments();
+      comments.push(...linkedPrComments);
     }
-    return comments;
+    const seen = new Set<string>();
+    return comments.filter((c) => {
+      const htmlUrl = c.html_url;
+      if (!htmlUrl) return false;
+      const { owner, repo, issue_number } = parseGitHubUrl(htmlUrl);
+      const key = `${owner}/${repo}/${issue_number}/${c.id}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }
 }
 
-export class Review {
+export class PullRequest {
   self: GitHubPullRequest | null = null;
   reviews: GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
   reviewComments: GitHubPullRequestReviewComment[] | null = null;

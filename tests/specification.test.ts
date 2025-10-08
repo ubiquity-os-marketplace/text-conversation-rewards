@@ -64,7 +64,7 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
 }));
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => []),
+  collectLinkedPulls: jest.fn(() => []),
 }));
 
 beforeAll(() => {
@@ -198,14 +198,14 @@ describe("Content Evaluator Module Test", () => {
     const commentWithAuthor = [...activity.comments, originalAuthorComment];
     server.use(
       http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/comments", () => {
-        const modifiedComments = commentWithAuthor;
-        return HttpResponse.json(modifiedComments);
+        return HttpResponse.json(commentWithAuthor);
       })
     );
 
     await activity.init();
 
     let processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -231,7 +231,11 @@ describe("Content Evaluator Module Test", () => {
     originalAuthorComment.body =
       "_Originally posted by @test-user in https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-1234_\n\nThe implementation looks good! One suggestion - consider adding a threshold value to filter out low-relevance comments.";
     await activity.init();
+    if (activity.self?.body) {
+      activity.self.body = originalAuthorComment.body;
+    }
     processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),

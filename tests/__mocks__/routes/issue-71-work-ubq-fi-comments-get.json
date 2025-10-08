@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/comments/2200000001",
+    "html_url": "https://github.com/ubiquity/work.ubq.fi/pull/71#issuecomment-2200000001",
+    "issue_url": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71",
+    "id": 2200000001,
+    "node_id": "IC_kwDOKzVPS86D0001",
+    "user": {
+      "login": "0x4007",
+      "id": 4975670,
+      "node_id": "MDQ6VXNlcjQ5NzU2NzA=",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4975670?v=4",
+      "html_url": "https://github.com/0x4007",
+      "type": "User",
+      "site_admin": false
+    },
+    "created_at": "2024-06-25T12:05:00Z",
+    "updated_at": "2024-06-25T12:05:00Z",
+    "author_association": "MEMBER",
+    "body": "Addressing feedback from the original task.",
+    "reactions": {
+      "url": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/comments/2200000001/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "performed_via_github_app": null
+  }
+]

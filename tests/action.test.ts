@@ -29,7 +29,7 @@ afterEach(() => {
 afterAll(() => server.close());
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
+  collectLinkedPulls: jest.fn(() => [
     {
       id: "PR_kwDOK87YcM5nHc9o",
       title: "chore: add new shared evmPrivateKeyEncrypted",

@@ -398,8 +398,8 @@
             "sentences": 1,
             "syllables": 8
           },
-          "relevance": 0.7,
-          "reward": 4.9,
+          "relevance": 1,
+          "reward": 7,
           "words": {
             "result": 0.37,
             "wordCount": 5,
@@ -433,8 +433,8 @@
             "sentences": 1,
             "syllables": 11
           },
-          "relevance": 0.7,
-          "reward": 5.348,
+          "relevance": 1,
+          "reward": 7.64,
           "words": {
             "result": 0.49,
             "wordCount": 7,
@@ -468,8 +468,8 @@
             "sentences": 4,
             "syllables": 79
           },
-          "relevance": 0.7,
-          "reward": 13.3,
+          "relevance": 1,
+          "reward": 19,
           "words": {
             "result": 1.67,
             "wordCount": 49,
@@ -503,8 +503,8 @@
             "sentences": 1,
             "syllables": 8
           },
-          "relevance": 0.7,
-          "reward": 4.872,
+          "relevance": 1,
+          "reward": 6.96,
           "words": {
             "result": 0.43,
             "wordCount": 6,
@@ -542,8 +542,8 @@
             "sentences": 1,
             "syllables": 33
           },
-          "relevance": 0.7,
-          "reward": 21.868,
+          "relevance": 1,
+          "reward": 31.24,
           "words": {
             "result": 1.28,
             "wordCount": 28,
@@ -581,8 +581,8 @@
             "sentences": 2,
             "syllables": 17
           },
-          "relevance": 0.7,
-          "reward": 9.38,
+          "relevance": 1,
+          "reward": 13.4,
           "words": {
             "result": 0.82,
             "wordCount": 14,
@@ -624,8 +624,8 @@
             "sentences": 2,
             "syllables": 43
           },
-          "relevance": 0.7,
-          "reward": 14.588,
+          "relevance": 1,
+          "reward": 20.84,
           "words": {
             "result": 1.17,
             "wordCount": 24,
@@ -659,8 +659,8 @@
             "sentences": 1,
             "syllables": 6
           },
-          "relevance": 0.7,
-          "reward": 4.984,
+          "relevance": 1,
+          "reward": 7.12,
           "words": {
             "result": 0.37,
             "wordCount": 5,
@@ -694,8 +694,8 @@
             "sentences": 1,
             "syllables": 12
           },
-          "relevance": 0.7,
-          "reward": 5.46,
+          "relevance": 1,
+          "reward": 7.8,
           "words": {
             "result": 0.54,
             "wordCount": 8,
@@ -737,8 +737,8 @@
             "sentences": 5,
             "syllables": 88
           },
-          "relevance": 0.7,
-          "reward": 23.688,
+          "relevance": 1,
+          "reward": 33.84,
           "words": {
             "result": 1.81,
             "wordCount": 65,
@@ -772,8 +772,8 @@
             "sentences": 2,
             "syllables": 32
           },
-          "relevance": 0.7,
-          "reward": 7.476,
+          "relevance": 1,
+          "reward": 10.68,
           "words": {
             "result": 1.14,
             "wordCount": 23,
@@ -807,8 +807,8 @@
             "sentences": 1,
             "syllables": 7
           },
-          "relevance": 0.7,
-          "reward": 4.732,
+          "relevance": 1,
+          "reward": 6.76,
           "words": {
             "result": 0.37,
             "wordCount": 5,
@@ -846,8 +846,8 @@
             "sentences": 3,
             "syllables": 26
           },
-          "relevance": 0.7,
-          "reward": 13.776,
+          "relevance": 1,
+          "reward": 19.68,
           "words": {
             "result": 1.01,
             "wordCount": 19,
@@ -881,8 +881,8 @@
             "sentences": 4,
             "syllables": 31
           },
-          "relevance": 0.7,
-          "reward": 7.364,
+          "relevance": 1,
+          "reward": 10.52,
           "words": {
             "result": 1.2,
             "wordCount": 25,
@@ -916,8 +916,8 @@
             "sentences": 1,
             "syllables": 10
           },
-          "relevance": 0.7,
-          "reward": 5.18,
+          "relevance": 1,
+          "reward": 7.4,
           "words": {
             "result": 0.49,
             "wordCount": 7,
@@ -951,8 +951,8 @@
             "sentences": 1,
             "syllables": 2
           },
-          "relevance": 0.7,
-          "reward": 4.284,
+          "relevance": 1,
+          "reward": 6.12,
           "words": {
             "result": 0.18,
             "wordCount": 2,
@@ -986,8 +986,8 @@
             "sentences": 1,
             "syllables": 14
           },
-          "relevance": 0.7,
-          "reward": 5.488,
+          "relevance": 1,
+          "reward": 7.84,
           "words": {
             "result": 0.54,
             "wordCount": 8,
@@ -1021,8 +1021,8 @@
             "sentences": 1,
             "syllables": 6
           },
-          "relevance": 0.7,
-          "reward": 3.304,
+          "relevance": 1,
+          "reward": 4.72,
           "words": {
             "result": 0.18,
             "wordCount": 2,
@@ -1060,8 +1060,8 @@
             "sentences": 3,
             "syllables": 42
           },
-          "relevance": 0.7,
-          "reward": 18.592,
+          "relevance": 1,
+          "reward": 26.56,
           "words": {
             "result": 1.33,
             "wordCount": 30,
@@ -1095,8 +1095,8 @@
             "sentences": 1,
             "syllables": 63
           },
-          "relevance": 0.7,
-          "reward": 8.792,
+          "relevance": 1,
+          "reward": 12.56,
           "words": {
             "result": 1.56,
             "wordCount": 41,
@@ -1130,8 +1130,8 @@
             "sentences": 5,
             "syllables": 143
           },
-          "relevance": 0.7,
-          "reward": 17.36,
+          "relevance": 1,
+          "reward": 24.8,
           "words": {
             "result": 1.84,
             "wordCount": 101,
@@ -1165,8 +1165,8 @@
             "sentences": 2,
             "syllables": 52
           },
-          "relevance": 0.7,
-          "reward": 7.84,
+          "relevance": 1,
+          "reward": 11.2,
           "words": {
             "result": 1.28,
             "wordCount": 28,
@@ -1199,8 +1199,8 @@
             "sentences": 2,
             "syllables": 25
           },
-          "relevance": 0.7,
-          "reward": 6.804,
+          "relevance": 1,
+          "reward": 9.72,
           "words": {
             "result": 0.9,
             "wordCount": 16,
@@ -1278,96 +1278,8 @@
       }
     },
     "payoutMode": "permit",
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MWIyYjQ1MGFhMjcyNDYwMDAwIn19LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjAifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDFiMmI0NTBhYTI3MjQ2MDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGRjZjBhNTRkNjM5OTYyZWU0OGU4MGJiYWQ1YTU2ZTdmZmYzMzNiZTJjYzI1YjkwYmJlNzRkYjg0MTQ3ZmY0YTQxOGRlNDkzMDRmZTc0YTcwMzIxZjJmZmVhNGRjMTczNDU3OWU2NDRjMmQ5YTBjNzc5NDBhYzkzZjk3Mjc4ZmJmMWMiLCJuZXR3b3JrSWQiOjEwMH1d",
-    "reviewRewards": [
-      {
-        "reviews": [
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2007841578,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2008041757,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2008690769,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2013381647,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2013381967,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2013708154,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2016111656,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2017922720,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2018784615,
-            "reward": 1
-          }
-        ],
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
-      }
-    ],
-    "total": 501.18,
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MWZjNzI4YzIyZGU1ZmMwMDAwIn19LCJub25jZSI6IjMzOTI5NDE3NjI3OTM5NzU1OTMxNzgxMTE1NjU5ODM3OTc0NzU4OTQwMzc0OTU0MDQxMzEyODYzODI3ODA0MTE2ODc3MDgzNTI4ODgiLCJkZWFkbGluZSI6IjAifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDFmYzcyOGMyMmRlNWZjMDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGM5ZGJkNDQ4ODRmYWQ3OWMyMzQxN2FmMjJmNzk5MzI0OTcxOTQwMjk5ZjgxMmRlZmUwMzkwYmNhZDVhNjk1YjAyM2Q2MDg4MmZjYWNiMTM2MGFjZjM3ZjU1YTMxZDI4ZTFjNjA0ZmRkMmM5MWRmMDFmZDEwYjIyZTQ1NmRmNjdjMWMiLCJuZXR3b3JrSWQiOjEwMH1d",
+    "total": 586.2,
     "userId": 4975670,
     "walletAddress": "0x1"
   },
@@ -1796,7 +1708,7 @@
             "sentences": 1,
             "syllables": 27
           },
-          "relevance": 0.7,
+          "relevance": 1,
           "reward": 0,
           "words": {
             "result": 0,
@@ -1835,8 +1747,8 @@
             "sentences": 3,
             "syllables": 82
           },
-          "relevance": 0.7,
-          "reward": 67.844,
+          "relevance": 1,
+          "reward": 96.92,
           "words": {
             "result": 3.56,
             "wordCount": 60,
@@ -1874,8 +1786,8 @@
             "sentences": 2,
             "syllables": 25
           },
-          "relevance": 0.7,
-          "reward": 27.244,
+          "relevance": 1,
+          "reward": 38.92,
           "words": {
             "result": 1.8,
             "wordCount": 16,
@@ -1913,8 +1825,8 @@
             "sentences": 4,
             "syllables": 25
           },
-          "relevance": 0.7,
-          "reward": 25.172,
+          "relevance": 1,
+          "reward": 35.96,
           "words": {
             "result": 1.72,
             "wordCount": 15,
@@ -1952,8 +1864,8 @@
             "sentences": 3,
             "syllables": 52
           },
-          "relevance": 0.7,
-          "reward": 35,
+          "relevance": 1,
+          "reward": 50,
           "words": {
             "result": 3.08,
             "wordCount": 40,
@@ -1995,8 +1907,8 @@
             "sentences": 3,
             "syllables": 43
           },
-          "relevance": 0.7,
-          "reward": 37.296,
+          "relevance": 1,
+          "reward": 53.28,
           "words": {
             "result": 1.28,
             "wordCount": 10,
@@ -2034,8 +1946,8 @@
             "sentences": 1,
             "syllables": 42
           },
-          "relevance": 0.7,
-          "reward": 39.76,
+          "relevance": 1,
+          "reward": 56.8,
           "words": {
             "result": 2.57,
             "wordCount": 28,
@@ -2069,8 +1981,8 @@
             "sentences": 1,
             "syllables": 27
           },
-          "relevance": 0.7,
-          "reward": 23.044,
+          "relevance": 1,
+          "reward": 32.92,
           "words": {
             "result": 2.4,
             "wordCount": 25,
@@ -2112,8 +2024,8 @@
             "sentences": 3,
             "syllables": 61
           },
-          "relevance": 0.7,
-          "reward": 43.82,
+          "relevance": 1,
+          "reward": 62.6,
           "words": {
             "result": 3.12,
             "wordCount": 41,
@@ -2151,8 +2063,8 @@
             "sentences": 5,
             "syllables": 56
           },
-          "relevance": 0.7,
-          "reward": 32.396,
+          "relevance": 1,
+          "reward": 46.28,
           "words": {
             "result": 2.57,
             "wordCount": 28,
@@ -2190,8 +2102,8 @@
             "sentences": 2,
             "syllables": 25
           },
-          "relevance": 0.7,
-          "reward": 21.7,
+          "relevance": 1,
+          "reward": 31,
           "words": {
             "result": 1.08,
             "wordCount": 8,
@@ -2233,8 +2145,8 @@
             "sentences": 6,
             "syllables": 55
           },
-          "relevance": 0.7,
-          "reward": 40.852,
+          "relevance": 1,
+          "reward": 58.36,
           "words": {
             "result": 3.05,
             "wordCount": 39,
@@ -2268,8 +2180,8 @@
             "sentences": 1,
             "syllables": 15
           },
-          "relevance": 0.7,
-          "reward": 16.772,
+          "relevance": 1,
+          "reward": 23.96,
           "words": {
             "result": 1.47,
             "wordCount": 12,
@@ -2303,8 +2215,8 @@
             "sentences": 2,
             "syllables": 45
           },
-          "relevance": 0.7,
-          "reward": 26.796,
+          "relevance": 1,
+          "reward": 38.28,
           "words": {
             "result": 2.81,
             "wordCount": 33,
@@ -2342,8 +2254,8 @@
             "sentences": 2,
             "syllables": 92
           },
-          "relevance": 0.7,
-          "reward": 40.992,
+          "relevance": 1,
+          "reward": 58.56,
           "words": {
             "result": 3.66,
             "wordCount": 68,
@@ -2381,8 +2293,8 @@
             "sentences": 2,
             "syllables": 33
           },
-          "relevance": 0.7,
-          "reward": 30.38,
+          "relevance": 1,
+          "reward": 43.4,
           "words": {
             "result": 2.4,
             "wordCount": 25,
@@ -2416,8 +2328,8 @@
             "sentences": 1,
             "syllables": 45
           },
-          "relevance": 0.7,
-          "reward": 22.288,
+          "relevance": 1,
+          "reward": 31.84,
           "words": {
             "result": 2.34,
             "wordCount": 24,
@@ -2455,8 +2367,8 @@
             "sentences": 2,
             "syllables": 34
           },
-          "relevance": 0.7,
-          "reward": 23.1,
+          "relevance": 1,
+          "reward": 33,
           "words": {
             "result": 1.28,
             "wordCount": 10,
@@ -2502,8 +2414,8 @@
             "sentences": 2,
             "syllables": 74
           },
-          "relevance": 0.7,
-          "reward": 60.032,
+          "relevance": 1,
+          "reward": 85.76,
           "words": {
             "result": 2.72,
             "wordCount": 31,
@@ -2541,8 +2453,8 @@
             "sentences": 3,
             "syllables": 39
           },
-          "relevance": 0.7,
-          "reward": 31.892,
+          "relevance": 1,
+          "reward": 45.56,
           "words": {
             "result": 2.67,
             "wordCount": 30,
@@ -2580,8 +2492,8 @@
             "sentences": 3,
             "syllables": 102
           },
-          "relevance": 0.7,
-          "reward": 104.552,
+          "relevance": 1,
+          "reward": 149.36,
           "words": {
             "result": 3.63,
             "wordCount": 65,
@@ -2615,8 +2527,8 @@
             "sentences": 2,
             "syllables": 76
           },
-          "relevance": 0.7,
-          "reward": 30.604,
+          "relevance": 1,
+          "reward": 43.72,
           "words": {
             "result": 3.32,
             "wordCount": 48,
@@ -2658,8 +2570,8 @@
             "sentences": 4,
             "syllables": 103
           },
-          "relevance": 0.7,
-          "reward": 85.792,
+          "relevance": 1,
+          "reward": 122.56,
           "words": {
             "result": 3.3,
             "wordCount": 47,
@@ -2696,8 +2608,8 @@
             "sentences": 2,
             "syllables": 30
           },
-          "relevance": 0.7,
-          "reward": 20.636,
+          "relevance": 1,
+          "reward": 29.48,
           "words": {
             "result": 0.97,
             "wordCount": 7,
@@ -2730,8 +2642,8 @@
             "sentences": 1,
             "syllables": 33
           },
-          "relevance": 0.7,
-          "reward": 24.612,
+          "relevance": 1,
+          "reward": 35.16,
           "words": {
             "result": 2.51,
             "wordCount": 27,
@@ -2825,15 +2737,14 @@
       }
     },
     "payoutMode": "permit",
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4NTdmNDY3YzhiZTNlM2IwMDAwIn19LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6eyJ0eXBlIjoiQmlnTnVtYmVyIiwiaGV4IjoiMHg1N2Y0NjdjOGJlM2UzYjAwMDAifX0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg1OTNkNDgyOWE5MzcyN2FmZTMwNmEwODM5MzU3MWE3ZDgwNDhjZDU5YjE5MmRhYWNlYTBiNjVmYjZmY2NkMzMyMDkyODIzYmJiZTAxNDNhMjA1YzFlMDg5NGU1YjU4ZGY3MjNiNzYyNzUxMTQxNTcwOWM3NjgxYTY4MWI4NjVlNzFiIiwibmV0d29ya0lkIjoxMDB9XQ==",
-    "reviewRewards": [],
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4NmQyODEwNTA5NWQ4OWIwMDAwIn19LCJub25jZSI6IjgzMDc2NDM3NDQ2NDk5NTg5MzA0NjExMTI4OTYzOTE2NzEwMTA2ODg2MTAyNDM2MDIzODgxNTIwMDU4MzQ2ODAwNTc4NzU0NDAxNzU1IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6IjB4NEQwNzA0ZjQwMEQ1N0JhOTNlRWE4ODc2NUMzRmNEQkQ4MjZkQ0ZjNCIsInJlcXVlc3RlZEFtb3VudCI6eyJ0eXBlIjoiQmlnTnVtYmVyIiwiaGV4IjoiMHg2ZDI4MTA1MDk1ZDg5YjAwMDAifX0sIm93bmVyIjoiMHhkOTUzMEYzZmJCRWExMWJlRDAxREMwOUU3OTMxOGYyZjIwMjIzNzE2Iiwic2lnbmF0dXJlIjoiMHg4M2IzNThhMmQ2YmExYmU2MzA5YTY2Njc3MTg4M2RlY2RiNWI5MzE3N2U1ZmEwMWYxNzgzNWQxZmI4Zjc0Nzg4Mjc1ZGU4YTZjZGU3OTE4MmNlZDJmMmQwNzNkMGZkMGE5OGZkMDZlOTQyYzI4NTY2YmIxNzNmZjRjYjA2ZjI2MzFjIiwibmV0d29ya0lkIjoxMDB9XQ==",
     "task": {
       "multiplier": 1,
       "reward": 400,
       "timestamp": "2024-04-25T14:29:35Z",
       "url": "https://github.com/ubiquity-os/conversation-rewards/issues/5#event-12609679506"
     },
-    "total": 1622.478,
+    "total": 2013.582,
     "userId": 9807008,
     "walletAddress": "0x1"
   },
@@ -2846,11 +2757,6 @@
     },
     "payoutMode": "permit",
     "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MDAifX0sIm5vbmNlIjoiNTY1NTM0OTQ0NTQwOTcwMTg3NzIyMTY2MTk1Mjc1OTkyMTU3NTA0NDU2MjgyNjY2OTYyMDczNzE2MTUzNzU1MTMyMzk2MzYwMzIwMTgiLCJkZWFkbGluZSI6IjAifSwidHJhbnNmZXJEZXRhaWxzIjp7InRvIjoiMHg0RDA3MDRmNDAwRDU3QmE5M2VFYTg4NzY1QzNGY0RCRDgyNmRDRmM0IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDAwIn19LCJvd25lciI6IjB4ZDk1MzBGM2ZiQkVhMTFiZUQwMURDMDlFNzkzMThmMmYyMDIyMzcxNiIsInNpZ25hdHVyZSI6IjB4YzE0YjNkODI4ODg3NGFkZTQ0NDc2NzRkMTIwYWUxY2EwMzdiMGUwYzA5ZGRkZmQ1MmNlY2FiNDg2ODBjZDRlZTM2MTI2YWQ3ZjY0MTg5MTIwODgyOWZiZWQ4OTQwOGMzMDFkMTkxNTFlMGMzYjBkYmMzN2M5OGEzZjVhMjdkZGUxYyIsIm5ldHdvcmtJZCI6MTAwfV0=",
-    "reviewRewards": [
-      {
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
-      }
-    ],
     "total": 0,
     "userId": 88761781,
     "walletAddress": "0x1"
@@ -2931,8 +2837,8 @@
             "sentences": 1,
             "syllables": 22
           },
-          "relevance": 0.7,
-          "reward": 2.576,
+          "relevance": 1,
+          "reward": 3.68,
           "words": {
             "result": 0.82,
             "wordCount": 14,
@@ -2966,8 +2872,8 @@
             "sentences": 1,
             "syllables": 33
           },
-          "relevance": 0.7,
-          "reward": 1.96,
+          "relevance": 1,
+          "reward": 2.8,
           "words": {
             "result": 1.2,
             "wordCount": 25,
@@ -3001,8 +2907,8 @@
             "sentences": 2,
             "syllables": 13
           },
-          "relevance": 0.7,
-          "reward": 1.372,
+          "relevance": 1,
+          "reward": 1.96,
           "words": {
             "result": 0.64,
             "wordCount": 10,
@@ -3036,8 +2942,8 @@
             "sentences": 2,
             "syllables": 20
           },
-          "relevance": 0.7,
-          "reward": 1.596,
+          "relevance": 1,
+          "reward": 2.28,
           "words": {
             "result": 0.78,
             "wordCount": 13,
@@ -3071,8 +2977,8 @@
             "sentences": 2,
             "syllables": 38
           },
-          "relevance": 0.7,
-          "reward": 1.96,
+          "relevance": 1,
+          "reward": 2.8,
           "words": {
             "result": 1.17,
             "wordCount": 24,
@@ -3106,8 +3012,8 @@
             "sentences": 1,
             "syllables": 26
           },
-          "relevance": 0.7,
-          "reward": 1.792,
+          "relevance": 1,
+          "reward": 2.56,
           "words": {
             "result": 1.04,
             "wordCount": 20,
@@ -3141,8 +3047,8 @@
             "sentences": 1,
             "syllables": 11
           },
-          "relevance": 0.7,
-          "reward": 1.344,
+          "relevance": 1,
+          "reward": 1.92,
           "words": {
             "result": 0.59,
             "wordCount": 9,
@@ -3180,8 +3086,8 @@
             "sentences": 2,
             "syllables": 111
           },
-          "relevance": 0.7,
-          "reward": 3.332,
+          "relevance": 1,
+          "reward": 4.76,
           "words": {
             "result": 1.8,
             "wordCount": 63,
@@ -3215,8 +3121,8 @@
             "sentences": 1,
             "syllables": 26
           },
-          "relevance": 0.7,
-          "reward": 1.764,
+          "relevance": 1,
+          "reward": 2.52,
           "words": {
             "result": 0.94,
             "wordCount": 17,
@@ -3254,8 +3160,8 @@
             "sentences": 3,
             "syllables": 49
           },
-          "relevance": 0.7,
-          "reward": 4.76,
+          "relevance": 1,
+          "reward": 6.8,
           "words": {
             "result": 1.47,
             "wordCount": 36,
@@ -3289,8 +3195,8 @@
             "sentences": 1,
             "syllables": 4
           },
-          "relevance": 0.7,
-          "reward": 1.204,
+          "relevance": 1,
+          "reward": 1.72,
           "words": {
             "result": 0.31,
             "wordCount": 4,
@@ -3340,51 +3246,8 @@
       }
     },
     "payoutMode": "permit",
-    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MDFkNmU2YWUzODc2OGUwMDAwIn19LCJub25jZSI6IjYyOTcwNTkwNjE1ODgxMjIxMjc0MzE2OTEwNTY3NzAxOTUzNDM1MDg1NjAzMDk5NzUxMjI0MzE2OTA5MTgzMDc5NTM5ODkzODYzOTE0IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6Ilttb2NrXSBDb3VsZCBub3QgZmluZCB3YWxsZXQgZm9yIHVzZXIgMTM5MjYyNjY3IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDAxZDZlNmFlMzg3NjhlMDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweDQ5OTlkNDk0NzE1M2JhNWY1OTFhNTE4NWI1ZjE1YzUwMDcyZDZlNTZkOWUxOTgzNzc3ZTM5ZWI0NjdiYmMzNmE1MGIzODBjYWQ1ZjI1NTMzNTU1NTRlMWRlMWIwODM3NWQ2ZTZmZTg5NGJhOGY0OTA2NTE0OTNhMjdlYWNhYTZkMWIiLCJuZXR3b3JrSWQiOjEwMH1d",
-    "reviewRewards": [
-      {
-        "reviews": [
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2014236289,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2017635547,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2020125850,
-            "reward": 1
-          },
-          {
-            "effect": {
-              "addition": 50,
-              "deletion": 50
-            },
-            "priority": 1,
-            "reviewId": 2020144465,
-            "reward": 1
-          }
-        ],
-        "url": "https://github.com/ubiquity-os/conversation-rewards/pull/12#issue-1822452078"
-      }
-    ],
-    "total": 33.932,
+    "permitUrl": "https://pay.ubq.fi?claim=W3sidHlwZSI6ImVyYzIwLXBlcm1pdCIsInBlcm1pdCI6eyJwZXJtaXR0ZWQiOnsidG9rZW4iOiIweGU5MUQxNTNFMGI0MTUxOEEyQ2U4RGQzRDc5NDRGYTg2MzQ2M2E5N2QiLCJhbW91bnQiOnsidHlwZSI6IkJpZ051bWJlciIsImhleCI6IjB4MDIyYzFjNTdiMDdmNzQwMDAwIn19LCJub25jZSI6IjYyOTcwNTkwNjE1ODgxMjIxMjc0MzE2OTEwNTY3NzAxOTUzNDM1MDg1NjAzMDk5NzUxMjI0MzE2OTA5MTgzMDc5NTM5ODkzODYzOTE0IiwiZGVhZGxpbmUiOiIwIn0sInRyYW5zZmVyRGV0YWlscyI6eyJ0byI6Ilttb2NrXSBDb3VsZCBub3QgZmluZCB3YWxsZXQgZm9yIHVzZXIgMTM5MjYyNjY3IiwicmVxdWVzdGVkQW1vdW50Ijp7InR5cGUiOiJCaWdOdW1iZXIiLCJoZXgiOiIweDAyMmMxYzU3YjA3Zjc0MDAwMCJ9fSwib3duZXIiOiIweGQ5NTMwRjNmYkJFYTExYmVEMDFEQzA5RTc5MzE4ZjJmMjAyMjM3MTYiLCJzaWduYXR1cmUiOiIweGViZjI5NjhkOTZlMmM3NTQyYjY1N2RmOGMyZDEyYWVhZjkzMmNiNWUwYmFiZTI0ZjRiMmFiZGMyYjEwZmYyNDY1YzgzY2FhN2I2YzJhZTBmN2ZmZjk5NjEyZjVkNTQxYzg2ZWU3NDFlZDc1NWM3NmI3MmQ3MDNhOTAwMGFlNzE0MWMiLCJuZXR3b3JrSWQiOjEwMH1d",
+    "total": 40.072,
     "userId": 139262667,
     "walletAddress": "0x1"
   }

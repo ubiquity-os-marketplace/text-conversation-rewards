@@ -18,6 +18,7 @@ import {
 } from "../types/content-evaluator-module-type";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
+import { LINKED_ISSUES, PullRequestClosingIssue } from "../types/requests";
 import { GithubCommentScore, Result } from "../types/results";
 
 /**
@@ -32,6 +33,7 @@ export class ContentEvaluatorModule extends BaseModule {
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
   private readonly _originalAuthorWeight: number = 0.5;
+  private _basePriority: number = 1;
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -87,12 +89,15 @@ export class ContentEvaluatorModule extends BaseModule {
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
+    this._basePriority = await this.computePriority(data);
     const allComments: { id: number; comment: string; author: string }[] = [];
 
     for (const [user, data] of Object.entries(result)) {
       if (data.comments?.length) {
         allComments.push(
-          ...data.comments.map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
+          ...data.comments
+            .filter((comment) => comment.commentType & CommentKind.ISSUE)
+            .map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
         );
       }
     }
@@ -123,7 +128,10 @@ export class ContentEvaluatorModule extends BaseModule {
    */
   private async _handleRewardsForOriginalAuthor(body: string, result: Result) {
     const originalComment = extractOriginalAuthor(body);
-    const issueAuthor = this.context.payload.issue.user?.login;
+    const issueAuthor =
+      "issue" in this.context.payload
+        ? this.context.payload.issue.user?.login
+        : this.context.payload.pull_request?.user?.login;
 
     if (!originalComment || !issueAuthor || issueAuthor === originalComment.username) return;
 
@@ -199,10 +207,13 @@ export class ContentEvaluatorModule extends BaseModule {
           prCommentsToEvaluate
         );
 
-        if (Object.keys(relevances).length !== commentsToEvaluate.length + prCommentsToEvaluate.length) {
+        const expectedRelevances = this.isPullRequest() ? prCommentsToEvaluate.length : commentsToEvaluate.length;
+        if (Object.keys(relevances).length !== expectedRelevances) {
           throw this.context.logger.error("There was a mismatch between the relevance scores and amount of comments.", {
-            expectedRelevances: commentsToEvaluate.length + prCommentsToEvaluate.length,
+            expectedRelevances,
             receivedRelevances: Object.keys(relevances).length,
+            prComments: prCommentsToEvaluate.length,
+            issueComments: commentsToEvaluate.length,
             relevances,
             commentsToEvaluate,
             prCommentsToEvaluate,
@@ -244,11 +255,10 @@ export class ContentEvaluatorModule extends BaseModule {
       }
 
       const currentReward = new Decimal(currentComment.score?.reward ?? 0);
+      const basePriority = this._basePriority;
       const priority =
         // We do not apply priority multiplier on issue specification
-        currentComment.score?.priority && !(currentComment.commentType & CommentAssociation.SPECIFICATION)
-          ? currentComment.score.priority
-          : 1;
+        !(currentComment.commentType & CommentAssociation.SPECIFICATION) ? basePriority : 1;
 
       currentComment.score = {
         ...(currentComment.score || { multiplier: 0 }),
@@ -353,7 +363,7 @@ export class ContentEvaluatorModule extends BaseModule {
     return commentRelevances;
   }
 
-  async _splitPromptForPullRequestCommentEvaluation(specification: string, comments: PrCommentToEvaluate[]) {
+  async _splitPromptForPullRequestCommentEvaluation(specification: string | string[], comments: PrCommentToEvaluate[]) {
     const commentRelevances: Relevances = {};
 
     let chunks = 2;
@@ -399,7 +409,7 @@ export class ContentEvaluatorModule extends BaseModule {
     let commentRelevances: Relevances = {};
     let prCommentRelevances: Relevances = {};
 
-    if (userIssueComments.length) {
+    if (userIssueComments.length && !this.isPullRequest()) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
@@ -415,27 +425,65 @@ export class ContentEvaluatorModule extends BaseModule {
       }
     }
 
-    if (userPrComments.length) {
+    if (userPrComments.length && this.isPullRequest()) {
+      // Build PR specification context from all closing issues (fallback to provided specification if none)
+      const closingIssueBodies = await this._getClosingIssueBodies();
+      const prSpecifications: string | string[] = closingIssueBodies.length ? closingIssueBodies : specification;
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userPrComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForPrComments = this._generatePromptForPrComments(specification, userPrComments);
+      const promptForPrComments = this._generatePromptForPrComments(prSpecifications, userPrComments);
       if (this._calculateMaxTokens(promptForPrComments, Infinity) + maxOutputTokens > this._tokenLimit) {
-        prCommentRelevances = await this._splitPromptForPullRequestCommentEvaluation(specification, userPrComments);
+        prCommentRelevances = await this._splitPromptForPullRequestCommentEvaluation(prSpecifications, userPrComments);
       } else {
         prCommentRelevances = await this._submitPrompt(promptForPrComments, maxOutputTokens);
       }
     }
 
     if (
-      userIssueComments.length !== Object.keys(commentRelevances).length ||
-      userPrComments.length !== Object.keys(prCommentRelevances).length
+      (userIssueComments.length !== Object.keys(commentRelevances).length && !this.isPullRequest()) ||
+      (userPrComments.length !== Object.keys(prCommentRelevances).length && this.isPullRequest())
     ) {
       this.context.logger.warn(
         `[_evaluateComments]: Result mismatch. Evaluated ${userIssueComments.length} user issue comments that gave ${Object.keys(commentRelevances).length} comment relevance, and ${userPrComments.length} that gave ${Object.keys(prCommentRelevances).length} pr comment relevance.`
       );
     }
     return { ...commentRelevances, ...prCommentRelevances };
+  }
+
+  /**
+   * Fetches the bodies of all issues that the current pull request closes.
+   * Returns an empty array if none are found or on failure.
+   */
+  private async _getClosingIssueBodies(): Promise<string[]> {
+    try {
+      if (!this.isPullRequest()) return [];
+
+      const owner = this.context.payload.repository.owner.login;
+      const repo = this.context.payload.repository.name;
+      let pullNumber: number | undefined;
+      if ("pull_request" in this.context.payload) {
+        pullNumber = this.context.payload.pull_request.number;
+      } else if ("issue" in this.context.payload && this.context.payload.issue.pull_request) {
+        pullNumber = this.context.payload.issue.number;
+      }
+      if (!pullNumber) return [];
+
+      const linked = await this.context.octokit.graphql.paginate<PullRequestClosingIssue>(LINKED_ISSUES, {
+        owner,
+        repo,
+        pull_number: pullNumber,
+      });
+      const edges = linked.repository.pullRequest.closingIssuesReferences.edges ?? [];
+      const bodies: string[] = [];
+      for (const edge of edges) {
+        const body = edge?.node?.body;
+        if (body) bodies.push(body);
+      }
+      return bodies;
+    } catch (e) {
+      throw this.context.logger.warn("Failed to collect the closing issue's body for a linked issue.", { e });
+    }
   }
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
@@ -513,7 +561,7 @@ export class ContentEvaluatorModule extends BaseModule {
       Notes:
       - Even minor details may be significant.
       - Comments may reference earlier comments.
-      - The number of entries in the JSON response must equal ${userCommentsMap.length}.
+      - The number of entries in the JSON response MUST equal ${userCommentsMap.length}.
 
       Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
 
@@ -521,28 +569,37 @@ export class ContentEvaluatorModule extends BaseModule {
     `;
   }
 
-  _generatePromptForPrComments(issue: string, userComments: PrCommentToEvaluate[]) {
-    if (!issue?.length) {
+  _generatePromptForPrComments(specifications: string | string[], userComments: PrCommentToEvaluate[]) {
+    const specsArray = Array.isArray(specifications) ? specifications : [specifications];
+    if (!specsArray.length || specsArray.every((s) => !s || s.length === 0)) {
       throw new Error("Issue specification comment is missing or empty");
     }
+    const payload = { specification: specsArray, comments: userComments };
     return `CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
 
-    I need to evaluate the value of a GitHub contributor's comments in a pull request. 
-    Some of these comments are code review comments, and some are general suggestions or a part of the discussion. 
-    I'm interested in how much each comment helps to solve the GitHub issue and improve code quality. 
-    Please provide a float between 0 and 1 to represent the value of each comment. 
-    A score of 1 indicates that the comment is very valuable and significantly improves the submitted solution and code quality, whereas a score of 0 indicates a negative or zero impact. 
-    A stringified JSON is given below that contains the specification of the GitHub issue, and comments by different contributors. 
-    The property "diffHunk" presents the chunk of code being addressed for a possible change in a code review comment. 
-    
-    ${JSON.stringify({ specification: issue, comments: userComments })}
-  
-    To what degree are each of the comments valuable? 
-    Please reply with ONLY a raw JSON object where each key is the comment ID given in JSON above, and the value is a float number between 0 and 1 corresponding to the comment. 
-    The float number should represent the value of the comment for improving the issue solution and code quality. The number of entries in the JSON response must equal ${userComments.length}.
-    Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
-    
-    YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.
-`;
+    Evaluate the value of a GitHub contributor's comments in a pull request.
+    Context may include ONE OR MORE issue specifications. Treat the entire list as the set of problems this PR aims to solve.
+    Consider a comment valuable if it helps address ANY of the specifications and/or clearly improves code quality while staying aligned with them.
+
+    Scoring rules (0.0 - 1.0 per comment):
+    - 1.0: Strongly advances a fix/feature tied to one or more specifications, or significantly improves correctness, safety, performance, or maintainability in direct relation to the specs.
+    - 0.5: Somewhat helpful or partially relevant; raises a valid concern or improvement but limited in scope/impact.
+    - 0.0: Not relevant, incorrect, or off-topic with respect to the specifications; noise.
+
+    Additional notes:
+    - Some comments are code-review entries and include a "diffHunk" representing the code context under review.
+    - Prefer actionable, specific suggestions over generic praise.
+    - Do not explain your reasoning; only output JSON.
+
+    The following JSON contains the issue specification context and the comments to evaluate.
+    The "specification" field is an array of one or more issue bodies; the "comments" array lists PR comments.
+
+    ${JSON.stringify(payload)}
+
+    Reply with ONLY a raw JSON object mapping each comment ID to a float between 0 and 1.
+    The number of entries in the JSON response MUST equal ${userComments.length}.
+    Example Output Format: {"123": 0.75, "456": 0.3, "789": 0.9}
+
+    YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.`;
   }
 }

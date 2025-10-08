@@ -1,16 +1,18 @@
 import * as github from "@actions/github";
-import { GitHubIssue } from "../github-types";
+import ms, { UnitAnyCase } from "ms";
+
+type Labels = ReadonlyArray<string | { name?: string | null }>;
 
 export function getGithubWorkflowRunUrl() {
   return `${github.context.payload.repository?.html_url}/actions/runs/${github.context.runId}`;
 }
 
-export function parsePriorityLabel(labels?: GitHubIssue["labels"]) {
+export function parsePriorityLabel(labels?: Labels) {
   if (!labels) return 1;
 
   for (const label of labels) {
     const priorityLabel = typeof label === "string" ? label : label.name;
-    const matched = priorityLabel?.match(/^Priority:\s*(\d+)/);
+    const matched = priorityLabel?.match(/^Priority:\s*(\d+)/i);
 
     if (matched && Number.isFinite(Number(matched[1]))) {
       return Number(matched[1]);
@@ -18,4 +20,24 @@ export function parsePriorityLabel(labels?: GitHubIssue["labels"]) {
   }
 
   return 1;
+}
+
+export function parseDurationLabel(labels?: Labels): number | undefined {
+  if (!labels) return undefined;
+
+  const re = /^Time\b\s*:?\s*<?\s*(\d+(?:\.\d+)?)\s*([a-z]+)\b/i;
+
+  for (const label of labels) {
+    const name = (typeof label === "string" ? label : label.name) ?? "";
+
+    const matched = re.exec(name);
+    if (!matched) continue;
+
+    const number = Number(matched[1]);
+    const unit = matched[2] as UnitAnyCase;
+
+    return ms(`${number} ${unit}`);
+  }
+
+  return undefined;
 }

@@ -20,9 +20,9 @@ export function isCollaborative(data: Readonly<IssueActivity>) {
 }
 
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
-  if (data.linkedReviews[0] && data.self?.assignee) {
-    const pullRequest = data.linkedReviews[0].self;
-    const pullReview = data.linkedReviews[0];
+  if (data.linkedMergedPullRequests[0] && data.self?.assignee) {
+    const pullRequest = data.linkedMergedPullRequests[0].self;
+    const pullReview = data.linkedMergedPullRequests[0];
     const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
     const assignee = data.self.assignee;
 
