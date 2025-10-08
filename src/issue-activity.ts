@@ -1,6 +1,6 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
-import { ClosedByPullRequestsReferences, collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
+import { ClosedByPullRequestsReferences, collectLinkedPulls } from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -50,7 +50,7 @@ export class IssueActivity {
   self: GitHubIssue | null = null;
   events: GitHubIssueEvent[] = [];
   comments: GitHubIssueComment[] = [];
-  linkedPullRequests: Review[] = [];
+  linkedMergedPullRequests: PullRequest[] = [];
   linkedIssues: ClosedByPullRequestsReferences[] = [];
 
   async init() {
@@ -59,7 +59,7 @@ export class IssueActivity {
       return;
     }
     try {
-      [this.self, this.events, this.comments, this.linkedPullRequests, this.linkedIssues] = await Promise.all([
+      [this.self, this.events, this.comments, this.linkedMergedPullRequests, this.linkedIssues] = await Promise.all([
         getIssue(this._context, this._issueParams),
         getIssueEvents(this._context, this._issueParams),
         getIssueComments(this._context, this._issueParams),
@@ -91,7 +91,7 @@ export class IssueActivity {
     return linked.repository.pullRequest.closingIssuesReferences.edges ?? [];
   }
 
-  private async _getLinkedPullRequests(): Promise<Review[]> {
+  private async _getLinkedPullRequests(): Promise<PullRequest[]> {
     this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
 
     const pulls: string[] = [];
@@ -107,7 +107,7 @@ export class IssueActivity {
               .filter((login): login is string => Boolean(login))
           : [];
       pulls.push(
-        ...(await collectLinkedMergedPulls(this._context, this._issueParams))
+        ...(await collectLinkedPulls(this._context, this._issueParams))
           .filter((pullRequest) => {
             // This can happen when a user deleted its account
             if (!pullRequest?.author?.login) {
@@ -139,12 +139,12 @@ export class IssueActivity {
             repo: repo,
             pull_number: issue_number,
           };
-          const review = new Review(this._context, pullParams);
+          const review = new PullRequest(this._context, pullParams);
           await review.init();
           return review;
         }
       })
-      .filter((o) => o !== null) as Promise<Review>[];
+      .filter((o) => o !== null) as Promise<PullRequest>[];
     return Promise.all(promises);
   }
 
@@ -188,16 +188,16 @@ export class IssueActivity {
     }
   }
 
-  private async _processSingleLinkedReview(linkedReview: Review) {
+  private async _processSingleLinkedPullRequest(linkedPullRequest: PullRequest) {
     const comments = [];
-    for (const value of Object.values(linkedReview)) {
+    for (const value of Object.values(linkedPullRequest)) {
       if (Array.isArray(value)) {
         for (const review of value) {
           this._addAnchorToUrl(review);
           comments.push({
             ...review,
             timestamp: review.submitted_at ?? review.created_at,
-            commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedReview.self),
+            commentType: this._getTypeFromComment(CommentKind.PULL, review, linkedPullRequest.self),
           });
         }
       } else if (value) {
@@ -229,9 +229,9 @@ export class IssueActivity {
     }
   }
 
-  async _getLinkedReviewComments() {
-    const commentPromises = this.linkedPullRequests.map((linkedReview) =>
-      this._processSingleLinkedReview(linkedReview)
+  async _getLinkedPullRequestComments() {
+    const commentPromises = this.linkedMergedPullRequests.map((linkedPullRequest) =>
+      this._processSingleLinkedPullRequest(linkedPullRequest)
     );
     const commentsArrays = await Promise.all(commentPromises);
     return commentsArrays.flat();
@@ -268,9 +268,9 @@ export class IssueActivity {
         ),
       });
     }
-    if (this.linkedPullRequests) {
-      const linkedComments = await this._getLinkedReviewComments();
-      comments.push(...linkedComments);
+    if (this.linkedMergedPullRequests) {
+      const linkedPrComments = await this._getLinkedPullRequestComments();
+      comments.push(...linkedPrComments);
     }
     const seen = new Set<string>();
     return comments.filter((c) => {
@@ -285,7 +285,7 @@ export class IssueActivity {
   }
 }
 
-export class Review {
+export class PullRequest {
   self: GitHubPullRequest | null = null;
   reviews: GitHubPullRequestReviewState[] | null = null; // this includes every comment on the files view.
   reviewComments: GitHubPullRequestReviewComment[] | null = null;

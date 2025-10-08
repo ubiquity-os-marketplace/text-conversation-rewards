@@ -62,12 +62,9 @@ export class Processor {
       // Aggregate total result
       for (const username of Object.keys(this._result)) {
         if (data.self?.assignees?.map((v) => v.login).includes(username)) {
-          this._result[username].total = this._sumRewards(
-            this._result[username],
-            await this._getRewardsLimit(data.self)
-          );
+          this._result[username].total = this._sumRewards(this._result[username], rewardLimit);
         } else {
-          this._result[username].total = Math.min(this._sumRewards(this._result[username], rewardLimit));
+          this._result[username].total = Math.min(this._sumRewards(this._result[username], rewardLimit), rewardLimit);
         }
       }
     }

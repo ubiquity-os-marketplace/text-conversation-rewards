@@ -11,11 +11,17 @@ export type PullRequestClosingIssue = {
 };
 
 export const LINKED_PULL_REQUESTS = /* GraphQL */ `
-  query collectLinkedPullRequests($owner: String!, $repo: String!, $issue_number: Int!, $cursor: String) {
+  query collectLinkedPullRequests(
+    $owner: String!
+    $repo: String!
+    $issue_number: Int!
+    $include_closed_prs: Boolean = false
+    $cursor: String
+  ) {
     repository(owner: $owner, name: $repo) {
       issue(number: $issue_number) {
         id
-        closedByPullRequestsReferences(first: 10, includeClosedPrs: false, after: $cursor) {
+        closedByPullRequestsReferences(first: 10, includeClosedPrs: $include_closed_prs, after: $cursor) {
           edges {
             node {
               id

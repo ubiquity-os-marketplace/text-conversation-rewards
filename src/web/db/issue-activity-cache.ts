@@ -43,13 +43,13 @@ export class IssueActivityCache extends IssueActivity {
             JSON.stringify(this.self),
             JSON.stringify(this.events),
             JSON.stringify(this.comments),
-            JSON.stringify(this.linkedPullRequests)
+            JSON.stringify(this.linkedMergedPullRequests)
           );
         } else {
           this.self = JSON.parse(relatedIssue.issue);
           this.events = JSON.parse(relatedIssue.events);
           this.comments = JSON.parse(relatedIssue.comments);
-          this.linkedPullRequests = JSON.parse(relatedIssue.reviews);
+          this.linkedMergedPullRequests = JSON.parse(relatedIssue.reviews);
         }
       } catch (error) {
         if (error && typeof error === "object" && "errno" in error) {

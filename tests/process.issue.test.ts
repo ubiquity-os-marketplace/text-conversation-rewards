@@ -118,7 +118,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
 });
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
+  collectLinkedPulls: jest.fn(() => [
     {
       id: "PR_kwDOLUK0B85soGlu",
       title: "feat: github comment generation and posting",

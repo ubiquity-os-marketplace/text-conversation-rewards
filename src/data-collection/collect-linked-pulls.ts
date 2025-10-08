@@ -26,7 +26,7 @@ type IssueWithClosedByPrs = {
   };
 };
 
-export async function collectLinkedMergedPulls(context: ContextPlugin, issue: IssueParams) {
+export async function collectLinkedPulls(context: ContextPlugin, issue: IssueParams, includeClosed: boolean = false) {
   const { octokit } = context;
   const { owner, repo, issue_number } = issue;
 
@@ -34,6 +34,7 @@ export async function collectLinkedMergedPulls(context: ContextPlugin, issue: Is
     owner,
     repo,
     issue_number,
+    $include_closed_prs: includeClosed,
   });
 
   return result.repository.issue.closedByPullRequestsReferences.edges.map((edge) => edge.node);

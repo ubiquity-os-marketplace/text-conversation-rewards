@@ -1,4 +1,3 @@
-import { collectLinkedMergedPulls } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { areLoginsEquivalent } from "./helpers/github";
 import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
@@ -12,6 +11,7 @@ import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
 import { Result } from "./types/results";
+import { collectLinkedPulls } from "./data-collection/collect-linked-pulls";
 
 async function handlePullRequestEvent(context: ContextPlugin<"pull_request.closed">, activity: IssueActivity) {
   const { logger } = context;
@@ -156,7 +156,7 @@ async function preCheck(context: ContextPlugin) {
     .map((assignee) => assignee?.login)
     .filter((login): login is string => Boolean(login));
   const specialUserGroups = context.config.incentives.specialUsers ?? [];
-  const linkedPulls = (await collectLinkedMergedPulls(context, issue)).filter((pullRequest) => {
+  const linkedPulls = (await collectLinkedPulls(context, issue)).filter((pullRequest) => {
     // This can happen when a user deleted its account
     const authorLogin = pullRequest?.author?.login;
     if (!authorLogin) {
@@ -166,9 +166,9 @@ async function preCheck(context: ContextPlugin) {
   });
   logger.debug("Checking open linked pull-requests for", {
     issue,
-    linkedPulls,
+    linkedPulls: linkedPulls.map((o) => o.url),
   });
-  if (linkedPulls.some((linkedPull) => linkedPull.state === "OPEN")) {
+  if (linkedPulls.some((linkedPull) => linkedPull?.state === "OPEN")) {
     await octokit.rest.issues.update({
       owner: issue.owner,
       repo: issue.repo,

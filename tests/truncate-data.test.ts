@@ -3,12 +3,12 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest 
 import { drop } from "@mswjs/data";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { GitHubIssueComment } from "../src/github-types";
+import { areBaseUrlsEqual } from "../src/helpers/urls";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { areBaseUrlsEqual } from "../src/helpers/urls";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -100,8 +100,65 @@ describe("Payload truncate tests", () => {
       })),
     }));
     jest.unstable_mockModule("../src/issue-activity", () => {
-      return { IssueActivity: jest.fn(() => ({ init: jest.fn() })) };
+      return { IssueActivity: jest.fn(() => ({ init: jest.fn(), linkedPullRequests: [] })) };
     });
+    const listEventsForTimeline = jest.fn();
+    const listComments = jest.fn();
+    const octokit = {
+      rest: {
+        orgs: {
+          getMembershipForUser: jest.fn(() => ({ status: 200 })),
+        },
+        repos: {
+          getCollaboratorPermissionLevel: jest.fn(() => ({ data: { role_name: "admin" } })),
+        },
+        issues: {
+          listEventsForTimeline,
+          listComments,
+          update: jest.fn(),
+        },
+      },
+      graphql: {
+        paginate: jest.fn(() => ({
+          repository: {
+            issue: {
+              closedByPullRequestsReferences: {
+                edges: [
+                  {
+                    node: {
+                      id: "PR_kwDOKzVPS85zXUok",
+                      title: "fix: add state to sorting manager for bottom and top 2",
+                      number: 71,
+                      url: "https://github.com/ubiquity/work.ubq.fi/pull/71",
+                      state: "MERGED",
+                      author: {
+                        login: "0x4007",
+                        id: 4975670,
+                      },
+                      repository: {
+                        owner: {
+                          login: "ubiquity",
+                        },
+                        name: "work.ubq.fi",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        })),
+      },
+      paginate: jest.fn(async (method) => {
+        if (method === listEventsForTimeline) {
+          return [];
+        }
+        if (method === listComments) {
+          return [];
+        }
+        return [];
+      }),
+    };
     const module = await import("../src/run");
     const result = await module.run({
       eventName: "issues.closed",
@@ -133,44 +190,7 @@ describe("Payload truncate tests", () => {
           id: 4975670,
         },
       },
-      octokit: {
-        rest: {
-          orgs: {
-            getMembershipForUser: jest.fn(() => ({ status: 200 })),
-          },
-        },
-        graphql: {
-          paginate: jest.fn(() => ({
-            repository: {
-              issue: {
-                closedByPullRequestsReferences: {
-                  edges: [
-                    {
-                      node: {
-                        id: "PR_kwDOKzVPS85zXUok",
-                        title: "fix: add state to sorting manager for bottom and top 2",
-                        number: 71,
-                        url: "https://github.com/ubiquity/work.ubq.fi/pull/71",
-                        state: "MERGED",
-                        author: {
-                          login: "0x4007",
-                          id: 4975670,
-                        },
-                        repository: {
-                          owner: {
-                            login: "ubiquity",
-                          },
-                          name: "work.ubq.fi",
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          })),
-        },
-      },
+      octokit,
       logger: new Logs("debug"),
       config: {
         ...cfg,

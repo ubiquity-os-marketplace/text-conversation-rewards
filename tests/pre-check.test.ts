@@ -49,7 +49,7 @@ describe("Pre-check tests", () => {
 
   it("Should reopen the issue and not generate rewards if linked pull-requests are still open", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => [
+      collectLinkedPulls: jest.fn(() => [
         {
           id: "PR_kwDOKzVPS85zXUoj",
           title: "fix: add state to sorting manager for bottom and top",
@@ -256,7 +256,7 @@ describe("Pre-check tests", () => {
 
   it("Should not generate a permit if non-collaborator user is merging / closing the issue", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => []),
+      collectLinkedPulls: jest.fn(() => []),
     }));
     const patchMock = jest.fn(() => HttpResponse.json({}));
     server.use(
@@ -315,12 +315,17 @@ describe("Pre-check tests", () => {
 
   it("Should post a warning message that bots cannot trigger reward generation", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => []),
+      collectLinkedPulls: jest.fn(() => []),
     }));
     jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
       postComment: jest.fn(),
     }));
     const { run } = await import("../src/run");
+    const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+    jest.spyOn(octokit.rest.orgs, "getMembershipForUser").mockRejectedValue(new Error("Membership not found"));
+    jest
+      .spyOn(octokit.rest.repos, "getCollaboratorPermissionLevel")
+      .mockResolvedValue({ data: { role_name: "read" } } as never);
 
     const result = await run({
       eventName: "issues.closed",
@@ -350,20 +355,7 @@ describe("Pre-check tests", () => {
       },
       config: cfg,
       logger: new Logs("debug"),
-      octokit: {
-        rest: {
-          orgs: {
-            getMembershipForUser: jest.fn(() => {
-              throw new Error();
-            }),
-          },
-          repos: {
-            getCollaboratorPermissionLevel: jest.fn(() => {
-              return { data: { role_name: "read" } };
-            }),
-          },
-        },
-      },
+      octokit,
       commentHandler: {
         postComment: jest.fn(),
       },

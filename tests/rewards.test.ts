@@ -59,7 +59,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-const collectLinkedMergedPulls = jest.fn(() => [
+const collectLinkedPulls = jest.fn(() => [
   {
     id: "PR_kwDOKzVPS85zXUoj",
     title: "fix: add state to sorting manager for bottom and top",
@@ -84,7 +84,7 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
 }));
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: collectLinkedMergedPulls,
+  collectLinkedPulls: collectLinkedPulls,
 }));
 
 beforeAll(() => {
@@ -199,7 +199,7 @@ describe("Rewards tests", () => {
       login: "contributor1",
       id: 4975670,
     };
-    collectLinkedMergedPulls.mockReturnValueOnce([
+    collectLinkedPulls.mockReturnValueOnce([
       {
         id: "PR_kwDOKzVPS85zXUoj",
         title: "fix: add authorship to issue body edits",
@@ -338,7 +338,7 @@ describe("Rewards tests", () => {
     const originalActivity = {
       comments: activity.comments,
       events: activity.events,
-      linkedPullRequests: activity.linkedPullRequests,
+      linkedPullRequests: activity.linkedMergedPullRequests,
     };
     const processor = new Processor(ctx);
     // @ts-expect-error just for testing
@@ -359,7 +359,7 @@ describe("Rewards tests", () => {
         "https://123-not-valid-url.com";
       activity.comments = [];
       activity.events = [];
-      activity.linkedPullRequests = [];
+      activity.linkedMergedPullRequests = [];
     }
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
@@ -368,7 +368,7 @@ describe("Rewards tests", () => {
       activity.self.body = originalBody;
       activity.comments = originalActivity.comments;
       activity.events = originalActivity.events;
-      activity.linkedPullRequests = originalActivity.linkedPullRequests;
+      activity.linkedMergedPullRequests = originalActivity.linkedPullRequests;
     }
     expect(result).not.toBeUndefined();
   });

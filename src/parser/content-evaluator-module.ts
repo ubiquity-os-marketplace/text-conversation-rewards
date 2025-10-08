@@ -561,7 +561,7 @@ export class ContentEvaluatorModule extends BaseModule {
       Notes:
       - Even minor details may be significant.
       - Comments may reference earlier comments.
-      - The number of entries in the JSON response must equal ${userCommentsMap.length}.
+      - The number of entries in the JSON response MUST equal ${userCommentsMap.length}.
 
       Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
 
@@ -597,7 +597,7 @@ export class ContentEvaluatorModule extends BaseModule {
     ${JSON.stringify(payload)}
 
     Reply with ONLY a raw JSON object mapping each comment ID to a float between 0 and 1.
-    The number of entries MUST equal ${userComments.length}.
+    The number of entries in the JSON response MUST equal ${userComments.length}.
     Example Output Format: {"123": 0.75, "456": 0.3, "789": 0.9}
 
     YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.`;
