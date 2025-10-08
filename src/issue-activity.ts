@@ -237,7 +237,7 @@ export class IssueActivity {
     return commentsArrays.flat();
   }
 
-  async getAllComments() {
+  async getAllComments(includeLinkedMergedPullRequests: boolean = false) {
     const comments: Array<
       (GitHubIssueComment | GitHubPullRequestReviewComment | GitHubIssue | GitHubPullRequest) & {
         commentType: CommentKind | CommentAssociation;
@@ -268,7 +268,7 @@ export class IssueActivity {
         ),
       });
     }
-    if (this.linkedMergedPullRequests) {
+    if (includeLinkedMergedPullRequests && this.linkedMergedPullRequests) {
       const linkedPrComments = await this._getLinkedPullRequestComments();
       comments.push(...linkedPrComments);
     }
