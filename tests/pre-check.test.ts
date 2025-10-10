@@ -128,7 +128,7 @@ describe("Pre-check tests", () => {
 
   it("Should match special user aliases when checking linked pull-requests", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => [
+      collectLinkedPulls: jest.fn(() => [
         {
           id: "PR_alias_test",
           title: "chore: alias user closes issue",
@@ -191,7 +191,7 @@ describe("Pre-check tests", () => {
 
   it("Should match configured Copilot aliases", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: jest.fn(() => [
+      collectLinkedPulls: jest.fn(() => [
         {
           id: "PR_copilot_alias",
           title: "feat: copilot closes issue",
