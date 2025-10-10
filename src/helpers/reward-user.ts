@@ -26,6 +26,7 @@ class CloseRewardModule extends BaseModule {
             multiplier: 1,
             timestamp: new Date().toISOString(),
             url: `${data.self?.html_url}`,
+            category: "stale",
           },
           total: 0,
           userId: this.context.payload.sender?.id ?? 0,

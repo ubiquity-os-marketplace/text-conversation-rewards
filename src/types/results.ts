@@ -10,6 +10,7 @@ export interface Result {
       multiplier: number;
       timestamp: string;
       url: string;
+      category?: "stale" | "standard";
     };
     feeRate?: number;
     permitUrl?: string;
