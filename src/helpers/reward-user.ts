@@ -73,7 +73,7 @@ export async function tryCreatingClosingReward(context: ContextPlugin<"issues.cl
     const result = await processor.run(activity);
     return JSON.stringify(result);
   }
-  return logger.info("Issue was not closed as completed. Skipping.", {
+  return logger.info("Issue does not meet criteria for closing reward. Skipping.", {
     durationThreshold: config.incentives.closeTaskReward.durationThreshold,
     dateDiff: `${dateDiff / (1000 * 60 * 60 * 24)} days`,
     taskReward,
