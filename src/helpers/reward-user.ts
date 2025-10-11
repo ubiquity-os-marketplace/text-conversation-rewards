@@ -58,7 +58,7 @@ export async function tryCreatingClosingReward(context: ContextPlugin<"issues.cl
   const closingDate = context.payload.issue.closed_at;
   const creationDate = context.payload.issue.created_at;
   if (!closingDate || !creationDate) {
-    return logger.warn("The issue was closed but the closing date or creation date is missing, no reward can be sent.")
+    return logger.warn("The issue was closed but the closing date or creation date is missing, no rewards can be sent.")
       .logMessage.raw;
   }
   const dateDiff = new Date(closingDate).getTime() - new Date(creationDate).getTime();
