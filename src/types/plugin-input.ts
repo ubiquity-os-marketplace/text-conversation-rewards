@@ -46,7 +46,7 @@ export const pluginSettingsSchema = T.Object(
           {
             rewardAmount: T.Number({
               default: 5,
-              description: "Reward amount in UUSD that the user should get on closing a task",
+              description: "Reward amount that the user should get on closing a stale task",
             }),
             durationThreshold: T.String({
               default: "30 days",
