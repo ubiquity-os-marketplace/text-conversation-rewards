@@ -1,47 +1,6 @@
 {
   "0x4007": {
-    "comments": [
-      {
-        "commentType": "PULL_COLLABORATOR",
-        "content": "This didn't quite work as expected. I merged these in and did a squash commit, but this didn't seem to get included [https://github.com/ubiquity/work.ubq.fi/commit/52bbc4ddf390cb24b3a84c59d8376dce7872b91d](https://github.com/ubiquity/work.ubq.fi/commit/52bbc4ddf390cb24b3a84c59d8376dce7872b91d)",
-        "id": 2392477440,
-        "score": {
-          "authorship": 1,
-          "formatting": {
-            "content": {
-              "a": {
-                "elementCount": 1,
-                "score": 1
-              },
-              "p": {
-                "elementCount": 1,
-                "score": 1
-              }
-            },
-            "result": 2
-          },
-          "multiplier": 1,
-          "priority": 1,
-          "readability": {
-            "fleschKincaid": 92.46327272727274,
-            "score": 0.6753672727272726,
-            "sentences": 5,
-            "syllables": 42
-          },
-          "relevance": 1,
-          "reward": 3.81,
-          "words": {
-            "result": 1.17,
-            "wordCount": 24,
-            "wordValue": 0.1
-          }
-        },
-        "timestamp": "2024-10-03T22:57:27Z",
-        "url": "https://github.com/ubiquity/work.ubq.fi/pull/101#issuecomment-2392477440"
-      }
-    ],
-    "evaluationCommentHtml": "<details><summary><b><h3>&nbsp;[ 3.81 WXDAI ]&nbsp;</h3><h6>@0x4007</h6></b></summary><h6>⚠️ Error fetching wallet</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody></tbody></table></details>",
-    "total": 3.81,
+    "total": 0,
     "userId": 4975670
   },
   "issueCreator": {
@@ -102,50 +61,5 @@
     },
     "total": 0.986,
     "userId": 12345
-  },
-  "rndquu": {
-    "comments": [
-      {
-        "commentType": "PULL_COLLABORATOR",
-        "content": "This PR should be reverted because it at least [removes](https://github.com/ubiquity/work.ubq.fi/pull/101/files#diff-3e8602c86d6cf04a5c74b954f9f957b652617102cf8f4b647fe46989f480861d) the main page.",
-        "id": 2393196508,
-        "score": {
-          "authorship": 1,
-          "formatting": {
-            "content": {
-              "a": {
-                "elementCount": 1,
-                "score": 1
-              },
-              "p": {
-                "elementCount": 1,
-                "score": 1
-              }
-            },
-            "result": 2
-          },
-          "multiplier": 1,
-          "priority": 1,
-          "readability": {
-            "fleschKincaid": 89.51692307692309,
-            "score": 0.704830769230769,
-            "sentences": 1,
-            "syllables": 16
-          },
-          "relevance": 1,
-          "reward": 3.37,
-          "words": {
-            "result": 0.78,
-            "wordCount": 13,
-            "wordValue": 0.1
-          }
-        },
-        "timestamp": "2024-10-04T08:57:52Z",
-        "url": "https://github.com/ubiquity/work.ubq.fi/pull/101#issuecomment-2393196508"
-      }
-    ],
-    "evaluationCommentHtml": "<details><summary><b><h3>&nbsp;[ 3.37 WXDAI ]&nbsp;</h3><h6>@rndquu</h6></b></summary><h6>⚠️ Error fetching wallet</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody></tbody></table></details>",
-    "total": 3.37,
-    "userId": 119500907
   }
 }
