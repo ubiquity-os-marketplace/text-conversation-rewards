@@ -89,7 +89,7 @@ export class UserExtractorModule extends BaseModule {
         result: result[assignee.login],
       });
     });
-    const allComments = await data.getAllComments();
+    const allComments = await data.getAllComments(this.isPullRequest());
     for (const comment of allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
         result[comment.user.login] = {

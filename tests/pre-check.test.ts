@@ -126,6 +126,134 @@ describe("Pre-check tests", () => {
     expect(patchMock).toHaveBeenCalled();
   });
 
+  it("Should match special user aliases when checking linked pull-requests", async () => {
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(() => [
+        {
+          id: "PR_alias_test",
+          title: "chore: alias user closes issue",
+          number: 72,
+          url: "https://github.com/ubiquity/work.ubq.fi/pull/72",
+          state: "OPEN",
+          author: {
+            login: "gentle-bot",
+            id: 987654,
+          },
+          repository: {
+            owner: {
+              login: "ubiquity",
+            },
+            name: "work.ubq.fi",
+          },
+        },
+      ]),
+    }));
+    const patchMock = jest.fn(() => HttpResponse.json({}));
+    server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
+    const { run } = await import("../src/run");
+    const configWithSpecialUsers = JSON.parse(JSON.stringify(cfg));
+    configWithSpecialUsers.incentives = {
+      ...configWithSpecialUsers.incentives,
+      specialUsers: [["gentlementlegen", "gentle-bot"]],
+    };
+    const result = await run({
+      eventName: "issues.closed",
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+          ],
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717,
+          },
+        },
+      },
+      config: configWithSpecialUsers,
+      logger: new Logs("debug"),
+      octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+      commentHandler: {
+        postComment: jest.fn(),
+      },
+    } as unknown as ContextPlugin);
+    expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
+    expect(patchMock).toHaveBeenCalled();
+  });
+
+  it("Should match configured Copilot aliases", async () => {
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(() => [
+        {
+          id: "PR_copilot_alias",
+          title: "feat: copilot closes issue",
+          number: 73,
+          url: "https://github.com/ubiquity/work.ubq.fi/pull/73",
+          state: "OPEN",
+          author: {
+            login: "copilot-swe-agent",
+            id: 123456,
+          },
+          repository: {
+            owner: {
+              login: "ubiquity",
+            },
+            name: "work.ubq.fi",
+          },
+        },
+      ]),
+    }));
+    const patchMock = jest.fn(() => HttpResponse.json({}));
+    server.use(http.patch("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", patchMock, { once: true }));
+    const { run } = await import("../src/run");
+    const configWithCopilotAliases = {
+      ...cfg,
+      incentives: {
+        ...cfg.incentives,
+        specialUsers: [["Copilot", "copilot-swe-agent"]],
+      },
+    };
+    const result = await run({
+      eventName: "issues.closed",
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 1,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "Copilot",
+            },
+          ],
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717,
+          },
+        },
+      },
+      config: configWithCopilotAliases,
+      logger: new Logs("debug"),
+      octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+      commentHandler: {
+        postComment: jest.fn(),
+      },
+    } as unknown as ContextPlugin);
+    expect(result).toEqual("All linked pull requests must be closed to generate rewards.");
+    expect(patchMock).toHaveBeenCalled();
+  });
+
   it("Should not generate a permit if non-collaborator user is merging / closing the issue", async () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: jest.fn(() => []),

@@ -2149,6 +2149,22 @@
               }
             ]
           },
+          "specialUsers": {
+            "default": [["Copilot", "copilot-swe-agent"]],
+            "description": "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests.",
+            "type": "array",
+            "items": {
+              "minItems": 1,
+              "description": "Logins that belong to the same group of interchangeable special users. Place all aliases for the same person or role in a single group.",
+              "type": "array",
+              "items": {
+                "minLength": 1,
+                "description": "GitHub login treated as equivalent to the other members of the same group when matching issue assignees to pull request authors.",
+                "examples": ["Copilot", "copilot-swe-agent"],
+                "type": "string"
+              }
+            }
+          },
           "externalContent": {
             "default": null,
             "anyOf": [
