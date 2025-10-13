@@ -96,7 +96,7 @@ export const pluginSettingsSchema = T.Object(
           {
             default: [["Copilot", "copilot-swe-agent"]],
             description:
-              "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests.",
+              "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests. Use this when a contributor appears under one login on the issue and another on the pull request, but they represent the same special user.",
           }
         ),
         externalContent: T.Union([externalContentConfigurationType, T.Null()], { default: null }),
