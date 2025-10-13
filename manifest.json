@@ -2151,7 +2151,7 @@
           },
           "specialUsers": {
             "default": [["Copilot", "copilot-swe-agent"]],
-            "description": "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests.",
+            "description": "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests. Use this when a contributor appears under one login on the issue and another on the pull request, but they represent the same special user.",
             "type": "array",
             "items": {
               "minItems": 1,
