@@ -48,9 +48,9 @@ export const pluginSettingsSchema = T.Object(
               default: 5,
               description: "Reward amount that the user should get on closing a stale task",
             }),
-            durationThreshold: T.String({
+            stalenessDuration: T.String({
               default: "30 days",
-              description: "Duration threshold for the reward to be applied",
+              description: "Minimum time an issue must stay open before the close-task reward applies",
             }),
           },
           { default: {} }

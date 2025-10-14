@@ -62,7 +62,7 @@ export async function tryCreatingClosingReward(context: ContextPlugin<"issues.cl
       .logMessage.raw;
   }
   const dateDiff = new Date(closingDate).getTime() - new Date(creationDate).getTime();
-  if (taskReward > 0 && dateDiff >= ms(config.incentives.closeTaskReward.durationThreshold as ms.StringValue)) {
+  if (taskReward > 0 && dateDiff >= ms(config.incentives.closeTaskReward.stalenessDuration as ms.StringValue)) {
     const processor = new CustomProcessor(context, [
       new UserExtractorModule(context),
       new CloseRewardModule(context),
@@ -74,7 +74,7 @@ export async function tryCreatingClosingReward(context: ContextPlugin<"issues.cl
     return JSON.stringify(result);
   }
   return logger.info("Issue does not meet criteria for closing reward. Skipping.", {
-    durationThreshold: config.incentives.closeTaskReward.durationThreshold,
+    stalenessDuration: config.incentives.closeTaskReward.stalenessDuration,
     dateDiff: `${dateDiff / (1000 * 60 * 60 * 24)} days`,
     taskReward,
   }).logMessage.raw;
