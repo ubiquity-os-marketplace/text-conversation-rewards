@@ -42,6 +42,7 @@ export class Processor {
     for (const module of modulesToAdd) {
       this.add(module);
     }
+    this._transformers.push(...modulesToAdd);
     this._context = context;
     this._configuration = this._context.config.incentives;
   }
