@@ -215,6 +215,9 @@ with:
     evmPrivateEncrypted: "encrypted-key"
     erc20RewardToken: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
   incentives:
+    closeTaskReward:
+      rewardAmount: 5
+      stalenessDuration: "30 days"
     specialUsers:
       - ["Copilot", "copilot-swe-agent"]
     requirePriceLabel: true

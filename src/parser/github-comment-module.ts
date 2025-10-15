@@ -235,7 +235,8 @@ export class GithubCommentModule extends BaseModule {
     }
 
     if (result.task?.reward) {
-      content.push(buildContributionRow("Issue", "Task", result.task.multiplier, result.task.reward));
+      const taskLabel = result.task.category === "stale" ? "Stale task reward" : "Task";
+      content.push(buildContributionRow("Issue", taskLabel, result.task.multiplier, result.task.reward));
     }
 
     if (result.simplificationReward && Object.keys(result.simplificationReward.files).length !== 0) {

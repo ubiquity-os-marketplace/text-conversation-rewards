@@ -19,22 +19,27 @@ import { UserExtractorModule } from "./user-extractor-module";
 import { ExternalContentProcessor } from "./external-content-module";
 
 export class Processor {
-  private readonly _transformers: Module[] = [];
-  private _result: Result = {};
-  private readonly _context: ContextPlugin;
-  private readonly _configuration;
+  protected readonly _transformers: Module[] = [];
+  protected _result: Result = {};
+  protected readonly _context: ContextPlugin;
+  protected readonly _configuration;
 
-  constructor(context: ContextPlugin) {
-    this.add(new UserExtractorModule(context))
-      .add(new DataPurgeModule(context))
-      .add(new ExternalContentProcessor(context))
-      .add(new FormattingEvaluatorModule(context))
-      .add(new ContentEvaluatorModule(context))
-      .add(new ReviewIncentivizerModule(context))
-      .add(new EventIncentivesModule(context))
-      .add(new SimplificationIncentivizerModule(context))
-      .add(new PaymentModule(context))
-      .add(new GithubCommentModule(context));
+  constructor(
+    context: ContextPlugin,
+    modulesToAdd: Module[] = [
+      new UserExtractorModule(context),
+      new DataPurgeModule(context),
+      new ExternalContentProcessor(context),
+      new FormattingEvaluatorModule(context),
+      new ContentEvaluatorModule(context),
+      new ReviewIncentivizerModule(context),
+      new EventIncentivesModule(context),
+      new SimplificationIncentivizerModule(context),
+      new PaymentModule(context),
+      new GithubCommentModule(context),
+    ]
+  ) {
+    this._transformers.push(...modulesToAdd);
     this._context = context;
     this._configuration = this._context.config.incentives;
   }

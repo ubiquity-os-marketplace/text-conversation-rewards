@@ -86,7 +86,9 @@ describe("Action tests", () => {
           postComment: jest.fn(),
         },
       } as unknown as ContextPlugin)
-    ).resolves.toEqual("Issue was not closed as completed. Skipping.");
+    ).resolves.toEqual(
+      "The issue was closed but the closing date or creation date is missing, no rewards can be sent."
+    );
   });
 
   it("Should post comment network failure", async () => {

@@ -42,6 +42,22 @@
         "default": {},
         "type": "object",
         "properties": {
+          "closeTaskReward": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "rewardAmount": {
+                "default": 5,
+                "description": "Reward amount that the user should get on closing a stale task",
+                "type": "number"
+              },
+              "stalenessDuration": {
+                "default": "30 days",
+                "description": "Minimum time an issue must stay open before the close-task reward applies",
+                "type": "string"
+              }
+            }
+          },
           "shouldProcessUnlinkedPullRequests": {
             "default": false,
             "description": "Should pull-requests that are not linked to an issue be processed?",
