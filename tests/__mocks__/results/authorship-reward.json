@@ -35,7 +35,7 @@
           "multiplier": 1,
           "priority": 1,
           "readability": {
-            "fleschKincaid": -0.13249999999996476,
+            "fleschKincaid": 0,
             "score": 0,
             "sentences": 2,
             "syllables": 132

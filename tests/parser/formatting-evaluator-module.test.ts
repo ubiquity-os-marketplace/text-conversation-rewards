@@ -87,6 +87,8 @@ describe("FormattingEvaluatorModule", () => {
       // Score should be normalized between 0 and 1
       expect(result.score).toBeGreaterThanOrEqual(0.8);
       expect(result.score).toBeLessThanOrEqual(1);
+      expect(result.fleschKincaid).toBeGreaterThanOrEqual(0);
+      expect(result.fleschKincaid).toBeLessThanOrEqual(100);
     });
 
     it("Low score for complex text", () => {
@@ -103,6 +105,8 @@ describe("FormattingEvaluatorModule", () => {
       // Score should be normalized between 0 and 1
       expect(result.score).toBeGreaterThanOrEqual(0);
       expect(result.score).toBeLessThanOrEqual(0.8);
+      expect(result.fleschKincaid).toBeGreaterThanOrEqual(0);
+      expect(result.fleschKincaid).toBeLessThanOrEqual(100);
     });
 
     it("should handle text with no periods", () => {
@@ -111,6 +115,8 @@ describe("FormattingEvaluatorModule", () => {
 
       expect(result.sentences).toBe(1);
       expect(result.syllables).toBeGreaterThan(0);
+      expect(result.fleschKincaid).toBeGreaterThanOrEqual(0);
+      expect(result.fleschKincaid).toBeLessThanOrEqual(100);
     });
 
     it("should handle very complex text with difficult words", () => {
@@ -128,6 +134,25 @@ describe("FormattingEvaluatorModule", () => {
       // Score should be normalized between 0 and 1
       expect(result.score).toBeGreaterThanOrEqual(0);
       expect(result.score).toBeLessThanOrEqual(0.2);
+      expect(result.fleschKincaid).toBeGreaterThanOrEqual(0);
+      expect(result.fleschKincaid).toBeLessThanOrEqual(100);
+    });
+
+    it("clamps readability score to the upper bound for very easy text", () => {
+      const text = "Cool";
+      const result = module["_calculateFleschKincaid"](text);
+
+      expect(result.fleschKincaid).toBe(100);
+      expect(result.score).toBe(1);
+    });
+
+    it("clamps readability score to the lower bound for extremely complex text", () => {
+      const text =
+        "Antidisestablishmentarianism incomprehensibilities counterrevolutionaries anthropomorphologically characteristically";
+      const result = module["_calculateFleschKincaid"](text);
+
+      expect(result.fleschKincaid).toBe(0);
+      expect(result.score).toBe(0);
     });
 
     it("Formatting result should be limited to a maximum of three decimal places", () => {
