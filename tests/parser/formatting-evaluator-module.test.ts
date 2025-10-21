@@ -1,7 +1,7 @@
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { CommentType } from "../../src/configuration/comment-types";
 import { FormattingEvaluatorModule } from "../../src/parser/formatting-evaluator-module";
 import { ContextPlugin } from "../../src/types/plugin-input";
-import { CommentType } from "../../src/configuration/comment-types";
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
 describe("FormattingEvaluatorModule", () => {
   let module: FormattingEvaluatorModule;
