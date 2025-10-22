@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.7.8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.7...v1.7.8) (2025-09-06)
+
+
+### Bug Fixes
+
+* bumped SDK version ([d2a3d46](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d2a3d460fa05938e93dd10da05dba57cf51cad8f))
+* comments are ignored for the authorship percentage calculation ([dc5bb99](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/dc5bb99c51aa0ed280f2e4be981c71622fcb6e51))
+* issue specification does not count as a comment anymore ([7695013](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/769501369588e4528a8f4b9269b4c2a43080d589))
+* issue specification does not count as a comment anymore ([bb290e8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bb290e87934b1aa120e3af4556fa2ecaf1b032fd))
+* release please issue permission ([ad23fe3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ad23fe35709d2a15275455cce15e936bdbc68168))
+* release please issue permission ([da93b57](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/da93b5728b8a7248f43e14995f9660c9d3e34625))
+* the local UI runs on open issues if the issue id is filled ([beb9786](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/beb9786c922fe5b508be2bc3673ead47c1f6e316))
+* the metadata content is properly escaped to avoid breaking the display ([cb4c9f5](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/cb4c9f52d8eb3d9d7abc84858125c01fb6a1534e))
+* the user's data is not erased if rewards are added for the author ([7bcd9c2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7bcd9c28cc87e9c69b55fea1021f83ee3cfedd25))
+* the user's data is not erased if rewards are added for the author ([e4ea133](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/e4ea1332350d7fb428daaae58991a3122ddc78c8))
+
+## [1.7.7](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.6...v1.7.7) (2025-08-08)
+
+
+### Bug Fixes
+
+* add OpenRouter transforms to external content module ([f2e3bb3](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/f2e3bb35ba9ae6d3422c9026a7cd8fe49cf90797))
+* add OpenRouter transforms to external content module ([34aa8f2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/34aa8f28a87956cb099240c89d4194a5abdd2281))
+* display Flesch Kincaid in the results ([789e627](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/789e6273fe0a66f626ebcd79b073a04185968d9f))
+* improve handling of empty diffs and comment clarity ([0295f04](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/0295f0478982f2d00a264c206f25b61a57561980))
+
 ## [1.7.6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.5...v1.7.6) (2025-07-23)
 
 
