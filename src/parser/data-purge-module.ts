@@ -1,11 +1,11 @@
+import { CommentAssociation } from "../configuration/comment-types";
 import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
 import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespan";
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
-import { GithubCommentScore as ResultComment, Result } from "../types/results";
-import { CommentAssociation } from "../configuration/comment-types";
+import { Result, GithubCommentScore as ResultComment } from "../types/results";
 
 type CommentType = Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
 
@@ -105,10 +105,11 @@ export class DataPurgeModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    this._assignmentPeriods = await getAssignmentPeriods(
-      this.context.octokit,
-      parseGitHubUrl(this.context.payload.issue.html_url)
-    );
+    const htmlUrl =
+      "pull_request" in this.context.payload
+        ? this.context.payload.pull_request.html_url
+        : this.context.payload.issue.html_url;
+    this._assignmentPeriods = await getAssignmentPeriods(this.context.octokit, parseGitHubUrl(htmlUrl));
     const allComments = await data.getAllComments();
     for (const comment of allComments) {
       await this._processComment(comment, result);

@@ -29,7 +29,7 @@ afterEach(() => {
 afterAll(() => server.close());
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
+  collectLinkedPulls: jest.fn(() => [
     {
       id: "PR_kwDOK87YcM5nHc9o",
       title: "chore: add new shared evmPrivateKeyEncrypted",
@@ -86,7 +86,9 @@ describe("Action tests", () => {
           postComment: jest.fn(),
         },
       } as unknown as ContextPlugin)
-    ).resolves.toEqual("Issue was not closed as completed. Skipping.");
+    ).resolves.toEqual(
+      "The issue was closed but the closing date or creation date is missing, no rewards can be sent."
+    );
   });
 
   it("Should post comment network failure", async () => {

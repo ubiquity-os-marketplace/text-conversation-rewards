@@ -1,3 +1,5 @@
+import Decimal from "decimal.js";
+import { parseDurationLabel, parsePriorityLabel } from "../helpers/github";
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "./plugin-input";
 import { Result } from "./results";
@@ -5,6 +7,10 @@ import { Result } from "./results";
 export interface Module {
   transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
   get enabled(): boolean;
+}
+
+export function isPullRequest(context: Pick<ContextPlugin, "payload">): boolean {
+  return "pull_request" in context.payload || ("issue" in context.payload && !!context.payload.issue.pull_request);
 }
 
 export abstract class BaseModule implements Module {
@@ -17,4 +23,43 @@ export abstract class BaseModule implements Module {
   abstract get enabled(): boolean;
 
   abstract transform(data: Readonly<IssueActivity>, result: Result): Promise<Result>;
+
+  protected isPullRequest(): boolean {
+    return isPullRequest(this.context);
+  }
+
+  protected async computePriority(data: Readonly<IssueActivity>): Promise<number> {
+    try {
+      if (!this.isPullRequest()) {
+        return parsePriorityLabel(data?.self?.labels);
+      }
+
+      const pullNumber = data.self?.number;
+      if (!pullNumber) {
+        return parsePriorityLabel(data?.self?.labels);
+      }
+
+      const issues = data.linkedIssues;
+
+      let weightedSum = new Decimal(0);
+      let weightTotal = new Decimal(0);
+      for (const issue of issues) {
+        const labels = issue.node.labels?.nodes;
+        const priority = parsePriorityLabel(labels);
+        const durationHours = parseDurationLabel(labels); // hours
+        if (durationHours && durationHours > 0) {
+          const duration = new Decimal(durationHours);
+          weightedSum = weightedSum.add(new Decimal(priority).mul(duration));
+          weightTotal = weightTotal.add(duration);
+        }
+      }
+
+      if (weightTotal.gt(0)) {
+        return weightedSum.div(weightTotal).toDecimalPlaces(2).toNumber();
+      }
+      return parsePriorityLabel(data?.self?.labels);
+    } catch (e) {
+      throw this.context.logger.warn("Failed to compute the averaged priority.", { e });
+    }
+  }
 }

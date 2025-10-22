@@ -1,16 +1,18 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, jest } from "@jest/globals";
-import { parseGitHubUrl } from "../src/start";
-import cfg from "./__mocks__/results/valid-configuration.json";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
-import { ContextPlugin } from "../src/types/plugin-input";
-import dbSeed from "./__mocks__/db-seed.json";
-import { db, db as mockDb } from "./__mocks__/db";
-import { server } from "./__mocks__/node";
-import Mock = jest.Mock;
 import { drop } from "@mswjs/data";
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { PullRequestData } from "../src/helpers/pull-request-data";
+import { parseGitHubUrl } from "../src/start";
+import { ContextPlugin } from "../src/types/plugin-input";
+import { db, db as mockDb } from "./__mocks__/db";
+import dbSeed from "./__mocks__/db-seed.json";
+import { server } from "./__mocks__/node";
+import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
+import Mock = jest.Mock;
+import { http, HttpResponse } from "msw";
 
 const ctx = {
   eventName: "issues.closed",
@@ -58,9 +60,9 @@ describe("Review Incentivizer", () => {
   });
 
   it("Should not run when no PR is linked to this issue", async () => {
-    const collectLinkedMergedPulls: Mock<() => Array<object>> = jest.fn(() => []);
+    const collectLinkedPulls: Mock<() => Array<object>> = jest.fn(() => []);
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: collectLinkedMergedPulls,
+      collectLinkedPulls: collectLinkedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
     const issue = parseGitHubUrl("https://github.com/ubiquity-os/conversation-rewards/issues/5");
@@ -80,41 +82,47 @@ describe("Review Incentivizer", () => {
 
     const spy = jest.spyOn(console, "warn");
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [new ReviewIncentivizerModule(ctx)];
     await processor.run(activity);
     expect(spy).toHaveBeenCalledWith(
-      expect.stringMatching("No pull request is linked to this issue, won't run review incentivizer")
+      expect.stringMatching("No assignees or pull request found, won't run review incentivizer module")
     );
     spy.mockClear();
     spy.mockReset();
   });
 
   it("Should run on the linked pull-request", async () => {
-    const collectLinkedMergedPulls: Mock<() => Array<object>> = jest.fn(() => [
-      {
-        id: "PR_kwDOLUK0B85soGlu",
-        title: "feat: github comment generation and posting",
-        number: 12,
-        url: "https://github.com/ubiquity-os/conversation-rewards/pull/12",
-        author: {
-          login: "gentlementlegen",
-          id: 9807008,
-        },
-        state: "MERGED",
-        repository: {
-          owner: {
-            login: "ubiquity-os",
-          },
-          name: "conversation-rewards",
-        },
+    const pr = {
+      id: "PR_kwDOLUK0B85soGlu",
+      title: "feat: github comment generation and posting",
+      number: 12,
+      url: "https://github.com/ubiquity-os/conversation-rewards/pull/12",
+      author: {
+        login: "gentlementlegen",
+        id: 9807008,
       },
-    ]);
+      state: "MERGED",
+      repository: {
+        owner: {
+          login: "ubiquity-os",
+        },
+        name: "conversation-rewards",
+      },
+    };
+    const collectLinkedPulls: Mock<() => Array<object>> = jest.fn(() => [pr]);
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-      collectLinkedMergedPulls: collectLinkedMergedPulls,
+      collectLinkedPulls: collectLinkedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
     const issue = parseGitHubUrl("https://github.com/ubiquity-os/conversation-rewards/issues/5");
-    const activity = new IssueActivity(ctx, issue);
+    const newCtx = { ...ctx };
+    newCtx.payload = {
+      ...structuredClone(ctx.payload),
+      // @ts-expect-error pull_request in context
+      pull_request: pr,
+    };
+    const activity = new IssueActivity(newCtx, issue);
     await activity.init();
     for (const item of dbSeed.users) {
       mockDb.users.create(item);
@@ -129,10 +137,13 @@ describe("Review Incentivizer", () => {
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
     const spy = jest.spyOn(console, "warn");
-    const processor = new Processor(ctx);
-    processor["_transformers"] = [new ReviewIncentivizerModule(ctx)];
+    const processor = new Processor(newCtx);
+    // @ts-expect-error just for testing
+    processor["_transformers"] = [new ReviewIncentivizerModule(newCtx)];
     await processor.run(activity);
-    expect(spy).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringMatching("No assignees or pull request found, won't run review incentivizer module")
+    );
     spy.mockClear();
   });
 
@@ -166,17 +177,71 @@ describe("Review Incentivizer", () => {
 
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
     const reviewIncentivizerModule = new ReviewIncentivizerModule(ctx);
+    const prData = new PullRequestData({} as never, "owner", "repo", 0);
+
+    server.use(
+      http.get(
+        "https://api.github.com/repos/ubiquity-os/conversation-rewards/compare/:baseHead",
+        () => {
+          return HttpResponse.json({
+            files: [
+              {
+                filename: "added.txt",
+                status: "added",
+                additions: 10,
+                deletions: 5,
+                changes: 15,
+                blob_url: "https://github.com/ubiquity-os/conversation-rewards/blob/base/added.txt",
+                patch:
+                  "@@ -0,0 +1,10 @@\n+line1\n+line2\n+line3\n+line4\n+line5\n+line6\n+line7\n+line8\n+line9\n+line10",
+              },
+              {
+                filename: "modified.txt",
+                status: "modified",
+                additions: 2,
+                deletions: 1,
+                changes: 3,
+                blob_url: "https://github.com/ubiquity-os/conversation-rewards/blob/base/modified.txt",
+                patch: "@@ -1,2 +1,2 @@\n-hello\n+hello world",
+              },
+            ],
+          });
+        },
+        { once: true }
+      )
+    );
+    jest.spyOn(PullRequestData.prototype, "fileList", "get").mockReturnValue([
+      {
+        filename: "added.txt",
+        additions: 10,
+        deletions: 5,
+        sha: "sha-added",
+        status: "added",
+        blob_url: "blob/added",
+        raw_url: "raw/added",
+      } as unknown as NonNullable<RestEndpointMethodTypes["repos"]["getCommit"]["response"]["data"]["files"]>[number],
+      {
+        filename: "modified.txt",
+        additions: 20,
+        deletions: 10,
+        sha: "sha-modified",
+        status: "modified",
+        blob_url: "blob/modified",
+        raw_url: "raw/modified",
+      } as unknown as NonNullable<RestEndpointMethodTypes["repos"]["getCommit"]["response"]["data"]["files"]>[number],
+    ]);
 
     const diff = await reviewIncentivizerModule.getTripleDotDiffAsObject(
       "ubiquity-os",
       "conversation-rewards",
       "base",
-      "head"
+      "head",
+      prData
     );
 
     expect(Object.keys(diff).length).toBe(2);
     expect(diff["added.txt"]).toEqual({ addition: 10, deletion: 5 });
-    expect(diff["modified.txt"]).toEqual({ addition: 20, deletion: 10 });
+    expect(diff["modified.txt"]).toEqual({ addition: 2, deletion: 1 });
     expect(diff["removed.txt"]).toEqual(undefined);
   });
 });

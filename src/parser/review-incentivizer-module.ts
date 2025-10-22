@@ -1,12 +1,11 @@
 import { Value } from "@sinclair/typebox/value";
-import { minimatch } from "minimatch";
 import {
   ReviewIncentivizerConfiguration,
   reviewIncentivizerConfigurationType,
 } from "../configuration/review-incentivizer-config";
 import { GitHubPullRequestReviewState } from "../github-types";
-import { getExcludedFiles } from "../helpers/excluded-files";
-import { parsePriorityLabel } from "../helpers/github";
+import { getExcludedFiles, shouldExcludeFile } from "../helpers/excluded-files";
+import { PullRequestData } from "../helpers/pull-request-data";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
@@ -30,23 +29,17 @@ export class ReviewIncentivizerModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!data.self?.assignees) {
+    if (!data.self?.assignees || !this.isPullRequest()) {
+      this.context.logger.warn("No assignees or pull request found, won't run review incentivizer module");
       return result;
     }
 
-    const prNumbers = data.linkedReviews.map((review) => review.self?.number);
-    if (!prNumbers.length) {
-      this.context.logger.warn(`No pull request is linked to this issue, won't run review incentivizer`);
-      return result;
-    }
-
-    this.context.logger.info(`Pull requests linked to this issue`, { prNumbers });
-
+    const priority = await this.computePriority(data);
     for (const username of Object.keys(result)) {
       const reward = result[username];
       reward.reviewRewards = [];
 
-      for (const linkedPullReviews of data.linkedReviews) {
+      for (const linkedPullReviews of data.linkedMergedPullRequests) {
         if (linkedPullReviews.reviews && linkedPullReviews.self && username !== linkedPullReviews.self.user.login) {
           const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
@@ -58,7 +51,8 @@ export class ReviewIncentivizerModule extends BaseModule {
             baseRepo,
             baseRef,
             headOwnerRepo ?? "",
-            reviewsByUser
+            reviewsByUser,
+            priority
           );
           reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url });
         }
@@ -67,19 +61,27 @@ export class ReviewIncentivizerModule extends BaseModule {
     return result;
   }
 
-  async getTripleDotDiffAsObject(owner: string, repo: string, baseSha: string, headSha: string): Promise<CommitDiff> {
-    const response = await this.context.octokit.rest.repos.compareCommits({
+  async getTripleDotDiffAsObject(
+    owner: string,
+    repo: string,
+    baseSha: string,
+    headSha: string,
+    prData: PullRequestData
+  ): Promise<CommitDiff> {
+    const fileList = prData.fileList;
+
+    const response = await this.context.octokit.rest.repos.compareCommitsWithBasehead({
       owner,
       repo,
-      base: baseSha,
-      head: headSha,
+      basehead: `${baseSha}...${headSha}`,
     });
 
     const files = response.data.files || [];
+    const allowedFiles = fileList;
     const diff: CommitDiff = {};
 
     for (const file of files) {
-      if (file.status === "removed") continue;
+      if (file.status === "removed" || !allowedFiles.some((o) => o.filename === file.filename)) continue;
       diff[file.filename] = {
         addition: file.additions || 0,
         deletion: file.deletions || 0,
@@ -94,20 +96,13 @@ export class ReviewIncentivizerModule extends BaseModule {
     repo: string,
     baseSha: string,
     headSha: string,
+    prData: PullRequestData,
     excludedFilePatterns?: string[] | null
   ) {
-    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha);
+    const diff = await this.getTripleDotDiffAsObject(owner, repo, baseSha, headSha, prData);
     const reviewEffect = { addition: 0, deletion: 0 };
     for (const [fileName, changes] of Object.entries(diff)) {
-      if (
-        !excludedFilePatterns?.length ||
-        !excludedFilePatterns.some((pattern) => {
-          // Adjust pattern to handle directories: append '**' if pattern ends with '/' otherwise minimatch doesn't
-          // exclude the files within the subdirectories
-          const adjustedPattern = pattern.endsWith("/") ? `${pattern}**` : pattern;
-          return minimatch(fileName, adjustedPattern);
-        })
-      ) {
+      if (!shouldExcludeFile(fileName, excludedFilePatterns)) {
         reviewEffect.addition += changes.addition;
         reviewEffect.deletion += changes.deletion;
       }
@@ -120,25 +115,21 @@ export class ReviewIncentivizerModule extends BaseModule {
     baseRepo: string,
     baseRef: string,
     headOwnerRepo: string,
-    reviewsByUser: GitHubPullRequestReviewState[]
+    reviewsByUser: GitHubPullRequestReviewState[],
+    priority: number
   ) {
     if (reviewsByUser.length == 0) {
+      this.context.logger.debug("No reviews found for this pull request", { baseOwner, baseRepo, baseRef });
       return;
     }
     const reviews: ReviewScore[] = [];
-    const priority = parsePriorityLabel(this.context.payload.issue.labels);
     const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
 
-    const pullCommits = (
-      await this.context.octokit.rest.pulls.listCommits({
-        owner: baseOwner,
-        repo: baseRepo,
-        pull_number: pullNumber,
-      })
-    ).data;
+    const prData = new PullRequestData(this.context, baseOwner, baseRepo, pullNumber);
+    await prData.fetchData();
 
     // Get the first commit of the PR
-    const firstCommitSha = pullCommits[0]?.parents[0]?.sha || pullCommits[0]?.sha;
+    const firstCommitSha = prData.pullCommits[0]?.parents?.[0]?.sha || prData.pullCommits[0]?.sha;
     if (!firstCommitSha) {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
@@ -157,8 +148,16 @@ export class ReviewIncentivizerModule extends BaseModule {
             baseRepo,
             baseSha,
             headSha,
+            prData,
             excludedFilePatterns
           );
+          this.context.logger.debug("Fetched diff between commits", {
+            baseOwner,
+            baseRepo,
+            baseSha,
+            headSha,
+            reviewEffect,
+          });
           reviews.push({
             reviewId: currentReview.id,
             effect: reviewEffect,

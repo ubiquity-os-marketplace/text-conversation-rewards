@@ -84,16 +84,17 @@ export class PaymentModule extends BaseModule {
       return this._handleXpRecording(result);
     }
 
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
     const payload: Context["payload"] & Payload = {
       ...context.payload.inputs,
-      issueUrl: this.context.payload.issue.html_url,
+      issueUrl: issue.html_url,
       evmPrivateEncrypted: this.context.config.rewards.evmPrivateEncrypted,
       evmNetworkId: this.context.config.rewards.evmNetworkId,
       erc20RewardToken: this.context.config.rewards.erc20RewardToken,
     };
     const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
     payload.issue = {
-      node_id: this.context.payload.issue.node_id,
+      node_id: issue.node_id,
     };
     const env = this.context.env;
 
@@ -143,34 +144,7 @@ export class PaymentModule extends BaseModule {
     let directTransferError;
     if (payoutMode === "transfer") {
       try {
-        const beneficiaries = await this._getBeneficiaries(result);
-        // Avoid empty transactions and gas wasting, maybe we should move this logic
-        // before this block to avoid any extra works
-        if (beneficiaries.length === 0) {
-          throw this.context.logger.warn("Beneficiary list is empty, skipping the direct transfer of rewards...");
-        }
-
-        const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
-        // Check if a funding wallet has enough reward tokens and gas to transfer rewards directly
-        const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
-        this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
-        const [tx, permits] = await this._transferReward(directTransferInfo);
-        this.context.logger.info("Rewards have been transferred.");
-        await Promise.all(
-          beneficiaries.map(async (beneficiary, idx) => {
-            result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
-            result[beneficiary.username].payoutMode = "transfer";
-            try {
-              await this._savePermitsToDatabase(
-                result[beneficiary.username].userId,
-                { issueUrl: payload.issueUrl, issueId },
-                [permits[idx]]
-              );
-            } catch (e) {
-              this.context.logger.warn(`Failed to save permits to the database`, { e });
-            }
-          })
-        );
+        await this._tryDirectTransfer(result, networkExplorer, issueId, payload.issueUrl, privateKey);
       } catch (e) {
         this.context.logger.warn(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
@@ -227,6 +201,36 @@ export class PaymentModule extends BaseModule {
     // remove treasury item from the final result in order not to display the permit fee in GitHub comments
     this._removeTreasuryItem(result);
     return result;
+  }
+
+  private async _tryDirectTransfer(
+    result: Result,
+    networkExplorer: string,
+    issueId: number,
+    issueUrl: string,
+    privateKey: string
+  ): Promise<void> {
+    const beneficiaries = await this._getBeneficiaries(result);
+    if (beneficiaries.length === 0) {
+      throw this.context.logger.warn("Beneficiary list is empty, skipping the direct transfer of rewards...");
+    }
+
+    const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
+    const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
+    this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
+    const [tx, permits] = await this._transferReward(directTransferInfo);
+    this.context.logger.info("Rewards have been transferred.");
+    await Promise.all(
+      beneficiaries.map(async (beneficiary, idx) => {
+        result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
+        result[beneficiary.username].payoutMode = "transfer";
+        try {
+          await this._savePermitsToDatabase(result[beneficiary.username].userId, { issueUrl, issueId }, [permits[idx]]);
+        } catch (e) {
+          this.context.logger.warn(`Failed to save permits to the database`, { e });
+        }
+      })
+    );
   }
 
   private _removeTreasuryItem(result: Result) {
@@ -725,7 +729,8 @@ export class PaymentModule extends BaseModule {
   }
 
   async _handleXpRecording(result: Result): Promise<Result> {
-    const issueUrl = this.context.payload.issue.html_url;
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
+    const issueUrl = issue.html_url;
     const { issue_number: issueId } = parseGitHubUrl(issueUrl);
     if (!issueId) {
       this.context.logger.error("[PaymentModule] Could not extract issue ID from URL for XP recording.", {

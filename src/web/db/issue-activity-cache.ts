@@ -26,28 +26,30 @@ export class IssueActivityCache extends IssueActivity {
       await this._initDatabase(db);
 
       try {
+        const issue =
+          "issue" in this._context.payload ? this._context.payload.issue : this._context.payload.pull_request;
         const relatedIssue = await db.get<{
           issue: string;
           events: string;
           comments: string;
           reviews: string;
-        }>("SELECT * FROM issues WHERE html_url = ?", this._context.payload.issue.html_url);
+        }>("SELECT * FROM issues WHERE html_url = ?", issue.html_url);
         this._context.logger.debug(`Fetched related issues from the cache.`, { relatedIssue });
         if (!relatedIssue) {
           await super.init();
           await db.run(
             `INSERT INTO issues (html_url, issue, events, comments, reviews) VALUES (?, ?, ?, ?, ?)`,
-            this._context.payload.issue.html_url,
+            issue.html_url,
             JSON.stringify(this.self),
             JSON.stringify(this.events),
             JSON.stringify(this.comments),
-            JSON.stringify(this.linkedReviews)
+            JSON.stringify(this.linkedMergedPullRequests)
           );
         } else {
           this.self = JSON.parse(relatedIssue.issue);
           this.events = JSON.parse(relatedIssue.events);
           this.comments = JSON.parse(relatedIssue.comments);
-          this.linkedReviews = JSON.parse(relatedIssue.reviews);
+          this.linkedMergedPullRequests = JSON.parse(relatedIssue.reviews);
         }
       } catch (error) {
         if (error && typeof error === "object" && "errno" in error) {

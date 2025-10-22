@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { db } from "./db";
+import gqlPullCommits from "./results/gql-commits.json";
 import issue100CommentsGet from "./routes/issue-100-comments-get.json";
 import issue100Edits from "./routes/issue-100-edits.json";
 import issue100EventsGet from "./routes/issue-100-events-get.json";
@@ -25,13 +26,19 @@ import issue71CommentsGet from "./routes/issue-71-comments-get.json";
 import issue71EventsGet from "./routes/issue-71-events-get.json";
 import issue71Get from "./routes/issue-71-get.json";
 import issue71TimelineGet from "./routes/issue-71-timeline-get.json";
+import issue71WorkUbqFiCommentsGet from "./routes/issue-71-work-ubq-fi-comments-get.json";
 import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
 import issueTimelineGet from "./routes/issue-timeline-get.json";
+import issue101CommentsGet from "./routes/pull-101-work-ubq-fi/issue-101-comments-get.json";
+import pull101CommentsGet from "./routes/pull-101-work-ubq-fi/pull-101-comments-get.json";
+import pull101Get from "./routes/pull-101-work-ubq-fi/pull-101-get.json";
+import pull101ReviewsGet from "./routes/pull-101-work-ubq-fi/pull-101-reviews-get.json";
 import issue12CommentsGet from "./routes/pull-12-conversation-rewards/issue-12-comments-get.json";
 import pull12CommentsGet from "./routes/pull-12-conversation-rewards/pull-12-comments-get.json";
 import pull12Get from "./routes/pull-12-conversation-rewards/pull-12-get.json";
 import pull12ReviewsGet from "./routes/pull-12-conversation-rewards/pull-12-reviews-get.json";
+import pull71Get from "./routes/pull-71-work-ubq-fi/pull-71-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
@@ -45,8 +52,34 @@ export const handlers = [
     const body = await args.request.text();
     if (body.includes("IssueEdits") && body.includes("userContentEdits")) {
       return HttpResponse.json({ data: issue100Edits });
+    } else if (body.includes("collectLinkedIssues")) {
+      return HttpResponse.json({
+        data: {
+          repository: {
+            pullRequest: {
+              closingIssuesReferences: {
+                edges: [
+                  {
+                    node: {
+                      author: { login: "0x4007" },
+                      repository: { name: "conversation-rewards" },
+                      labels: {
+                        nodes: [{ name: "Time: <1 Hour" }, { name: "Priority: 3 (High)" }, { name: "Price: 150 USD" }],
+                      },
+                    },
+                  },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: "Y",
+                },
+              },
+            },
+          },
+        },
+      });
     }
-    return HttpResponse.json({});
+    return HttpResponse.json(gqlPullCommits);
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5", () => {
     return HttpResponse.json(issue5Get);
@@ -155,6 +188,30 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/70/comments", () => {
     return HttpResponse.json(issue70CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71", () => {
+    return HttpResponse.json(pull71Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/reviews", () => {
+    return HttpResponse.json(pullsReviewsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/comments", () => {
+    return HttpResponse.json([]);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71/comments", () => {
+    return HttpResponse.json(issue71WorkUbqFiCommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101", () => {
+    return HttpResponse.json(pull101Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/reviews", () => {
+    return HttpResponse.json(pull101ReviewsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/comments", () => {
+    return HttpResponse.json(pull101CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/101/comments", () => {
+    return HttpResponse.json(issue101CommentsGet);
   }),
   http.get("https://api.github.com/users/:login", ({ params: { login } }) => {
     const user = db.users.findFirst({

@@ -41,7 +41,7 @@ jest.unstable_mockModule("@actions/github", () => ({
 }));
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => []),
+  collectLinkedPulls: jest.fn(() => []),
 }));
 
 const ctx = {
@@ -114,6 +114,7 @@ describe("Purging tests", () => {
     const { Processor } = await import("../src/parser/processor");
 
     const processor = new Processor(ctx);
+    // @ts-expect-error only for testing
     processor["_transformers"] = [new UserExtractorModule(ctx), new DataPurgeModule(ctx)];
     await processor.run(activity);
     const result = JSON.parse(processor.dump());

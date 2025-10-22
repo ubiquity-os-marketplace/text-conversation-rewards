@@ -120,7 +120,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
 });
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: jest.fn(() => [
+  collectLinkedPulls: jest.fn(() => [
     {
       id: "PR_kwDOLUK0B85soGlu",
       title: "feat: github comment generation and posting",
@@ -235,15 +235,12 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
     jest.clearAllMocks();
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
+      .mockImplementation((specificationBody, commentsToEvaluate) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
             commentsToEvaluate.forEach((comment) => {
               relevance[`${comment.id}`] = 0.8;
-            });
-            prCommentsToEvaluate.forEach((comment) => {
-              relevance[`${comment.id}`] = 0.7;
             });
             return relevance;
           })()
@@ -254,7 +251,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       .mockImplementation(() => Promise.resolve(Infinity));
     jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
       return {
-        "test.txt": {
+        "test.ts": {
           addition: 50,
           deletion: 50,
         },
@@ -271,6 +268,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
+      // @ts-expect-error just for testing
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
         new DataPurgeModule(ctx),
@@ -293,6 +291,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
+      // @ts-expect-error just for testing
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
         new DataPurgeModule(ctx),
@@ -321,6 +320,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       isCollaborativeMocked.mockImplementation(() => true);
 
       const processor = new Processor(ctx);
+      // @ts-expect-error just for testing
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
         new DataPurgeModule(ctx),
@@ -343,6 +343,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
       isCollaborativeMocked.mockImplementation(() => false);
 
       const processor = new Processor(ctx);
+      // @ts-expect-error just for testing
       processor["_transformers"] = [
         new UserExtractorModule(ctx),
         new DataPurgeModule(ctx),

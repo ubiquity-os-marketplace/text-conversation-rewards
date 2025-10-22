@@ -1,7 +1,7 @@
 {
   "name": "Conversation rewards",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
-  "ubiquity:listeners": ["issues.closed"],
+  "ubiquity:listeners": ["issues.closed", "pull_request.closed"],
   "skipBotEvents": false,
   "commands": {
     "finish": {
@@ -42,6 +42,27 @@
         "default": {},
         "type": "object",
         "properties": {
+          "closeTaskReward": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "rewardAmount": {
+                "default": 5,
+                "description": "Reward amount that the user should get on closing a stale task",
+                "type": "number"
+              },
+              "stalenessDuration": {
+                "default": "30 days",
+                "description": "Minimum time an issue must stay open before the close-task reward applies",
+                "type": "string"
+              }
+            }
+          },
+          "shouldProcessUnlinkedPullRequests": {
+            "default": false,
+            "description": "Should pull-requests that are not linked to an issue be processed?",
+            "type": "boolean"
+          },
           "file": {
             "description": "Specify a file to write the results in",
             "examples": ["./result.json"],
@@ -2143,6 +2164,22 @@
                 "type": "null"
               }
             ]
+          },
+          "specialUsers": {
+            "default": [["Copilot", "copilot-swe-agent"]],
+            "description": "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests. Use this when a contributor appears under one login on the issue and another on the pull request, but they represent the same special user.",
+            "type": "array",
+            "items": {
+              "minItems": 1,
+              "description": "Logins that belong to the same group of interchangeable special users. Place all aliases for the same person or role in a single group.",
+              "type": "array",
+              "items": {
+                "minLength": 1,
+                "description": "GitHub login treated as equivalent to the other members of the same group when matching issue assignees to pull request authors.",
+                "examples": ["Copilot", "copilot-swe-agent"],
+                "type": "string"
+              }
+            }
           },
           "externalContent": {
             "default": null,

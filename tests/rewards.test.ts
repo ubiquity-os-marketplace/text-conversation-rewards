@@ -5,8 +5,6 @@ import { drop } from "@mswjs/data";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
-import { parseGitHubUrl } from "../src/start";
-import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import dbSeed from "./__mocks__/db-seed.json";
 import { server } from "./__mocks__/node";
@@ -16,7 +14,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
 import { Result } from "../src/types/results";
-import { ExternalContentProcessor } from "../src/parser/external-content-module";
+import { ContextPlugin } from "../src/types/plugin-input";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -61,7 +59,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-const collectLinkedMergedPulls = jest.fn(() => [
+const collectLinkedPulls = jest.fn(() => [
   {
     id: "PR_kwDOKzVPS85zXUoj",
     title: "fix: add state to sorting manager for bottom and top",
@@ -86,7 +84,7 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
 }));
 
 jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedMergedPulls: collectLinkedMergedPulls,
+  collectLinkedPulls: collectLinkedPulls,
 }));
 
 beforeAll(() => {
@@ -107,23 +105,20 @@ const { GithubCommentModule } = await import("../src/parser/github-comment-modul
 const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
+const { parseGitHubUrl } = await import("../src/start");
+const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
 
-jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, comments, allComments, prComments) => {
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        prComments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.7;
-        });
-        return relevance;
-      })()
-    );
-  });
+jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specificationBody, comments) => {
+  return Promise.resolve(
+    (() => {
+      const relevance: { [k: string]: number } = {};
+      comments.forEach((comment) => {
+        relevance[`${comment.id}`] = 0.8;
+      });
+      return relevance;
+    })()
+  );
+});
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
 
@@ -182,6 +177,7 @@ describe("Rewards tests", () => {
 
   it("Should split the rewards between multiple assignees", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -199,16 +195,17 @@ describe("Rewards tests", () => {
   }, 120000);
 
   it("Should distribute rewards based on authorship percentages in issue body edits", async () => {
-    collectLinkedMergedPulls.mockReturnValueOnce([
+    const author = {
+      login: "contributor1",
+      id: 4975670,
+    };
+    collectLinkedPulls.mockReturnValueOnce([
       {
         id: "PR_kwDOKzVPS85zXUoj",
         title: "fix: add authorship to issue body edits",
         number: 101,
         url: "https://github.com/ubiquity/work.ubq.fi/pull/101",
-        author: {
-          login: "contributor1",
-          id: 4975670,
-        },
+        author,
         state: "MERGED",
         repository: {
           owner: {
@@ -218,10 +215,21 @@ describe("Rewards tests", () => {
         },
       },
     ]);
-    const issue = parseGitHubUrl("https://github.com/ubiquity/work.ubq.fi/issues/100");
-    const activity = new IssueActivity(ctx, issue);
+    const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/100";
+    const issue = parseGitHubUrl(issueUrl);
+    const modifiedCtx = {
+      ...ctx,
+    };
+    modifiedCtx.payload = structuredClone(ctx.payload);
+    if ("issue" in modifiedCtx.payload) {
+      modifiedCtx.payload.issue.html_url = issueUrl;
+      modifiedCtx.payload.issue.id = 100;
+      modifiedCtx.payload.issue.assignees = [author] as typeof modifiedCtx.payload.issue.assignees;
+    }
+    const activity = new IssueActivity(modifiedCtx, issue);
     await activity.init();
-    const processor = new Processor(ctx);
+    const processor = new Processor(modifiedCtx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -247,6 +255,7 @@ describe("Rewards tests", () => {
     };
     modifiedCtx.config.rewards = undefined;
     const processor = new Processor(modifiedCtx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(modifiedCtx),
       new DataPurgeModule(modifiedCtx),
@@ -258,12 +267,13 @@ describe("Rewards tests", () => {
     await processor.run(activity);
     const result: Result = JSON.parse(processor.dump());
     expect(Object.values(result)?.[0].evaluationCommentHtml).toMatch(
-      `<details><summary><b><h3>&nbsp;[ 51.232 XP ]&nbsp;</h3><h6>@0x4007</h6></b></summary><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Issue</td><td>Task</td><td>0.5</td><td>25</td></tr><tr><td>Issue</td><td>Specification</td><td>1</td><td>5.95</td></tr><tr><td>Issue</td><td>Comment</td><td>2</td><td>6.8</td></tr><tr><td>Review</td><td>Comment</td><td>3</td><td>13.482</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/issues/69#issue-2370126310" target="_blank" rel="noopener">Looks like the filters are barely useable now that we have the s&hellip;</a></h6></td><td><details><summary>4.66</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    img:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 48&#13;  wordValue: 0.1&#13;  result: 1.66&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 1<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 67.9</td><td>1</td><td>5.95</td></tr><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186802545" target="_blank" rel="noopener">Okay both bots are broken @gentlementlegen We should have sp&hellip;</a></h6></td><td><details><summary>3.55</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 2&#13;regex:&#13;  wordCount: 13&#13;  wordValue: 0.2&#13;  result: 1.55&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 0.8<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 50.5</td><td>1</td><td>3.608</td></tr><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186807999" target="_blank" rel="noopener">Actually, looks like it did the right thing for your reward on v&hellip;</a></h6></td><td><details><summary>3.16</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 21&#13;  wordValue: 0.2&#13;  result: 2.16&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 0.8<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 72.7</td><td>1</td><td>3.192</td></tr><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/pull/70#issue-2370184795" target="_blank" rel="noopener">Resolves [https://github.com/ubiquity/work.ubq.fi/issues/69](htt&hellip;</a></h6></td><td><details><summary>2</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 2&#13;regex:&#13;  wordCount: 1&#13;  wordValue: 0&#13;  result: 0&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 0.7<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 68.9</td><td>1</td><td>0</td></tr><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186530214" target="_blank" rel="noopener">I always struggle with Cypress</a></h6></td><td><details><summary>1.75</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 5&#13;  wordValue: 0.2&#13;  result: 0.75&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 0.7<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 66.4</td><td>1</td><td>3.136</td></tr><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/pull/70#issuecomment-2186798329" target="_blank" rel="noopener">Only doesn't work on my local, the guess is token expiration aft&hellip;</a></h6></td><td><details><summary>6.05</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    a:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 39&#13;  wordValue: 0.2&#13;  result: 3.05&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 0.7<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 86.3</td><td>1</td><td>10.346</td></tr></tbody></table></details>`
+      `<details><summary><b><h3>&nbsp;[ 37.75 XP ]&nbsp;</h3><h6>@0x4007</h6></b></summary><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Issue</td><td>Task</td><td>0.5</td><td>25</td></tr><tr><td>Issue</td><td>Specification</td><td>1</td><td>5.95</td></tr><tr><td>Issue</td><td>Comment</td><td>2</td><td>6.8</td></tr></tbody></table><h6>Conversation Incentives</h6><table><thead><tr><th>Comment</th><th>Formatting</th><th>Relevance</th><th>Priority</th><th>Reward</th></tr></thead><tbody><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/issues/69#issue-2370126310" target="_blank" rel="noopener">Looks like the filters are barely useable now that we have the s&hellip;</a></h6></td><td><details><summary>4.66</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;    img:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 3&#13;regex:&#13;  wordCount: 48&#13;  wordValue: 0.1&#13;  result: 1.66&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 1<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 67.9</td><td>1</td><td>5.95</td></tr><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186802545" target="_blank" rel="noopener">Okay both bots are broken @gentlementlegen We should have sp&hellip;</a></h6></td><td><details><summary>3.55</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 2&#13;  result: 2&#13;regex:&#13;  wordCount: 13&#13;  wordValue: 0.2&#13;  result: 1.55&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 0.8<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 50.5</td><td>1</td><td>3.608</td></tr><tr><td><h6><a href="https://github.com/ubiquity/work.ubq.fi/issues/69#issuecomment-2186807999" target="_blank" rel="noopener">Actually, looks like it did the right thing for your reward on v&hellip;</a></h6></td><td><details><summary>3.16</summary><pre>content:&#13;  content:&#13;    p:&#13;      score: 1&#13;      elementCount: 1&#13;  result: 1&#13;regex:&#13;  wordCount: 21&#13;  wordValue: 0.2&#13;  result: 2.16&#13;authorship: 1&#13;</pre></details></td><td>Relevance: 0.8<br/><span title="Flesch-Kincaid readability score. Higher scores indicate easier to read text (0-30: very difficult, 30-50: difficult, 50-60: fairly difficult, 60-70: standard, 70-80: fairly easy, 80-90: easy, 90-100: very easy)" style="cursor: help;">Readability</span>: 72.7</td><td>1</td><td>3.192</td></tr></tbody></table></details>`
     );
   });
 
   it("Should not display a wallet warning on XP mode", async () => {
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -290,6 +300,7 @@ describe("Rewards tests", () => {
       }
     }
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -327,9 +338,10 @@ describe("Rewards tests", () => {
     const originalActivity = {
       comments: activity.comments,
       events: activity.events,
-      linkedReviews: activity.linkedReviews,
+      linkedPullRequests: activity.linkedMergedPullRequests,
     };
     const processor = new Processor(ctx);
+    // @ts-expect-error just for testing
     processor["_transformers"] = [
       new UserExtractorModule(ctx),
       new DataPurgeModule(ctx),
@@ -347,7 +359,7 @@ describe("Rewards tests", () => {
         "https://123-not-valid-url.com";
       activity.comments = [];
       activity.events = [];
-      activity.linkedReviews = [];
+      activity.linkedMergedPullRequests = [];
     }
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
@@ -356,7 +368,7 @@ describe("Rewards tests", () => {
       activity.self.body = originalBody;
       activity.comments = originalActivity.comments;
       activity.events = originalActivity.events;
-      activity.linkedReviews = originalActivity.linkedReviews;
+      activity.linkedMergedPullRequests = originalActivity.linkedPullRequests;
     }
     expect(result).not.toBeUndefined();
   });

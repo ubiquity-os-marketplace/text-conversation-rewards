@@ -5,6 +5,7 @@ import { contentEvaluatorConfigurationType } from "../configuration/content-eval
 import { dataCollectionConfigurationType } from "../configuration/data-collection-config";
 import { dataPurgeConfigurationType } from "../configuration/data-purge-config";
 import { eventIncentivesConfigurationType } from "../configuration/event-incentives-config";
+import { externalContentConfigurationType } from "../configuration/external-content-config";
 import { formattingEvaluatorConfigurationType } from "../configuration/formatting-evaluator-config";
 import { githubCommentConfigurationType } from "../configuration/github-comment-config";
 import { paymentConfigurationType } from "../configuration/payment-configuration";
@@ -13,7 +14,6 @@ import { simplificationIncentivizerConfigurationType } from "../configuration/si
 import { userExtractorConfigurationType } from "../configuration/user-extractor-config";
 import { Command } from "./command";
 import { EnvConfig } from "./env-type";
-import { externalContentConfigurationType } from "../configuration/external-content-config";
 
 export const pluginSettingsSchema = T.Object(
   {
@@ -42,8 +42,25 @@ export const pluginSettingsSchema = T.Object(
     ),
     incentives: T.Object(
       {
+        closeTaskReward: T.Object(
+          {
+            rewardAmount: T.Number({
+              default: 5,
+              description: "Reward amount that the user should get on closing a stale task",
+            }),
+            stalenessDuration: T.String({
+              default: "30 days",
+              description: "Minimum time an issue must stay open before the close-task reward applies",
+            }),
+          },
+          { default: {} }
+        ),
+        shouldProcessUnlinkedPullRequests: T.Boolean({
+          default: false,
+          description: "Should pull-requests that are not linked to an issue be processed?",
+        }),
         /**
-         * Optionally specify a file to write the results in
+         * Optionally, specify a file to write the results in
          */
         file: T.Optional(
           T.String({ description: "Specify a file to write the results in", examples: ["./result.json"] })
@@ -75,6 +92,26 @@ export const pluginSettingsSchema = T.Object(
         formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()], { default: null }),
         payment: T.Union([paymentConfigurationType, T.Null()], { default: null }),
         githubComment: T.Union([githubCommentConfigurationType, T.Null()], { default: null }),
+        specialUsers: T.Array(
+          T.Array(
+            T.String({
+              minLength: 1,
+              description:
+                "GitHub login treated as equivalent to the other members of the same group when matching issue assignees to pull request authors.",
+              examples: ["Copilot", "copilot-swe-agent"],
+            }),
+            {
+              minItems: 1,
+              description:
+                "Logins that belong to the same group of interchangeable special users. Place all aliases for the same person or role in a single group.",
+            }
+          ),
+          {
+            default: [["Copilot", "copilot-swe-agent"]],
+            description:
+              "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests. Use this when a contributor appears under one login on the issue and another on the pull request, but they represent the same special user.",
+          }
+        ),
         externalContent: T.Union([externalContentConfigurationType, T.Null()], { default: null }),
       },
       { default: {} }
@@ -86,7 +123,7 @@ export const pluginSettingsSchema = T.Object(
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
-export type SupportedEvents = "issues.closed" | "issue_comment.created";
+export type SupportedEvents = "issues.closed" | "issue_comment.created" | "pull_request.closed";
 export type ContextPlugin<T extends SupportedEvents = SupportedEvents> = Context<
   PluginSettings,
   EnvConfig,

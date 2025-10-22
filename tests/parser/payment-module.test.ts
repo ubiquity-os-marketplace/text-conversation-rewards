@@ -11,6 +11,7 @@ import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
 import { mockWeb3Module } from "../helpers/web3-mocks";
+import { ReviewIncentivizerModule } from "../../src/parser/review-incentivizer-module";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -149,6 +150,15 @@ beforeAll(() => {
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+  return {
+    "test.txt": {
+      addition: 50,
+      deletion: 50,
+    },
+  };
+});
 
 describe("payment-module.ts", () => {
   describe("applyFees()", () => {

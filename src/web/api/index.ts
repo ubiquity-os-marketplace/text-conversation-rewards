@@ -133,7 +133,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
           );
           return false;
         }
-        return !o.pull_request && (isSingleIssueMode || o.state_reason === "completed");
+        return isSingleIssueMode || o.state_reason === "completed";
       });
       if (!issues.length) {
         logger.warn("No issues found, skipping.");
@@ -204,7 +204,7 @@ app.use(
 // Fakes OpenAi routes
 app.post("/openai/:module/*", async (c) => {
   const text = await c.req.json();
-  const regex = /The number of entries in the JSON response must equal (\d+)/g;
+  const regex = /The number of entries in the JSON response MUST equal (\d+)/g;
 
   if ("messages" in text) {
     switch (c.req.param("module")) {

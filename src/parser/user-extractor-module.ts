@@ -89,7 +89,7 @@ export class UserExtractorModule extends BaseModule {
         result: result[assignee.login],
       });
     });
-    const allComments = await data.getAllComments();
+    const allComments = await data.getAllComments(this.isPullRequest());
     for (const comment of allComments) {
       if (comment.user && comment.body && this._checkEntryValidity(comment)) {
         result[comment.user.login] = {
@@ -100,7 +100,7 @@ export class UserExtractorModule extends BaseModule {
       }
     }
     // Pull-request reviewers can also potentially be rewarded
-    for (const review of data.linkedReviews) {
+    for (const review of data.linkedMergedPullRequests) {
       review.reviews?.forEach((o) => {
         if (o.user && o.user.type === "User") {
           result[o.user.login] = {
