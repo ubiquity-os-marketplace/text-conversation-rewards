@@ -367,6 +367,7 @@ export class GithubCommentModule extends BaseModule {
         <tr>
           <td><a href="${result.simplificationReward.url}/files#diff-${createHash("sha256").update(file.fileName).digest("hex")}" target="_blank" rel="noopener">${file.fileName}</a></td>
           <td>${file.reward}</td>
+          <td>${file.additions}</td>
           <td>${file.deletions}</td>
         </tr>`);
     }
@@ -378,6 +379,7 @@ export class GithubCommentModule extends BaseModule {
         <tr>
           <th>Filename</th>
           <th>Reward</th>
+          <th>Additions</th>
           <th>Deletions</th>
         </tr>
       </thead>
