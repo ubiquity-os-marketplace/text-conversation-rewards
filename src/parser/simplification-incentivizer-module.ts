@@ -1,4 +1,3 @@
-import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
 import {
   SimplificationIncentivizerConfiguration,
@@ -11,7 +10,7 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result } from "../types/results";
 
-type GitHubPullRequestFile = RestEndpointMethodTypes["pulls"]["listFiles"]["response"]["data"][0];
+type SimplificationRewardFile = NonNullable<Result[string]["simplificationReward"]>["files"][number];
 
 export class SimplificationIncentivizerModule extends BaseModule {
   private readonly _configuration: SimplificationIncentivizerConfiguration | null =
@@ -53,8 +52,30 @@ export class SimplificationIncentivizerModule extends BaseModule {
         repo: pull.base.repo.name,
         pull_number: pull.number,
       });
+      let totalAdditions = 0;
+      let totalDeletions = 0;
+      const simplificationFiles: SimplificationRewardFile[] = [];
       for (const file of files.data) {
-        this._processFile(file, excludedFilePatterns, prAuthor, pull, result);
+        if (shouldExcludeFile(file.filename, excludedFilePatterns)) {
+          continue;
+        }
+        totalAdditions += file.additions;
+        totalDeletions += file.deletions;
+        const reward = Math.max((file.deletions - file.additions) / this._simplificationRate, 0);
+        if (reward !== 0) {
+          simplificationFiles.push({
+            additions: file.additions,
+            deletions: file.deletions,
+            reward,
+            fileName: file.filename,
+          });
+        }
+      }
+      if (totalDeletions > totalAdditions && simplificationFiles.length > 0) {
+        result[prAuthor].simplificationReward = {
+          files: simplificationFiles,
+          url: pull.html_url,
+        };
       }
     } catch (e) {
       if (e && typeof e === "object" && "status" in e && e.status === 404) {
@@ -70,30 +91,6 @@ export class SimplificationIncentivizerModule extends BaseModule {
       throw e;
     }
     return result;
-  }
-
-  private _processFile(
-    file: GitHubPullRequestFile,
-    excludedFilePatterns: string[] | undefined,
-    prAuthor: string,
-    pull: GitHubPullRequest,
-    result: Result
-  ) {
-    if (!shouldExcludeFile(file.filename, excludedFilePatterns)) {
-      result[prAuthor].simplificationReward = result[prAuthor].simplificationReward ?? {
-        files: [],
-        url: pull.html_url,
-      };
-      const reward = Math.max((file.deletions - file.additions) / this._simplificationRate, 0);
-      if (reward !== 0) {
-        result[prAuthor].simplificationReward.files.push({
-          additions: file.additions,
-          deletions: file.deletions,
-          reward: reward,
-          fileName: file.filename,
-        });
-      }
-    }
   }
 
   get enabled(): boolean {
