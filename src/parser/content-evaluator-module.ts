@@ -240,7 +240,7 @@ export class ContentEvaluatorModule extends BaseModule {
               }
             );
           }
-          this.context.logger.error(String(error), { err: error });
+          this.context.logger.error("retry onError", { err: error });
         },
         isErrorRetryable: (error) => {
           const llmRetryable = checkLlmRetryableState(error);
