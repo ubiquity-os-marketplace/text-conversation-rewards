@@ -349,11 +349,11 @@ describe("Modules tests", () => {
   it("Should incentivize simplifications", async () => {
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
+      .mockImplementation((specificationBody, userId, allComments) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
-            prCommentsToEvaluate.forEach((comment) => {
+            allComments.forEach((comment) => {
               relevance[`${comment.id}`] = 0.8;
             });
             return relevance;
