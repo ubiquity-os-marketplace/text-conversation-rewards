@@ -198,7 +198,7 @@ describe("Modules tests", () => {
   beforeEach(async () => {
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate) => {
+      .mockImplementation((specificationBody, userId, commentsToEvaluate) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
