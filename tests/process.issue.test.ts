@@ -347,19 +347,13 @@ describe("Modules tests", () => {
   });
 
   it("Should incentivize simplifications", async () => {
-    jest
-      .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, userId, allComments) => {
-        return Promise.resolve(
-          (() => {
-            const relevance: { [k: string]: number } = {};
-            allComments.forEach((comment) => {
-              relevance[`${comment.id}`] = 0.8;
-            });
-            return relevance;
-          })()
-        );
-      });
+    jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
+      return Promise.resolve(
+        (() => {
+          return {};
+        })()
+      );
+    });
     // should run on https://github.com/ubiquity-os/conversation-rewards/pull/12 since it is a pull-request
     const ctx = {
       eventName: "pull_request.closed",
