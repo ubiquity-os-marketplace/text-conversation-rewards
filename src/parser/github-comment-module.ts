@@ -21,7 +21,7 @@ import { GithubCommentScore, Result, ReviewScore } from "../types/results";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
-  reviews: GithubCommentScore[];
+  reviews: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
 }
 
 interface BodyComment {
@@ -287,13 +287,16 @@ export class GithubCommentModule extends BaseModule {
         )
       );
     }
-    if (sortedTasks.reviews.length && this.isPullRequest()) {
+    if (sortedTasks.reviews.specification) {
+      content.push(buildContributionRow("Review", "Specification", 1, sortedTasks.reviews.specification.score?.reward));
+    }
+    if (sortedTasks.reviews.comments.length && this.isPullRequest()) {
       content.push(
         buildContributionRow(
           "Review",
           "Comment",
-          sortedTasks.reviews.length,
-          sortedTasks.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+          sortedTasks.reviews.comments.length,
+          sortedTasks.reviews.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
         )
       );
     }
@@ -348,11 +351,14 @@ export class GithubCommentModule extends BaseModule {
     if (sortedTasks.issues.specification) {
       content.push(buildIncentiveRow(sortedTasks.issues.specification));
     }
+    if (sortedTasks.reviews.specification) {
+      content.push(buildIncentiveRow(sortedTasks.reviews.specification));
+    }
     for (const issueComment of sortedTasks.issues.comments) {
       content.push(buildIncentiveRow(issueComment));
     }
     if (this.isPullRequest()) {
-      for (const reviewComment of sortedTasks.reviews) {
+      for (const reviewComment of sortedTasks.reviews.comments) {
         content.push(buildIncentiveRow(reviewComment));
       }
     }
@@ -456,11 +462,15 @@ export class GithubCommentModule extends BaseModule {
             acc.issues.comments.push(curr);
           }
         } else if (curr.commentType & CommentKind.PULL) {
-          acc.reviews.push(curr);
+          if (curr.commentType & CommentAssociation.SPECIFICATION) {
+            acc.reviews.specification = curr;
+          } else {
+            acc.reviews.comments.push(curr);
+          }
         }
         return acc;
       },
-      { issues: { specification: null, comments: [] }, reviews: [] }
+      { issues: { specification: null, comments: [] }, reviews: { specification: null, comments: [] } }
     );
     let tokenSymbol = "XP";
     if (this.context.config.rewards) {
@@ -513,7 +523,10 @@ export class GithubCommentModule extends BaseModule {
       ${
         !stripComments &&
         sortedTasks &&
-        (sortedTasks.issues.comments.length || sortedTasks.reviews.length || sortedTasks.issues.specification)
+        (sortedTasks.issues.comments.length ||
+          sortedTasks.reviews.comments.length ||
+          sortedTasks.issues.specification ||
+          sortedTasks.reviews.specification)
           ? `<h6>Conversation Incentives</h6>
       <table>
         <thead>
