@@ -89,7 +89,7 @@ jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplemen
 
 jest
   .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, comments, allComments, prComments) => {
+  .mockImplementation((specificationBody, userId, comments, allComments, prComments) => {
     return Promise.resolve(
       (() => {
         const relevance: { [k: string]: number } = {};

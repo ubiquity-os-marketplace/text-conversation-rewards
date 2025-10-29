@@ -235,7 +235,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
     jest.clearAllMocks();
     jest
       .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-      .mockImplementation((specificationBody, commentsToEvaluate) => {
+      .mockImplementation((specificationBody, userId, commentsToEvaluate) => {
         return Promise.resolve(
           (() => {
             const relevance: { [k: string]: number } = {};
