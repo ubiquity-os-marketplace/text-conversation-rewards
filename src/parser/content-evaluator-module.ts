@@ -340,7 +340,11 @@ export class ContentEvaluatorModule extends BaseModule {
     const maxOutputTokensAll = this._calculateMaxTokens(dummyResponseAll);
 
     let chunks = 2;
+    let lastMaxChunkTokens = Number.POSITIVE_INFINITY;
+    const maxIterations = Math.max(allComments.length, 1) * 2;
+    let iteration = 0;
     while (true) {
+      iteration++;
       const chunkTokenEstimates = this._splitArrayToChunks(allComments, chunks)
         .map((chunk) => {
           if (!chunk.some((comment) => comment.author === userId)) {
@@ -350,9 +354,21 @@ export class ContentEvaluatorModule extends BaseModule {
         })
         .filter((value) => value > 0);
       const maxChunkTokens = chunkTokenEstimates.length ? Math.max(...chunkTokenEstimates) : 0;
-      if (!chunkTokenEstimates.length || maxOutputTokensAll + maxChunkTokens <= this._tokenLimit) {
+      const totalTokens = maxOutputTokensAll + maxChunkTokens;
+      if (!chunkTokenEstimates.length || totalTokens <= this._tokenLimit) {
         break;
       }
+      if (iteration >= maxIterations || (chunks >= allComments.length && maxChunkTokens >= lastMaxChunkTokens)) {
+        this.context.logger.warn("Unable to reduce issue comment evaluation below token limit", {
+          tokenLimit: this._tokenLimit,
+          totalTokens,
+          maxChunkTokens,
+          outputTokens: maxOutputTokensAll,
+          chunks,
+        });
+        return this._generateDummyResponse(comments);
+      }
+      lastMaxChunkTokens = maxChunkTokens;
       chunks++;
     }
     this.context.logger.debug(`Splitting issue comments into ${chunks} chunks`);
