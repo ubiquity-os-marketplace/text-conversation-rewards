@@ -336,41 +336,36 @@ export class ContentEvaluatorModule extends BaseModule {
     const commentRelevances: Relevances = {};
     const evaluationCounts: Record<string, number> = {};
 
-    const dummyResponseAll = JSON.stringify(this._generateDummyResponse(comments), null, 2);
-    const maxOutputTokensAll = this._calculateMaxTokens(dummyResponseAll);
+    const maxChunks = Math.max(allComments.length, 1);
+    let chunks = 0;
 
-    let chunks = 2;
-    let lastMaxChunkTokens = Number.POSITIVE_INFINITY;
-    const maxIterations = Math.max(allComments.length, 1) * 2;
-    let iteration = 0;
-    while (true) {
-      iteration++;
-      const chunkTokenEstimates = this._splitArrayToChunks(allComments, chunks)
-        .map((chunk) => {
-          if (!chunk.some((comment) => comment.author === username)) {
-            return 0;
-          }
-          return this._calculateMaxTokens(this._generatePromptForComments(specification, username, chunk), Infinity);
-        })
-        .filter((value) => value > 0);
-      const maxChunkTokens = chunkTokenEstimates.length ? Math.max(...chunkTokenEstimates) : 0;
-      const totalTokens = maxOutputTokensAll + maxChunkTokens;
-      if (!chunkTokenEstimates.length || totalTokens <= this._tokenLimit) {
+    for (let currentChunk = 2; currentChunk <= maxChunks; currentChunk++) {
+      const chunkTokenEstimates = this._getIssueChunkEstimates(specification, username, allComments, currentChunk);
+      if (!chunkTokenEstimates.length) {
+        continue;
+      }
+      const maxPromptTokens = Math.max(...chunkTokenEstimates.map((estimate) => estimate.promptTokens));
+      const maxOutputTokens = Math.max(...chunkTokenEstimates.map((estimate) => estimate.outputTokens));
+      if (maxPromptTokens + maxOutputTokens <= this._tokenLimit) {
+        chunks = currentChunk;
         break;
       }
-      if (iteration >= maxIterations || (chunks >= allComments.length && maxChunkTokens >= lastMaxChunkTokens)) {
-        this.context.logger.warn("Unable to reduce issue comment evaluation below token limit", {
-          tokenLimit: this._tokenLimit,
-          totalTokens,
-          maxChunkTokens,
-          outputTokens: maxOutputTokensAll,
-          chunks,
-        });
-        return this._generateDummyResponse(comments);
-      }
-      lastMaxChunkTokens = maxChunkTokens;
-      chunks++;
     }
+
+    if (!chunks) {
+      const fallbackPrompt = this._generatePromptForComments(specification, username, allComments);
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
+      const fallbackPromptTokens = this._calculateMaxTokens(fallbackPrompt, Infinity);
+      const fallbackOutputTokens = this._calculateMaxTokens(dummyResponse);
+      this.context.logger.warn("Unable to reduce issue comment evaluation below token limit", {
+        tokenLimit: this._tokenLimit,
+        promptTokens: fallbackPromptTokens,
+        outputTokens: fallbackOutputTokens,
+        comments: allComments.length,
+      });
+      return this._submitPrompt(fallbackPrompt, fallbackOutputTokens);
+    }
+
     this.context.logger.debug(`Splitting issue comments into ${chunks} chunks`);
 
     for (const commentSplit of this._splitArrayToChunks(allComments, chunks)) {
@@ -395,6 +390,32 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     return commentRelevances;
+  }
+
+  private _getIssueChunkEstimates(
+    specification: string,
+    username: string,
+    allComments: AllComments,
+    chunks: number
+  ): { promptTokens: number; outputTokens: number }[] {
+    return this._splitArrayToChunks(allComments, chunks)
+      .map((chunk) => {
+        if (!chunk.some((comment) => comment.author === username)) {
+          return null;
+        }
+        const promptTokens = this._calculateMaxTokens(
+          this._generatePromptForComments(specification, username, chunk),
+          Infinity
+        );
+        const dummyResponse = JSON.stringify(
+          this._generateDummyResponse(chunk.filter((comment) => comment.author === username)),
+          null,
+          2
+        );
+        const outputTokens = this._calculateMaxTokens(dummyResponse);
+        return { promptTokens, outputTokens };
+      })
+      .filter((value): value is { promptTokens: number; outputTokens: number } => value !== null);
   }
 
   async _splitPromptForPullRequestCommentEvaluation(specification: string | string[], comments: PrCommentToEvaluate[]) {
