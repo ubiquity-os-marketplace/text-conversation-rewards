@@ -102,14 +102,14 @@ export class ContentEvaluatorModule extends BaseModule {
       }
     }
 
-    for (const key of Object.keys(result)) {
-      const currentElement = result[key];
+    for (const username of Object.keys(result)) {
+      const currentElement = result[username];
       const comments = currentElement.comments ?? [];
       const specificationBody = data.self?.body;
 
       if (specificationBody && comments.length) {
         promises.push(
-          this._processComment(key, comments, specificationBody, allComments).then(
+          this._processComment(username, comments, specificationBody, allComments).then(
             (commentsWithScore) => (currentElement.comments = commentsWithScore)
           )
         );
@@ -195,7 +195,7 @@ export class ContentEvaluatorModule extends BaseModule {
   }
 
   async _processComment(
-    userId: string,
+    username: string,
     comments: Readonly<GithubCommentScore>[],
     specificationBody: string,
     allComments: AllComments
@@ -207,7 +207,7 @@ export class ContentEvaluatorModule extends BaseModule {
       async () => {
         const relevances = await this._evaluateComments(
           specificationBody,
-          userId,
+          username,
           commentsToEvaluate,
           allComments,
           prCommentsToEvaluate
@@ -329,7 +329,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async _splitPromptForIssueCommentEvaluation(
     specification: string,
-    userId: string,
+    username: string,
     comments: CommentToEvaluate[],
     allComments: AllComments
   ) {
@@ -347,10 +347,10 @@ export class ContentEvaluatorModule extends BaseModule {
       iteration++;
       const chunkTokenEstimates = this._splitArrayToChunks(allComments, chunks)
         .map((chunk) => {
-          if (!chunk.some((comment) => comment.author === userId)) {
+          if (!chunk.some((comment) => comment.author === username)) {
             return 0;
           }
-          return this._calculateMaxTokens(this._generatePromptForComments(specification, userId, chunk), Infinity);
+          return this._calculateMaxTokens(this._generatePromptForComments(specification, username, chunk), Infinity);
         })
         .filter((value) => value > 0);
       const maxChunkTokens = chunkTokenEstimates.length ? Math.max(...chunkTokenEstimates) : 0;
@@ -374,13 +374,13 @@ export class ContentEvaluatorModule extends BaseModule {
     this.context.logger.debug(`Splitting issue comments into ${chunks} chunks`);
 
     for (const commentSplit of this._splitArrayToChunks(allComments, chunks)) {
-      const targetComments = commentSplit.filter((comment) => comment.author === userId);
+      const targetComments = commentSplit.filter((comment) => comment.author === username);
       if (!targetComments.length) {
         continue;
       }
       const dummyResponse = JSON.stringify(this._generateDummyResponse(targetComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-      const promptForComments = this._generatePromptForComments(specification, userId, commentSplit);
+      const promptForComments = this._generatePromptForComments(specification, username, commentSplit);
 
       for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
         const accumulated = commentRelevances[key] ?? 0;
@@ -436,7 +436,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async _evaluateComments(
     specification: string,
-    userId: string,
+    username: string,
     userIssueComments: CommentToEvaluate[],
     allComments: AllComments,
     userPrComments: PrCommentToEvaluate[]
@@ -448,11 +448,11 @@ export class ContentEvaluatorModule extends BaseModule {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForIssueComments = this._generatePromptForComments(specification, userId, allComments);
+      const promptForIssueComments = this._generatePromptForComments(specification, username, allComments);
       if (this._calculateMaxTokens(promptForIssueComments, Infinity) + maxOutputTokens > this._tokenLimit) {
         commentRelevances = await this._splitPromptForIssueCommentEvaluation(
           specification,
-          userId,
+          username,
           userIssueComments,
           allComments
         );
@@ -558,21 +558,21 @@ export class ContentEvaluatorModule extends BaseModule {
     }
   }
 
-  _generatePromptForComments(issue: string, userId: string, allComments: AllComments) {
+  _generatePromptForComments(issue: string, username: string, allComments: AllComments) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
     const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
-    const targetComments = allComments.filter((value) => value.author === userId);
+    const targetComments = allComments.filter((value) => value.author === username);
     if (!targetComments.length) {
-      throw new Error(`No comments found for user ${userId}`);
+      throw new Error(`No comments found for user ${username}`);
     }
     const targetCommentIds = targetComments.map((value) => value.id).join(", ");
 
     return `
       CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
       
-      Evaluate the relevance of GitHub comments to an issue. Focus exclusively on the comments authored by ${userId}. Provide a raw JSON object with those comment IDs and their relevance scores.
+      Evaluate the relevance of GitHub comments to an issue. Focus exclusively on the comments authored by ${username}. Provide a raw JSON object with those comment IDs and their relevance scores.
 
       Issue: ${issue}
 
@@ -581,7 +581,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
       Instructions:
       1. Read all comments carefully, considering their context and content.
-      2. Identify every comment authored by ${userId}. Their comment IDs are: ${targetCommentIds}.
+      2. Identify every comment authored by ${username}. Their comment IDs are: ${targetCommentIds}.
       3. Assign a relevance score from 0 to 1 for each identified comment:
         - 0: Not related (e.g., spam)
         - 1: Highly relevant (e.g., solutions, bug reports)
@@ -593,7 +593,7 @@ export class ContentEvaluatorModule extends BaseModule {
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${userId} to its score, like this example: {"123": 0.8, "456": 0.2, "789": 1.0}
+      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, like this example: {"123": 0.8, "456": 0.2, "789": 1.0}
 
       Notes:
       - Even minor details may be significant.
