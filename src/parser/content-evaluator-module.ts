@@ -96,7 +96,10 @@ export class ContentEvaluatorModule extends BaseModule {
       if (data.comments?.length) {
         allComments.push(
           ...data.comments
-            .filter((comment) => comment.commentType & CommentKind.ISSUE)
+            .filter(
+              (comment) =>
+                comment.commentType & CommentKind.ISSUE && !(comment.commentType & CommentAssociation.SPECIFICATION)
+            )
             .map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
         );
       }
@@ -583,7 +586,13 @@ export class ContentEvaluatorModule extends BaseModule {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
-    const allCommentsMap = allComments.map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
+    const allCommentsMap = allComments
+      // Sort by id to keep conversation in the original order
+      .sort((a, b) => {
+        console.log("sorting", Number(a.id) - Number(b.id));
+        return Number(a.id) - Number(b.id);
+      })
+      .map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const targetComments = allComments.filter((value) => value.author === username);
     if (!targetComments.length) {
       throw new Error(`No comments found for user ${username}`);
@@ -614,14 +623,15 @@ export class ContentEvaluatorModule extends BaseModule {
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, like this example: {"123": 0.8, "456": 0.2, "789": 1.0}
+      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
+      7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
       Notes:
       - Even minor details may be significant.
       - Comments may reference earlier comments.
       - The number of entries in the JSON response MUST equal ${targetComments.length}.
 
-      Example Output Format: {"commentId1": 0.75, "commentId2": 0.3, "commentId3": 0.9}
+      Example Output Format (for format only — not content): {${targetComments.map((o) => `"${o.id}": <score>`).join(", ")}}
 
       YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.
     `;
@@ -656,7 +666,8 @@ export class ContentEvaluatorModule extends BaseModule {
 
     Reply with ONLY a raw JSON object mapping each comment ID to a float between 0 and 1.
     The number of entries in the JSON response MUST equal ${userComments.length}.
-    Example Output Format: {"123": 0.75, "456": 0.3, "789": 0.9}
+    Example Output Format (for format only — not content): {${userComments.map((o) => `"${o.id}": <score>`).join(", ")}}
+    Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
     YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.`;
   }
