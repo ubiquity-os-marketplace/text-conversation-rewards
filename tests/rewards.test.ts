@@ -108,17 +108,19 @@ const { UserExtractorModule } = await import("../src/parser/user-extractor-modul
 const { parseGitHubUrl } = await import("../src/start");
 const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specificationBody, comments) => {
-  return Promise.resolve(
-    (() => {
-      const relevance: { [k: string]: number } = {};
-      comments.forEach((comment) => {
-        relevance[`${comment.id}`] = 0.8;
-      });
-      return relevance;
-    })()
-  );
-});
+jest
+  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+  .mockImplementation((specificationBody, userId, comments) => {
+    return Promise.resolve(
+      (() => {
+        const relevance: { [k: string]: number } = {};
+        comments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        return relevance;
+      })()
+    );
+  });
 
 jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
 
