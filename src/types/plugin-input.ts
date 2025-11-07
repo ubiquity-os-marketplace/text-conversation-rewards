@@ -15,31 +15,38 @@ import { userExtractorConfigurationType } from "../configuration/user-extractor-
 import { Command } from "./command";
 import { EnvConfig } from "./env-type";
 
+const rewardSettingsType = T.Object(
+  {
+    evmNetworkId: T.Number({
+      default: 100,
+      description: "Network ID to run in, default to 100",
+      examples: ["100"],
+    }),
+    evmPrivateEncrypted: T.String({
+      description: "The encrypted Ethereum private key to use for funding rewards.",
+      examples: ["0x000..."],
+    }),
+    erc20RewardToken: T.String({ default: "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068" }),
+  },
+  { additionalProperties: false }
+);
+
+const rewardRoleSettingsType = T.Partial(
+  T.Object(
+    {
+      admin: rewardSettingsType,
+      collaborator: rewardSettingsType,
+      contributor: rewardSettingsType,
+      billingManager: rewardSettingsType,
+    },
+    { additionalProperties: false }
+  ),
+  { default: {} }
+);
+
 export const pluginSettingsSchema = T.Object(
   {
-    rewards: T.Optional(
-      T.Object({
-        /**
-         * Network ID to run in, default to 100
-         */
-        evmNetworkId: T.Number({
-          default: 100,
-          description: "Network ID to run in, default to 100",
-          examples: ["100"],
-        }),
-        /**
-         * The encrypted key to use for permit generation
-         */
-        evmPrivateEncrypted: T.String({
-          description: "The encrypted Ethereum private key to use for funding rewards.",
-          examples: ["0x000..."],
-        }),
-        /**
-         * Reward token for ERC20 permits, default UUSD for gnosis chain
-         */
-        erc20RewardToken: T.String({ default: "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068" }),
-      })
-    ),
+    rewards: T.Optional(T.Union([rewardSettingsType, rewardRoleSettingsType])),
     incentives: T.Object(
       {
         closeTaskReward: T.Object(
@@ -120,6 +127,10 @@ export const pluginSettingsSchema = T.Object(
   },
   { default: {} }
 );
+
+export type RewardSettings = StaticDecode<typeof rewardSettingsType>;
+export type RewardRoleSettings = StaticDecode<typeof rewardRoleSettingsType>;
+export type RewardConfiguration = RewardSettings | RewardRoleSettings;
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
