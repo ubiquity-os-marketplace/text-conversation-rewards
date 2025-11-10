@@ -588,10 +588,7 @@ export class ContentEvaluatorModule extends BaseModule {
     }
     const allCommentsMap = allComments
       // Sort by id to keep conversation in the original order
-      .sort((a, b) => {
-        console.log("sorting", Number(a.id) - Number(b.id));
-        return Number(a.id) - Number(b.id);
-      })
+      .sort((a, b) => Number(a.id) - Number(b.id))
       .map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const targetComments = allComments.filter((value) => value.author === username);
     if (!targetComments.length) {
