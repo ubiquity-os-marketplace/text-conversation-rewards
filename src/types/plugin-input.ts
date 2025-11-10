@@ -39,7 +39,7 @@ const rewardRoleSettingsType = T.Partial(
       contributor: rewardSettingsType,
       billingManager: rewardSettingsType,
     },
-    { additionalProperties: false }
+    { additionalProperties: false, minProperties: 1 }
   ),
   { default: {} }
 );
@@ -130,7 +130,6 @@ export const pluginSettingsSchema = T.Object(
 
 export type RewardSettings = StaticDecode<typeof rewardSettingsType>;
 export type RewardRoleSettings = StaticDecode<typeof rewardRoleSettingsType>;
-export type RewardConfiguration = RewardSettings | RewardRoleSettings;
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
 
