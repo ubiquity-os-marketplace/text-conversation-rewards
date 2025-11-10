@@ -57,7 +57,7 @@ async function fetchRepoPermissionInfo(context: ContextPlugin, username: string)
       permissions: permissionLevel.data.user?.permissions ?? {},
     };
   } catch (e) {
-    context.logger.debug(`Failed to determine collaborator permission level for ${username}`, { e });
+    context.logger.warn(`Failed to determine collaborator permission level for ${username}`, { e });
     return {
       role: null,
       permission: null,
@@ -67,13 +67,7 @@ async function fetchRepoPermissionInfo(context: ContextPlugin, username: string)
 }
 
 function membershipRoleToRewardRole(role: string | null): RewardUserRole | null {
-  if (role === "billing_manager") {
-    return "billing_manager";
-  }
-  if (role === "admin") {
-    return "admin";
-  }
-  return null;
+  return role && ["billing_manager", "admin"].includes(role) ? (role as RewardUserRole) : null;
 }
 
 function isAdminPermission(info: RepoPermissionInfo) {
