@@ -2,10 +2,10 @@
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
+import { http, HttpResponse } from "msw";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
-import * as permissions from "../src/helpers/permissions";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import { db } from "./__mocks__/db";
@@ -288,25 +288,37 @@ describe("Rewards tests", () => {
         },
       },
     } as ContextPlugin;
-    const roleSpy = jest.spyOn(permissions, "getUserRewardRole").mockResolvedValue("contributor");
-    try {
-      const processor = new Processor(modifiedCtx);
-      // @ts-expect-error just for testing
-      processor["_transformers"] = [
-        new UserExtractorModule(modifiedCtx),
-        new DataPurgeModule(modifiedCtx),
-        new FormattingEvaluatorModule(modifiedCtx),
-        new ContentEvaluatorModule(modifiedCtx),
-        new PaymentModule(modifiedCtx),
-        new GithubCommentModule(modifiedCtx),
-      ];
-      await processor.run(activity);
-      const result: Result = JSON.parse(processor.dump());
-      expect(Object.values(result)?.[0].evaluationCommentHtml).toContain("XP");
-      expect(Object.values(result)?.[0].evaluationCommentHtml).not.toMatch("Wallet address is not set");
-    } finally {
-      roleSpy.mockRestore();
-    }
+    server.use(
+      http.get("https://api.github.com/orgs/:org/memberships/:username", () => HttpResponse.json({}, { status: 404 })),
+      http.get("https://api.github.com/repos/:owner/:repo/collaborators/:user/permission", () =>
+        HttpResponse.json({
+          role_name: "read",
+          permission: "read",
+          user: {
+            permissions: {
+              admin: false,
+              maintain: false,
+              push: false,
+              triage: false,
+            },
+          },
+        })
+      )
+    );
+    const processor = new Processor(modifiedCtx);
+    // @ts-expect-error just for testing
+    processor["_transformers"] = [
+      new UserExtractorModule(modifiedCtx),
+      new DataPurgeModule(modifiedCtx),
+      new FormattingEvaluatorModule(modifiedCtx),
+      new ContentEvaluatorModule(modifiedCtx),
+      new PaymentModule(modifiedCtx),
+      new GithubCommentModule(modifiedCtx),
+    ];
+    await processor.run(activity);
+    const result: Result = JSON.parse(processor.dump());
+    expect(Object.values(result)?.[0].evaluationCommentHtml).toContain("XP");
+    expect(Object.values(result)?.[0].evaluationCommentHtml).not.toMatch("Wallet address is not set");
   });
 
   it("Should not display a wallet warning on XP mode", async () => {
