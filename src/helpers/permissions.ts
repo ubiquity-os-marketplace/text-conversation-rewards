@@ -5,6 +5,9 @@ export const COLLABORATOR_ROLES = ["write", "member", "collaborator", "maintain"
 
 export type RewardUserRole = "admin" | "collaborator" | "contributor" | "billing_manager";
 
+// Use WeakMap for caching so that cache entries are automatically garbage collected
+// when the context is no longer referenced. This is important for memory management
+// in a long-running process, as it prevents memory leaks from unused contexts.
 const rewardRoleCache = new WeakMap<ContextPlugin, Map<string, RewardUserRole>>();
 
 function getRoleCache(context: ContextPlugin) {
