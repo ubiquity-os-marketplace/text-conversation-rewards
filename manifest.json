@@ -18,25 +18,126 @@
     "type": "object",
     "properties": {
       "rewards": {
-        "type": "object",
-        "properties": {
-          "evmNetworkId": {
-            "default": 100,
-            "description": "Network ID to run in, default to 100",
-            "examples": ["100"],
-            "type": "number"
+        "anyOf": [
+          {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "evmNetworkId": {
+                "default": 100,
+                "description": "Network ID to run in, default to 100",
+                "examples": ["100"],
+                "type": "number"
+              },
+              "evmPrivateEncrypted": {
+                "description": "The encrypted Ethereum private key to use for funding rewards.",
+                "examples": ["0x000..."],
+                "type": "string"
+              },
+              "erc20RewardToken": {
+                "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
+                "type": "string"
+              }
+            },
+            "required": ["evmPrivateEncrypted"]
           },
-          "evmPrivateEncrypted": {
-            "description": "The encrypted Ethereum private key to use for funding rewards.",
-            "examples": ["0x000..."],
-            "type": "string"
-          },
-          "erc20RewardToken": {
-            "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
-            "type": "string"
+          {
+            "additionalProperties": false,
+            "minProperties": 1,
+            "type": "object",
+            "properties": {
+              "admin": {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "evmNetworkId": {
+                    "default": 100,
+                    "description": "Network ID to run in, default to 100",
+                    "examples": ["100"],
+                    "type": "number"
+                  },
+                  "evmPrivateEncrypted": {
+                    "description": "The encrypted Ethereum private key to use for funding rewards.",
+                    "examples": ["0x000..."],
+                    "type": "string"
+                  },
+                  "erc20RewardToken": {
+                    "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
+                    "type": "string"
+                  }
+                },
+                "required": ["evmPrivateEncrypted"]
+              },
+              "collaborator": {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "evmNetworkId": {
+                    "default": 100,
+                    "description": "Network ID to run in, default to 100",
+                    "examples": ["100"],
+                    "type": "number"
+                  },
+                  "evmPrivateEncrypted": {
+                    "description": "The encrypted Ethereum private key to use for funding rewards.",
+                    "examples": ["0x000..."],
+                    "type": "string"
+                  },
+                  "erc20RewardToken": {
+                    "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
+                    "type": "string"
+                  }
+                },
+                "required": ["evmPrivateEncrypted"]
+              },
+              "contributor": {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "evmNetworkId": {
+                    "default": 100,
+                    "description": "Network ID to run in, default to 100",
+                    "examples": ["100"],
+                    "type": "number"
+                  },
+                  "evmPrivateEncrypted": {
+                    "description": "The encrypted Ethereum private key to use for funding rewards.",
+                    "examples": ["0x000..."],
+                    "type": "string"
+                  },
+                  "erc20RewardToken": {
+                    "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
+                    "type": "string"
+                  }
+                },
+                "required": ["evmPrivateEncrypted"]
+              },
+              "billingManager": {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "evmNetworkId": {
+                    "default": 100,
+                    "description": "Network ID to run in, default to 100",
+                    "examples": ["100"],
+                    "type": "number"
+                  },
+                  "evmPrivateEncrypted": {
+                    "description": "The encrypted Ethereum private key to use for funding rewards.",
+                    "examples": ["0x000..."],
+                    "type": "string"
+                  },
+                  "erc20RewardToken": {
+                    "default": "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068",
+                    "type": "string"
+                  }
+                },
+                "required": ["evmPrivateEncrypted"]
+              }
+            },
+            "default": {}
           }
-        },
-        "required": ["evmPrivateEncrypted"]
+        ]
       },
       "incentives": {
         "default": {},

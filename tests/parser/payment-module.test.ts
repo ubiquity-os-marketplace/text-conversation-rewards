@@ -5,7 +5,7 @@ import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { parseUnits } from "ethers/lib/utils";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { IssueActivity } from "../../src/issue-activity";
-import { ContextPlugin } from "../../src/types/plugin-input";
+import { ContextPlugin, RewardSettings } from "../../src/types/plugin-input";
 import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
@@ -17,6 +17,9 @@ const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 const PAYOUT_MODE_TRANSFER = '"payoutMode": "transfer"';
 const PAYOUT_MODE_PERMIT = '"payoutMode": "permit"';
+const DEFAULT_TIMESTAMP = "";
+const DEFAULT_URL = "";
+const EMPTY_STRING = "";
 const ctx = {
   eventName: "issues.closed",
   payload: {
@@ -64,7 +67,6 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
 
 const web3Mocks = mockWeb3Module("../../src/helpers/web3");
 
-// original rewards object before fees are applied
 function getResultOriginal() {
   return {
     molecula451: {
@@ -72,8 +74,8 @@ function getResultOriginal() {
       task: {
         reward: 90,
         multiplier: 1,
-        timestamp: "",
-        url: "",
+        timestamp: DEFAULT_TIMESTAMP,
+        url: DEFAULT_URL,
       },
       userId: 1,
       walletAddress: "0x1",
@@ -82,7 +84,7 @@ function getResultOriginal() {
           id: 57,
           content: "comment 3",
           url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-          timestamp: "",
+          timestamp: DEFAULT_TIMESTAMP,
           commentType: CommentKind.ISSUE,
           score: {
             reward: 10,
@@ -97,8 +99,8 @@ function getResultOriginal() {
       task: {
         reward: 9.99,
         multiplier: 1,
-        timestamp: "",
-        url: "",
+        timestamp: DEFAULT_TIMESTAMP,
+        url: DEFAULT_URL,
       },
       userId: 2,
       walletAddress: "0x1",
@@ -107,7 +109,7 @@ function getResultOriginal() {
           id: 57,
           content: "comment 3",
           url: "https://github.com/user-org/test-repo/issues/57#issuecomment-2172704421",
-          timestamp: "",
+          timestamp: DEFAULT_TIMESTAMP,
           commentType: CommentKind.ISSUE,
           score: {
             reward: 1.12,
@@ -140,7 +142,6 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
 });
 
 const { PaymentModule } = await import("../../src/parser/payment-module");
-
 beforeAll(() => {
   server.listen();
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -181,7 +182,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
-      ctx.env.PERMIT_FEE_RATE = "";
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -201,8 +202,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
-      process.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
-      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = "";
+      process.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
+      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -253,7 +254,7 @@ describe("payment-module.ts", () => {
 
   describe("_getBeneficiaries()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = "";
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -278,7 +279,7 @@ describe("payment-module.ts", () => {
 
   describe("_automaticTransferMode", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = "";
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -310,7 +311,7 @@ describe("payment-module.ts", () => {
   });
   describe("_getPayoutMode()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = "";
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -351,7 +352,7 @@ describe("payment-module.ts", () => {
       expect(payoutMode).toEqual("permit");
 
       payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: "", user: { type: "Bot" } }],
+        comments: [{ body: EMPTY_STRING, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
     });
@@ -372,7 +373,7 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
 
       const payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: "", user: { type: "Bot" } }],
+        comments: [{ body: EMPTY_STRING, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("transfer");
     });
@@ -381,7 +382,7 @@ describe("payment-module.ts", () => {
   const fundingWalletPrivateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   describe("_canTransferDirectly()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = "";
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
     });
 
@@ -394,8 +395,10 @@ describe("payment-module.ts", () => {
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
+      const rewardSettings = ctx.config.rewards as RewardSettings;
       const directTransferInfo = await paymentModule._getDirectTransferInfo(
         beneficiaries,
+        rewardSettings,
         fundingWalletPrivateKey,
         "0"
       );
@@ -430,8 +433,9 @@ describe("payment-module.ts", () => {
       }));
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
+      const rewardSettings = ctx.config.rewards as RewardSettings;
       await expect(
-        paymentModule._getDirectTransferInfo(beneficiaries, fundingWalletPrivateKey, "0")
+        paymentModule._getDirectTransferInfo(beneficiaries, rewardSettings, fundingWalletPrivateKey, "0")
       ).rejects.toMatchObject({
         logMessage: {
           raw: "The funding wallet lacks sufficient gas to perform direct transfers",
@@ -459,8 +463,9 @@ describe("payment-module.ts", () => {
 
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
+      const rewardSettings = ctx.config.rewards as RewardSettings;
       await expect(
-        paymentModule._getDirectTransferInfo(beneficiaries, fundingWalletPrivateKey, "0")
+        paymentModule._getDirectTransferInfo(beneficiaries, rewardSettings, fundingWalletPrivateKey, "0")
       ).rejects.toMatchObject({
         logMessage: {
           raw: "The funding wallet lacks sufficient reward tokens to perform direct transfers",
