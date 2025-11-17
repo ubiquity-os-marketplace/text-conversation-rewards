@@ -70,21 +70,32 @@ async function fetchRepoPermissionInfo(context: ContextPlugin, username: string)
 }
 
 function membershipRoleToRewardRole(role: string | null): RewardUserRole | null {
-  return role && ["billing_manager", "admin"].includes(role) ? (role as RewardUserRole) : null;
+  if (!role) {
+    return null;
+  }
+  if (role === "member") {
+    return "collaborator";
+  }
+  if (role === "billing_manager") {
+    return "billing_manager";
+  }
+  if (role === "admin" || role === "owner") {
+    return "admin";
+  }
+  return null;
 }
 
 function isAdminPermission(info: RepoPermissionInfo) {
   return info.permissions?.admin || info.role === "admin" || info.role === "owner" || info.permission === "admin";
 }
 
-function isCollaboratorPermission(info: RepoPermissionInfo, membershipRole: string | null) {
+function isCollaboratorPermission(info: RepoPermissionInfo) {
   return (
     (info.role ? COLLABORATOR_ROLES.includes(info.role) : false) ||
     (info.permission ? COLLABORATOR_ROLES.includes(info.permission) : false) ||
     info.permissions?.maintain ||
     info.permissions?.push ||
-    info.permissions?.triage ||
-    membershipRole === "member"
+    info.permissions?.triage
   );
 }
 
@@ -104,10 +115,10 @@ export async function getUserRewardRole(context: ContextPlugin, username: string
 
   const repoInfo = await fetchRepoPermissionInfo(context, username);
 
-  let resolvedRole: RewardUserRole = membershipDerivedRole ?? "contributor";
+  let resolvedRole: RewardUserRole = "contributor";
   if (isAdminPermission(repoInfo)) {
     resolvedRole = "admin";
-  } else if (isCollaboratorPermission(repoInfo, membershipRole)) {
+  } else if (isCollaboratorPermission(repoInfo)) {
     resolvedRole = "collaborator";
   }
 

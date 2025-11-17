@@ -85,6 +85,7 @@ export class PaymentModule extends BaseModule {
     if (xpUsernames.length > 0) {
       const xpResult = this._selectResultSubset(result, xpUsernames);
       await this._handleXpRecording(xpResult);
+      this._removeTreasuryItem(result);
     }
 
     if (!tokenGroups.length) {
@@ -104,6 +105,7 @@ export class PaymentModule extends BaseModule {
     for (const group of tokenGroups) {
       const groupResult = this._selectResultSubset(result, group.usernames);
       await this._processTokenRewardGroup(data, groupResult, group.config, payoutMode);
+      this._removeTreasuryItem(result);
     }
 
     return result;
