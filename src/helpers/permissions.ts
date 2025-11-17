@@ -97,7 +97,7 @@ export async function getUserRewardRole(context: ContextPlugin, username: string
 
   const membershipRole = await fetchMembershipRole(context, username);
   const membershipDerivedRole = membershipRoleToRewardRole(membershipRole);
-  if (membershipDerivedRole === "billing_manager") {
+  if (membershipDerivedRole && membershipDerivedRole !== "contributor") {
     cache.set(username, membershipDerivedRole);
     return membershipDerivedRole;
   }
@@ -105,9 +105,9 @@ export async function getUserRewardRole(context: ContextPlugin, username: string
   const repoInfo = await fetchRepoPermissionInfo(context, username);
 
   let resolvedRole: RewardUserRole = membershipDerivedRole ?? "contributor";
-  if (resolvedRole !== "admin" && isAdminPermission(repoInfo)) {
+  if (isAdminPermission(repoInfo)) {
     resolvedRole = "admin";
-  } else if (resolvedRole !== "admin" && isCollaboratorPermission(repoInfo, membershipRole)) {
+  } else if (isCollaboratorPermission(repoInfo, membershipRole)) {
     resolvedRole = "collaborator";
   }
 
