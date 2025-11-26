@@ -70,9 +70,16 @@ incentives:
       - role:
           - ISSUE_AUTHOR
           - ISSUE_COLLABORATOR
-          - ISSUE_SPECIFICATION
           - PULL_COLLABORATOR
+          - PULL_SPECIFICATION
         multiplier: 1
+        rewards:
+          wordValue: 0.1
+          html: *tcrHtmlConfig
+
+      - role:
+          - ISSUE_SPECIFICATION
+        multiplier: 3
         rewards:
           wordValue: 0.1
           html: *tcrHtmlConfig
@@ -89,7 +96,6 @@ incentives:
           - PULL_AUTHOR
           - PULL_CONTRIBUTOR
           - PULL_ASSIGNEE
-          - PULL_SPECIFICATION
         multiplier: 0
         rewards:
           wordValue: 0

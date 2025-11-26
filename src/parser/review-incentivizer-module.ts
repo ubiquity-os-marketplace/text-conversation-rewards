@@ -10,6 +10,7 @@ import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result, ReviewScore } from "../types/results";
+import { isUserAllowedToGenerateRewards } from "../helpers/permissions";
 
 interface CommitDiff {
   [fileName: string]: {
@@ -41,6 +42,10 @@ export class ReviewIncentivizerModule extends BaseModule {
 
       for (const linkedPullReviews of data.linkedMergedPullRequests) {
         if (linkedPullReviews.reviews && linkedPullReviews.self && username !== linkedPullReviews.self.user.login) {
+          if (!(await isUserAllowedToGenerateRewards(this.context, username))) {
+            this.context.logger.warn("The user is not allowed to receive rewards for a review", { username });
+            continue;
+          }
           const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
           const baseOwner = linkedPullReviews.self.base.repo.owner.login;

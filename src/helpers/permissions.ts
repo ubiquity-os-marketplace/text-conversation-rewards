@@ -134,9 +134,9 @@ function isCollaboratorRole(role: string) {
   return COLLABORATOR_ROLES.includes(role.toLowerCase());
 }
 
-export async function isUserAllowedToGenerateRewards(context: ContextPlugin) {
+export async function isUserAllowedToGenerateRewards(context: ContextPlugin, login?: string): Promise<boolean> {
   const { octokit, payload } = context;
-  const username = payload.sender.login;
+  const username = login ?? payload.sender.login;
   try {
     await octokit.rest.orgs.getMembershipForUser({
       org: payload.repository.owner.login,
