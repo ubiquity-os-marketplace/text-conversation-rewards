@@ -21,6 +21,8 @@ import Decimal from "decimal.js";
 import { BigNumber, ethers, utils } from "ethers";
 import { PaymentConfiguration, paymentConfigurationType } from "../configuration/payment-configuration";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
+import { getUserRewardRole } from "../helpers/permissions";
+import { isGlobalRewardSettings, resolveRewardSettingsForRole, rewardConfigKey } from "../helpers/reward-settings";
 import {
   BatchTransferPermit,
   ERC20_ABI,
@@ -35,6 +37,7 @@ import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { PERMIT2_ADDRESS } from "../types/permit2";
+import { RewardSettings } from "../types/plugin-input";
 import { PayoutMode, Result } from "../types/results";
 import chains from "../types/rpcs.json";
 
@@ -58,6 +61,8 @@ export interface DirectTransferInfo {
   permit2Wrapper: Permit2Wrapper;
   batchTransferPermit: BatchTransferPermit;
   nonce: string;
+  rewardTokenAddress: string;
+  networkId: number;
 }
 
 export class PaymentModule extends BaseModule {
@@ -66,52 +71,109 @@ export class PaymentModule extends BaseModule {
     this.context.config.incentives.payment?.automaticTransferMode == undefined
       ? true
       : this.context.config.incentives.payment?.automaticTransferMode;
-  readonly _evmPrivateEncrypted: string = `${this.context.config.rewards?.evmPrivateEncrypted}`;
-  readonly _evmNetworkId: number = Number(this.context.config.rewards?.evmNetworkId);
-  readonly _erc20RewardToken: string = `${this.context.config.rewards?.erc20RewardToken}`;
   readonly _supabase = createClient<Database>(this.context.env.SUPABASE_URL, this.context.env.SUPABASE_KEY);
 
   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
-    const networkExplorer = this._getNetworkExplorer(this._evmNetworkId);
     const canMakePayment = await this._canMakePayment(data);
     if (!canMakePayment) {
       this.context.logger.warn("Non collaborative issue detected, skipping.");
       return Promise.resolve(result);
     }
 
-    if (!this.context.config.rewards) {
-      this.context.logger.info("No permit settings found, switching to XP recording mode.");
-      return this._handleXpRecording(result);
+    const { xpUsernames, tokenGroups } = await this._splitUsersByRewardConfiguration(result);
+
+    if (xpUsernames.length > 0) {
+      const xpResult = this._selectResultSubset(result, xpUsernames);
+      await this._handleXpRecording(xpResult);
+      this._removeTreasuryItem(result);
     }
 
-    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
-    const payload: Context["payload"] & Payload = {
-      ...context.payload.inputs,
-      issueUrl: issue.html_url,
-      evmPrivateEncrypted: this.context.config.rewards.evmPrivateEncrypted,
-      evmNetworkId: this.context.config.rewards.evmNetworkId,
-      erc20RewardToken: this.context.config.rewards.erc20RewardToken,
-    };
-    const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
-    payload.issue = {
-      node_id: issue.node_id,
-    };
-    const env = this.context.env;
+    if (!tokenGroups.length) {
+      if (!this.context.config.rewards) {
+        this.context.logger.info("No permit settings found, switching to XP recording mode.");
+      } else {
+        this.context.logger.info("No reward settings matched the eligible users, switching to XP recording mode.");
+      }
+      return result;
+    }
 
-    const privateKeyParsed = await this._parsePrivateKey(this._evmPrivateEncrypted);
-    const [isPrivateKeyAllowed, privateKey] = await this._isPrivateKeyAllowed(
-      privateKeyParsed,
-      this.context.payload.repository.owner.id,
-      this.context.payload.repository.id
+    const payoutMode = await this._getPayoutMode(data);
+    if (payoutMode === null) {
+      throw this.context.logger.warn("Rewards can not be transferred twice.");
+    }
+
+    for (const group of tokenGroups) {
+      const groupResult = this._selectResultSubset(result, group.usernames);
+      await this._processTokenRewardGroup(data, groupResult, group.config, payoutMode);
+      this._removeTreasuryItem(result);
+    }
+
+    return result;
+  }
+
+  private _selectResultSubset(result: Result, usernames: string[]): Result {
+    const subset: Result = {};
+    for (const username of usernames) {
+      if (username === this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
+        continue;
+      }
+      if (result[username]) {
+        subset[username] = result[username];
+      }
+    }
+    return subset;
+  }
+
+  private async _splitUsersByRewardConfiguration(result: Result) {
+    const usernames = Object.keys(result).filter(
+      (username) => username !== this.context.env.PERMIT_TREASURY_GITHUB_USERNAME
     );
-    if (!isPrivateKeyAllowed) {
-      this.context.logger.error("Private key is not allowed to be used in this organization/repository.");
-      return Promise.resolve(result);
+    const xpUsernames: string[] = [];
+    const tokenGroupMap = new Map<string, { config: RewardSettings; usernames: string[] }>();
+    const rewardsConfig = this.context.config.rewards;
+
+    if (!rewardsConfig) {
+      xpUsernames.push(...usernames);
+      return { xpUsernames, tokenGroups: [] as { config: RewardSettings; usernames: string[] }[] };
     }
 
-    const eventName = context.eventName as SupportedEvents;
-    const octokit = this.context.octokit as unknown as Context["octokit"];
-    const permitLogger = {
+    if (isGlobalRewardSettings(rewardsConfig)) {
+      return {
+        xpUsernames,
+        tokenGroups: [
+          {
+            config: rewardsConfig,
+            usernames,
+          },
+        ],
+      };
+    }
+
+    for (const username of usernames) {
+      const reward = result[username];
+      if (!reward) {
+        continue;
+      }
+      const role = await getUserRewardRole(this.context, username);
+      const config = resolveRewardSettingsForRole(rewardsConfig, role);
+      if (!config) {
+        xpUsernames.push(username);
+        continue;
+      }
+      const key = rewardConfigKey(config);
+      const existing = tokenGroupMap.get(key);
+      if (existing) {
+        existing.usernames.push(username);
+      } else {
+        tokenGroupMap.set(key, { config, usernames: [username] });
+      }
+    }
+
+    return { xpUsernames, tokenGroups: Array.from(tokenGroupMap.values()) };
+  }
+
+  private _createPermitLogger() {
+    return {
       debug(message: unknown, optionalParams: unknown) {
         console.log(message, optionalParams);
       },
@@ -128,23 +190,54 @@ export class PaymentModule extends BaseModule {
         console.warn(message, optionalParams);
       },
     };
-    const adapters = {} as ReturnType<typeof createAdapters>;
+  }
 
-    this.context.logger.info("Will attempt to apply fees...");
-    result = await this._applyFees(result, payload.erc20RewardToken);
+  private async _processTokenRewardGroup(
+    data: Readonly<IssueActivity>,
+    result: Result,
+    config: RewardSettings,
+    payoutMode: PayoutMode
+  ) {
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
+    const payload: Context["payload"] & Payload = {
+      ...context.payload.inputs,
+      issueUrl: issue.html_url,
+      evmPrivateEncrypted: config.evmPrivateEncrypted,
+      evmNetworkId: config.evmNetworkId,
+      erc20RewardToken: config.erc20RewardToken,
+    };
+    const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
+    payload.issue = {
+      node_id: issue.node_id,
+    };
 
-    // get the payout mode
-    const payoutMode = await this._getPayoutMode(data);
-    if (payoutMode === null) {
-      throw this.context.logger.warn("Rewards can not be transferred twice.");
+    const privateKeyParsed = await this._parsePrivateKey(config.evmPrivateEncrypted);
+    const [isPrivateKeyAllowed, privateKey] = await this._isPrivateKeyAllowed(
+      privateKeyParsed,
+      this.context.payload.repository.owner.id,
+      this.context.payload.repository.id
+    );
+    if (!isPrivateKeyAllowed) {
+      this.context.logger.error("Private key is not allowed to be used in this organization/repository.");
+      return;
     }
 
+    this.context.logger.info("Will attempt to apply fees...");
+    await this._applyFees(result, config.erc20RewardToken);
+
     await this._addWalletAddressesToResult(result);
+
+    const env = this.context.env;
+    const eventName = context.eventName as SupportedEvents;
+    const octokit = this.context.octokit as unknown as Context["octokit"];
+    const permitLogger = this._createPermitLogger();
+    const adapters = {} as ReturnType<typeof createAdapters>;
+    const networkExplorer = this._getNetworkExplorer(config.evmNetworkId);
 
     let directTransferError;
     if (payoutMode === "transfer") {
       try {
-        await this._tryDirectTransfer(result, networkExplorer, issueId, payload.issueUrl, privateKey);
+        await this._tryDirectTransfer(result, config, networkExplorer, issueId, payload.issueUrl, privateKey);
       } catch (e) {
         this.context.logger.warn(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
@@ -155,13 +248,13 @@ export class PaymentModule extends BaseModule {
       this.context.logger.info("Transitioning to permit generation.");
       for (const [username, reward] of Object.entries(result)) {
         this.context.logger.debug(`Updating result for user ${username}`);
-        const config: Context["config"] = {
+        const configPayload: Context["config"] = {
           evmNetworkId: payload.evmNetworkId,
           evmPrivateEncrypted: payload.evmPrivateEncrypted,
           permitRequests: [
             {
               amount: reward.total,
-              username: username,
+              username,
               contributionType: "",
               type: TokenType.ERC20,
               tokenAddress: payload.erc20RewardToken,
@@ -179,15 +272,15 @@ export class PaymentModule extends BaseModule {
                 env,
                 eventName,
                 octokit,
-                config,
+                config: configPayload,
                 logger: permitLogger,
                 payload,
                 adapters,
               }),
               octokit,
-              config,
+              config: configPayload,
             },
-            config.permitRequests
+            configPayload.permitRequests
           );
           result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
           result[username].payoutMode = "permit";
@@ -198,13 +291,12 @@ export class PaymentModule extends BaseModule {
       }
     }
 
-    // remove treasury item from the final result in order not to display the permit fee in GitHub comments
     this._removeTreasuryItem(result);
-    return result;
   }
 
   private async _tryDirectTransfer(
     result: Result,
+    config: RewardSettings,
     networkExplorer: string,
     issueId: number,
     issueUrl: string,
@@ -216,7 +308,7 @@ export class PaymentModule extends BaseModule {
     }
 
     const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
-    const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, privateKey, nonce);
+    const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, config, privateKey, nonce);
     this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
     const [tx, permits] = await this._transferReward(directTransferInfo);
     this.context.logger.info("Rewards have been transferred.");
@@ -270,10 +362,11 @@ export class PaymentModule extends BaseModule {
   // This method checks that the funding wallet has enough reward tokens for a direct transfer and sufficient funds to cover gas fees.
   async _getDirectTransferInfo(
     beneficiaries: Beneficiary[],
+    config: RewardSettings,
     privateKey: string,
     nonce: string
   ): Promise<DirectTransferInfo> {
-    const { rewardTokenWrapper, fundingWallet } = await this._initializeContractsAndWallet(privateKey);
+    const { rewardTokenWrapper, fundingWallet } = await this._initializeContractsAndWallet(config, privateKey);
     const { rewardBalance, rewardAllowance, nativeBalance } = await this._fetchBalancesAndAllowances(
       rewardTokenWrapper,
       fundingWallet
@@ -309,13 +402,14 @@ export class PaymentModule extends BaseModule {
         directTransferLog
       );
     }
-    const permit2Contract = await getContract(this._evmNetworkId, PERMIT2_ADDRESS, PERMIT2_ABI);
+    const permit2Contract = await getContract(config.evmNetworkId, PERMIT2_ADDRESS, PERMIT2_ABI);
     const permit2Wrapper = new Permit2Wrapper(permit2Contract);
     const { gasEstimation, batchTransferPermit } = await this._getGasEstimation(
       fundingWallet,
       permit2Wrapper,
       transferRequests,
-      nonce
+      nonce,
+      config
     );
     directTransferLog.gas.required = gasEstimation.toString();
     if (nativeBalance.lte(gasEstimation.mul(2))) {
@@ -334,11 +428,13 @@ export class PaymentModule extends BaseModule {
       permit2Wrapper,
       batchTransferPermit,
       nonce,
+      rewardTokenAddress: config.erc20RewardToken,
+      networkId: config.evmNetworkId,
     };
   }
 
-  private async _initializeContractsAndWallet(privateKey: string) {
-    const erc20Contract = await getContract(this._evmNetworkId, this._erc20RewardToken, ERC20_ABI);
+  private async _initializeContractsAndWallet(config: RewardSettings, privateKey: string) {
+    const erc20Contract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
     const fundingWallet = await getEvmWallet(privateKey, erc20Contract.provider);
     const rewardTokenWrapper = new Erc20Wrapper(erc20Contract);
     return { rewardTokenWrapper, fundingWallet };
@@ -355,12 +451,13 @@ export class PaymentModule extends BaseModule {
     fundingWallet: ethers.Wallet,
     permit2Wrapper: Permit2Wrapper,
     transferRequests: TransferRequest[],
-    nonce: string
+    nonce: string,
+    config: RewardSettings
   ): Promise<{ gasEstimation: BigNumber; batchTransferPermit: BatchTransferPermit }> {
     try {
       const batchTransferPermit = await permit2Wrapper.generateBatchTransferPermit(
         fundingWallet,
-        this._erc20RewardToken,
+        config.erc20RewardToken,
         transferRequests,
         BigNumber.from(nonce)
       );
@@ -393,6 +490,8 @@ export class PaymentModule extends BaseModule {
     permit2Wrapper,
     batchTransferPermit,
     nonce,
+    rewardTokenAddress,
+    networkId,
   }: DirectTransferInfo): Promise<[ethers.providers.TransactionResponse, PermitReward[]]> {
     try {
       const tx = await permit2Wrapper.sendPermitTransferFrom(fundingWallet, batchTransferPermit);
@@ -404,13 +503,13 @@ export class PaymentModule extends BaseModule {
         (beneficiary) =>
           ({
             tokenType: TokenType.ERC20,
-            tokenAddress: this._erc20RewardToken,
+            tokenAddress: rewardTokenAddress,
             beneficiary: beneficiary.address,
             nonce: nonce,
             deadline: MaxUint256,
             owner: fundingWallet.address,
             signature: batchTransferPermit.signature,
-            networkId: this._evmNetworkId,
+            networkId,
             amount: beneficiary.amount,
           }) as PermitReward
       );

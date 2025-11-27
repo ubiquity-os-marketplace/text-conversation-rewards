@@ -94,16 +94,17 @@ export class FormattingEvaluatorModule extends BaseModule {
     const syllableCount = words.reduce((count, word) => count + this._countSyllables(word), 0);
     const wordsPerSentence = wordCount / Math.max(1, sentences);
     const syllablesPerWord = syllableCount / Math.max(1, wordCount);
-    const fleschKincaid = sentences && wordCount ? 206.835 - 1.015 * wordsPerSentence - 84.6 * syllablesPerWord : 0;
+    const rawFleschKincaid = sentences && wordCount ? 206.835 - 1.015 * wordsPerSentence - 84.6 * syllablesPerWord : 0;
+    const fleschKincaid = Math.max(0, Math.min(100, rawFleschKincaid));
 
     // Normalize score between 0 and 1
     let normalizedScore: number;
-    if (fleschKincaid > 100) {
+    if (rawFleschKincaid > 100) {
       normalizedScore = 1.0;
-    } else if (fleschKincaid <= 0) {
+    } else if (rawFleschKincaid <= 0) {
       normalizedScore = 0.0;
     } else {
-      const distance = Math.abs(fleschKincaid - (this._readabilityConfig?.targetReadabilityScore ?? 60));
+      const distance = Math.abs(rawFleschKincaid - (this._readabilityConfig?.targetReadabilityScore ?? 60));
       normalizedScore = Math.max(0, Math.min(1, (100 - distance) / 100));
     }
 

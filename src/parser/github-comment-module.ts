@@ -12,16 +12,19 @@ import { GITHUB_COMMENT_PAYLOAD_LIMIT } from "../helpers/constants";
 import { getGithubWorkflowRunUrl } from "../helpers/github";
 import { getTaskReward } from "../helpers/label-price-extractor";
 import { createStructuredMetadata } from "../helpers/metadata";
+import { getUserRewardRole } from "../helpers/permissions";
 import { commentTypeReplacer, removeKeyFromObject } from "../helpers/result-replacer";
+import { isGlobalRewardSettings, resolveRewardSettingsForRole, rewardConfigKey } from "../helpers/reward-settings";
 import { ERC20_ABI, Erc20Wrapper, getContract, PERMIT2_ABI, Permit2Wrapper } from "../helpers/web3";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { PERMIT2_ADDRESS } from "../types/permit2";
+import { RewardSettings } from "../types/plugin-input";
 import { GithubCommentScore, Result, ReviewScore } from "../types/results";
 
 interface SortedTasks {
   issues: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
-  reviews: GithubCommentScore[];
+  reviews: { specification: GithubCommentScore | null; comments: GithubCommentScore[] };
 }
 
 interface BodyComment {
@@ -36,6 +39,8 @@ interface BodyComment {
 export class GithubCommentModule extends BaseModule {
   private readonly _configuration: GithubCommentConfiguration | null = this.context.config.incentives.githubComment;
   private readonly _debugFilePath = "./output.html";
+  private readonly _tokenSymbolCache = new Map<string, string>();
+  private readonly _userRewardSettingsCache = new Map<string, RewardSettings | null>();
 
   /**
    * Ensures that a string containing special characters get HTML encoded.
@@ -45,6 +50,45 @@ export class GithubCommentModule extends BaseModule {
     const div = dom.window.document.createElement("div");
     div.appendChild(dom.window.document.createTextNode(str));
     return div.innerHTML;
+  }
+
+  private async _getRewardSettingsForUser(username: string): Promise<RewardSettings | null> {
+    if (this._userRewardSettingsCache.has(username)) {
+      return this._userRewardSettingsCache.get(username) ?? null;
+    }
+    const rewards = this.context.config.rewards;
+    let resolved: RewardSettings | null = null;
+    if (rewards) {
+      if (isGlobalRewardSettings(rewards)) {
+        resolved = rewards;
+      } else {
+        const role = await getUserRewardRole(this.context, username);
+        resolved = resolveRewardSettingsForRole(rewards, role);
+      }
+    }
+    this._userRewardSettingsCache.set(username, resolved);
+    return resolved;
+  }
+
+  private async _getTokenSymbolForConfig(config: RewardSettings) {
+    const key = rewardConfigKey(config);
+    const cached = this._tokenSymbolCache.get(key);
+    if (cached) {
+      return cached;
+    }
+    const tokenContract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
+    const symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    this._tokenSymbolCache.set(key, symbol);
+    return symbol;
+  }
+
+  private async _getTokenDisplayForUser(username: string) {
+    const settings = await this._getRewardSettingsForUser(username);
+    if (!settings) {
+      return { symbol: "XP", hasToken: false } as const;
+    }
+    const symbol = await this._getTokenSymbolForConfig(settings);
+    return { symbol, hasToken: true } as const;
   }
 
   _getPayoutMode(result: Result): string | undefined {
@@ -287,13 +331,16 @@ export class GithubCommentModule extends BaseModule {
         )
       );
     }
-    if (sortedTasks.reviews.length && this.isPullRequest()) {
+    if (sortedTasks.reviews.specification) {
+      content.push(buildContributionRow("Review", "Specification", 1, sortedTasks.reviews.specification.score?.reward));
+    }
+    if (sortedTasks.reviews.comments.length && this.isPullRequest()) {
       content.push(
         buildContributionRow(
           "Review",
           "Comment",
-          sortedTasks.reviews.length,
-          sortedTasks.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
+          sortedTasks.reviews.comments.length,
+          sortedTasks.reviews.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))
         )
       );
     }
@@ -348,11 +395,14 @@ export class GithubCommentModule extends BaseModule {
     if (sortedTasks.issues.specification) {
       content.push(buildIncentiveRow(sortedTasks.issues.specification));
     }
+    if (sortedTasks.reviews.specification) {
+      content.push(buildIncentiveRow(sortedTasks.reviews.specification));
+    }
     for (const issueComment of sortedTasks.issues.comments) {
       content.push(buildIncentiveRow(issueComment));
     }
     if (this.isPullRequest()) {
-      for (const reviewComment of sortedTasks.reviews) {
+      for (const reviewComment of sortedTasks.reviews.comments) {
         content.push(buildIncentiveRow(reviewComment));
       }
     }
@@ -367,6 +417,7 @@ export class GithubCommentModule extends BaseModule {
         <tr>
           <td><a href="${result.simplificationReward.url}/files#diff-${createHash("sha256").update(file.fileName).digest("hex")}" target="_blank" rel="noopener">${file.fileName}</a></td>
           <td>${file.reward}</td>
+          <td>${file.additions}</td>
           <td>${file.deletions}</td>
         </tr>`);
     }
@@ -378,6 +429,7 @@ export class GithubCommentModule extends BaseModule {
         <tr>
           <th>Filename</th>
           <th>Reward</th>
+          <th>Additions</th>
           <th>Deletions</th>
         </tr>
       </thead>
@@ -425,14 +477,15 @@ export class GithubCommentModule extends BaseModule {
     return reviewTables;
   }
 
-  _createWalletWarning(walletAddress: string | null | undefined) {
-    // When using XP mode, this warning is not relevant, as it doesn't require a wallet
-    if (!this.context.config.rewards) {
+  async _createWalletWarning(username: string, walletAddress: string | null | undefined) {
+    const { hasToken } = await this._getTokenDisplayForUser(username);
+    if (!hasToken) {
       return "";
     }
     if (walletAddress === null) {
       return `<h6>⚠️ Wallet address is not set</h6>`;
-    } else if (walletAddress === undefined) {
+    }
+    if (walletAddress === undefined) {
       return `<h6>⚠️ Error fetching wallet</h6>`;
     }
     return "";
@@ -456,21 +509,17 @@ export class GithubCommentModule extends BaseModule {
             acc.issues.comments.push(curr);
           }
         } else if (curr.commentType & CommentKind.PULL) {
-          acc.reviews.push(curr);
+          if (curr.commentType & CommentAssociation.SPECIFICATION) {
+            acc.reviews.specification = curr;
+          } else {
+            acc.reviews.comments.push(curr);
+          }
         }
         return acc;
       },
-      { issues: { specification: null, comments: [] }, reviews: [] }
+      { issues: { specification: null, comments: [] }, reviews: { specification: null, comments: [] } }
     );
-    let tokenSymbol = "XP";
-    if (this.context.config.rewards) {
-      const tokenContract = await getContract(
-        this.context.config.rewards.evmNetworkId,
-        this.context.config.rewards.erc20RewardToken,
-        ERC20_ABI
-      );
-      tokenSymbol = await new Erc20Wrapper(tokenContract).getSymbol();
-    }
+    const { symbol: tokenSymbol } = await this._getTokenDisplayForUser(username);
 
     const rewardsSum =
       result.comments?.reduce<Decimal>((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ??
@@ -491,7 +540,7 @@ export class GithubCommentModule extends BaseModule {
           </h6>
         </b>
       </summary>
-      ${this._createWalletWarning(result.walletAddress)}
+      ${await this._createWalletWarning(username, result.walletAddress)}
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       ${isCapped ? `<h6>⚠️ Your rewards have been limited to the task price of ${taskReward} ${tokenSymbol}.</h6>` : ""}
       <h6>Contributions Overview</h6>
@@ -513,7 +562,10 @@ export class GithubCommentModule extends BaseModule {
       ${
         !stripComments &&
         sortedTasks &&
-        (sortedTasks.issues.comments.length || sortedTasks.reviews.length || sortedTasks.issues.specification)
+        (sortedTasks.issues.comments.length ||
+          sortedTasks.reviews.comments.length ||
+          sortedTasks.issues.specification ||
+          sortedTasks.reviews.specification)
           ? `<h6>Conversation Incentives</h6>
       <table>
         <thead>

@@ -17,17 +17,19 @@ import { DataPurgeModule } from "../src/parser/data-purge-module";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation((specification, comments) => {
-  return Promise.resolve(
-    (() => {
-      const relevance: { [k: string]: number } = {};
-      comments.forEach((comment) => {
-        relevance[`${comment.id}`] = 0.8;
-      });
-      return relevance;
-    })()
-  );
-});
+jest
+  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+  .mockImplementation((specification, userId, comments) => {
+    return Promise.resolve(
+      (() => {
+        const relevance: { [k: string]: number } = {};
+        comments.forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        return relevance;
+      })()
+    );
+  });
 
 jest.unstable_mockModule("@actions/github", () => ({
   context: {
