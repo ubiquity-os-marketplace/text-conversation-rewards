@@ -110,7 +110,7 @@ export class DataPurgeModule extends BaseModule {
         ? this.context.payload.pull_request.html_url
         : this.context.payload.issue.html_url;
     this._assignmentPeriods = await getAssignmentPeriods(this.context.octokit, parseGitHubUrl(htmlUrl));
-    const allComments = await data.getAllComments();
+    const allComments = await data.getAllComments(this.isPullRequest());
     for (const comment of allComments) {
       await this._processComment(comment, result);
     }
