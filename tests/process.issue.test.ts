@@ -347,13 +347,15 @@ describe("Modules tests", () => {
   });
 
   it("Should incentivize simplifications", async () => {
-    jest.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments").mockImplementation(() => {
-      return Promise.resolve(
-        (() => {
-          return {};
-        })()
-      );
-    });
+    jest
+      .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+      .mockImplementation((specificationBody, userId, commentsToEvaluate, allComments, prCommentsToEvaluate) => {
+        const relevance: { [k: string]: number } = {};
+        (prCommentsToEvaluate ?? commentsToEvaluate ?? []).forEach((comment) => {
+          relevance[`${comment.id}`] = 0.8;
+        });
+        return Promise.resolve(relevance);
+      });
     // should run on https://github.com/ubiquity-os/conversation-rewards/pull/12 since it is a pull-request
     const ctx = {
       eventName: "pull_request.closed",
@@ -407,7 +409,8 @@ describe("Modules tests", () => {
       new SimplificationIncentivizerModule(ctx),
     ];
     await processor.run(activity);
-    const result = JSON.parse(processor.dump());
+    const dump = processor.dump();
+    const result = JSON.parse(dump);
     expect(result).toEqual(simplificationIncentivizerResults);
   }, 240000);
 
