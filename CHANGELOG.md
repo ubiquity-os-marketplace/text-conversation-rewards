@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.10](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.9...v1.7.10) (2025-12-09)
+
+
+### Bug Fixes
+
+* pass context to get all comments in data purge ([636b86e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/636b86ece27b618ef6a5cbe0a1ae9a2feece5e4e))
+
 ## [1.7.9](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.8...v1.7.9) (2025-11-27)
 
 
