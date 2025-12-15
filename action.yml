@@ -13,6 +13,10 @@ inputs:
     description: "Auth Token"
   ref:
     description: "Ref"
+  signature:
+    description: "Signature sent from the Kernel"
+  command:
+    description: "Command"
 outputs:
   result:
     description: "The result containing all the rewards of the users"
