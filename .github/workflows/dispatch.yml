@@ -1,0 +1,48 @@
+name: Kernel Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      stateId:
+        description: "State Id"
+        required: true
+      eventName:
+        description: "Event Name"
+        required: true
+      eventPayload:
+        description: "Event Payload"
+        required: true
+      settings:
+        description: "Settings"
+        required: true
+      authToken:
+        description: "Auth Token"
+        required: true
+      ref:
+        description: "Ref"
+        required: false
+      signature:
+        description: "Signature sent from the Kernel"
+        required: true
+      command:
+        description: "Command"
+        required: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    environment: ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) && 'main' || 'development' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./
+        with:
+          stateId: ${{ inputs.stateId }}
+          eventName: ${{ inputs.eventName }}
+          eventPayload: ${{ inputs.eventPayload }}
+          settings: ${{ inputs.settings }}
+          authToken: ${{ inputs.authToken }}
+          ref: ${{ inputs.ref }}
+          signature: ${{ inputs.signature }}
+          command: ${{ inputs.command }}
+
