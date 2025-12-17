@@ -85,8 +85,6 @@ const { PaymentModule } = await import("../src/parser/payment-module");
 const { Processor } = await import("../src/parser/processor");
 const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
-
 jest
   .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
   .mockImplementation((specificationBody, userId, comments, allComments, prComments) => {
@@ -169,7 +167,6 @@ describe("Content Evaluator Module Test", () => {
         id: 12345678,
         node_id: "MDQ6VXNlcjEyMzQ1Njc4",
         avatar_url: "https://avatars.githubusercontent.com/u/12345678?v=4",
-        gravatar_id: "",
         url: "https://api.github.com/users/test-user",
         html_url: "https://github.com/test-user",
         type: "User",

@@ -1,5 +1,4 @@
 import ms, { StringValue } from "ms";
-import OpenAI from "openai";
 
 interface RetryOptions {
   maxRetries: number;
@@ -39,19 +38,52 @@ export async function retry<T>(fn: () => Promise<T>, options: RetryOptions): Pro
 }
 
 export function checkLlmRetryableState(error: unknown) {
-  if (error instanceof OpenAI.APIError && error.status) {
-    if ([500, 503].includes(error.status)) {
-      return true;
-    }
-    if (error.status === 429 && error.headers) {
-      const retryAfterTokens = error.headers["x-ratelimit-reset-tokens"];
-      const retryAfterRequests = error.headers["x-ratelimit-reset-requests"];
-      if (!retryAfterTokens || !retryAfterRequests) {
-        return true;
-      }
-      const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
-      return Number.isFinite(retryAfter) ? retryAfter : true;
+  const maybe = error as { status?: unknown; headers?: unknown; message?: unknown };
+  const status = typeof maybe?.status === "number" ? maybe.status : extractStatusFromMessage(error);
+
+  if (!status) return false;
+
+  if ([500, 502, 503, 504].includes(status)) return true;
+
+  if (status === 429) {
+    const headers =
+      typeof maybe.headers === "object" && maybe.headers !== null
+        ? (maybe.headers as Record<string, unknown>)
+        : undefined;
+    const retryAfterTokensHeader = headers?.["x-ratelimit-reset-tokens"];
+    const retryAfterRequestsHeader = headers?.["x-ratelimit-reset-requests"];
+    const retryAfterTokens = typeof retryAfterTokensHeader === "string" ? retryAfterTokensHeader : undefined;
+    const retryAfterRequests = typeof retryAfterRequestsHeader === "string" ? retryAfterRequestsHeader : undefined;
+    if (!retryAfterTokens || !retryAfterRequests) return true;
+
+    const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
+    return Number.isFinite(retryAfter) ? retryAfter : true;
+  }
+
+  return false;
+}
+
+function extractStatusFromMessage(error: unknown): number | null {
+  let message: string | undefined;
+
+  if (typeof error === "string") {
+    message = error;
+  } else if (typeof error === "object" && error !== null && "message" in error) {
+    const maybeMessage = (error as { message?: unknown }).message;
+    if (typeof maybeMessage === "string") {
+      message = maybeMessage;
     }
   }
-  return false;
+
+  if (!message) return null;
+
+  const patterns = [/LLM API error:\s*(\d{3})/i, /ai\.ubq\.fi error:\s*(\d{3})/i];
+  for (const pattern of patterns) {
+    const match = pattern.exec(message);
+    const statusText = match?.[1];
+    if (!statusText) continue;
+    const status = Number.parseInt(statusText, 10);
+    if (Number.isFinite(status)) return status;
+  }
+  return null;
 }

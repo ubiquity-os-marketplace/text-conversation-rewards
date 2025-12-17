@@ -317,9 +317,6 @@ describe("Pre-check tests", () => {
     jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: jest.fn(() => []),
     }));
-    jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
-      postComment: jest.fn(),
-    }));
     const { run } = await import("../src/run");
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
     jest.spyOn(octokit.rest.orgs, "getMembershipForUser").mockRejectedValue(new Error("Membership not found"));

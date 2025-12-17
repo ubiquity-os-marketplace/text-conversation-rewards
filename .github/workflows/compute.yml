@@ -19,6 +19,8 @@ on:
         description: "Payload signature from the kernel"
       command:
         description: "Command"
+      ubiquityKernelToken:
+        description: "Kernel attestation token (optional)"
 
 jobs:
   compute:
@@ -30,7 +32,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PLUGIN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       X25519_PRIVATE_KEY: ${{ secrets.X25519_PRIVATE_KEY }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
