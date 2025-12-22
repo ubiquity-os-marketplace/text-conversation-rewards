@@ -716,6 +716,15 @@ export class PaymentModule extends BaseModule {
 
   async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: PermitReward[]) {
     for (const permit of permits) {
+      const amount = new Decimal(permit.amount.toString());
+      if (!amount.gt(0)) {
+        this.context.logger.warn("Skipping permit persistence because amount is zero.", {
+          beneficiaryId: userId,
+          issueId: issue.issueId,
+          nonce: permit.nonce,
+        });
+        continue;
+      }
       try {
         const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
         const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
