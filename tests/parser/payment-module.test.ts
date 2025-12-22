@@ -284,7 +284,7 @@ describe("payment-module.ts", () => {
     });
 
     it("should skip inserting permits with zero amount", async () => {
-      const insert = jest.fn().mockResolvedValue({ error: null });
+      const insert = jest.fn<() => Promise<{ error: null }>>().mockResolvedValue({ error: null });
       const supabaseMock = {
         from: jest.fn((table: string) => {
           if (table === "users") {
@@ -315,7 +315,7 @@ describe("payment-module.ts", () => {
         ...ctx,
         adapters: {
           supabase: {
-            location: { getOrCreateIssueLocation: jest.fn().mockResolvedValue(5) },
+            location: { getOrCreateIssueLocation: jest.fn<() => Promise<number>>().mockResolvedValue(5) },
           },
         },
       } as unknown as ContextPlugin);
