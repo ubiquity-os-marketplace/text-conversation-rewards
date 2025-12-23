@@ -1,3 +1,4 @@
+-- WARNING: destructive rollback; only run if no production data has been added to network_id/permit2_address.
 begin;
 
 drop function if exists public.upsert_permit_max(
@@ -15,6 +16,9 @@ drop function if exists public.upsert_permit_max(
 
 drop index if exists permits_partner_network_permit2_nonce_unique;
 drop index if exists permits_partner_nonce_unique;
+
+alter table public.permits
+  drop constraint if exists permits_permit2_address_lowercase;
 
 alter table public.permits
   drop column if exists permit2_address,

@@ -20,6 +20,19 @@ set permit2_address = lower(coalesce(current_setting('app.permit2_address', true
 where permit2_address is null
   and partner_id is not null;
 
+-- Normalize any existing permit2_address values to lowercase.
+update public.permits
+set permit2_address = lower(permit2_address)
+where permit2_address is not null
+  and permit2_address <> lower(permit2_address);
+
+alter table public.permits
+  drop constraint if exists permits_permit2_address_lowercase;
+
+alter table public.permits
+  add constraint permits_permit2_address_lowercase
+  check (permit2_address is null or permit2_address = lower(permit2_address));
+
 with ranked as (
   select
     id,
