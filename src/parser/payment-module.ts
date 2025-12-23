@@ -816,9 +816,7 @@ export class PaymentModule extends BaseModule {
     return this._insertPermitWithFallback(insertData, metadata);
   }
 
-  private _resolvePermitMetadata(
-    insertData: Database["public"]["Tables"]["permits"]["Insert"]
-  ): PermitMetadata | null {
+  private _resolvePermitMetadata(insertData: Database["public"]["Tables"]["permits"]["Insert"]): PermitMetadata | null {
     const { network_id: networkId, permit2_address: permit2Address, partner_id: partnerId } = insertData;
     const missingFields: string[] = [];
     if (networkId === null || networkId === undefined) {
@@ -965,7 +963,10 @@ export class PaymentModule extends BaseModule {
     try {
       return new Decimal(amount);
     } catch (parseError) {
-      const parseErrorForLog = this._getErrorForLog(parseError, "Failed to compare permit amounts after unique violation");
+      const parseErrorForLog = this._getErrorForLog(
+        parseError,
+        "Failed to compare permit amounts after unique violation"
+      );
       this.context.logger.error("Failed to compare permit amounts after unique violation", {
         error: parseErrorForLog,
         nonce: insertData.nonce,

@@ -164,7 +164,9 @@ describe("PaymentModule _upsertPermitRecord", () => {
   });
 
   it("falls back to insert when RPC permission is denied", async () => {
-    mockRpc.mockResolvedValue({ error: { message: "permission denied for function upsert_permit_max", code: "42501" } });
+    mockRpc.mockResolvedValue({
+      error: { message: "permission denied for function upsert_permit_max", code: "42501" },
+    });
     const context = makeContext();
     const paymentModule = new PaymentModule(context);
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
