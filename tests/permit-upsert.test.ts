@@ -78,6 +78,20 @@ describe("PaymentModule _upsertPermitRecord", () => {
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(true);
     expect(mockRpc).toHaveBeenCalledTimes(1);
+    const [rpcName, rpcArgs] = mockRpc.mock.calls[0] as unknown as [string, Record<string, unknown>];
+    expect(rpcName).toBe("upsert_permit_max");
+    expect(rpcArgs).toEqual({
+      p_amount: baseInsertData.amount,
+      p_nonce: baseInsertData.nonce,
+      p_deadline: baseInsertData.deadline,
+      p_signature: baseInsertData.signature,
+      p_beneficiary_id: baseInsertData.beneficiary_id,
+      p_location_id: baseInsertData.location_id,
+      p_token_id: baseInsertData.token_id,
+      p_partner_id: baseInsertData.partner_id,
+      p_network_id: baseInsertData.network_id,
+      p_permit2_address: baseInsertData.permit2_address,
+    });
     expect(mockInsert).not.toHaveBeenCalled();
   });
 

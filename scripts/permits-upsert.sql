@@ -10,11 +10,13 @@ alter table public.permits
 update public.permits p
 set network_id = t.network
 from public.tokens t
-where p.token_id = t.id
-  and p.network_id is null;
+where p.network_id is null
+  and p.token_id is not null
+  and p.token_id = t.id;
 
+-- Permit2 address default (kept in sync with src/types/permit2.ts).
 update public.permits
-set permit2_address = lower('0xd635918A75356D133d5840eE5c9ED070302C9C60')
+set permit2_address = lower(coalesce(current_setting('app.permit2_address', true), '0xd635918A75356D133d5840eE5c9ED070302C9C60'))
 where permit2_address is null
   and partner_id is not null;
 
@@ -99,7 +101,7 @@ begin
         permit2_address = excluded.permit2_address,
         updated = now()
   where public.permits.transaction is null
-    and (public.permits.amount::numeric < excluded.amount::numeric);
+    and excluded.amount::numeric > public.permits.amount::numeric;
 end;
 $$;
 

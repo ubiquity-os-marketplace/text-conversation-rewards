@@ -722,6 +722,8 @@ export class PaymentModule extends BaseModule {
   }
 
   async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: PermitReward[]) {
+    const permit2Address = PERMIT2_ADDRESS.toLowerCase();
+
     for (const permit of permits) {
       try {
         const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
@@ -740,7 +742,7 @@ export class PaymentModule extends BaseModule {
             token_id: tokenId,
             partner_id: partnerId,
             network_id: permit.networkId,
-            permit2_address: PERMIT2_ADDRESS,
+            permit2_address: permit2Address,
           };
           const didUpsert = await this._upsertPermitRecord(insertData);
           if (!didUpsert) {
@@ -763,7 +765,7 @@ export class PaymentModule extends BaseModule {
   private async _upsertPermitRecord(insertData: Database["public"]["Tables"]["permits"]["Insert"]): Promise<boolean> {
     const networkId = insertData.network_id;
     const permit2Address = insertData.permit2_address;
-    if (networkId == null || permit2Address == null) {
+    if (networkId === null || networkId === undefined || permit2Address === null || permit2Address === undefined) {
       this.context.logger.error("Permit missing network metadata for upsert", {
         nonce: insertData.nonce,
         signature: insertData.signature,
@@ -791,10 +793,8 @@ export class PaymentModule extends BaseModule {
     const message = this._getErrorMessage(error);
     const code = this._getErrorCode(error);
     const errorForLog = this._getErrorForLog(error, message);
-    const isRpcMissing =
-      code === "42883" ||
-      message.toLowerCase().includes("upsert_permit_max") ||
-      message.toLowerCase().includes("does not exist");
+    const normalizedMessage = message.toLowerCase();
+    const isRpcMissing = code === "42883" || normalizedMessage.includes("upsert_permit_max does not exist");
 
     if (!isRpcMissing) {
       this.context.logger.error("Failed to upsert permit via RPC", { error: errorForLog });
@@ -821,6 +821,17 @@ export class PaymentModule extends BaseModule {
       typeof (error as { message?: unknown }).message === "string"
     ) {
       return (error as { message: string }).message;
+    }
+
+    if (typeof error === "object" && error !== null) {
+      try {
+        const json = JSON.stringify(error);
+        if (json && json !== "{}") {
+          return json;
+        }
+      } catch {
+        // Ignore JSON serialization errors and fall back to String(error).
+      }
     }
 
     return String(error);
