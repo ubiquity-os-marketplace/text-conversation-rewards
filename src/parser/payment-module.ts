@@ -732,6 +732,8 @@ export class PaymentModule extends BaseModule {
             location_id: locationId,
             token_id: tokenId,
             partner_id: partnerId,
+            network_id: permit.networkId,
+            permit2_address: PERMIT2_ADDRESS,
           };
           const upserted = await this._upsertPermitRecord(insertData);
           if (!upserted) {
@@ -761,6 +763,8 @@ export class PaymentModule extends BaseModule {
       p_location_id: insertData.location_id,
       p_token_id: insertData.token_id,
       p_partner_id: insertData.partner_id,
+      p_network_id: insertData.network_id,
+      p_permit2_address: insertData.permit2_address,
     });
 
     if (!error) {

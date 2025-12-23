@@ -367,8 +367,10 @@ export type Database = {
           deadline: string;
           id: number;
           location_id: number | null;
+          network_id: number | null;
           nonce: string;
           partner_id: number | null;
+          permit2_address: string | null;
           signature: string;
           token_id: number | null;
           transaction: string | null;
@@ -381,8 +383,10 @@ export type Database = {
           deadline: string;
           id?: number;
           location_id?: number | null;
+          network_id?: number | null;
           nonce: string;
           partner_id?: number | null;
+          permit2_address?: string | null;
           signature: string;
           token_id?: number | null;
           transaction?: string | null;
@@ -395,8 +399,10 @@ export type Database = {
           deadline?: string;
           id?: number;
           location_id?: number | null;
+          network_id?: number | null;
           nonce?: string;
           partner_id?: number | null;
+          permit2_address?: string | null;
           signature?: string;
           token_id?: number | null;
           transaction?: string | null;
@@ -673,6 +679,8 @@ export type Database = {
           p_location_id: number | null;
           p_token_id: number | null;
           p_partner_id: number | null;
+          p_network_id: number;
+          p_permit2_address: string;
         };
         Returns: undefined;
       };
