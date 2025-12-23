@@ -830,8 +830,81 @@ export class PaymentModule extends BaseModule {
       const isUniqueViolation =
         insertCode === "23505" || normalizedInsertMessage.includes("duplicate key value violates unique constraint");
       if (isUniqueViolation) {
-        this.context.logger.info("Permit already exists; treating unique constraint violation as success", {
-          error: insertErrorForLog,
+        const { data: existingPermit, error: existingError } = await this._supabase
+          .from("permits")
+          .select("id, amount, transaction")
+          .eq("partner_id", resolvedPartnerId)
+          .eq("network_id", resolvedNetworkId)
+          .eq("permit2_address", resolvedPermit2Address)
+          .eq("nonce", insertData.nonce)
+          .maybeSingle();
+        if (existingError || !existingPermit) {
+          const existingErrorForLog = existingError
+            ? this._getErrorForLog(existingError, this._getErrorMessage(existingError))
+            : insertErrorForLog;
+          this.context.logger.error("Failed to load existing permit after unique violation", {
+            error: existingErrorForLog,
+            nonce: insertData.nonce,
+            beneficiary_id: insertData.beneficiary_id,
+          });
+          return false;
+        }
+        if (existingPermit.transaction) {
+          this.context.logger.info("Permit already claimed; keeping existing record after RPC fallback", {
+            id: existingPermit.id,
+            nonce: insertData.nonce,
+            beneficiary_id: insertData.beneficiary_id,
+          });
+          return true;
+        }
+        let incomingAmount: Decimal;
+        let currentAmount: Decimal;
+        try {
+          incomingAmount = new Decimal(insertData.amount);
+          currentAmount = new Decimal(existingPermit.amount);
+        } catch (parseError) {
+          const parseErrorForLog = this._getErrorForLog(
+            parseError,
+            "Failed to compare permit amounts after unique violation"
+          );
+          this.context.logger.error("Failed to compare permit amounts after unique violation", {
+            error: parseErrorForLog,
+            nonce: insertData.nonce,
+            beneficiary_id: insertData.beneficiary_id,
+          });
+          return false;
+        }
+        if (incomingAmount.lte(currentAmount)) {
+          this.context.logger.info("Existing permit amount is higher or equal; keeping existing record", {
+            id: existingPermit.id,
+            nonce: insertData.nonce,
+            beneficiary_id: insertData.beneficiary_id,
+          });
+          return true;
+        }
+        const { error: updateError } = await this._supabase
+          .from("permits")
+          .update({
+            amount: insertData.amount,
+            deadline: insertData.deadline,
+            signature: insertData.signature,
+            beneficiary_id: insertData.beneficiary_id,
+            location_id: insertData.location_id ?? null,
+            token_id: insertData.token_id ?? null,
+            partner_id: resolvedPartnerId,
+            network_id: resolvedNetworkId,
+            permit2_address: resolvedPermit2Address,
+            updated: new Date().toISOString(),
+          })
+          .eq("id", existingPermit.id)
+          .is("transaction", null);
+        if (updateError) {
+          const updateErrorForLog = this._getErrorForLog(updateError, this._getErrorMessage(updateError));
+          this.context.logger.error("Failed to update permit after RPC fallback", { error: updateErrorForLog });
+          return false;
+        }
+        this.context.logger.info("Updated existing permit after RPC fallback", {
+          id: existingPermit.id,
           nonce: insertData.nonce,
           beneficiary_id: insertData.beneficiary_id,
         });

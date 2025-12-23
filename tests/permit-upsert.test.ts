@@ -4,11 +4,35 @@ import type { ContextPlugin } from "../src/types/plugin-input";
 
 type RpcResponse = { error: { message?: string; code?: string } | null };
 type InsertResponse = { error: unknown };
+type MaybeSingleResponse = {
+  data: { id: number; amount: string; transaction: string | null } | null;
+  error: unknown;
+};
+type UpdateResponse = { error: unknown };
 
 const mockRpc = jest.fn<() => Promise<RpcResponse>>();
 const mockInsert = jest.fn<() => Promise<InsertResponse>>();
+const mockMaybeSingle = jest.fn<() => Promise<MaybeSingleResponse>>();
+const mockSelect = jest.fn();
+const selectBuilder = {
+  eq: jest.fn(),
+  maybeSingle: mockMaybeSingle,
+};
+selectBuilder.eq.mockImplementation(() => selectBuilder);
+const updateResult: UpdateResponse = { error: null };
+const updateBuilder = {
+  eq: jest.fn(),
+  is: jest.fn(),
+  then: (resolve: (value: UpdateResponse) => void) => resolve(updateResult),
+};
+updateBuilder.eq.mockImplementation(() => updateBuilder);
+updateBuilder.is.mockImplementation(() => updateBuilder);
+const mockUpdate = jest.fn(() => updateBuilder);
+mockSelect.mockImplementation(() => selectBuilder);
 const mockFrom = jest.fn(() => ({
   insert: mockInsert,
+  select: mockSelect,
+  update: mockUpdate,
 }));
 
 jest.unstable_mockModule("@supabase/supabase-js", () => ({
@@ -70,8 +94,16 @@ describe("PaymentModule _upsertPermitRecord", () => {
     mockRpc.mockReset();
     mockInsert.mockReset();
     mockFrom.mockClear();
+    mockSelect.mockClear();
+    mockMaybeSingle.mockReset();
+    mockUpdate.mockClear();
+    updateResult.error = null;
+    selectBuilder.eq.mockClear();
+    updateBuilder.eq.mockClear();
+    updateBuilder.is.mockClear();
     mockRpc.mockResolvedValue({ error: null });
     mockInsert.mockResolvedValue({ error: null });
+    mockMaybeSingle.mockResolvedValue({ data: null, error: null });
   });
 
   it("returns true when RPC succeeds", async () => {
@@ -153,7 +185,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     );
   });
 
-  it("treats unique violations as success when insert fallback hits a duplicate", async () => {
+  it("updates existing unclaimed permit when fallback hits a duplicate with lower amount", async () => {
     mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
     mockInsert.mockResolvedValue({
       error: {
@@ -161,18 +193,23 @@ describe("PaymentModule _upsertPermitRecord", () => {
         code: "23505",
       },
     });
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        id: 123,
+        amount: "1",
+        transaction: null,
+      },
+      error: null,
+    });
     const context = makeContext();
     const paymentModule = new PaymentModule(context);
-    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord({
+      ...baseInsertData,
+      amount: "2",
+    });
     expect(didUpsert).toBe(true);
-    expect(context.logger.info).toHaveBeenCalledWith(
-      "Permit already exists; treating unique constraint violation as success",
-      expect.objectContaining({
-        error: expect.anything(),
-        nonce: baseInsertData.nonce,
-        beneficiary_id: baseInsertData.beneficiary_id,
-      })
-    );
+    expect(mockSelect).toHaveBeenCalledTimes(1);
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
   });
 
   it("returns false when network metadata is missing", async () => {
