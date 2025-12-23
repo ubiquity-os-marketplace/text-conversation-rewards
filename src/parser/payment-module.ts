@@ -771,9 +771,15 @@ export class PaymentModule extends BaseModule {
       return true;
     }
 
-    const message =
-      typeof error === "object" && error && "message" in error && typeof error.message === "string" ? error.message : String(error);
-    const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+    const rpcError: unknown = error;
+    const hasMessage =
+      typeof rpcError === "object" &&
+      rpcError !== null &&
+      "message" in rpcError &&
+      typeof (rpcError as { message?: unknown }).message === "string";
+    const message = hasMessage ? (rpcError as { message: string }).message : String(rpcError);
+    const hasCode = typeof rpcError === "object" && rpcError !== null && "code" in rpcError;
+    const code = hasCode ? String((rpcError as { code?: unknown }).code) : "";
     const missingRpc =
       code === "42883" || message.toLowerCase().includes("upsert_permit_max") || message.toLowerCase().includes("does not exist");
 
@@ -785,7 +791,15 @@ export class PaymentModule extends BaseModule {
     this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", { error: message });
     const { error: insertError } = await this._supabase.from("permits").insert(insertData);
     if (insertError) {
-      this.context.logger.error("Failed to insert permit after RPC fallback", { error: insertError.message });
+      const insertValue: unknown = insertError;
+      const insertMessage =
+        typeof insertValue === "object" &&
+        insertValue !== null &&
+        "message" in insertValue &&
+        typeof (insertValue as { message?: unknown }).message === "string"
+          ? (insertValue as { message: string }).message
+          : String(insertValue);
+      this.context.logger.error("Failed to insert permit after RPC fallback", { error: insertMessage });
       return false;
     }
 

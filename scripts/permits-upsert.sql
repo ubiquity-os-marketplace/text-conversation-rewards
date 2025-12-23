@@ -52,9 +52,9 @@ create or replace function public.upsert_permit_max(
   p_deadline text,
   p_signature text,
   p_beneficiary_id bigint,
-  p_location_id bigint,
-  p_token_id bigint,
-  p_partner_id bigint,
+  p_location_id bigint default null,
+  p_token_id bigint default null,
+  p_partner_id bigint default null,
   p_network_id integer,
   p_permit2_address text
 ) returns void
@@ -84,7 +84,11 @@ begin
     p_network_id,
     lower(p_permit2_address)
   )
-  on conflict (partner_id, network_id, permit2_address, nonce) do update
+  on conflict (partner_id, network_id, permit2_address, nonce)
+    where partner_id is not null
+      and network_id is not null
+      and permit2_address is not null
+    do update
     set amount = excluded.amount,
         deadline = excluded.deadline,
         signature = excluded.signature,
