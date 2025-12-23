@@ -202,7 +202,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
-      delete process.env.PERMIT_TREASURY_GITHUB_USERNAME;
+      (process.env as Partial<NodeJS.ProcessEnv>).PERMIT_TREASURY_GITHUB_USERNAME = undefined;
       delete (ctx.env as Partial<typeof ctx.env>).PERMIT_TREASURY_GITHUB_USERNAME;
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");

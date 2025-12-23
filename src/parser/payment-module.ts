@@ -773,7 +773,7 @@ export class PaymentModule extends BaseModule {
   }
 
   /**
-   * Upserts a permit via RPC, falling back to insert + dedupe when RPC is unavailable.
+   * Upsert a permit via RPC, falling back to insert + dedupe when RPC is unavailable.
    * Uses optimistic guards to avoid overwriting claimed or higher-amount rows.
    */
   private async _upsertPermitRecord(insertData: Database["public"]["Tables"]["permits"]["Insert"]): Promise<boolean> {

@@ -19,7 +19,9 @@ class CloseRewardModule extends BaseModule {
     const closingUser = this.context.payload.sender?.login;
 
     if (closingUser) {
-      const issueUrl = data.self?.html_url ?? this.context.payload.issue?.html_url;
+      const issueUrl =
+        data.self?.html_url ??
+        ("issue" in this.context.payload ? this.context.payload.issue?.html_url : undefined);
       if (!issueUrl) {
         this.context.logger.warn("Missing issue URL for closing reward; skipping reward entry.");
         return Promise.resolve(result);
