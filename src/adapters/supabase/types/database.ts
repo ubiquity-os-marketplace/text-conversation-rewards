@@ -663,6 +663,19 @@ export type Database = {
         };
         Returns: string;
       };
+      upsert_permit_max: {
+        Args: {
+          p_amount: string;
+          p_nonce: string;
+          p_deadline: string;
+          p_signature: string;
+          p_beneficiary_id: number;
+          p_location_id: number | null;
+          p_token_id: number | null;
+          p_partner_id: number | null;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       github_node_type:

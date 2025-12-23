@@ -723,7 +723,7 @@ export class PaymentModule extends BaseModule {
         const partnerId = await this._getOrCreatePartner(permit.owner);
 
         if (userData) {
-          const { error } = await this._supabase.from("permits").insert({
+          const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
             amount: String(permit.amount),
             nonce: String(permit.nonce),
             deadline: String(permit.deadline),
@@ -732,9 +732,15 @@ export class PaymentModule extends BaseModule {
             location_id: locationId,
             token_id: tokenId,
             partner_id: partnerId,
-          });
-          if (error) {
-            this.context.logger.error("Failed to insert a new permit", error);
+          };
+          const upserted = await this._upsertPermitRecord(insertData);
+          if (!upserted) {
+            this.context.logger.error("Failed to save permit", {
+              beneficiaryId: userData.id,
+              nonce: insertData.nonce,
+              signature: insertData.signature,
+              partnerId,
+            });
           }
         } else {
           this.context.logger.error(`Failed to save the permit: could not find user ${userId}`);
@@ -743,6 +749,43 @@ export class PaymentModule extends BaseModule {
         this.context.logger.error("Failed to save permits to the database", { e });
       }
     }
+  }
+
+  private async _upsertPermitRecord(insertData: Database["public"]["Tables"]["permits"]["Insert"]): Promise<boolean> {
+    const { error } = await this._supabase.rpc("upsert_permit_max", {
+      p_amount: insertData.amount,
+      p_nonce: insertData.nonce,
+      p_deadline: insertData.deadline,
+      p_signature: insertData.signature,
+      p_beneficiary_id: insertData.beneficiary_id,
+      p_location_id: insertData.location_id,
+      p_token_id: insertData.token_id,
+      p_partner_id: insertData.partner_id,
+    });
+
+    if (!error) {
+      return true;
+    }
+
+    const message =
+      typeof error === "object" && error && "message" in error && typeof error.message === "string" ? error.message : String(error);
+    const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+    const missingRpc =
+      code === "42883" || message.toLowerCase().includes("upsert_permit_max") || message.toLowerCase().includes("does not exist");
+
+    if (!missingRpc) {
+      this.context.logger.error("Failed to upsert permit via RPC", { error: message });
+      return false;
+    }
+
+    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", { error: message });
+    const { error: insertError } = await this._supabase.from("permits").insert(insertData);
+    if (insertError) {
+      this.context.logger.error("Failed to insert permit after RPC fallback", { error: insertError.message });
+      return false;
+    }
+
+    return true;
   }
 
   async _parsePrivateKey(evmPrivateEncrypted: string) {
