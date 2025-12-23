@@ -760,7 +760,15 @@ export class PaymentModule extends BaseModule {
   private async _upsertPermitRecord(insertData: Database["public"]["Tables"]["permits"]["Insert"]): Promise<boolean> {
     const networkId = insertData.network_id;
     const permit2Address = insertData.permit2_address;
-    if (networkId === null || networkId === undefined || permit2Address === null || permit2Address === undefined) {
+    const partnerId = insertData.partner_id;
+    if (
+      networkId === null ||
+      networkId === undefined ||
+      permit2Address === null ||
+      permit2Address === undefined ||
+      partnerId === null ||
+      partnerId === undefined
+    ) {
       this.context.logger.error("Permit missing network metadata for upsert", {
         nonce: insertData.nonce,
         signature: insertData.signature,
@@ -776,7 +784,7 @@ export class PaymentModule extends BaseModule {
       p_beneficiary_id: insertData.beneficiary_id,
       p_location_id: insertData.location_id ?? null,
       p_token_id: insertData.token_id ?? null,
-      p_partner_id: insertData.partner_id ?? null,
+      p_partner_id: partnerId ?? null,
       p_network_id: networkId,
       p_permit2_address: permit2Address,
     });

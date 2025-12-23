@@ -43,10 +43,7 @@ where p.id = r.id
 drop index if exists permits_partner_nonce_unique;
 
 create unique index if not exists permits_partner_network_permit2_nonce_unique
-  on public.permits (partner_id, network_id, permit2_address, nonce)
-  where partner_id is not null
-    and network_id is not null
-    and permit2_address is not null;
+  on public.permits (partner_id, network_id, permit2_address, nonce);
 
 create or replace function public.upsert_permit_max(
   p_amount text,
@@ -88,9 +85,6 @@ begin
   )
   -- Only replace unclaimed permits when the incoming amount is higher.
   on conflict (partner_id, network_id, permit2_address, nonce)
-    where partner_id is not null
-      and network_id is not null
-      and permit2_address is not null
     do update
     set amount = excluded.amount,
         deadline = excluded.deadline,

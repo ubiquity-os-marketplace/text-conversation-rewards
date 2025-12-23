@@ -166,4 +166,18 @@ describe("PaymentModule _upsertPermitRecord", () => {
       expect.objectContaining({ nonce: baseInsertData.nonce, signature: baseInsertData.signature })
     );
   });
+
+  it("returns false when partner metadata is missing", async () => {
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord({
+      ...baseInsertData,
+      partner_id: null,
+    });
+    expect(didUpsert).toBe(false);
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Permit missing network metadata for upsert",
+      expect.objectContaining({ nonce: baseInsertData.nonce, signature: baseInsertData.signature })
+    );
+  });
 });
