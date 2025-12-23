@@ -104,9 +104,6 @@ begin
         beneficiary_id = excluded.beneficiary_id,
         location_id = excluded.location_id,
         token_id = excluded.token_id,
-        partner_id = excluded.partner_id,
-        network_id = excluded.network_id,
-        permit2_address = excluded.permit2_address,
         updated = now()
   where public.permits.transaction is null
     and excluded.amount::numeric > public.permits.amount::numeric;

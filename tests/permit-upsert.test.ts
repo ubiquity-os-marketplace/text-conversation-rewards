@@ -185,7 +185,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     );
   });
 
-  it("updates existing unclaimed permit when fallback hits a duplicate with lower amount", async () => {
+  it("updates existing unclaimed permit when incoming amount is higher", async () => {
     mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
     mockInsert.mockResolvedValue({
       error: {
@@ -210,6 +210,71 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(didUpsert).toBe(true);
     expect(mockSelect).toHaveBeenCalledTimes(1);
     expect(mockUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps claimed permits when fallback hits a duplicate", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
+    mockInsert.mockResolvedValue({
+      error: {
+        message: "duplicate key value violates unique constraint",
+        code: "23505",
+      },
+    });
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        id: 456,
+        amount: "1",
+        transaction: "0xclaimed",
+      },
+      error: null,
+    });
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(true);
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(context.logger.info).toHaveBeenCalledWith(
+      "Permit already claimed; keeping existing record after RPC fallback",
+      expect.objectContaining({
+        id: 456,
+        nonce: baseInsertData.nonce,
+        beneficiary_id: baseInsertData.beneficiary_id,
+      })
+    );
+  });
+
+  it("keeps existing permit when incoming amount is lower or equal", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
+    mockInsert.mockResolvedValue({
+      error: {
+        message: "duplicate key value violates unique constraint",
+        code: "23505",
+      },
+    });
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        id: 789,
+        amount: "5",
+        transaction: null,
+      },
+      error: null,
+    });
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord({
+      ...baseInsertData,
+      amount: "2",
+    });
+    expect(didUpsert).toBe(true);
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(context.logger.info).toHaveBeenCalledWith(
+      "Existing permit amount is higher or equal; keeping existing record",
+      expect.objectContaining({
+        id: 789,
+        nonce: baseInsertData.nonce,
+        beneficiary_id: baseInsertData.beneficiary_id,
+      })
+    );
   });
 
   it("returns false when network metadata is missing", async () => {

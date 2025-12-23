@@ -891,9 +891,6 @@ export class PaymentModule extends BaseModule {
             beneficiary_id: insertData.beneficiary_id,
             location_id: insertData.location_id ?? null,
             token_id: insertData.token_id ?? null,
-            partner_id: resolvedPartnerId,
-            network_id: resolvedNetworkId,
-            permit2_address: resolvedPermit2Address,
             updated: new Date().toISOString(),
           })
           .eq("id", existingPermit.id)
