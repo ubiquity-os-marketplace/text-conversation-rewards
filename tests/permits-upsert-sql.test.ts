@@ -3,19 +3,20 @@ import fs from "fs";
 
 const sql = fs.readFileSync(new URL("../scripts/permits-upsert.sql", import.meta.url), "utf-8");
 
-const normalizeColumns = (columns: string) =>
-  columns
+function normalizeColumns(columns: string) {
+  return columns
     .split(",")
     .map((column) => column.trim().replace(/\s+/g, " "))
     .filter(Boolean);
+}
 
-const extractColumns = (regex: RegExp) => {
-  const match = sql.match(regex);
+function extractColumns(regex: RegExp) {
+  const match = regex.exec(sql);
   if (!match) {
     return null;
   }
   return normalizeColumns(match[1]);
-};
+}
 
 describe("permits-upsert.sql", () => {
   it("keeps claimed permits from being replaced", () => {
