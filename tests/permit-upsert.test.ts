@@ -153,6 +153,28 @@ describe("PaymentModule _upsertPermitRecord", () => {
     );
   });
 
+  it("treats unique violations as success when insert fallback hits a duplicate", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
+    mockInsert.mockResolvedValue({
+      error: {
+        message: "duplicate key value violates unique constraint",
+        code: "23505",
+      },
+    });
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(true);
+    expect(context.logger.info).toHaveBeenCalledWith(
+      "Permit already exists; treating unique constraint violation as success",
+      expect.objectContaining({
+        error: expect.anything(),
+        nonce: baseInsertData.nonce,
+        beneficiary_id: baseInsertData.beneficiary_id,
+      })
+    );
+  });
+
   it("returns false when network metadata is missing", async () => {
     const context = makeContext();
     const paymentModule = new PaymentModule(context);
@@ -167,6 +189,24 @@ describe("PaymentModule _upsertPermitRecord", () => {
         nonce: baseInsertData.nonce,
         signature: baseInsertData.signature,
         missingFields: ["network_id"],
+      })
+    );
+  });
+
+  it("returns false when permit2 metadata is missing", async () => {
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord({
+      ...baseInsertData,
+      permit2_address: null,
+    });
+    expect(didUpsert).toBe(false);
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
+      expect.objectContaining({
+        nonce: baseInsertData.nonce,
+        signature: baseInsertData.signature,
+        missingFields: ["permit2_address"],
       })
     );
   });

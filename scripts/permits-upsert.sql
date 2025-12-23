@@ -53,13 +53,25 @@ create or replace function public.upsert_permit_max(
   p_beneficiary_id bigint,
   p_location_id bigint default null,
   p_token_id bigint default null,
-  p_partner_id bigint default null,
+  p_partner_id bigint,
   p_network_id integer,
   p_permit2_address text
 ) returns void
 language plpgsql
 as $$
 begin
+  if p_partner_id is null then
+    raise exception 'p_partner_id is required';
+  end if;
+
+  if p_network_id is null then
+    raise exception 'p_network_id is required';
+  end if;
+
+  if p_permit2_address is null then
+    raise exception 'p_permit2_address is required';
+  end if;
+
   insert into public.permits (
     amount,
     nonce,

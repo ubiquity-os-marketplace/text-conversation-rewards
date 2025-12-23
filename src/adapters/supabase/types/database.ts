@@ -678,7 +678,7 @@ export type Database = {
           p_beneficiary_id: number;
           p_location_id: number | null;
           p_token_id: number | null;
-          p_partner_id: number | null;
+          p_partner_id: number;
           p_network_id: number;
           p_permit2_address: string;
         };

@@ -824,7 +824,19 @@ export class PaymentModule extends BaseModule {
     const { error: insertError } = await this._supabase.from("permits").insert(insertData);
     if (insertError) {
       const insertMessage = this._getErrorMessage(insertError);
+      const insertCode = this._getErrorCode(insertError);
       const insertErrorForLog = this._getErrorForLog(insertError, insertMessage);
+      const normalizedInsertMessage = insertMessage.toLowerCase();
+      const isUniqueViolation =
+        insertCode === "23505" || normalizedInsertMessage.includes("duplicate key value violates unique constraint");
+      if (isUniqueViolation) {
+        this.context.logger.info("Permit already exists; treating unique constraint violation as success", {
+          error: insertErrorForLog,
+          nonce: insertData.nonce,
+          beneficiary_id: insertData.beneficiary_id,
+        });
+        return true;
+      }
       this.context.logger.error("Failed to insert permit after RPC fallback", { error: insertErrorForLog });
       return false;
     }
