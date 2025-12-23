@@ -227,6 +227,125 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(didUpsert).toBe(true);
     expect(mockSelect).toHaveBeenCalledTimes(1);
     expect(mockUpdate).toHaveBeenCalledTimes(1);
+    expect(context.logger.info).toHaveBeenCalledWith(
+      "Updated existing permit after RPC fallback",
+      expect.objectContaining({
+        id: 123,
+        nonce: baseInsertData.nonce,
+        beneficiary_id: baseInsertData.beneficiary_id,
+      })
+    );
+  });
+
+  it("returns false when existing permit lookup fails after unique violation", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
+    mockInsert.mockResolvedValue({
+      error: {
+        message: "duplicate key value violates unique constraint",
+        code: "23505",
+      },
+    });
+    mockMaybeSingle.mockResolvedValue({ data: null, error: "select failed" });
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(false);
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Failed to load existing permit after unique violation",
+      expect.objectContaining({
+        error: expect.anything(),
+        nonce: baseInsertData.nonce,
+        beneficiary_id: baseInsertData.beneficiary_id,
+      })
+    );
+  });
+
+  it("returns false when existing permit is missing after unique violation", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
+    mockInsert.mockResolvedValue({
+      error: {
+        message: "duplicate key value violates unique constraint",
+        code: "23505",
+      },
+    });
+    mockMaybeSingle.mockResolvedValue({ data: null, error: null });
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(false);
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Failed to load existing permit after unique violation",
+      expect.objectContaining({
+        error: expect.anything(),
+        nonce: baseInsertData.nonce,
+        beneficiary_id: baseInsertData.beneficiary_id,
+      })
+    );
+  });
+
+  it("returns false when amount comparison fails after unique violation", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
+    mockInsert.mockResolvedValue({
+      error: {
+        message: "duplicate key value violates unique constraint",
+        code: "23505",
+      },
+    });
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        id: 123,
+        amount: "not-a-number",
+        transaction: null,
+      },
+      error: null,
+    });
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord({
+      ...baseInsertData,
+      amount: "2",
+    });
+    expect(didUpsert).toBe(false);
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Failed to compare permit amounts after unique violation",
+      expect.objectContaining({
+        error: expect.anything(),
+        nonce: baseInsertData.nonce,
+        beneficiary_id: baseInsertData.beneficiary_id,
+      })
+    );
+  });
+
+  it("returns false when update fails after RPC fallback", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
+    mockInsert.mockResolvedValue({
+      error: {
+        message: "duplicate key value violates unique constraint",
+        code: "23505",
+      },
+    });
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        id: 123,
+        amount: "1",
+        transaction: null,
+      },
+      error: null,
+    });
+    updateResult.error = "update failed";
+    updateResult.data = null;
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord({
+      ...baseInsertData,
+      amount: "2",
+    });
+    expect(didUpsert).toBe(false);
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Failed to update permit after RPC fallback",
+      expect.objectContaining({ error: expect.anything() })
+    );
   });
 
   it("skips update when permit changes concurrently after RPC fallback", async () => {
@@ -253,7 +372,8 @@ describe("PaymentModule _upsertPermitRecord", () => {
       amount: "2",
     });
     expect(didUpsert).toBe(true);
-    expect(mockUpdate).toHaveBeenCalledTimes(1);
+    expect(mockMaybeSingle).toHaveBeenCalledTimes(2);
+    expect(mockUpdate).toHaveBeenCalledTimes(2);
     expect(context.logger.info).toHaveBeenCalledWith(
       "Skipped updating permit after RPC fallback; permit changed concurrently",
       expect.objectContaining({

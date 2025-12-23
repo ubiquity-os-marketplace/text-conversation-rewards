@@ -840,23 +840,47 @@ export class PaymentModule extends BaseModule {
       const isUniqueViolation =
         insertCode === "23505" || normalizedInsertMessage.includes("duplicate key value violates unique constraint");
       if (isUniqueViolation) {
-        const { data: existingPermit, error: existingError } = await this._supabase
-          .from("permits")
-          .select("id, amount, transaction")
-          .eq("partner_id", resolvedPartnerId)
-          .eq("network_id", resolvedNetworkId)
-          .eq("permit2_address", resolvedPermit2Address)
-          .eq("nonce", insertData.nonce)
-          .maybeSingle();
-        if (existingError || !existingPermit) {
-          const existingErrorForLog = existingError
-            ? this._getErrorForLog(existingError, this._getErrorMessage(existingError))
-            : insertErrorForLog;
-          this.context.logger.error("Failed to load existing permit after unique violation", {
-            error: existingErrorForLog,
-            nonce: insertData.nonce,
-            beneficiary_id: insertData.beneficiary_id,
-          });
+        const loadExistingPermit = async (message: string) => {
+          const { data: existingPermit, error: existingError } = await this._supabase
+            .from("permits")
+            .select("id, amount, transaction")
+            .eq("partner_id", resolvedPartnerId)
+            .eq("network_id", resolvedNetworkId)
+            .eq("permit2_address", resolvedPermit2Address)
+            .eq("nonce", insertData.nonce)
+            .maybeSingle();
+          if (existingError || !existingPermit) {
+            const existingErrorForLog = existingError
+              ? this._getErrorForLog(existingError, this._getErrorMessage(existingError))
+              : insertErrorForLog;
+            this.context.logger.error(message, {
+              error: existingErrorForLog,
+              nonce: insertData.nonce,
+              beneficiary_id: insertData.beneficiary_id,
+            });
+            return null;
+          }
+          return existingPermit;
+        };
+        const parsePermitAmount = (amount: string): Decimal | null => {
+          try {
+            return new Decimal(amount);
+          } catch (parseError) {
+            const parseErrorForLog = this._getErrorForLog(
+              parseError,
+              "Failed to compare permit amounts after unique violation"
+            );
+            this.context.logger.error("Failed to compare permit amounts after unique violation", {
+              error: parseErrorForLog,
+              nonce: insertData.nonce,
+              beneficiary_id: insertData.beneficiary_id,
+            });
+            return null;
+          }
+        };
+
+        const existingPermit = await loadExistingPermit("Failed to load existing permit after unique violation");
+        if (!existingPermit) {
           return false;
         }
         if (existingPermit.transaction) {
@@ -867,21 +891,12 @@ export class PaymentModule extends BaseModule {
           });
           return true;
         }
-        let incomingAmount: Decimal;
-        let currentAmount: Decimal;
-        try {
-          incomingAmount = new Decimal(insertData.amount);
-          currentAmount = new Decimal(existingPermit.amount);
-        } catch (parseError) {
-          const parseErrorForLog = this._getErrorForLog(
-            parseError,
-            "Failed to compare permit amounts after unique violation"
-          );
-          this.context.logger.error("Failed to compare permit amounts after unique violation", {
-            error: parseErrorForLog,
-            nonce: insertData.nonce,
-            beneficiary_id: insertData.beneficiary_id,
-          });
+        const incomingAmount = parsePermitAmount(insertData.amount);
+        if (!incomingAmount) {
+          return false;
+        }
+        const currentAmount = parsePermitAmount(existingPermit.amount);
+        if (!currentAmount) {
           return false;
         }
         if (incomingAmount.lte(currentAmount)) {
@@ -912,16 +927,71 @@ export class PaymentModule extends BaseModule {
           this.context.logger.error("Failed to update permit after RPC fallback", { error: updateErrorForLog });
           return false;
         }
-        if (!updatedPermits || updatedPermits.length === 0) {
-          this.context.logger.info("Skipped updating permit after RPC fallback; permit changed concurrently", {
+        if (updatedPermits && updatedPermits.length > 0) {
+          this.context.logger.info("Updated existing permit after RPC fallback", {
             id: existingPermit.id,
             nonce: insertData.nonce,
             beneficiary_id: insertData.beneficiary_id,
           });
           return true;
         }
+
+        const refreshedPermit = await loadExistingPermit(
+          "Failed to reload existing permit after RPC fallback update race"
+        );
+        if (!refreshedPermit) {
+          return false;
+        }
+        if (refreshedPermit.transaction) {
+          this.context.logger.info("Permit already claimed; keeping existing record after RPC fallback", {
+            id: refreshedPermit.id,
+            nonce: insertData.nonce,
+            beneficiary_id: insertData.beneficiary_id,
+          });
+          return true;
+        }
+        const refreshedAmount = parsePermitAmount(refreshedPermit.amount);
+        if (!refreshedAmount) {
+          return false;
+        }
+        if (incomingAmount.lte(refreshedAmount)) {
+          this.context.logger.info("Existing permit amount is higher or equal; keeping existing record", {
+            id: refreshedPermit.id,
+            nonce: insertData.nonce,
+            beneficiary_id: insertData.beneficiary_id,
+          });
+          return true;
+        }
+        const { data: retriedPermits, error: retryError } = await this._supabase
+          .from("permits")
+          .update({
+            amount: insertData.amount,
+            deadline: insertData.deadline,
+            signature: insertData.signature,
+            beneficiary_id: insertData.beneficiary_id,
+            location_id: insertData.location_id ?? null,
+            token_id: insertData.token_id ?? null,
+            updated: new Date().toISOString(),
+          })
+          .eq("id", refreshedPermit.id)
+          .eq("amount", refreshedPermit.amount)
+          .is("transaction", null)
+          .select("id");
+        if (retryError) {
+          const retryErrorForLog = this._getErrorForLog(retryError, this._getErrorMessage(retryError));
+          this.context.logger.error("Failed to update permit after RPC fallback", { error: retryErrorForLog });
+          return false;
+        }
+        if (!retriedPermits || retriedPermits.length === 0) {
+          this.context.logger.info("Skipped updating permit after RPC fallback; permit changed concurrently", {
+            id: refreshedPermit.id,
+            nonce: insertData.nonce,
+            beneficiary_id: insertData.beneficiary_id,
+          });
+          return true;
+        }
         this.context.logger.info("Updated existing permit after RPC fallback", {
-          id: existingPermit.id,
+          id: refreshedPermit.id,
           nonce: insertData.nonce,
           beneficiary_id: insertData.beneficiary_id,
         });
