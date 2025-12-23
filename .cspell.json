@@ -52,7 +52,8 @@
     "basehead",
     "millis",
     "dedupe",
-    "plpgsql"
+    "plpgsql",
+    "PGRST"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
