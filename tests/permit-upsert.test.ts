@@ -163,8 +163,21 @@ describe("PaymentModule _upsertPermitRecord", () => {
     );
   });
 
+  it("falls back to insert when RPC permission is denied", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "permission denied for function upsert_permit_max", code: "42501" } });
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(true);
+    expect(mockInsert).toHaveBeenCalledTimes(1);
+    expect(context.logger.warn).toHaveBeenCalledWith(
+      "upsert_permit_max RPC unavailable; falling back to insert",
+      expect.objectContaining({ error: expect.anything(), reason: "permission denied" })
+    );
+  });
+
   it("returns false when RPC fails for other errors", async () => {
-    mockRpc.mockResolvedValue({ error: { message: "permission denied", code: "42501" } });
+    mockRpc.mockResolvedValue({ error: { message: "data too long", code: "22001" } });
     const context = makeContext();
     const paymentModule = new PaymentModule(context);
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);

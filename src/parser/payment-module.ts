@@ -815,13 +815,18 @@ export class PaymentModule extends BaseModule {
       code === "PGRST202" ||
       normalizedMessage.includes("upsert_permit_max does not exist") ||
       isSchemaCacheMissing;
+    const isRpcPermissionDenied = code === "42501" || normalizedMessage.includes("permission denied");
+    const shouldFallback = isRpcMissing || isRpcPermissionDenied;
 
-    if (!isRpcMissing) {
+    if (!shouldFallback) {
       this.context.logger.error("Failed to upsert permit via RPC", { error: errorForLog });
       return false;
     }
 
-    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", { error: errorForLog });
+    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", {
+      error: errorForLog,
+      reason: isRpcPermissionDenied ? "permission denied" : "unavailable",
+    });
     const { error: insertError } = await this._supabase.from("permits").insert(insertData);
     if (insertError) {
       const insertMessage = this._getErrorMessage(insertError);
