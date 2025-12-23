@@ -8,7 +8,7 @@ type MaybeSingleResponse = {
   data: { id: number; amount: string; transaction: string | null } | null;
   error: unknown;
 };
-type UpdateResponse = { error: unknown };
+type UpdateResponse = { data: Array<{ id: number }> | null; error: unknown };
 
 const mockRpc = jest.fn<() => Promise<RpcResponse>>();
 const mockInsert = jest.fn<() => Promise<InsertResponse>>();
@@ -19,14 +19,16 @@ const selectBuilder = {
   maybeSingle: mockMaybeSingle,
 };
 selectBuilder.eq.mockImplementation(() => selectBuilder);
-const updateResult: UpdateResponse = { error: null };
+const updateResult: UpdateResponse = { data: [{ id: 123 }], error: null };
 const updateBuilder = {
   eq: jest.fn(),
   is: jest.fn(),
+  select: jest.fn(),
   then: (resolve: (value: UpdateResponse) => void) => resolve(updateResult),
 };
 updateBuilder.eq.mockImplementation(() => updateBuilder);
 updateBuilder.is.mockImplementation(() => updateBuilder);
+updateBuilder.select.mockImplementation(() => updateBuilder);
 const mockUpdate = jest.fn(() => updateBuilder);
 mockSelect.mockImplementation(() => selectBuilder);
 const mockFrom = jest.fn(() => ({
@@ -98,9 +100,11 @@ describe("PaymentModule _upsertPermitRecord", () => {
     mockMaybeSingle.mockReset();
     mockUpdate.mockClear();
     updateResult.error = null;
+    updateResult.data = [{ id: 123 }];
     selectBuilder.eq.mockClear();
     updateBuilder.eq.mockClear();
     updateBuilder.is.mockClear();
+    updateBuilder.select.mockClear();
     mockRpc.mockResolvedValue({ error: null });
     mockInsert.mockResolvedValue({ error: null });
     mockMaybeSingle.mockResolvedValue({ data: null, error: null });
@@ -210,6 +214,41 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(didUpsert).toBe(true);
     expect(mockSelect).toHaveBeenCalledTimes(1);
     expect(mockUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips update when permit changes concurrently after RPC fallback", async () => {
+    mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
+    mockInsert.mockResolvedValue({
+      error: {
+        message: "duplicate key value violates unique constraint",
+        code: "23505",
+      },
+    });
+    mockMaybeSingle.mockResolvedValue({
+      data: {
+        id: 123,
+        amount: "1",
+        transaction: null,
+      },
+      error: null,
+    });
+    updateResult.data = [];
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord({
+      ...baseInsertData,
+      amount: "2",
+    });
+    expect(didUpsert).toBe(true);
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
+    expect(context.logger.info).toHaveBeenCalledWith(
+      "Skipped updating permit after RPC fallback; permit changed concurrently",
+      expect.objectContaining({
+        id: 123,
+        nonce: baseInsertData.nonce,
+        beneficiary_id: baseInsertData.beneficiary_id,
+      })
+    );
   });
 
   it("keeps claimed permits when fallback hits a duplicate", async () => {

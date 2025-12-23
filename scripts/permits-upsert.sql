@@ -31,6 +31,7 @@ with ranked as (
                id desc
     ) as rn
   from public.permits
+  -- Only dedupe rows with full Permit2 metadata; legacy null metadata rows are out of scope.
   where partner_id is not null
     and network_id is not null
     and permit2_address is not null

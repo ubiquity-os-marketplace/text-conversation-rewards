@@ -717,6 +717,7 @@ export class PaymentModule extends BaseModule {
   }
 
   async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: PermitReward[]) {
+    // Normalize here so fallback inserts (when RPC is unavailable) stay lowercased.
     const permit2Address = PERMIT2_ADDRESS.toLowerCase();
 
     for (const permit of permits) {
@@ -882,7 +883,7 @@ export class PaymentModule extends BaseModule {
           });
           return true;
         }
-        const { error: updateError } = await this._supabase
+        const { data: updatedPermits, error: updateError } = await this._supabase
           .from("permits")
           .update({
             amount: insertData.amount,
@@ -894,11 +895,21 @@ export class PaymentModule extends BaseModule {
             updated: new Date().toISOString(),
           })
           .eq("id", existingPermit.id)
-          .is("transaction", null);
+          .eq("amount", existingPermit.amount)
+          .is("transaction", null)
+          .select("id");
         if (updateError) {
           const updateErrorForLog = this._getErrorForLog(updateError, this._getErrorMessage(updateError));
           this.context.logger.error("Failed to update permit after RPC fallback", { error: updateErrorForLog });
           return false;
+        }
+        if (!updatedPermits || updatedPermits.length === 0) {
+          this.context.logger.info("Skipped updating permit after RPC fallback; permit changed concurrently", {
+            id: existingPermit.id,
+            nonce: insertData.nonce,
+            beneficiary_id: insertData.beneficiary_id,
+          });
+          return true;
         }
         this.context.logger.info("Updated existing permit after RPC fallback", {
           id: existingPermit.id,
