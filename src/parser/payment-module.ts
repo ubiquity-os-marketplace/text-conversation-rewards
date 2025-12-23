@@ -761,20 +761,30 @@ export class PaymentModule extends BaseModule {
     const networkId = insertData.network_id;
     const permit2Address = insertData.permit2_address;
     const partnerId = insertData.partner_id;
-    if (
-      networkId === null ||
-      networkId === undefined ||
-      permit2Address === null ||
-      permit2Address === undefined ||
-      partnerId === null ||
-      partnerId === undefined
-    ) {
-      this.context.logger.error("Permit missing network metadata for upsert", {
-        nonce: insertData.nonce,
-        signature: insertData.signature,
-      });
+    const missingFields: string[] = [];
+    if (networkId === null || networkId === undefined) {
+      missingFields.push("network_id");
+    }
+    if (permit2Address === null || permit2Address === undefined) {
+      missingFields.push("permit2_address");
+    }
+    if (partnerId === null || partnerId === undefined) {
+      missingFields.push("partner_id");
+    }
+    if (missingFields.length > 0) {
+      this.context.logger.error(
+        "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
+        {
+          nonce: insertData.nonce,
+          signature: insertData.signature,
+          missingFields,
+        }
+      );
       return false;
     }
+    const resolvedNetworkId = networkId as number;
+    const resolvedPermit2Address = permit2Address as string;
+    const resolvedPartnerId = partnerId as number;
 
     const { error } = await this._supabase.rpc("upsert_permit_max", {
       p_amount: insertData.amount,
@@ -784,9 +794,9 @@ export class PaymentModule extends BaseModule {
       p_beneficiary_id: insertData.beneficiary_id,
       p_location_id: insertData.location_id ?? null,
       p_token_id: insertData.token_id ?? null,
-      p_partner_id: partnerId ?? null,
-      p_network_id: networkId,
-      p_permit2_address: permit2Address,
+      p_partner_id: resolvedPartnerId,
+      p_network_id: resolvedNetworkId,
+      p_permit2_address: resolvedPermit2Address,
     });
 
     if (!error) {

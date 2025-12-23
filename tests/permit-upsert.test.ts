@@ -162,8 +162,12 @@ describe("PaymentModule _upsertPermitRecord", () => {
     });
     expect(didUpsert).toBe(false);
     expect(context.logger.error).toHaveBeenCalledWith(
-      "Permit missing network metadata for upsert",
-      expect.objectContaining({ nonce: baseInsertData.nonce, signature: baseInsertData.signature })
+      "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
+      expect.objectContaining({
+        nonce: baseInsertData.nonce,
+        signature: baseInsertData.signature,
+        missingFields: ["network_id"],
+      })
     );
   });
 
@@ -176,8 +180,12 @@ describe("PaymentModule _upsertPermitRecord", () => {
     });
     expect(didUpsert).toBe(false);
     expect(context.logger.error).toHaveBeenCalledWith(
-      "Permit missing network metadata for upsert",
-      expect.objectContaining({ nonce: baseInsertData.nonce, signature: baseInsertData.signature })
+      "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
+      expect.objectContaining({
+        nonce: baseInsertData.nonce,
+        signature: baseInsertData.signature,
+        missingFields: ["partner_id"],
+      })
     );
   });
 });
