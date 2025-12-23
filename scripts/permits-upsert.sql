@@ -16,7 +16,7 @@ where p.network_id is null
 
 -- Permit2 address default (kept in sync with src/types/permit2.ts).
 update public.permits
-set permit2_address = lower(coalesce(current_setting('app.permit2_address', true), '0xd635918A75356D133d5840eE5c9ED070302C9C60'))
+set permit2_address = lower(coalesce(current_setting('app.permit2_address', true), '0xd635918a75356d133d5840ee5c9ed070302c9c60'))
 where permit2_address is null
   and partner_id is not null;
 
@@ -86,6 +86,7 @@ begin
     p_network_id,
     lower(p_permit2_address)
   )
+  -- Only replace unclaimed permits when the incoming amount is higher.
   on conflict (partner_id, network_id, permit2_address, nonce)
     where partner_id is not null
       and network_id is not null
@@ -97,6 +98,7 @@ begin
         beneficiary_id = excluded.beneficiary_id,
         location_id = excluded.location_id,
         token_id = excluded.token_id,
+        partner_id = excluded.partner_id,
         network_id = excluded.network_id,
         permit2_address = excluded.permit2_address,
         updated = now()

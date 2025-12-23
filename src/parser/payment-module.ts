@@ -41,12 +41,7 @@ import { PayoutMode, Result } from "../types/results";
 import chains from "../types/rpcs.json";
 import type { Database } from "../adapters/supabase/types/database";
 
-type RpcChain = {
-  chainId: number;
-  explorers?: Array<{ url: string }>;
-  rpc?: string[];
-  [key: string]: unknown;
-};
+type RpcChain = (typeof chains)[number];
 
 interface Payload {
   evmNetworkId: number;
@@ -794,7 +789,13 @@ export class PaymentModule extends BaseModule {
     const code = this._getErrorCode(error);
     const errorForLog = this._getErrorForLog(error, message);
     const normalizedMessage = message.toLowerCase();
-    const isRpcMissing = code === "42883" || normalizedMessage.includes("upsert_permit_max does not exist");
+    const isSchemaCacheMissing =
+      normalizedMessage.includes("schema cache") && normalizedMessage.includes("upsert_permit_max");
+    const isRpcMissing =
+      code === "42883" ||
+      code === "PGRST202" ||
+      normalizedMessage.includes("upsert_permit_max does not exist") ||
+      isSchemaCacheMissing;
 
     if (!isRpcMissing) {
       this.context.logger.error("Failed to upsert permit via RPC", { error: errorForLog });

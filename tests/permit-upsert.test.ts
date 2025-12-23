@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import type { Database } from "../src/adapters/supabase/types/database";
 import type { ContextPlugin } from "../src/types/plugin-input";
 
 type RpcResponse = { error: { message?: string; code?: string } | null };
@@ -47,7 +48,7 @@ function makeContext(): ContextPlugin {
   } as unknown as ContextPlugin;
 }
 
-const baseInsertData = {
+const baseInsertData: Database["public"]["Tables"]["permits"]["Insert"] = {
   amount: "1",
   nonce: "1",
   deadline: "1",
@@ -61,7 +62,7 @@ const baseInsertData = {
 };
 
 type UpsertModule = {
-  _upsertPermitRecord: (data: typeof baseInsertData) => Promise<boolean>;
+  _upsertPermitRecord: (data: Database["public"]["Tables"]["permits"]["Insert"]) => Promise<boolean>;
 };
 
 describe("PaymentModule _upsertPermitRecord", () => {
@@ -97,25 +98,72 @@ describe("PaymentModule _upsertPermitRecord", () => {
 
   it("falls back to insert when RPC is missing", async () => {
     mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
-    const paymentModule = new PaymentModule(makeContext());
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(true);
     expect(mockInsert).toHaveBeenCalledTimes(1);
+    expect(context.logger.warn).toHaveBeenCalledWith(
+      "upsert_permit_max RPC unavailable; falling back to insert",
+      expect.objectContaining({ error: expect.anything() })
+    );
+  });
+
+  it("falls back to insert when RPC is missing in schema cache", async () => {
+    mockRpc.mockResolvedValue({
+      error: {
+        message: "Could not find the function public.upsert_permit_max in the schema cache",
+        code: "PGRST202",
+      },
+    });
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(true);
+    expect(mockInsert).toHaveBeenCalledTimes(1);
+    expect(context.logger.warn).toHaveBeenCalledWith(
+      "upsert_permit_max RPC unavailable; falling back to insert",
+      expect.objectContaining({ error: expect.anything() })
+    );
   });
 
   it("returns false when RPC fails for other errors", async () => {
     mockRpc.mockResolvedValue({ error: { message: "permission denied", code: "42501" } });
-    const paymentModule = new PaymentModule(makeContext());
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(false);
     expect(mockInsert).not.toHaveBeenCalled();
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Failed to upsert permit via RPC",
+      expect.objectContaining({ error: expect.anything() })
+    );
   });
 
   it("returns false when insert fails after RPC fallback", async () => {
     mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
     mockInsert.mockResolvedValue({ error: "insert failed" });
-    const paymentModule = new PaymentModule(makeContext());
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(false);
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Failed to insert permit after RPC fallback",
+      expect.objectContaining({ error: expect.anything() })
+    );
+  });
+
+  it("returns false when network metadata is missing", async () => {
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord({
+      ...baseInsertData,
+      network_id: null,
+    });
+    expect(didUpsert).toBe(false);
+    expect(context.logger.error).toHaveBeenCalledWith(
+      "Permit missing network metadata for upsert",
+      expect.objectContaining({ nonce: baseInsertData.nonce, signature: baseInsertData.signature })
+    );
   });
 });
