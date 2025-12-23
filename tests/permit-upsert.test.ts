@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import type { ContextPlugin } from "../src/types/plugin-input";
 
-const mockRpc = jest.fn();
-const mockInsert = jest.fn();
+type RpcResponse = { error: { message?: string; code?: string } | null };
+type InsertResponse = { error: unknown };
+
+const mockRpc = jest.fn<() => Promise<RpcResponse>>();
+const mockInsert = jest.fn<() => Promise<InsertResponse>>();
 const mockFrom = jest.fn(() => ({
   insert: mockInsert,
 }));
@@ -27,11 +30,11 @@ jest.unstable_mockModule("@actions/github", () => ({
 
 const { PaymentModule } = await import("../src/parser/payment-module");
 
-const makeContext = () =>
-  ({
+function makeContext(): ContextPlugin {
+  return {
     config: { incentives: { payment: null } },
     env: {
-      SUPABASE_URL: "http://supabase.local",
+      SUPABASE_URL: "https://supabase.local",
       SUPABASE_KEY: "supabase-key",
     },
     logger: {
@@ -41,7 +44,8 @@ const makeContext = () =>
       debug: jest.fn(),
     },
     adapters: {},
-  }) as unknown as ContextPlugin;
+  } as unknown as ContextPlugin;
+}
 
 const baseInsertData = {
   amount: "1",
@@ -71,8 +75,8 @@ describe("PaymentModule _upsertPermitRecord", () => {
 
   it("returns true when RPC succeeds", async () => {
     const paymentModule = new PaymentModule(makeContext());
-    const result = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
-    expect(result).toBe(true);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(true);
     expect(mockRpc).toHaveBeenCalledTimes(1);
     expect(mockInsert).not.toHaveBeenCalled();
   });
@@ -80,16 +84,16 @@ describe("PaymentModule _upsertPermitRecord", () => {
   it("falls back to insert when RPC is missing", async () => {
     mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
     const paymentModule = new PaymentModule(makeContext());
-    const result = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
-    expect(result).toBe(true);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(true);
     expect(mockInsert).toHaveBeenCalledTimes(1);
   });
 
   it("returns false when RPC fails for other errors", async () => {
     mockRpc.mockResolvedValue({ error: { message: "permission denied", code: "42501" } });
     const paymentModule = new PaymentModule(makeContext());
-    const result = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
-    expect(result).toBe(false);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(false);
     expect(mockInsert).not.toHaveBeenCalled();
   });
 
@@ -97,7 +101,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
     mockInsert.mockResolvedValue({ error: "insert failed" });
     const paymentModule = new PaymentModule(makeContext());
-    const result = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
-    expect(result).toBe(false);
+    const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
+    expect(didUpsert).toBe(false);
   });
 });

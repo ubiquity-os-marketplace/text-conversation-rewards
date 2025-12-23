@@ -6,7 +6,6 @@ import { decodeError } from "@ubiquity-os/ethers-decode-error";
 import {
   Context,
   createAdapters,
-  Database,
   decrypt,
   encodePermits,
   generatePayoutPermit,
@@ -40,6 +39,14 @@ import { PERMIT2_ADDRESS } from "../types/permit2";
 import { RewardSettings } from "../types/plugin-input";
 import { PayoutMode, Result } from "../types/results";
 import chains from "../types/rpcs.json";
+import type { Database } from "../adapters/supabase/types/database";
+
+type RpcChain = {
+  chainId: number;
+  explorers?: Array<{ url: string }>;
+  rpc?: string[];
+  [key: string]: unknown;
+};
 
 interface Payload {
   evmNetworkId: number;
@@ -347,7 +354,7 @@ export class PaymentModule extends BaseModule {
   }
 
   _getNetworkExplorer(networkId: number): string {
-    const chain = chains.find((chain) => chain.chainId === networkId);
+    const chain = (chains as RpcChain[]).find((chain) => chain.chainId === networkId);
     return chain?.explorers?.[0].url || "https://blockscan.com";
   }
 
@@ -735,8 +742,8 @@ export class PaymentModule extends BaseModule {
             network_id: permit.networkId,
             permit2_address: PERMIT2_ADDRESS,
           };
-          const upserted = await this._upsertPermitRecord(insertData);
-          if (!upserted) {
+          const didUpsert = await this._upsertPermitRecord(insertData);
+          if (!didUpsert) {
             this.context.logger.error("Failed to save permit", {
               beneficiaryId: userData.id,
               nonce: insertData.nonce,
@@ -754,56 +761,94 @@ export class PaymentModule extends BaseModule {
   }
 
   private async _upsertPermitRecord(insertData: Database["public"]["Tables"]["permits"]["Insert"]): Promise<boolean> {
+    const networkId = insertData.network_id;
+    const permit2Address = insertData.permit2_address;
+    if (networkId == null || permit2Address == null) {
+      this.context.logger.error("Permit missing network metadata for upsert", {
+        nonce: insertData.nonce,
+        signature: insertData.signature,
+      });
+      return false;
+    }
+
     const { error } = await this._supabase.rpc("upsert_permit_max", {
       p_amount: insertData.amount,
       p_nonce: insertData.nonce,
       p_deadline: insertData.deadline,
       p_signature: insertData.signature,
       p_beneficiary_id: insertData.beneficiary_id,
-      p_location_id: insertData.location_id,
-      p_token_id: insertData.token_id,
-      p_partner_id: insertData.partner_id,
-      p_network_id: insertData.network_id,
-      p_permit2_address: insertData.permit2_address,
+      p_location_id: insertData.location_id ?? null,
+      p_token_id: insertData.token_id ?? null,
+      p_partner_id: insertData.partner_id ?? null,
+      p_network_id: networkId,
+      p_permit2_address: permit2Address,
     });
 
     if (!error) {
       return true;
     }
 
-    const rpcError: unknown = error;
-    const hasMessage =
-      typeof rpcError === "object" &&
-      rpcError !== null &&
-      "message" in rpcError &&
-      typeof (rpcError as { message?: unknown }).message === "string";
-    const message = hasMessage ? (rpcError as { message: string }).message : String(rpcError);
-    const hasCode = typeof rpcError === "object" && rpcError !== null && "code" in rpcError;
-    const code = hasCode ? String((rpcError as { code?: unknown }).code) : "";
-    const missingRpc =
-      code === "42883" || message.toLowerCase().includes("upsert_permit_max") || message.toLowerCase().includes("does not exist");
+    const message = this._getErrorMessage(error);
+    const code = this._getErrorCode(error);
+    const errorForLog = this._getErrorForLog(error, message);
+    const isRpcMissing =
+      code === "42883" ||
+      message.toLowerCase().includes("upsert_permit_max") ||
+      message.toLowerCase().includes("does not exist");
 
-    if (!missingRpc) {
-      this.context.logger.error("Failed to upsert permit via RPC", { error: message });
+    if (!isRpcMissing) {
+      this.context.logger.error("Failed to upsert permit via RPC", { error: errorForLog });
       return false;
     }
 
-    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", { error: message });
+    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", { error: errorForLog });
     const { error: insertError } = await this._supabase.from("permits").insert(insertData);
     if (insertError) {
-      const insertValue: unknown = insertError;
-      const insertMessage =
-        typeof insertValue === "object" &&
-        insertValue !== null &&
-        "message" in insertValue &&
-        typeof (insertValue as { message?: unknown }).message === "string"
-          ? (insertValue as { message: string }).message
-          : String(insertValue);
-      this.context.logger.error("Failed to insert permit after RPC fallback", { error: insertMessage });
+      const insertMessage = this._getErrorMessage(insertError);
+      const insertErrorForLog = this._getErrorForLog(insertError, insertMessage);
+      this.context.logger.error("Failed to insert permit after RPC fallback", { error: insertErrorForLog });
       return false;
     }
 
     return true;
+  }
+
+  private _getErrorMessage(error: unknown): string {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      typeof (error as { message?: unknown }).message === "string"
+    ) {
+      return (error as { message: string }).message;
+    }
+
+    return String(error);
+  }
+
+  private _getErrorCode(error: unknown): string {
+    if (typeof error === "object" && error !== null && "code" in error) {
+      return String((error as { code?: unknown }).code);
+    }
+
+    return "";
+  }
+
+  private _getErrorForLog(error: unknown, fallbackMessage: string): Error | { stack: string } {
+    if (error instanceof Error) {
+      return error;
+    }
+
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "stack" in error &&
+      typeof (error as { stack?: unknown }).stack === "string"
+    ) {
+      return error as { stack: string };
+    }
+
+    return new Error(fallbackMessage);
   }
 
   async _parsePrivateKey(evmPrivateEncrypted: string) {
