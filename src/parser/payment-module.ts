@@ -67,6 +67,20 @@ export interface DirectTransferInfo {
   networkId: number;
 }
 
+type PermitMetadata = {
+  networkId: number;
+  permit2Address: string;
+  partnerId: number;
+};
+
+type ExistingPermitRecord = {
+  id: number;
+  amount: string;
+  transaction: string | null;
+};
+
+type RpcFallbackReason = "permission denied" | "unavailable";
+
 export class PaymentModule extends BaseModule {
   readonly _configuration: PaymentConfiguration | null = this.context.config.incentives.payment;
   readonly _autoTransferMode =
@@ -257,7 +271,7 @@ export class PaymentModule extends BaseModule {
             {
               amount: reward.total,
               username,
-              contributionType: "",
+              contributionType: "reward",
               type: TokenType.ERC20,
               tokenAddress: payload.erc20RewardToken,
             },
@@ -763,9 +777,49 @@ export class PaymentModule extends BaseModule {
    * Uses optimistic guards to avoid overwriting claimed or higher-amount rows.
    */
   private async _upsertPermitRecord(insertData: Database["public"]["Tables"]["permits"]["Insert"]): Promise<boolean> {
-    const networkId = insertData.network_id;
-    const permit2Address = insertData.permit2_address;
-    const partnerId = insertData.partner_id;
+    const metadata = this._resolvePermitMetadata(insertData);
+    if (!metadata) {
+      return false;
+    }
+
+    const { error } = await this._supabase.rpc("upsert_permit_max", {
+      p_amount: insertData.amount,
+      p_nonce: insertData.nonce,
+      p_deadline: insertData.deadline,
+      p_signature: insertData.signature,
+      p_beneficiary_id: insertData.beneficiary_id,
+      p_location_id: insertData.location_id ?? null,
+      p_token_id: insertData.token_id ?? null,
+      p_partner_id: metadata.partnerId,
+      p_network_id: metadata.networkId,
+      p_permit2_address: metadata.permit2Address,
+    });
+
+    if (!error) {
+      return true;
+    }
+
+    const message = this._getErrorMessage(error);
+    const code = this._getErrorCode(error);
+    const errorForLog = this._getErrorForLog(error, message);
+    const fallbackReason = this._getRpcFallbackReason(message, code);
+
+    if (!fallbackReason) {
+      this.context.logger.error("Failed to upsert permit via RPC", { error: errorForLog });
+      return false;
+    }
+
+    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", {
+      error: errorForLog,
+      reason: fallbackReason,
+    });
+    return this._insertPermitWithFallback(insertData, metadata);
+  }
+
+  private _resolvePermitMetadata(
+    insertData: Database["public"]["Tables"]["permits"]["Insert"]
+  ): PermitMetadata | null {
+    const { network_id: networkId, permit2_address: permit2Address, partner_id: partnerId } = insertData;
     const missingFields: string[] = [];
     if (networkId === null || networkId === undefined) {
       missingFields.push("network_id");
@@ -785,32 +839,16 @@ export class PaymentModule extends BaseModule {
           missingFields,
         }
       );
-      return false;
+      return null;
     }
-    const resolvedNetworkId = networkId as number;
-    const resolvedPermit2Address = permit2Address as string;
-    const resolvedPartnerId = partnerId as number;
+    return {
+      networkId: networkId as number,
+      permit2Address: permit2Address as string,
+      partnerId: partnerId as number,
+    };
+  }
 
-    const { error } = await this._supabase.rpc("upsert_permit_max", {
-      p_amount: insertData.amount,
-      p_nonce: insertData.nonce,
-      p_deadline: insertData.deadline,
-      p_signature: insertData.signature,
-      p_beneficiary_id: insertData.beneficiary_id,
-      p_location_id: insertData.location_id ?? null,
-      p_token_id: insertData.token_id ?? null,
-      p_partner_id: resolvedPartnerId,
-      p_network_id: resolvedNetworkId,
-      p_permit2_address: resolvedPermit2Address,
-    });
-
-    if (!error) {
-      return true;
-    }
-
-    const message = this._getErrorMessage(error);
-    const code = this._getErrorCode(error);
-    const errorForLog = this._getErrorForLog(error, message);
+  private _getRpcFallbackReason(message: string, code: string | null): RpcFallbackReason | null {
     const normalizedMessage = message.toLowerCase();
     const isSchemaCacheMissing =
       normalizedMessage.includes("schema cache") && normalizedMessage.includes("upsert_permit_max");
@@ -820,188 +858,244 @@ export class PaymentModule extends BaseModule {
       normalizedMessage.includes("upsert_permit_max does not exist") ||
       isSchemaCacheMissing;
     const isRpcPermissionDenied = code === "42501" || normalizedMessage.includes("permission denied");
-    const shouldFallback = isRpcMissing || isRpcPermissionDenied;
+    if (isRpcPermissionDenied) {
+      return "permission denied";
+    }
+    if (isRpcMissing) {
+      return "unavailable";
+    }
+    return null;
+  }
 
-    if (!shouldFallback) {
-      this.context.logger.error("Failed to upsert permit via RPC", { error: errorForLog });
-      return false;
+  private async _insertPermitWithFallback(
+    insertData: Database["public"]["Tables"]["permits"]["Insert"],
+    metadata: PermitMetadata
+  ): Promise<boolean> {
+    const { error: insertError } = await this._supabase.from("permits").insert(insertData);
+    if (!insertError) {
+      return true;
     }
 
-    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", {
-      error: errorForLog,
-      reason: isRpcPermissionDenied ? "permission denied" : "unavailable",
-    });
-    const { error: insertError } = await this._supabase.from("permits").insert(insertData);
-    if (insertError) {
-      const insertMessage = this._getErrorMessage(insertError);
-      const insertCode = this._getErrorCode(insertError);
-      const insertErrorForLog = this._getErrorForLog(insertError, insertMessage);
-      const normalizedInsertMessage = insertMessage.toLowerCase();
-      const isUniqueViolation =
-        insertCode === "23505" || normalizedInsertMessage.includes("duplicate key value violates unique constraint");
-      if (isUniqueViolation) {
-        const loadExistingPermit = async (message: string) => {
-          const { data: existingPermit, error: existingError } = await this._supabase
-            .from("permits")
-            .select("id, amount, transaction")
-            .eq("partner_id", resolvedPartnerId)
-            .eq("network_id", resolvedNetworkId)
-            .eq("permit2_address", resolvedPermit2Address)
-            .eq("nonce", insertData.nonce)
-            .maybeSingle();
-          if (existingError || !existingPermit) {
-            const existingErrorForLog = existingError
-              ? this._getErrorForLog(existingError, this._getErrorMessage(existingError))
-              : insertErrorForLog;
-            this.context.logger.error(message, {
-              error: existingErrorForLog,
-              nonce: insertData.nonce,
-              beneficiary_id: insertData.beneficiary_id,
-            });
-            return null;
-          }
-          return existingPermit;
-        };
-        const parsePermitAmount = (amount: string): Decimal | null => {
-          try {
-            return new Decimal(amount);
-          } catch (parseError) {
-            const parseErrorForLog = this._getErrorForLog(
-              parseError,
-              "Failed to compare permit amounts after unique violation"
-            );
-            this.context.logger.error("Failed to compare permit amounts after unique violation", {
-              error: parseErrorForLog,
-              nonce: insertData.nonce,
-              beneficiary_id: insertData.beneficiary_id,
-            });
-            return null;
-          }
-        };
+    const insertMessage = this._getErrorMessage(insertError);
+    const insertCode = this._getErrorCode(insertError);
+    const insertErrorForLog = this._getErrorForLog(insertError, insertMessage);
 
-        const existingPermit = await loadExistingPermit("Failed to load existing permit after unique violation");
-        if (!existingPermit) {
-          return false;
-        }
-        if (existingPermit.transaction) {
-          this.context.logger.info("Permit already claimed; keeping existing record after RPC fallback", {
-            id: existingPermit.id,
-            nonce: insertData.nonce,
-            beneficiary_id: insertData.beneficiary_id,
-          });
-          return true;
-        }
-        const incomingAmount = parsePermitAmount(insertData.amount);
-        if (!incomingAmount) {
-          return false;
-        }
-        const currentAmount = parsePermitAmount(existingPermit.amount);
-        if (!currentAmount) {
-          return false;
-        }
-        if (incomingAmount.lte(currentAmount)) {
-          this.context.logger.info("Existing permit amount is higher or equal; keeping existing record", {
-            id: existingPermit.id,
-            nonce: insertData.nonce,
-            beneficiary_id: insertData.beneficiary_id,
-          });
-          return true;
-        }
-        const { data: updatedPermits, error: updateError } = await this._supabase
-          .from("permits")
-          .update({
-            amount: insertData.amount,
-            deadline: insertData.deadline,
-            signature: insertData.signature,
-            beneficiary_id: insertData.beneficiary_id,
-            location_id: insertData.location_id ?? null,
-            token_id: insertData.token_id ?? null,
-            updated: new Date().toISOString(),
-          })
-          .eq("id", existingPermit.id)
-          .eq("amount", existingPermit.amount)
-          .is("transaction", null)
-          .select("id");
-        if (updateError) {
-          const updateErrorForLog = this._getErrorForLog(updateError, this._getErrorMessage(updateError));
-          this.context.logger.error("Failed to update permit after RPC fallback", { error: updateErrorForLog });
-          return false;
-        }
-        if (updatedPermits && updatedPermits.length > 0) {
-          this.context.logger.info("Updated existing permit after RPC fallback", {
-            id: existingPermit.id,
-            nonce: insertData.nonce,
-            beneficiary_id: insertData.beneficiary_id,
-          });
-          return true;
-        }
-
-        const refreshedPermit = await loadExistingPermit(
-          "Failed to reload existing permit after RPC fallback update race"
-        );
-        if (!refreshedPermit) {
-          return false;
-        }
-        if (refreshedPermit.transaction) {
-          this.context.logger.info("Permit already claimed; keeping existing record after RPC fallback", {
-            id: refreshedPermit.id,
-            nonce: insertData.nonce,
-            beneficiary_id: insertData.beneficiary_id,
-          });
-          return true;
-        }
-        const refreshedAmount = parsePermitAmount(refreshedPermit.amount);
-        if (!refreshedAmount) {
-          return false;
-        }
-        if (incomingAmount.lte(refreshedAmount)) {
-          this.context.logger.info("Existing permit amount is higher or equal; keeping existing record", {
-            id: refreshedPermit.id,
-            nonce: insertData.nonce,
-            beneficiary_id: insertData.beneficiary_id,
-          });
-          return true;
-        }
-        const { data: retriedPermits, error: retryError } = await this._supabase
-          .from("permits")
-          .update({
-            amount: insertData.amount,
-            deadline: insertData.deadline,
-            signature: insertData.signature,
-            beneficiary_id: insertData.beneficiary_id,
-            location_id: insertData.location_id ?? null,
-            token_id: insertData.token_id ?? null,
-            updated: new Date().toISOString(),
-          })
-          .eq("id", refreshedPermit.id)
-          .eq("amount", refreshedPermit.amount)
-          .is("transaction", null)
-          .select("id");
-        if (retryError) {
-          const retryErrorForLog = this._getErrorForLog(retryError, this._getErrorMessage(retryError));
-          this.context.logger.error("Failed to update permit after RPC fallback", { error: retryErrorForLog });
-          return false;
-        }
-        if (!retriedPermits || retriedPermits.length === 0) {
-          this.context.logger.info("Skipped updating permit after RPC fallback; permit changed concurrently", {
-            id: refreshedPermit.id,
-            nonce: insertData.nonce,
-            beneficiary_id: insertData.beneficiary_id,
-          });
-          return true;
-        }
-        this.context.logger.info("Updated existing permit after RPC fallback", {
-          id: refreshedPermit.id,
-          nonce: insertData.nonce,
-          beneficiary_id: insertData.beneficiary_id,
-        });
-        return true;
-      }
+    if (!this._isUniqueViolation(insertCode, insertMessage)) {
       this.context.logger.error("Failed to insert permit after RPC fallback", { error: insertErrorForLog });
       return false;
     }
 
+    return this._handleDuplicatePermitAfterFallback(insertData, metadata, insertErrorForLog);
+  }
+
+  private _isUniqueViolation(code: string | null, message: string): boolean {
+    const normalizedMessage = message.toLowerCase();
+    return code === "23505" || normalizedMessage.includes("duplicate key value violates unique constraint");
+  }
+
+  private async _handleDuplicatePermitAfterFallback(
+    insertData: Database["public"]["Tables"]["permits"]["Insert"],
+    metadata: PermitMetadata,
+    insertErrorForLog: Error | { stack: string }
+  ): Promise<boolean> {
+    const existingPermit = await this._loadExistingPermit(
+      metadata,
+      insertData,
+      "Failed to load existing permit after unique violation",
+      insertErrorForLog
+    );
+    if (!existingPermit) {
+      return false;
+    }
+    if (existingPermit.transaction) {
+      this.context.logger.info("Permit already claimed; keeping existing record after RPC fallback", {
+        id: existingPermit.id,
+        nonce: insertData.nonce,
+        beneficiary_id: insertData.beneficiary_id,
+      });
+      return true;
+    }
+
+    const incomingAmount = this._parsePermitAmount(insertData.amount, insertData);
+    if (!incomingAmount) {
+      return false;
+    }
+
+    return this._tryUpdateExistingPermitAfterFallback(
+      insertData,
+      existingPermit,
+      incomingAmount,
+      metadata,
+      insertErrorForLog
+    );
+  }
+
+  private async _loadExistingPermit(
+    metadata: PermitMetadata,
+    insertData: Database["public"]["Tables"]["permits"]["Insert"],
+    message: string,
+    fallbackError: Error | { stack: string }
+  ): Promise<ExistingPermitRecord | null> {
+    const { data: existingPermit, error: existingError } = await this._supabase
+      .from("permits")
+      .select("id, amount, transaction")
+      .eq("partner_id", metadata.partnerId)
+      .eq("network_id", metadata.networkId)
+      .eq("permit2_address", metadata.permit2Address)
+      .eq("nonce", insertData.nonce)
+      .maybeSingle();
+    if (existingError || !existingPermit) {
+      const existingErrorForLog = existingError
+        ? this._getErrorForLog(existingError, this._getErrorMessage(existingError))
+        : fallbackError;
+      this.context.logger.error(message, {
+        error: existingErrorForLog,
+        nonce: insertData.nonce,
+        beneficiary_id: insertData.beneficiary_id,
+      });
+      return null;
+    }
+    return existingPermit;
+  }
+
+  private _parsePermitAmount(
+    amount: string,
+    insertData: Database["public"]["Tables"]["permits"]["Insert"]
+  ): Decimal | null {
+    try {
+      return new Decimal(amount);
+    } catch (parseError) {
+      const parseErrorForLog = this._getErrorForLog(parseError, "Failed to compare permit amounts after unique violation");
+      this.context.logger.error("Failed to compare permit amounts after unique violation", {
+        error: parseErrorForLog,
+        nonce: insertData.nonce,
+        beneficiary_id: insertData.beneficiary_id,
+      });
+      return null;
+    }
+  }
+
+  private async _tryUpdateExistingPermitAfterFallback(
+    insertData: Database["public"]["Tables"]["permits"]["Insert"],
+    existingPermit: ExistingPermitRecord,
+    incomingAmount: Decimal,
+    metadata: PermitMetadata,
+    insertErrorForLog: Error | { stack: string }
+  ): Promise<boolean> {
+    const currentAmount = this._parsePermitAmount(existingPermit.amount, insertData);
+    if (!currentAmount) {
+      return false;
+    }
+    if (incomingAmount.lte(currentAmount)) {
+      this.context.logger.info("Existing permit amount is higher or equal; keeping existing record", {
+        id: existingPermit.id,
+        nonce: insertData.nonce,
+        beneficiary_id: insertData.beneficiary_id,
+      });
+      return true;
+    }
+
+    const updateResult = await this._attemptPermitUpdate(existingPermit, insertData);
+    if (updateResult === "error") {
+      return false;
+    }
+    if (updateResult === "updated") {
+      this.context.logger.info("Updated existing permit after RPC fallback", {
+        id: existingPermit.id,
+        nonce: insertData.nonce,
+        beneficiary_id: insertData.beneficiary_id,
+      });
+      return true;
+    }
+
+    return this._handlePermitUpdateRace(insertData, incomingAmount, metadata, insertErrorForLog);
+  }
+
+  private async _handlePermitUpdateRace(
+    insertData: Database["public"]["Tables"]["permits"]["Insert"],
+    incomingAmount: Decimal,
+    metadata: PermitMetadata,
+    insertErrorForLog: Error | { stack: string }
+  ): Promise<boolean> {
+    const refreshedPermit = await this._loadExistingPermit(
+      metadata,
+      insertData,
+      "Failed to reload existing permit after RPC fallback update race",
+      insertErrorForLog
+    );
+    if (!refreshedPermit) {
+      return false;
+    }
+    if (refreshedPermit.transaction) {
+      this.context.logger.info("Permit already claimed; keeping existing record after RPC fallback", {
+        id: refreshedPermit.id,
+        nonce: insertData.nonce,
+        beneficiary_id: insertData.beneficiary_id,
+      });
+      return true;
+    }
+    const refreshedAmount = this._parsePermitAmount(refreshedPermit.amount, insertData);
+    if (!refreshedAmount) {
+      return false;
+    }
+    if (incomingAmount.lte(refreshedAmount)) {
+      this.context.logger.info("Existing permit amount is higher or equal; keeping existing record", {
+        id: refreshedPermit.id,
+        nonce: insertData.nonce,
+        beneficiary_id: insertData.beneficiary_id,
+      });
+      return true;
+    }
+
+    const retryResult = await this._attemptPermitUpdate(refreshedPermit, insertData);
+    if (retryResult === "error") {
+      return false;
+    }
+    if (retryResult === "updated") {
+      this.context.logger.info("Updated existing permit after RPC fallback", {
+        id: refreshedPermit.id,
+        nonce: insertData.nonce,
+        beneficiary_id: insertData.beneficiary_id,
+      });
+      return true;
+    }
+
+    this.context.logger.info("Skipped updating permit after RPC fallback; permit changed concurrently", {
+      id: refreshedPermit.id,
+      nonce: insertData.nonce,
+      beneficiary_id: insertData.beneficiary_id,
+    });
     return true;
+  }
+
+  private async _attemptPermitUpdate(
+    existingPermit: ExistingPermitRecord,
+    insertData: Database["public"]["Tables"]["permits"]["Insert"]
+  ): Promise<"updated" | "skipped" | "error"> {
+    const { data: updatedPermits, error: updateError } = await this._supabase
+      .from("permits")
+      .update({
+        amount: insertData.amount,
+        deadline: insertData.deadline,
+        signature: insertData.signature,
+        beneficiary_id: insertData.beneficiary_id,
+        location_id: insertData.location_id ?? null,
+        token_id: insertData.token_id ?? null,
+        updated: new Date().toISOString(),
+      })
+      .eq("id", existingPermit.id)
+      .eq("amount", existingPermit.amount)
+      .is("transaction", null)
+      .select("id");
+    if (updateError) {
+      const updateErrorForLog = this._getErrorForLog(updateError, this._getErrorMessage(updateError));
+      this.context.logger.error("Failed to update permit after RPC fallback", { error: updateErrorForLog });
+      return "error";
+    }
+    if (updatedPermits && updatedPermits.length > 0) {
+      return "updated";
+    }
+    return "skipped";
   }
 
   private _getErrorMessage(error: unknown): string {
@@ -1028,12 +1122,13 @@ export class PaymentModule extends BaseModule {
     return String(error);
   }
 
-  private _getErrorCode(error: unknown): string {
+  private _getErrorCode(error: unknown): string | null {
     if (typeof error === "object" && error !== null && "code" in error) {
-      return String((error as { code?: unknown }).code);
+      const code = (error as { code?: unknown }).code;
+      return code === null || code === undefined ? null : String(code);
     }
 
-    return "";
+    return null;
   }
 
   private _getErrorForLog(error: unknown, fallbackMessage: string): Error | { stack: string } {
@@ -1122,7 +1217,7 @@ export class PaymentModule extends BaseModule {
         location_id: locationId,
         token_id: null,
         nonce: BigInt(utils.keccak256(utils.toUtf8Bytes(`${userId}-${issue.issueId}`))).toString(),
-        deadline: "",
+        deadline: "0",
         signature: randomUUID(),
         partner_id: null,
       };

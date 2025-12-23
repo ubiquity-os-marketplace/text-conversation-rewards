@@ -91,6 +91,11 @@ const ctx = {
   },
 } as unknown as ContextPlugin;
 
+const PLACEHOLDER_TIMESTAMP = "2024-01-01T00:00:00.000Z";
+const PLACEHOLDER_URL = "https://example.test/resource";
+const PLACEHOLDER_CONTENT = "placeholder content";
+const OPENAI_SYSTEM_PROMPT = "system prompt";
+
 jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
@@ -554,8 +559,8 @@ describe("Modules tests", () => {
         task: {
           multiplier: 0.5,
           reward: 18.5,
-          timestamp: "",
-          url: "",
+          timestamp: PLACEHOLDER_TIMESTAMP,
+          url: PLACEHOLDER_URL,
         },
         userId: 0,
       },
@@ -614,15 +619,15 @@ describe("Modules tests", () => {
         task: {
           multiplier: 0.5,
           reward: 18.5,
-          timestamp: "",
-          url: "",
+          timestamp: PLACEHOLDER_TIMESTAMP,
+          url: PLACEHOLDER_URL,
         },
         comments: [
           {
             id: 1,
-            content: "",
-            url: "",
-            timestamp: "",
+            content: PLACEHOLDER_CONTENT,
+            url: PLACEHOLDER_URL,
+            timestamp: PLACEHOLDER_TIMESTAMP,
             commentType: CommentAssociation.ASSIGNEE,
             score: {
               reward: 50000,
@@ -733,7 +738,7 @@ describe("Retry", () => {
       messages: [
         {
           role: "system",
-          content: "",
+          content: OPENAI_SYSTEM_PROMPT,
         },
       ],
     });
@@ -756,9 +761,9 @@ describe("Retry", () => {
       http.post("https://api.openai.com/v1/*", () => {
         called += 1;
         if (called === 1) {
-          return HttpResponse.text("", { status: 500 });
+          return HttpResponse.text("error", { status: 500 });
         } else if (called === 2) {
-          return HttpResponse.text("", { status: 429 });
+          return HttpResponse.text("rate limited", { status: 429 });
         } else {
           return HttpResponse.json({ choices: [{ text: "Hello" }] });
         }
@@ -772,7 +777,7 @@ describe("Retry", () => {
   it("should throw error if maxRetries is reached", async () => {
     server.use(
       http.post("https://api.openai.com/v1/*", () => {
-        return HttpResponse.text("", { status: 500 });
+        return HttpResponse.text("error", { status: 500 });
       })
     );
 
@@ -792,9 +797,9 @@ describe("Retry", () => {
       http.post("https://api.openai.com/v1/*", () => {
         called += 1;
         if (called === 1) {
-          return HttpResponse.text("", { status: 500 });
+          return HttpResponse.text("error", { status: 500 });
         } else if (called === 2) {
-          return HttpResponse.text("", { status: 429 });
+          return HttpResponse.text("rate limited", { status: 429 });
         } else {
           return HttpResponse.json({ choices: [{ text: "Hello" }] });
         }

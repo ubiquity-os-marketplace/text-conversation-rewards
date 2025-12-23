@@ -19,13 +19,18 @@ class CloseRewardModule extends BaseModule {
     const closingUser = this.context.payload.sender?.login;
 
     if (closingUser) {
+      const issueUrl = data.self?.html_url ?? this.context.payload.issue?.html_url;
+      if (!issueUrl) {
+        this.context.logger.warn("Missing issue URL for closing reward; skipping reward entry.");
+        return Promise.resolve(result);
+      }
       result = {
         [closingUser]: {
           task: {
             reward: this.context.config.incentives.closeTaskReward.rewardAmount,
             multiplier: 1,
             timestamp: new Date().toISOString(),
-            url: data.self?.html_url ?? "",
+            url: issueUrl,
             category: "stale",
           },
           total: 0,

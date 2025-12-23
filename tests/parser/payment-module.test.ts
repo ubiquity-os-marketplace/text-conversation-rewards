@@ -17,9 +17,9 @@ const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 const PAYOUT_MODE_TRANSFER = '"payoutMode": "transfer"';
 const PAYOUT_MODE_PERMIT = '"payoutMode": "permit"';
-const DEFAULT_TIMESTAMP = "";
-const DEFAULT_URL = "";
-const EMPTY_STRING = "";
+const DEFAULT_TIMESTAMP = "2024-01-01T00:00:00.000Z";
+const DEFAULT_URL = "https://example.test/issues/1";
+const NO_MARKER_BODY = "no payout markers";
 const ctx = {
   eventName: "issues.closed",
   payload: {
@@ -182,7 +182,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -202,8 +202,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
-      process.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
-      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
+      delete process.env.PERMIT_TREASURY_GITHUB_USERNAME;
+      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_TREASURY_GITHUB_USERNAME;
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -254,7 +254,7 @@ describe("payment-module.ts", () => {
 
   describe("_getBeneficiaries()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -279,7 +279,7 @@ describe("payment-module.ts", () => {
 
   describe("_automaticTransferMode", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -311,7 +311,7 @@ describe("payment-module.ts", () => {
   });
   describe("_getPayoutMode()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -352,7 +352,7 @@ describe("payment-module.ts", () => {
       expect(payoutMode).toEqual("permit");
 
       payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: EMPTY_STRING, user: { type: "Bot" } }],
+        comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
     });
@@ -373,7 +373,7 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
 
       const payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: EMPTY_STRING, user: { type: "Bot" } }],
+        comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("transfer");
     });
@@ -382,7 +382,7 @@ describe("payment-module.ts", () => {
   const fundingWalletPrivateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   describe("_canTransferDirectly()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
       ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
     });
 
