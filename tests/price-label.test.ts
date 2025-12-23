@@ -1,5 +1,3 @@
-/* eslint-disable sonarjs/no-nested-functions */
-
 import { server } from "./__mocks__/node";
 import { afterAll, afterEach, beforeAll, expect, it, jest } from "@jest/globals";
 import cfg from "./__mocks__/results/valid-configuration.json";
@@ -27,24 +25,8 @@ describe("Price tests", () => {
       getMinimizedCommentStatus: jest.fn(),
     }));
 
-    jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
-      paginateGraphQL() {
-        return {
-          graphql: {
-            paginate() {
-              return {
-                repository: {
-                  issue: {
-                    closedByPullRequestsReferences: {
-                      edges: [],
-                    },
-                  },
-                },
-              };
-            },
-          },
-        };
-      },
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(async () => []),
     }));
 
     const octokit = (await import("@ubiquity-os/plugin-sdk/octokit")).customOctokit;
@@ -99,24 +81,8 @@ describe("Price tests", () => {
       getMinimizedCommentStatus: jest.fn(),
     }));
 
-    jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
-      paginateGraphQL() {
-        return {
-          graphql: {
-            paginate() {
-              return {
-                repository: {
-                  issue: {
-                    closedByPullRequestsReferences: {
-                      edges: [],
-                    },
-                  },
-                },
-              };
-            },
-          },
-        };
-      },
+    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(async () => []),
     }));
 
     const octokit = (await import("@ubiquity-os/plugin-sdk/octokit")).customOctokit;

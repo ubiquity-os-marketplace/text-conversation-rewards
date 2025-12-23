@@ -123,8 +123,6 @@ jest
     );
   });
 
-jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
-
 describe("Rewards tests", () => {
   const issue = parseGitHubUrl(issueUrl);
   const ctx = {
@@ -372,15 +370,11 @@ describe("Rewards tests", () => {
   it("Should ignore invalid links", async () => {
     ctx.config.incentives.externalContent = {
       llmWebsiteModel: {
-        model: "model",
         tokenCountLimit: 1000,
-        endpoint: "endopint",
         maxRetries: 1,
       },
       llmImageModel: {
-        model: "model",
         tokenCountLimit: 1000,
-        endpoint: "endpoint",
         maxRetries: 1,
       },
     };

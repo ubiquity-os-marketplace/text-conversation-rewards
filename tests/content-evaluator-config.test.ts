@@ -4,14 +4,16 @@ import {
   contentEvaluatorConfigurationType,
 } from "../src/configuration/content-evaluator-config";
 
+type PartialContentEvaluatorConfiguration = Omit<Partial<ContentEvaluatorConfiguration>, "openAi"> & {
+  openAi?: Partial<ContentEvaluatorConfiguration["openAi"]>;
+};
+
 describe("ContentEvaluatorConfiguration Validation", () => {
-  it("should trigger an error when a non-URL value is provided for the endpoint", () => {
-    const invalidConfig: Partial<ContentEvaluatorConfiguration> = {
+  it("should trigger an error when tokenCountLimit is not an integer", () => {
+    const invalidConfig: PartialContentEvaluatorConfiguration = {
       openAi: {
-        model: "gpt-4o-2024-08-06",
-        endpoint: "not-a-valid-url",
         maxRetries: 3,
-        tokenCountLimit: 0,
+        tokenCountLimit: 1.5,
       },
       originalAuthorWeight: 0.5,
     };
@@ -25,11 +27,9 @@ describe("ContentEvaluatorConfiguration Validation", () => {
     expect(assertInvalidConfig).toThrow();
   });
 
-  it("should pass validation when a valid URL value is provided for the endpoint", () => {
-    const validConfig: Partial<ContentEvaluatorConfiguration> = {
+  it("should pass validation when tokenCountLimit and maxRetries are valid", () => {
+    const validConfig: PartialContentEvaluatorConfiguration = {
       openAi: {
-        model: "gpt-4o-2024-08-06",
-        endpoint: "https://api.openai.com/v1",
         maxRetries: 3,
         tokenCountLimit: 100,
       },
@@ -40,5 +40,17 @@ describe("ContentEvaluatorConfiguration Validation", () => {
     const decodedConfig = Value.Decode(contentEvaluatorConfigurationType, defaultedConfig);
     const isValid = Value.Check(contentEvaluatorConfigurationType, decodedConfig);
     expect(isValid).toBe(true);
+  });
+
+  it("should apply defaults when openAi is empty", () => {
+    const config: PartialContentEvaluatorConfiguration = {
+      openAi: {},
+      originalAuthorWeight: 0.5,
+    };
+
+    const defaultedConfig = Value.Default(contentEvaluatorConfigurationType, config);
+    const decodedConfig = Value.Decode(contentEvaluatorConfigurationType, defaultedConfig);
+    expect(decodedConfig.openAi.tokenCountLimit).toBe(124000);
+    expect(decodedConfig.openAi.maxRetries).toBe(10);
   });
 });

@@ -51,7 +51,7 @@ const ctx = {
   stateId: 1,
   eventName: "issues.closed",
   authToken: process.env.GITHUB_TOKEN,
-  ref: "",
+  ref: "refs/heads/main",
   payload: {
     issue: {
       html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/5",
@@ -83,7 +83,6 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
   env: {
-    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
@@ -246,9 +245,6 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
           })()
         );
       });
-    jest
-      .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
-      .mockImplementation(() => Promise.resolve(Infinity));
     jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
       return {
         "test.ts": {

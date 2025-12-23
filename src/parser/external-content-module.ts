@@ -2,7 +2,7 @@ import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import he from "he";
 import { JSDOM } from "jsdom";
 import { marked } from "marked";
-import OpenAI from "openai";
+import { callLlm } from "@ubiquity-os/plugin-sdk";
 import { ExternalContentConfig } from "../configuration/external-content-config";
 import { checkLlmRetryableState, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
@@ -10,13 +10,21 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import { CommentKind } from "../configuration/comment-types";
-import ChatCompletionCreateParamsNonStreaming = OpenAI.ChatCompletionCreateParamsNonStreaming;
+
+type LlmPrompt = Parameters<typeof callLlm>[0];
+
+function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    Symbol.asyncIterator in value &&
+    typeof (value as { [Symbol.asyncIterator]?: unknown })[Symbol.asyncIterator] === "function"
+  );
+}
 
 export class ExternalContentProcessor extends BaseModule {
   private readonly _isEnabled: boolean;
   readonly _configuration: ExternalContentConfig;
-  readonly _llmImage: OpenAI;
-  readonly _llmWebsite: OpenAI;
 
   constructor(context: ContextPlugin) {
     super(context);
@@ -25,18 +33,8 @@ export class ExternalContentProcessor extends BaseModule {
 
     if (config) {
       this._configuration = config;
-      this._llmImage = new OpenAI({
-        apiKey: this.context.env.OPENROUTER_API_KEY,
-        ...(config.llmImageModel.endpoint && { baseURL: config.llmImageModel.endpoint }),
-      });
-      this._llmWebsite = new OpenAI({
-        apiKey: this.context.env.OPENROUTER_API_KEY,
-        ...(config.llmWebsiteModel.endpoint && { baseURL: config.llmWebsiteModel.endpoint }),
-      });
     } else {
       this._configuration = {} as ExternalContentConfig;
-      this._llmImage = {} as OpenAI;
-      this._llmWebsite = {} as OpenAI;
     }
   }
 
@@ -52,19 +50,15 @@ export class ExternalContentProcessor extends BaseModule {
     }
   }
 
-  private async _buildUserPrompt(linkResponse: Response): Promise<ChatCompletionCreateParamsNonStreaming | null> {
+  private async _buildUserPrompt(linkResponse: Response): Promise<LlmPrompt | null> {
     const contentType = linkResponse.headers.get("content-type");
     if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
 
     if (contentType?.startsWith("image/")) {
       const imageData = await linkResponse.arrayBuffer();
       const linkContent = Buffer.from(imageData).toString("base64");
-      this.context.logger.debug("Analyzing image", {
-        href: linkResponse.url,
-        model: this._configuration.llmImageModel.model,
-      });
+      this.context.logger.debug("Analyzing image", { href: linkResponse.url });
       return {
-        model: this._configuration.llmImageModel.model,
         max_tokens: 1000,
         messages: [
           {
@@ -82,18 +76,11 @@ export class ExternalContentProcessor extends BaseModule {
             ],
           },
         ],
-        // @ts-expect-error Supported by OpenRouter: https://openrouter.ai/docs/features/message-transforms
-        transforms: ["middle-out"],
       };
     }
     const linkContent = await linkResponse.text();
-    this.context.logger.debug("Evaluating anchor content", {
-      href: linkResponse.url,
-      contentType,
-      model: this._configuration.llmWebsiteModel.model,
-    });
+    this.context.logger.debug("Evaluating anchor content", { href: linkResponse.url, contentType });
     return {
-      model: this._configuration.llmWebsiteModel.model,
       max_tokens: 1000,
       messages: [
         {
@@ -105,8 +92,6 @@ export class ExternalContentProcessor extends BaseModule {
           content: `Provide a direct factual summary in one paragraph, written in a single line. Start immediately with the key information without introductory phrases. Focus on factual information and avoid subjective language or emotional adjectives. Do not use bullet points or numbering, only plain sentences. The content is provided as "${contentType}" content.\n\n${linkContent}`,
         },
       ],
-      // @ts-expect-error Supported by OpenRouter: https://openrouter.ai/docs/features/message-transforms
-      transforms: ["middle-out"],
     };
   }
 
@@ -142,16 +127,19 @@ export class ExternalContentProcessor extends BaseModule {
 
           const prompt = await this._buildUserPrompt(linkResponse);
           if (!prompt) return null;
-          const llmResponse =
-            await this[contentType.startsWith("image/") ? "_llmImage" : "_llmWebsite"].chat.completions.create(prompt);
-          if (!llmResponse.choices?.length || !llmResponse.choices[0]?.message?.content) {
+          const llmResponse = await callLlm(prompt, this.context);
+          if (isAsyncIterable(llmResponse)) {
+            throw this.context.logger.error("Unexpected streaming response from the LLM.");
+          }
+          const content = llmResponse.choices[0]?.message?.content;
+          if (typeof content !== "string" || !content.trim()) {
             throw this.context.logger.error("Failed to generate a description for the given external element.", {
               url,
               contentType,
               llmResponse,
             });
           }
-          return llmResponse.choices[0].message.content;
+          return content;
         },
         {
           maxRetries: this._configuration[isImage ? "llmImageModel" : "llmWebsiteModel"].maxRetries,
