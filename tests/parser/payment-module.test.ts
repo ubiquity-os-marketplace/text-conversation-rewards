@@ -21,6 +21,7 @@ const PAYOUT_MODE_PERMIT = '"payoutMode": "permit"';
 const DEFAULT_TIMESTAMP = "2024-01-01T00:00:00.000Z";
 const DEFAULT_URL = "https://example.test/issues/1";
 const NO_MARKER_BODY = "no payout markers";
+const EMPTY_STRING = "";
 const ctx = {
   eventName: "issues.closed",
   payload: {
@@ -183,7 +184,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
-      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
+      ctx.env.PERMIT_FEE_RATE = "";
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -203,8 +204,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
-      (process.env as Partial<NodeJS.ProcessEnv>).PERMIT_TREASURY_GITHUB_USERNAME = undefined;
-      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_TREASURY_GITHUB_USERNAME;
+      process.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
+      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -255,7 +256,7 @@ describe("payment-module.ts", () => {
 
   describe("_getBeneficiaries()", () => {
     beforeEach(() => {
-      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -350,7 +351,7 @@ describe("payment-module.ts", () => {
 
   describe("_automaticTransferMode", () => {
     beforeEach(() => {
-      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -382,7 +383,7 @@ describe("payment-module.ts", () => {
   });
   describe("_getPayoutMode()", () => {
     beforeEach(() => {
-      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -453,7 +454,7 @@ describe("payment-module.ts", () => {
   const fundingWalletPrivateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   describe("_canTransferDirectly()", () => {
     beforeEach(() => {
-      delete (ctx.env as Partial<typeof ctx.env>).PERMIT_FEE_RATE;
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
     });
 
