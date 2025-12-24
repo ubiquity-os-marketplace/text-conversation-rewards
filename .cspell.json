@@ -53,7 +53,8 @@
     "millis",
     "dedupe",
     "plpgsql",
-    "PGRST"
+    "PGRST",
+    "Postgrest"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [
