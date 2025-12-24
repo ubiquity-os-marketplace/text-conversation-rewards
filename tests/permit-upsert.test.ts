@@ -141,7 +141,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(mockInsert).toHaveBeenCalledTimes(1);
     expect(context.logger.warn).toHaveBeenCalledWith(
       "upsert_permit_max RPC unavailable; falling back to insert",
-      expect.objectContaining({ error: expect.anything() })
+      expect.objectContaining({ err: expect.anything() })
     );
   });
 
@@ -159,7 +159,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(mockInsert).toHaveBeenCalledTimes(1);
     expect(context.logger.warn).toHaveBeenCalledWith(
       "upsert_permit_max RPC unavailable; falling back to insert",
-      expect.objectContaining({ error: expect.anything() })
+      expect.objectContaining({ err: expect.anything() })
     );
   });
 
@@ -174,7 +174,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(mockInsert).toHaveBeenCalledTimes(1);
     expect(context.logger.warn).toHaveBeenCalledWith(
       "upsert_permit_max RPC unavailable; falling back to insert",
-      expect.objectContaining({ error: expect.anything(), reason: "permission denied" })
+      expect.objectContaining({ err: expect.anything(), reason: "permission denied" })
     );
   });
 
@@ -187,7 +187,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(mockInsert).not.toHaveBeenCalled();
     expect(context.logger.error).toHaveBeenCalledWith(
       "Failed to upsert permit via RPC",
-      expect.objectContaining({ error: expect.anything() })
+      expect.objectContaining({ err: expect.anything() })
     );
   });
 
@@ -200,7 +200,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(didUpsert).toBe(false);
     expect(context.logger.error).toHaveBeenCalledWith(
       "Failed to insert permit after RPC fallback",
-      expect.objectContaining({ error: expect.anything() })
+      expect.objectContaining({ err: expect.anything() })
     );
   });
 
@@ -256,7 +256,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(context.logger.error).toHaveBeenCalledWith(
       "Failed to load existing permit after unique violation",
       expect.objectContaining({
-        error: expect.anything(),
+        err: expect.anything(),
         nonce: baseInsertData.nonce,
         beneficiary_id: baseInsertData.beneficiary_id,
       })
@@ -279,7 +279,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(context.logger.error).toHaveBeenCalledWith(
       "Failed to load existing permit after unique violation",
       expect.objectContaining({
-        error: expect.anything(),
+        err: expect.anything(),
         nonce: baseInsertData.nonce,
         beneficiary_id: baseInsertData.beneficiary_id,
       })
@@ -312,7 +312,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(context.logger.error).toHaveBeenCalledWith(
       "Failed to compare permit amounts after unique violation",
       expect.objectContaining({
-        error: expect.anything(),
+        err: expect.anything(),
         nonce: baseInsertData.nonce,
         beneficiary_id: baseInsertData.beneficiary_id,
       })
@@ -346,7 +346,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     expect(didUpsert).toBe(false);
     expect(context.logger.error).toHaveBeenCalledWith(
       "Failed to update permit after RPC fallback",
-      expect.objectContaining({ error: expect.anything() })
+      expect.objectContaining({ err: expect.anything() })
     );
   });
 
