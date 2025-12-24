@@ -1,17 +1,18 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
+import { PermitReward, TokenType } from "@ubiquity-os/permit-generation";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { parseUnits } from "ethers/lib/utils";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { IssueActivity } from "../../src/issue-activity";
+import { ReviewIncentivizerModule } from "../../src/parser/review-incentivizer-module";
 import { ContextPlugin, RewardSettings } from "../../src/types/plugin-input";
 import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
 import { mockWeb3Module } from "../helpers/web3-mocks";
-import { ReviewIncentivizerModule } from "../../src/parser/review-incentivizer-module";
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
@@ -274,6 +275,76 @@ describe("payment-module.ts", () => {
       expect(beneficiaries).not.toBeNull();
       const totalPayable = beneficiaries?.reduce((accumulator, current) => accumulator + current.amount, 0);
       expect(totalPayable).toEqual(111.11);
+    });
+  });
+
+  describe("_savePermitsToDatabase()", () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("should skip inserting permits with zero amount", async () => {
+      const insert = jest.fn<() => Promise<{ error: null }>>().mockResolvedValue({ error: null });
+      const supabaseMock = {
+        from: jest.fn((table: string) => {
+          if (table === "users") {
+            return {
+              // eslint-disable-next-line sonarjs/no-nested-functions
+              select: jest.fn(() => ({
+                eq: jest.fn(() => ({
+                  single: jest.fn(() => Promise.resolve({ data: { id: 1 } })),
+                })),
+              })),
+            };
+          }
+          if (table === "permits") {
+            return { insert };
+          }
+          return {
+            // eslint-disable-next-line sonarjs/no-nested-functions
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                single: jest.fn(() => Promise.resolve({ data: null })),
+              })),
+            })),
+          };
+        }),
+      };
+
+      const paymentModule = new PaymentModule({
+        ...ctx,
+        adapters: {
+          supabase: {
+            location: { getOrCreateIssueLocation: jest.fn<() => Promise<number>>().mockResolvedValue(5) },
+          },
+        },
+      } as unknown as ContextPlugin);
+
+      (paymentModule as unknown as { _supabase: typeof supabaseMock })._supabase = supabaseMock;
+      jest
+        .spyOn(paymentModule as unknown as { _getOrCreateToken: () => Promise<number> }, "_getOrCreateToken")
+        .mockResolvedValue(10);
+      jest
+        .spyOn(paymentModule as unknown as { _getOrCreatePartner: () => Promise<number> }, "_getOrCreatePartner")
+        .mockResolvedValue(20);
+
+      const zeroAmountPermit: PermitReward = {
+        tokenType: TokenType.ERC20,
+        tokenAddress: "0xtoken",
+        beneficiary: "0xbeneficiary",
+        nonce: "1",
+        deadline: "0",
+        owner: "0xowner",
+        signature: "sig",
+        networkId: 1,
+        amount: "0",
+      };
+
+      await paymentModule._savePermitsToDatabase(1, { issueId: 99, issueUrl: "https://example.com" }, [
+        zeroAmountPermit,
+      ]);
+
+      expect(insert).not.toHaveBeenCalled();
     });
   });
 
