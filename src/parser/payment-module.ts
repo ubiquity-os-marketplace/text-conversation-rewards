@@ -1,7 +1,7 @@
 import { context } from "@actions/github";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 import { Value } from "@sinclair/typebox/value";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, PostgrestError } from "@supabase/supabase-js";
 import { decodeError } from "@ubiquity-os/ethers-decode-error";
 import {
   Context,
@@ -40,8 +40,6 @@ import { RewardSettings } from "../types/plugin-input";
 import { PayoutMode, Result } from "../types/results";
 import chains from "../types/rpcs.json";
 import type { Database } from "../adapters/supabase/types/database";
-
-type RpcChain = (typeof chains)[number];
 
 interface Payload {
   evmNetworkId: number;
@@ -363,7 +361,7 @@ export class PaymentModule extends BaseModule {
   }
 
   _getNetworkExplorer(networkId: number): string {
-    const chain = (chains as RpcChain[]).find((chain) => chain.chainId === networkId);
+    const chain = chains.find((chain) => chain.chainId === networkId);
     return chain?.explorers?.[0].url || "https://blockscan.com";
   }
 
@@ -756,7 +754,7 @@ export class PaymentModule extends BaseModule {
           };
           const didUpsert = await this._upsertPermitRecord(insertData);
           if (!didUpsert) {
-            this.context.logger.error("Failed to save permit", {
+            this.context.logger.warn("Failed to save permit", {
               beneficiaryId: userData.id,
               nonce: insertData.nonce,
               signature: insertData.signature,
@@ -799,18 +797,15 @@ export class PaymentModule extends BaseModule {
       return true;
     }
 
-    const message = this._getErrorMessage(error);
-    const code = this._getErrorCode(error);
-    const errorForLog = this._getErrorForLog(error, message);
-    const fallbackReason = this._getRpcFallbackReason(message, code);
+    const fallbackReason = this._getRpcFallbackReason(error);
 
     if (!fallbackReason) {
-      this.context.logger.error("Failed to upsert permit via RPC", { error: errorForLog });
+      this.context.logger.error("Failed to upsert permit via RPC", { err: error });
       return false;
     }
 
     this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", {
-      error: errorForLog,
+      err: error,
       reason: fallbackReason,
     });
     return this._insertPermitWithFallback(insertData, metadata);
@@ -829,7 +824,7 @@ export class PaymentModule extends BaseModule {
       missingFields.push("partner_id");
     }
     if (missingFields.length > 0) {
-      this.context.logger.error(
+      this.context.logger.warn(
         "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
         {
           nonce: insertData.nonce,
@@ -846,8 +841,9 @@ export class PaymentModule extends BaseModule {
     };
   }
 
-  private _getRpcFallbackReason(message: string, code: string | null): RpcFallbackReason | null {
-    const normalizedMessage = message.toLowerCase();
+  private _getRpcFallbackReason(error: PostgrestError): RpcFallbackReason | null {
+    const normalizedMessage = error.message.toLowerCase();
+    const code = error.code;
     const isSchemaCacheMissing =
       normalizedMessage.includes("schema cache") && normalizedMessage.includes("upsert_permit_max");
     const isRpcMissing =
@@ -874,19 +870,16 @@ export class PaymentModule extends BaseModule {
       return true;
     }
 
-    const insertMessage = this._getErrorMessage(insertError);
-    const insertCode = this._getErrorCode(insertError);
-    const insertErrorForLog = this._getErrorForLog(insertError, insertMessage);
-
-    if (!this._isUniqueViolation(insertCode, insertMessage)) {
-      this.context.logger.error("Failed to insert permit after RPC fallback", { error: insertErrorForLog });
+    if (!this._isUniqueViolation(insertError)) {
+      this.context.logger.error("Failed to insert permit after RPC fallback", { err: insertError });
       return false;
     }
 
-    return this._handleDuplicatePermitAfterFallback(insertData, metadata, insertErrorForLog);
+    return this._handleDuplicatePermitAfterFallback(insertData, metadata, insertError);
   }
 
-  private _isUniqueViolation(code: string | null, message: string): boolean {
+  private _isUniqueViolation(error: PostgrestError): boolean {
+    const { message, code } = error;
     const normalizedMessage = message.toLowerCase();
     return code === "23505" || normalizedMessage.includes("duplicate key value violates unique constraint");
   }
@@ -894,13 +887,13 @@ export class PaymentModule extends BaseModule {
   private async _handleDuplicatePermitAfterFallback(
     insertData: Database["public"]["Tables"]["permits"]["Insert"],
     metadata: PermitMetadata,
-    insertErrorForLog: Error | { stack: string }
+    insertError: PostgrestError
   ): Promise<boolean> {
     const existingPermit = await this._loadExistingPermit(
       metadata,
       insertData,
       "Failed to load existing permit after unique violation",
-      insertErrorForLog
+      insertError
     );
     if (!existingPermit) {
       return false;
@@ -924,7 +917,7 @@ export class PaymentModule extends BaseModule {
       existingPermit,
       incomingAmount,
       metadata,
-      insertErrorForLog
+      insertError
     );
   }
 
@@ -932,7 +925,7 @@ export class PaymentModule extends BaseModule {
     metadata: PermitMetadata,
     insertData: Database["public"]["Tables"]["permits"]["Insert"],
     message: string,
-    fallbackError: Error | { stack: string }
+    fallbackError: PostgrestError
   ): Promise<ExistingPermitRecord | null> {
     const { data: existingPermit, error: existingError } = await this._supabase
       .from("permits")
@@ -943,11 +936,9 @@ export class PaymentModule extends BaseModule {
       .eq("nonce", insertData.nonce)
       .maybeSingle();
     if (existingError || !existingPermit) {
-      const existingErrorForLog = existingError
-        ? this._getErrorForLog(existingError, this._getErrorMessage(existingError))
-        : fallbackError;
+      const existingErrorForLog = existingError ?? fallbackError;
       this.context.logger.error(message, {
-        error: existingErrorForLog,
+        err: existingErrorForLog,
         nonce: insertData.nonce,
         beneficiary_id: insertData.beneficiary_id,
       });
@@ -963,12 +954,8 @@ export class PaymentModule extends BaseModule {
     try {
       return new Decimal(amount);
     } catch (parseError) {
-      const parseErrorForLog = this._getErrorForLog(
-        parseError,
-        "Failed to compare permit amounts after unique violation"
-      );
       this.context.logger.error("Failed to compare permit amounts after unique violation", {
-        error: parseErrorForLog,
+        err: parseError,
         nonce: insertData.nonce,
         beneficiary_id: insertData.beneficiary_id,
       });
@@ -981,7 +968,7 @@ export class PaymentModule extends BaseModule {
     existingPermit: ExistingPermitRecord,
     incomingAmount: Decimal,
     metadata: PermitMetadata,
-    insertErrorForLog: Error | { stack: string }
+    insertErrorForLog: PostgrestError
   ): Promise<boolean> {
     const currentAmount = this._parsePermitAmount(existingPermit.amount, insertData);
     if (!currentAmount) {
@@ -1016,7 +1003,7 @@ export class PaymentModule extends BaseModule {
     insertData: Database["public"]["Tables"]["permits"]["Insert"],
     incomingAmount: Decimal,
     metadata: PermitMetadata,
-    insertErrorForLog: Error | { stack: string }
+    insertErrorForLog: PostgrestError
   ): Promise<boolean> {
     const refreshedPermit = await this._loadExistingPermit(
       metadata,
@@ -1089,64 +1076,13 @@ export class PaymentModule extends BaseModule {
       .is("transaction", null)
       .select("id");
     if (updateError) {
-      const updateErrorForLog = this._getErrorForLog(updateError, this._getErrorMessage(updateError));
-      this.context.logger.error("Failed to update permit after RPC fallback", { error: updateErrorForLog });
+      this.context.logger.error("Failed to update permit after RPC fallback", { err: updateError });
       return "error";
     }
     if (updatedPermits && updatedPermits.length > 0) {
       return "updated";
     }
     return "skipped";
-  }
-
-  private _getErrorMessage(error: unknown): string {
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "message" in error &&
-      typeof (error as { message?: unknown }).message === "string"
-    ) {
-      return (error as { message: string }).message;
-    }
-
-    if (typeof error === "object" && error !== null) {
-      try {
-        const json = JSON.stringify(error);
-        if (json && json !== "{}") {
-          return json;
-        }
-      } catch {
-        // Ignore JSON serialization errors and fall back to String(error).
-      }
-    }
-
-    return String(error);
-  }
-
-  private _getErrorCode(error: unknown): string | null {
-    if (typeof error === "object" && error !== null && "code" in error) {
-      const code = (error as { code?: unknown }).code;
-      return code === null || code === undefined ? null : String(code);
-    }
-
-    return null;
-  }
-
-  private _getErrorForLog(error: unknown, fallbackMessage: string): Error | { stack: string } {
-    if (error instanceof Error) {
-      return error;
-    }
-
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "stack" in error &&
-      typeof (error as { stack?: unknown }).stack === "string"
-    ) {
-      return error as { stack: string };
-    }
-
-    return new Error(fallbackMessage);
   }
 
   async _parsePrivateKey(evmPrivateEncrypted: string) {
