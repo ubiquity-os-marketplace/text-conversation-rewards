@@ -1,7 +1,6 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { RestEndpointMethodTypes } from "@octokit/rest";
 import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
@@ -230,7 +229,7 @@ describe("Modules tests", () => {
             },
           ],
         },
-      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
+      } as unknown as ReturnType<Awaited<typeof ctx.octokit.rest.repos.compareCommits>>;
     });
   });
 

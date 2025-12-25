@@ -658,7 +658,7 @@ export class PaymentModule extends BaseModule {
         .single();
 
       if (error || !insertedToken) {
-        this.context.logger.error("Failed to insert a new token:", error);
+        this.context.logger.error("Failed to insert a new token:", { err: error });
       } else {
         tokenId = insertedToken.id;
       }
@@ -714,7 +714,7 @@ export class PaymentModule extends BaseModule {
         .single();
 
       if (error || !insertedPartner) {
-        this.context.logger.error("Failed to insert a new token:", error);
+        this.context.logger.error("Failed to insert a new token:", { err: error });
       } else {
         partnerId = insertedPartner.id;
       }

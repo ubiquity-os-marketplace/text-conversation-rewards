@@ -172,7 +172,7 @@ describe("Review Incentivizer", () => {
             },
           ],
         },
-      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
+      } as unknown as ReturnType<Awaited<typeof ctx.octokit.rest.repos.compareCommits>>;
     });
 
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
