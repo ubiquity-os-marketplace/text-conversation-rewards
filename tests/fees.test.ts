@@ -4,7 +4,6 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { mockWeb3Module } from "./helpers/web3-mocks";
-import "libsodium-wrappers";
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 mockWeb3Module();
