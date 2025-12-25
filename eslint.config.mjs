@@ -85,7 +85,7 @@ export default defineConfig(
       "sonarjs/no-identical-expressions": "error",
       "sonarjs/new-cap": "off",
       "sonarjs/different-types-comparison": "off",
-      "sonarjs/sonar-prefer-regexp-exec": "off",
+      "sonarjs/prefer-regexp-exec": "off",
       "sonarjs/function-return-type": "off",
       "sonarjs/no-misleading-array-reverse": "off",
       "sonarjs/slow-regex": "off",
