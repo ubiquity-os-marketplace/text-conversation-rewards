@@ -1,10 +1,10 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
-import { server } from "./__mocks__/node";
 import { afterAll, afterEach, beforeAll, expect, it, jest } from "@jest/globals";
-import cfg from "./__mocks__/results/valid-configuration.json";
-import { ContextPlugin } from "../src/types/plugin-input";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { ContextPlugin } from "../src/types/plugin-input";
+import { server } from "./__mocks__/node";
+import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 
 beforeAll(() => server.listen());
@@ -22,6 +22,10 @@ describe("Price tests", () => {
         getTaskReward: jest.fn(() => 0),
       };
     });
+
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(() => []),
+    }));
 
     jest.mock("../src/helpers/get-comment-details", () => ({
       getMinimizedCommentStatus: jest.fn(),
@@ -94,6 +98,10 @@ describe("Price tests", () => {
         getTaskReward: jest.fn(() => 0),
       };
     });
+
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(() => []),
+    }));
 
     jest.mock("../src/helpers/get-comment-details", () => ({
       getMinimizedCommentStatus: jest.fn(),
