@@ -79,6 +79,13 @@ type ExistingPermitRecord = {
 
 type RpcFallbackReason = "permission denied" | "unavailable";
 
+class PermitPersistenceError extends Error {
+  constructor(message: string, readonly context: Record<string, unknown>) {
+    super(message);
+    this.name = "PermitPersistenceError";
+  }
+}
+
 export class PaymentModule extends BaseModule {
   readonly _configuration: PaymentConfiguration | null = this.context.config.incentives.payment;
   readonly _autoTransferMode =
@@ -253,6 +260,9 @@ export class PaymentModule extends BaseModule {
       try {
         await this._tryDirectTransfer(result, config, networkExplorer, issueId, payload.issueUrl, privateKey);
       } catch (e) {
+        if (e instanceof PermitPersistenceError) {
+          throw e;
+        }
         this.context.logger.warn(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
       }
@@ -275,8 +285,9 @@ export class PaymentModule extends BaseModule {
             },
           ],
         };
+        let permits: PermitReward[];
         try {
-          const permits = await generatePayoutPermit(
+          permits = await generatePayoutPermit(
             {
               env,
               eventName,
@@ -296,12 +307,14 @@ export class PaymentModule extends BaseModule {
             },
             configPayload.permitRequests
           );
-          result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
-          result[username].payoutMode = "permit";
-          await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
         } catch (e) {
           this.context.logger.warn(`Failed to generate permits for user ${username}`, { e });
+          continue;
         }
+
+        result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
+        result[username].payoutMode = "permit";
+        await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
       }
     }
 
@@ -330,11 +343,7 @@ export class PaymentModule extends BaseModule {
       beneficiaries.map(async (beneficiary, idx) => {
         result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
         result[beneficiary.username].payoutMode = "transfer";
-        try {
-          await this._savePermitsToDatabase(result[beneficiary.username].userId, { issueUrl, issueId }, [permits[idx]]);
-        } catch (e) {
-          this.context.logger.warn(`Failed to save permits to the database`, { e });
-        }
+        await this._savePermitsToDatabase(result[beneficiary.username].userId, { issueUrl, issueId }, [permits[idx]]);
       })
     );
   }
@@ -763,7 +772,7 @@ export class PaymentModule extends BaseModule {
           };
           const didUpsert = await this._upsertPermitRecord(insertData);
           if (!didUpsert) {
-            this.context.logger.warn("Failed to save permit", {
+            throw new PermitPersistenceError("Failed to save permit", {
               beneficiaryId: userData.id,
               nonce: insertData.nonce,
               signature: insertData.signature,
@@ -771,10 +780,22 @@ export class PaymentModule extends BaseModule {
             });
           }
         } else {
-          this.context.logger.error(`Failed to save the permit: could not find user ${userId}`);
+          throw new PermitPersistenceError(`Failed to save the permit: could not find user ${userId}`, {
+            beneficiaryId: userId,
+            nonce: permit.nonce,
+          });
         }
       } catch (e) {
+        if (e instanceof PermitPersistenceError) {
+          this.context.logger.error(e.message, e.context);
+          throw e;
+        }
         this.context.logger.error("Failed to save permits to the database", { e });
+        throw new PermitPersistenceError("Failed to save permits to the database", {
+          beneficiaryId: userId,
+          nonce: permit.nonce,
+          error: e,
+        });
       }
     }
   }
