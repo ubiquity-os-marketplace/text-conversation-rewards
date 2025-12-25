@@ -83,7 +83,6 @@ export default defineConfig(
       "sonarjs/no-element-overwrite": "error",
       "sonarjs/no-identical-conditions": "error",
       "sonarjs/no-identical-expressions": "error",
-      // "sonarjs/no-invalid-await": "off",
       "sonarjs/new-cap": "off",
       "sonarjs/different-types-comparison": "off",
       "sonarjs/sonar-prefer-regexp-exec": "off",
