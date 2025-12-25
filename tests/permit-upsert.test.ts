@@ -55,7 +55,12 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
-const { PaymentModule } = await import("../src/parser/payment-module");
+// eslint-disable-next-line @typescript-eslint/naming-convention
+let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
+
+beforeAll(async () => {
+  PaymentModule = (await import("../src/parser/payment-module")).PaymentModule;
+});
 
 function makeContext(): ContextPlugin {
   return {
