@@ -14,6 +14,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import { Octokit } from "@octokit/rest";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { DataPurgeModule } from "../src/parser/data-purge-module";
+import { IssueActivity } from "../src/issue-activity";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
@@ -95,11 +96,9 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const { IssueActivity } = await import("../src/issue-activity");
-
 describe("Purging tests", () => {
   const issue = parseGitHubUrl(issueUrl);
-  const activity = new IssueActivity(ctx, issue);
+  let activity: IssueActivity;
 
   beforeEach(async () => {
     drop(db);
@@ -109,6 +108,8 @@ describe("Purging tests", () => {
         db[tableName].create(row);
       }
     }
+    const { IssueActivity } = await import("../src/issue-activity");
+    activity = new IssueActivity(ctx, issue);
     await activity.init();
   });
 
