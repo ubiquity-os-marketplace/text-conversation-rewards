@@ -34,7 +34,7 @@ import { mockWeb3Module } from "./helpers/web3-mocks";
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 const web3Mocks = mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -47,7 +47,7 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
@@ -96,7 +96,7 @@ const PLACEHOLDER_URL = "https://example.test/resource";
 const PLACEHOLDER_CONTENT = "placeholder content";
 const OPENAI_SYSTEM_PROMPT = "system prompt";
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
@@ -122,7 +122,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+jest.mock("../src/data-collection/collect-linked-pulls", () => ({
   collectLinkedPulls: jest.fn(() => [
     {
       id: "PR_kwDOLUK0B85soGlu",

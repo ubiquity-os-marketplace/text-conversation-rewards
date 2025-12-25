@@ -31,7 +31,7 @@ jest
     );
   });
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   context: {
     runId: "1",
     payload: {
@@ -42,7 +42,7 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+jest.mock("../src/data-collection/collect-linked-pulls", () => ({
   collectLinkedPulls: jest.fn(() => []),
 }));
 
@@ -76,7 +76,7 @@ const ctx = {
   },
 } as unknown as ContextPlugin;
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn((comments: GitHubIssueComment[]) => {
     for (let i = 0; i < comments.length; i++) {
       const comment = comments[i];
@@ -85,7 +85,7 @@ jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
   }),
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({})),
   };

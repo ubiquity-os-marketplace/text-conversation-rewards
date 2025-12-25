@@ -4,12 +4,12 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { mockWeb3Module } from "./helpers/web3-mocks";
-
+import "libsodium-wrappers";
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -84,7 +84,7 @@ describe("GithubCommentModule Fee Tests", () => {
 
     expect(bodyContent.raw).toEqual(
       '<details><summary><b><h3>&nbsp;<a href="https://pay.ubq.fi" target="_blank" rel="noopener">[ 100 WXDAI ]</a>&nbsp;</h3><h6>@ubiquity-os</h6></b></summary><h6>⚠️ 20% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6><h6>Contributions Overview</h6><table><thead><tr><th>View</th><th>Contribution</th><th>Count</th><th>Reward</th></tr></thead><tbody><tr><td>Issue</td><td>Task</td><td>1.5</td><td>50</td></tr></tbody></table></details>\n' +
-        "<!-- Ubiquity - GithubCommentModule - GithubCommentModule.createStructuredMetadata - 1234\n" +
+        "<!-- Ubiquity - GithubCommentModule - GithubCommentModule.getBodyContent - 1234\n" +
         "{\n" +
         '  "workflowUrl": "https://github.com/ubiquity-os/conversation-rewards/actions/runs/1",\n' +
         '  "output": {\n' +

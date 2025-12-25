@@ -37,14 +37,14 @@ const mockFrom = jest.fn(() => ({
   update: mockUpdate,
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => ({
+jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({
     rpc: mockRpc,
     from: mockFrom,
   })),
 }));
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   context: {
     payload: {
       repository: {

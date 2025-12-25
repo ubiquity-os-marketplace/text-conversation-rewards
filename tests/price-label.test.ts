@@ -16,18 +16,18 @@ afterAll(() => server.close());
 
 describe("Price tests", () => {
   it("Should skip when no price label is set", async () => {
-    jest.unstable_mockModule("../src/helpers/label-price-extractor", () => {
+    jest.mock("../src/helpers/label-price-extractor", () => {
       return {
         getSortedPrices: jest.fn(() => []),
         getTaskReward: jest.fn(() => 0),
       };
     });
 
-    jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+    jest.mock("../src/helpers/get-comment-details", () => ({
       getMinimizedCommentStatus: jest.fn(),
     }));
 
-    jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
+    jest.mock("@octokit/plugin-paginate-graphql", () => ({
       paginateGraphQL() {
         return {
           graphql: {
@@ -88,18 +88,18 @@ describe("Price tests", () => {
   it("Should throw a warning when a Price: 0 label is detected", async () => {
     jest.resetModules();
 
-    jest.unstable_mockModule("../src/helpers/label-price-extractor", () => {
+    jest.mock("../src/helpers/label-price-extractor", () => {
       return {
         getSortedPrices: jest.fn(() => [0]),
         getTaskReward: jest.fn(() => 0),
       };
     });
 
-    jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+    jest.mock("../src/helpers/get-comment-details", () => ({
       getMinimizedCommentStatus: jest.fn(),
     }));
 
-    jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
+    jest.mock("@octokit/plugin-paginate-graphql", () => ({
       paginateGraphQL() {
         return {
           graphql: {
