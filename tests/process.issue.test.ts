@@ -143,27 +143,22 @@ jest.mock("../src/data-collection/collect-linked-pulls", () => ({
   ]),
 }));
 
-const { IssueActivity } = await import("../src/issue-activity");
-const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
-const { DataPurgeModule } = await import("../src/parser/data-purge-module");
-const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PaymentModule } = await import("../src/parser/payment-module");
-const { Processor } = await import("../src/parser/processor");
-const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
-const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
-const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
-const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
-const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
+/* eslint-disable @typescript-eslint/naming-convention */
+let IssueActivity: typeof import("../src/issue-activity").IssueActivity;
+let ContentEvaluatorModule: typeof import("../src/parser/content-evaluator-module").ContentEvaluatorModule;
+let DataPurgeModule: typeof import("../src/parser/data-purge-module").DataPurgeModule;
+let FormattingEvaluatorModule: typeof import("../src/parser/formatting-evaluator-module").FormattingEvaluatorModule;
+let GithubCommentModule: typeof import("../src/parser/github-comment-module").GithubCommentModule;
+let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
+let Processor: typeof import("../src/parser/processor").Processor;
+let UserExtractorModule: typeof import("../src/parser/user-extractor-module").UserExtractorModule;
+let ReviewIncentivizerModule: typeof import("../src/parser/review-incentivizer-module").ReviewIncentivizerModule;
+let EventIncentivesModule: typeof import("../src/parser/event-incentives-module").EventIncentivesModule;
+let SimplificationIncentivizerModule: typeof import("../src/parser/simplification-incentivizer-module").SimplificationIncentivizerModule;
+let ExternalContentProcessor: typeof import("../src/parser/external-content-module").ExternalContentProcessor;
+/* eslint-enable @typescript-eslint/naming-convention */
 
-jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
-  return {
-    "test.ts": {
-      addition: 50,
-      deletion: 50,
-    },
-  };
-});
+let activity: InstanceType<typeof IssueActivity>;
 
 function getExternalContentProcessor(context: ContextPlugin) {
   const instance = new ExternalContentProcessor(context);
@@ -172,20 +167,42 @@ function getExternalContentProcessor(context: ContextPlugin) {
   return instance;
 }
 
-beforeAll(() => {
+beforeAll(async () => {
   server.listen();
+
+  ({ IssueActivity } = await import("../src/issue-activity"));
+  ({ ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module"));
+  ({ DataPurgeModule } = await import("../src/parser/data-purge-module"));
+  ({ FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module"));
+  ({ GithubCommentModule } = await import("../src/parser/github-comment-module"));
+  ({ PaymentModule } = await import("../src/parser/payment-module"));
+  ({ Processor } = await import("../src/parser/processor"));
+  ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
+  ({ ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module"));
+  ({ EventIncentivesModule } = await import("../src/parser/event-incentives-module"));
+  ({ SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module"));
+  ({ ExternalContentProcessor } = await import("../src/parser/external-content-module"));
+
+  jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+    return {
+      "test.ts": {
+        addition: 50,
+        deletion: 50,
+      },
+    };
+  });
+
   // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };
+  const issue = parseGitHubUrl(issueUrl);
+  activity = new IssueActivity(ctx, issue);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("Modules tests", () => {
-  const issue = parseGitHubUrl(issueUrl);
-  const activity = new IssueActivity(ctx, issue);
-
   beforeAll(async () => {
     await activity.init();
     for (const item of dbSeed.users) {

@@ -16,6 +16,7 @@ import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
+import { parseGitHubUrl } from "../src/start";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
@@ -89,85 +90,104 @@ jest.mock("../src/data-collection/collect-linked-pulls", () => ({
   collectLinkedPulls: collectLinkedPulls,
 }));
 
-beforeAll(() => {
+/* eslint-disable @typescript-eslint/naming-convention */
+let IssueActivity: typeof import("../src/issue-activity").IssueActivity;
+let ContentEvaluatorModule: typeof import("../src/parser/content-evaluator-module").ContentEvaluatorModule;
+let DataPurgeModule: typeof import("../src/parser/data-purge-module").DataPurgeModule;
+let FormattingEvaluatorModule: typeof import("../src/parser/formatting-evaluator-module").FormattingEvaluatorModule;
+let GithubCommentModule: typeof import("../src/parser/github-comment-module").GithubCommentModule;
+let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
+let Processor: typeof import("../src/parser/processor").Processor;
+let UserExtractorModule: typeof import("../src/parser/user-extractor-module").UserExtractorModule;
+// let parseGitHubUrl: typeof import("../src/start").parseGitHubUrl;
+let ExternalContentProcessor: typeof import("../src/parser/external-content-module").ExternalContentProcessor;
+/* eslint-enable @typescript-eslint/naming-convention */
+
+let activity: InstanceType<typeof IssueActivity>;
+
+const issue = parseGitHubUrl(issueUrl);
+const ctx = {
+  eventName: "issues.closed",
+  payload: {
+    issue: {
+      html_url: issueUrl,
+      number: 69,
+      state_reason: "completed",
+      assignees: [
+        {
+          id: 1,
+          login: "gentlementlegen",
+        },
+        {
+          id: 2,
+          login: "0x4007",
+        },
+      ],
+    },
+    repository: {
+      name: "conversation-rewards",
+      owner: {
+        login: "ubiquity-os",
+        id: 76412717, // https://github.com/ubiquity
+      },
+    },
+  },
+  adapters: {
+    supabase: {
+      wallet: {
+        getWalletByUserId: jest.fn(async () => "0x1"),
+      },
+    },
+  },
+  config: cfg,
+  logger: new Logs("debug"),
+  octokit: new Octokit(),
+  env: process.env,
+} as unknown as ContextPlugin;
+
+beforeAll(async () => {
   server.listen();
+
+  ({ IssueActivity } = await import("../src/issue-activity"));
+  ({ ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module"));
+  ({ DataPurgeModule } = await import("../src/parser/data-purge-module"));
+  ({ FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module"));
+  ({ GithubCommentModule } = await import("../src/parser/github-comment-module"));
+  ({ PaymentModule } = await import("../src/parser/payment-module"));
+  ({ Processor } = await import("../src/parser/processor"));
+  ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
+  // ({ parseGitHubUrl } = await import("../src/start"));
+  ({ ExternalContentProcessor } = await import("../src/parser/external-content-module"));
+
   // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };
+
+  jest
+    .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+    .mockImplementation((specificationBody, userId, comments) => {
+      return Promise.resolve(
+        (() => {
+          const relevance: { [k: string]: number } = {};
+          comments.forEach((comment) => {
+            relevance[`${comment.id}`] = 0.8;
+          });
+          return relevance;
+        })()
+      );
+    });
+
+  jest
+    .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
+    .mockImplementation(() => Promise.resolve(Infinity));
+
+  activity = new IssueActivity(ctx, issue);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const { IssueActivity } = await import("../src/issue-activity");
-const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
-const { DataPurgeModule } = await import("../src/parser/data-purge-module");
-const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PaymentModule } = await import("../src/parser/payment-module");
-const { Processor } = await import("../src/parser/processor");
-const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
-const { parseGitHubUrl } = await import("../src/start");
-const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
-
-jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, userId, comments) => {
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        return relevance;
-      })()
-    );
-  });
-
-jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
-
 describe("Rewards tests", () => {
-  const issue = parseGitHubUrl(issueUrl);
-  const ctx = {
-    eventName: "issues.closed",
-    payload: {
-      issue: {
-        html_url: issueUrl,
-        number: 69,
-        state_reason: "completed",
-        assignees: [
-          {
-            id: 1,
-            login: "gentlementlegen",
-          },
-          {
-            id: 2,
-            login: "0x4007",
-          },
-        ],
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-          id: 76412717, // https://github.com/ubiquity
-        },
-      },
-    },
-    adapters: {
-      supabase: {
-        wallet: {
-          getWalletByUserId: jest.fn(async () => "0x1"),
-        },
-      },
-    },
-    config: cfg,
-    logger: new Logs("debug"),
-    octokit: new Octokit(),
-    env: process.env,
-  } as unknown as ContextPlugin;
-  const activity = new IssueActivity(ctx, issue);
-
   beforeEach(async () => {
     drop(db);
     for (const table of Object.keys(dbSeed)) {
