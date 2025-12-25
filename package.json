@@ -33,7 +33,7 @@
     "@octokit/request-error": "^7.1.0",
     "@octokit/rest": "^22.0.1",
     "@sinclair/typebox": "0.34.30",
-    "@supabase/supabase-js": "2.42.0",
+    "@supabase/supabase-js": "2.89.0",
     "@ubiquity-os/ethers-decode-error": "^1.1.0",
     "@ubiquity-os/permit-generation": "^2.1.1",
     "@ubiquity-os/plugin-sdk": "3.6.2",
