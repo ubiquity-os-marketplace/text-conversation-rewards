@@ -145,10 +145,6 @@ jest.mock("@supabase/supabase-js", () => {
 
 beforeAll(() => {
   server.listen();
-   
-  // PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
-  //   return "https://rpc";
-  // };
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
