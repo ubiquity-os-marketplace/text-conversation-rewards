@@ -186,6 +186,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.env.PERMIT_FEE_RATE = "";
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
@@ -196,6 +198,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is 0", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.env.PERMIT_FEE_RATE = "0";
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
@@ -206,6 +210,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       process.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
       ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
       const paymentModule = new PaymentModule(ctx);
@@ -217,6 +223,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if ERC20 reward token is included in PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), DOLLAR_ADDRESS);
@@ -228,6 +236,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should apply fees", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       const paymentModule = new PaymentModule(ctx);
       const resultAfterFees = await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
 
@@ -250,6 +260,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return a network explorer url", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       const paymentModule = new PaymentModule(ctx);
       const url = paymentModule._getNetworkExplorer(100);
       expect(url).toMatch(/http.*/);
@@ -273,6 +285,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return the correct total payable amount", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       const paymentModule = new PaymentModule(ctx);
       const beneficiaries = await paymentModule._getBeneficiaries(getResultOriginal());
       expect(beneficiaries).not.toBeNull();
@@ -287,6 +301,8 @@ describe("payment-module.ts", () => {
     });
 
     it("should skip inserting permits with zero amount", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       const insert = jest.fn<() => Promise<{ error: null }>>().mockResolvedValue({ error: null });
       const supabaseMock = {
         from: jest.fn((table: string) => {
@@ -368,6 +384,8 @@ describe("payment-module.ts", () => {
       }
     });
     it("Should set correct value for _automaticTransferMode", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.config.incentives.payment = { automaticTransferMode: false };
       let paymentModule = new PaymentModule(ctx);
       expect(paymentModule._autoTransferMode).toEqual(false);
@@ -405,6 +423,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return null if the `payoutMode` was already set to `direct`", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.config.incentives.payment = { automaticTransferMode: false };
       let paymentModule = new PaymentModule(ctx);
 
@@ -422,6 +442,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return `permit` if the `payoutMode` was already set to `permit` or `autoTransferMode` is set to `false`", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.config.incentives.payment = { automaticTransferMode: false };
       const paymentModule = new PaymentModule(ctx);
 
@@ -437,6 +459,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return `permit` if the `payoutMode` was already set to `permit` even if `autoTransferMode` is set to `true`", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.config.incentives.payment = { automaticTransferMode: true };
 
       const paymentModule = new PaymentModule(ctx);
@@ -448,6 +472,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return `direct` if the `payoutMode` was not set and `autoTransferMode` is set to `true`", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.config.incentives.payment = { automaticTransferMode: true };
       const paymentModule = new PaymentModule(ctx);
 
@@ -470,6 +496,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return a transferInfo when the funding wallet has enough reward tokens and gas", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(ctx.logger, "info");
 
@@ -503,6 +531,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should reject if the funding wallet has enough reward tokens but insufficient gas", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       const { getEvmWallet } = await import("../../src/helpers/web3");
 
       const mockedGetEvmWallet = getEvmWallet as jest.Mock;
@@ -534,6 +563,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should reject if the funding wallet has insufficient reward tokens", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       web3Mocks.getEvmWallet.mockImplementationOnce(() => ({
         address: "0xOverriddenAddress",
         getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
@@ -571,6 +601,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return false if private key could not be decrypted", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "warn");
 
@@ -594,6 +626,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should decrypt private key correctly", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       const paymentModule = new PaymentModule(ctx);
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
@@ -607,6 +640,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return false if private key is used in unallowed organization", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
 
@@ -631,6 +665,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return true if private key is used in allowed organization", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       const paymentModule = new PaymentModule(ctx);
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID"
@@ -651,6 +687,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return false if private key is used in un-allowed organization and allowed repository", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
 
@@ -677,6 +714,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return false if private key is used in allowed organization and unallowed repository", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
 
@@ -703,6 +741,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return true if private key is used in allowed organization and repository", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       const paymentModule = new PaymentModule(ctx);
 
       // format: "PRIVATE_KEY:GITHUB_ORGANIZATION_ID:GITHUB_REPOSITORY_ID"
@@ -723,6 +762,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should return false if private key format is invalid", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "warn");
 
