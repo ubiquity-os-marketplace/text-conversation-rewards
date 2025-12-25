@@ -193,7 +193,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
 
   it("returns false when insert fails after RPC fallback", async () => {
     mockRpc.mockResolvedValue({ error: { message: "function upsert_permit_max does not exist", code: "42883" } });
-    mockInsert.mockResolvedValue({ error: "insert failed" });
+    mockInsert.mockResolvedValue({ error: { message: "insert failed", code: "XX000" } });
     const context = makeContext();
     const paymentModule = new PaymentModule(context);
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
@@ -459,7 +459,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
       network_id: null,
     });
     expect(didUpsert).toBe(false);
-    expect(context.logger.error).toHaveBeenCalledWith(
+    expect(context.logger.warn).toHaveBeenCalledWith(
       "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
       expect.objectContaining({
         nonce: baseInsertData.nonce,
@@ -477,7 +477,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
       permit2_address: null,
     });
     expect(didUpsert).toBe(false);
-    expect(context.logger.error).toHaveBeenCalledWith(
+    expect(context.logger.warn).toHaveBeenCalledWith(
       "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
       expect.objectContaining({
         nonce: baseInsertData.nonce,
@@ -495,7 +495,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
       partner_id: null,
     });
     expect(didUpsert).toBe(false);
-    expect(context.logger.error).toHaveBeenCalledWith(
+    expect(context.logger.warn).toHaveBeenCalledWith(
       "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
       expect.objectContaining({
         nonce: baseInsertData.nonce,
