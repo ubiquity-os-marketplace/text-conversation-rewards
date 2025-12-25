@@ -99,7 +99,6 @@ let GithubCommentModule: typeof import("../src/parser/github-comment-module").Gi
 let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
 let Processor: typeof import("../src/parser/processor").Processor;
 let UserExtractorModule: typeof import("../src/parser/user-extractor-module").UserExtractorModule;
-// let parseGitHubUrl: typeof import("../src/start").parseGitHubUrl;
 let ExternalContentProcessor: typeof import("../src/parser/external-content-module").ExternalContentProcessor;
 /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -156,7 +155,6 @@ beforeAll(async () => {
   ({ PaymentModule } = await import("../src/parser/payment-module"));
   ({ Processor } = await import("../src/parser/processor"));
   ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
-  // ({ parseGitHubUrl } = await import("../src/start"));
   ({ ExternalContentProcessor } = await import("../src/parser/external-content-module"));
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
