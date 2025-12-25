@@ -58,6 +58,8 @@ describe("GithubCommentModule Fee Tests", () => {
   });
 
   it("should display the fee message when a fee percentage is applied", async () => {
+    const testTimestamp = "2024-01-01T00:00:00.000Z";
+    const testUrl = "https://example.test/issues/1";
     const result: Result = {
       "ubiquity-os": {
         comments: [],
@@ -65,14 +67,13 @@ describe("GithubCommentModule Fee Tests", () => {
         task: {
           reward: 50, // Example value
           multiplier: 1.5, // Example value
-          timestamp: "",
-          url: "",
+          timestamp: testTimestamp,
+          url: testUrl,
         },
         feeRate: 0.2, // This implies a 5% fee
         permitUrl: "https://pay.ubq.fi", // Example URL
         payoutMode: "permit",
         userId: 12345, // Example user ID
-        evaluationCommentHtml: "",
         walletAddress: "0x1",
       },
     };
@@ -93,8 +94,8 @@ describe("GithubCommentModule Fee Tests", () => {
         '      "task": {\n' +
         '        "reward": 50,\n' +
         '        "multiplier": 1.5,\n' +
-        '        "timestamp": "",\n' +
-        '        "url": ""\n' +
+        `        "timestamp": "${testTimestamp}",\n` +
+        `        "url": "${testUrl}"\n` +
         "      },\n" +
         '      "feeRate": 0.2,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +

@@ -98,7 +98,7 @@ describe("Action tests", () => {
       "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/comments",
       "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/timeline",
     ].forEach((url) => {
-      server.use(http.get(url, () => HttpResponse.json("", { status: 500 })));
+      server.use(http.get(url, () => HttpResponse.json({ error: "fail" }, { status: 500 })));
     });
     const { run } = await import("../src/run");
     await expect(
@@ -136,9 +136,9 @@ describe("Action tests", () => {
       } as unknown as ContextPlugin)
     ).rejects.toEqual({
       logMessage: {
-        diff: "> [!CAUTION]\n> Could not fetch issue data: HttpError",
+        diff: '> [!CAUTION]\n> Could not fetch issue data: HttpError: Unknown error: {"error":"fail"}',
         level: "error",
-        raw: "Could not fetch issue data: HttpError",
+        raw: 'Could not fetch issue data: HttpError: Unknown error: {"error":"fail"}',
         type: "error",
       },
       metadata: {

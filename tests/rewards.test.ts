@@ -56,6 +56,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
           })),
         })),
       })),
+      rpc: jest.fn(() => ({ error: null })),
     })),
   };
 });

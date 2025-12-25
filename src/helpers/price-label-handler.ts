@@ -48,8 +48,8 @@ async function tryAutoFetchingPrice(logger: LoggerType, activity: ActivityType):
 
     const fakeLabel = {
       id: 0,
-      node_id: "",
-      url: "",
+      node_id: activity.self?.node_id ?? "",
+      url: activity.self?.url ?? activity.self?.html_url ?? "",
       name: priceLabelName,
       color: "ededed",
       default: false,

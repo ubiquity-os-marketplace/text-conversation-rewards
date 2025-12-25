@@ -18,8 +18,9 @@ const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 const PAYOUT_MODE_TRANSFER = '"payoutMode": "transfer"';
 const PAYOUT_MODE_PERMIT = '"payoutMode": "permit"';
-const DEFAULT_TIMESTAMP = "";
-const DEFAULT_URL = "";
+const DEFAULT_TIMESTAMP = "2024-01-01T00:00:00.000Z";
+const DEFAULT_URL = "https://example.test/issues/1";
+const NO_MARKER_BODY = "no payout markers";
 const EMPTY_STRING = "";
 const ctx = {
   eventName: "issues.closed",
@@ -183,7 +184,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      ctx.env.PERMIT_FEE_RATE = "";
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -423,7 +424,7 @@ describe("payment-module.ts", () => {
       expect(payoutMode).toEqual("permit");
 
       payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: EMPTY_STRING, user: { type: "Bot" } }],
+        comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
     });
@@ -444,7 +445,7 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
 
       const payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: EMPTY_STRING, user: { type: "Bot" } }],
+        comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("transfer");
     });

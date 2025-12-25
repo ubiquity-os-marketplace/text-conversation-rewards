@@ -169,7 +169,7 @@ describe("Content Evaluator Module Test", () => {
         id: 12345678,
         node_id: "MDQ6VXNlcjEyMzQ1Njc4",
         avatar_url: "https://avatars.githubusercontent.com/u/12345678?v=4",
-        gravatar_id: "",
+        gravatar_id: null,
         url: "https://api.github.com/users/test-user",
         html_url: "https://github.com/test-user",
         type: "User",

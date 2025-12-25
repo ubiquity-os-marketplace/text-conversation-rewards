@@ -51,7 +51,7 @@ const ctx = {
   stateId: 1,
   eventName: "issues.closed",
   authToken: process.env.GITHUB_TOKEN,
-  ref: "",
+  ref: "refs/heads/main",
   payload: {
     issue: {
       html_url: "https://github.com/ubiquity-os/conversation-rewards/issues/5",
