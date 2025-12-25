@@ -17,6 +17,7 @@ import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
+import { parseGitHubUrl } from "../src/start";
 
 const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
 process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
