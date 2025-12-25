@@ -1,8 +1,7 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { http, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
@@ -42,11 +41,6 @@ jest.mock("../src/helpers/checkers", () => ({
   isCollaborative: jest.fn(),
 }));
 
-const { isAdmin, isCollaborative } = await import("../src/helpers/checkers");
-
-const isAdminMocked = isAdmin as jest.Mock;
-const isCollaborativeMocked = isCollaborative as jest.Mock;
-
 const ctx = {
   stateId: 1,
   eventName: "issues.closed",
@@ -81,7 +75,7 @@ const ctx = {
   },
   config: cfg,
   logger: new Logs("debug"),
-  octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
@@ -161,21 +155,36 @@ jest.mock("@supabase/supabase-js", () => {
   };
 });
 
-const { IssueActivity } = await import("../src/issue-activity");
-const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
-const { DataPurgeModule } = await import("../src/parser/data-purge-module");
-const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { PaymentModule } = await import("../src/parser/payment-module");
-const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
-const { Processor } = await import("../src/parser/processor");
-const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
-const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
-const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
+/* eslint-disable @typescript-eslint/naming-convention */
+let IssueActivity: typeof import("../src/issue-activity").IssueActivity;
+let ContentEvaluatorModule: typeof import("../src/parser/content-evaluator-module").ContentEvaluatorModule;
+let DataPurgeModule: typeof import("../src/parser/data-purge-module").DataPurgeModule;
+let FormattingEvaluatorModule: typeof import("../src/parser/formatting-evaluator-module").FormattingEvaluatorModule;
+let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
+let ReviewIncentivizerModule: typeof import("../src/parser/review-incentivizer-module").ReviewIncentivizerModule;
+let Processor: typeof import("../src/parser/processor").Processor;
+let UserExtractorModule: typeof import("../src/parser/user-extractor-module").UserExtractorModule;
+let EventIncentivesModule: typeof import("../src/parser/event-incentives-module").EventIncentivesModule;
+let SimplificationIncentivizerModule: typeof import("../src/parser/simplification-incentivizer-module").SimplificationIncentivizerModule;
+/* eslint-enable @typescript-eslint/naming-convention */
 
-const issue = parseGitHubUrl(issueUrl);
-const activity = new IssueActivity(ctx, issue);
+let activity: InstanceType<typeof IssueActivity>;
 
 beforeAll(async () => {
+  ({ IssueActivity } = await import("../src/issue-activity"));
+  ({ ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module"));
+  ({ DataPurgeModule } = await import("../src/parser/data-purge-module"));
+  ({ FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module"));
+  ({ PaymentModule } = await import("../src/parser/payment-module"));
+  ({ ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module"));
+  ({ Processor } = await import("../src/parser/processor"));
+  ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
+  ({ EventIncentivesModule } = await import("../src/parser/event-incentives-module"));
+  ({ SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module"));
+
+  const issue = parseGitHubUrl(issueUrl);
+  activity = new IssueActivity(ctx, issue);
+
   server.listen();
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -215,7 +224,14 @@ interface JsonData {
 }
 let paymentResults: JsonData = {};
 describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTransferMode) => {
+  let isAdminMocked: jest.Mock;
+  let isCollaborativeMocked: jest.Mock;
+
   beforeAll(async () => {
+    const { isAdmin, isCollaborative } = await import("../src/helpers/checkers");
+
+    isAdminMocked = isAdmin as jest.Mock;
+    isCollaborativeMocked = isCollaborative as jest.Mock;
     ctx.config.incentives.payment = { automaticTransferMode: automaticTransferMode };
     paymentResults = { ...originalpaymentResults };
     const payoutMode: PayoutMode = automaticTransferMode ? "transfer" : "permit";
