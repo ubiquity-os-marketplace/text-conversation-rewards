@@ -495,22 +495,19 @@ export class GithubCommentModule extends BaseModule {
     if (!result.permitSaveErrors?.length) {
       return "";
     }
-    const items = result.permitSaveErrors
+    const linkUrl = result.permitUrl || result.explorerUrl;
+    const linkLabel = result.permitUrl ? "Claim" : "View";
+    const safeLink = linkUrl ? this._encodeHTML(linkUrl) : "";
+    const rows = result.permitSaveErrors
       .map((error) => {
-        const parts = [];
-        if (error.amount) {
-          parts.push(`amount ${error.amount}`);
-        }
-        if (error.nonce) {
-          parts.push(`nonce ${error.nonce}`);
-        }
-        if (error.message) {
-          parts.push(error.message);
-        }
-        return `<li>${this._encodeHTML(parts.join(" - "))}</li>`;
+        const amount = error.amount ? this._encodeHTML(error.amount) : "-";
+        const nonce = error.nonce ? this._encodeHTML(error.nonce) : "-";
+        const message = error.message ? this._encodeHTML(error.message) : "Unknown error";
+        const linkCell = safeLink ? `<a href="${safeLink}" target="_blank" rel="noopener">${linkLabel}</a>` : "-";
+        return `<tr><td>${amount}</td><td>${nonce}</td><td>${message}</td><td>${linkCell}</td></tr>`;
       })
       .join("");
-    return `<h6>⚠️ Permit not saved to database</h6><ul>${items}</ul>`;
+    return `<h6>⚠️ Permit not saved to database</h6><table><thead><tr><th>Amount</th><th>Nonce</th><th>Reason</th><th>Claim</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
 
   async _createRewardLink(result: Result[0], tokenSymbol: string) {

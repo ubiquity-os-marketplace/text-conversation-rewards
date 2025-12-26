@@ -768,6 +768,18 @@ export class PaymentModule extends BaseModule {
             network_id: permit.networkId,
             permit2_address: permit2Address,
           };
+          const missingMetadata = this._getMissingPermitMetadata(insertData);
+          if (missingMetadata.length > 0) {
+            errors.push({
+              message: `Permit missing required metadata for upsert: ${missingMetadata.join(", ")}`,
+              nonce: insertData.nonce,
+              amount: insertData.amount,
+              signature: insertData.signature,
+              partnerId,
+              beneficiaryId: userData.id,
+            });
+            continue;
+          }
           const didUpsert = await this._upsertPermitRecord(insertData);
           if (!didUpsert) {
             errors.push({
@@ -832,45 +844,37 @@ export class PaymentModule extends BaseModule {
     const fallbackReason = this._getRpcFallbackReason(error);
 
     if (!fallbackReason) {
-      this.context.logger.error("Failed to upsert permit via RPC", { err: error });
       return false;
     }
 
-    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", {
-      err: error,
-      reason: fallbackReason,
-    });
     return this._insertPermitWithFallback(insertData, metadata);
   }
 
   private _resolvePermitMetadata(insertData: Database["public"]["Tables"]["permits"]["Insert"]): PermitMetadata | null {
-    const { network_id: networkId, permit2_address: permit2Address, partner_id: partnerId } = insertData;
-    const missingFields: string[] = [];
-    if (networkId === null || networkId === undefined) {
-      missingFields.push("network_id");
-    }
-    if (permit2Address === null || permit2Address === undefined) {
-      missingFields.push("permit2_address");
-    }
-    if (partnerId === null || partnerId === undefined) {
-      missingFields.push("partner_id");
-    }
+    const missingFields = this._getMissingPermitMetadata(insertData);
     if (missingFields.length > 0) {
-      this.context.logger.warn(
-        "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
-        {
-          nonce: insertData.nonce,
-          signature: insertData.signature,
-          missingFields,
-        }
-      );
       return null;
     }
+    const { network_id: networkId, permit2_address: permit2Address, partner_id: partnerId } = insertData;
     return {
       networkId: networkId as number,
       permit2Address: permit2Address as string,
       partnerId: partnerId as number,
     };
+  }
+
+  private _getMissingPermitMetadata(insertData: Database["public"]["Tables"]["permits"]["Insert"]): string[] {
+    const missingFields: string[] = [];
+    if (insertData.network_id === null || insertData.network_id === undefined) {
+      missingFields.push("network_id");
+    }
+    if (insertData.permit2_address === null || insertData.permit2_address === undefined) {
+      missingFields.push("permit2_address");
+    }
+    if (insertData.partner_id === null || insertData.partner_id === undefined) {
+      missingFields.push("partner_id");
+    }
+    return missingFields;
   }
 
   private _getRpcFallbackReason(error: PostgrestError): RpcFallbackReason | null {
@@ -903,11 +907,10 @@ export class PaymentModule extends BaseModule {
     }
 
     if (!this._isUniqueViolation(insertError)) {
-      this.context.logger.error("Failed to insert permit after RPC fallback", { err: insertError });
       return false;
     }
 
-    return this._handleDuplicatePermitAfterFallback(insertData, metadata, insertError);
+    return this._handleDuplicatePermitAfterFallback(insertData, metadata);
   }
 
   private _isUniqueViolation(error: PostgrestError): boolean {
@@ -918,15 +921,9 @@ export class PaymentModule extends BaseModule {
 
   private async _handleDuplicatePermitAfterFallback(
     insertData: Database["public"]["Tables"]["permits"]["Insert"],
-    metadata: PermitMetadata,
-    insertError: PostgrestError
+    metadata: PermitMetadata
   ): Promise<boolean> {
-    const existingPermit = await this._loadExistingPermit(
-      metadata,
-      insertData,
-      "Failed to load existing permit after unique violation",
-      insertError
-    );
+    const existingPermit = await this._loadExistingPermit(metadata, insertData);
     if (!existingPermit) {
       return false;
     }
@@ -939,25 +936,17 @@ export class PaymentModule extends BaseModule {
       return true;
     }
 
-    const incomingAmount = this._parsePermitAmount(insertData.amount, insertData);
+    const incomingAmount = this._parsePermitAmount(insertData.amount);
     if (!incomingAmount) {
       return false;
     }
 
-    return this._tryUpdateExistingPermitAfterFallback(
-      insertData,
-      existingPermit,
-      incomingAmount,
-      metadata,
-      insertError
-    );
+    return this._tryUpdateExistingPermitAfterFallback(insertData, existingPermit, incomingAmount, metadata);
   }
 
   private async _loadExistingPermit(
     metadata: PermitMetadata,
-    insertData: Database["public"]["Tables"]["permits"]["Insert"],
-    message: string,
-    fallbackError: PostgrestError
+    insertData: Database["public"]["Tables"]["permits"]["Insert"]
   ): Promise<ExistingPermitRecord | null> {
     const { data: existingPermit, error: existingError } = await this._supabase
       .from("permits")
@@ -967,30 +956,13 @@ export class PaymentModule extends BaseModule {
       .eq("permit2_address", metadata.permit2Address)
       .eq("nonce", insertData.nonce)
       .maybeSingle();
-    if (existingError || !existingPermit) {
-      const existingErrorForLog = existingError ?? fallbackError;
-      this.context.logger.error(message, {
-        err: existingErrorForLog,
-        nonce: insertData.nonce,
-        beneficiary_id: insertData.beneficiary_id,
-      });
-      return null;
-    }
-    return existingPermit;
+    return existingError || !existingPermit ? null : existingPermit;
   }
 
-  private _parsePermitAmount(
-    amount: string,
-    insertData: Database["public"]["Tables"]["permits"]["Insert"]
-  ): Decimal | null {
+  private _parsePermitAmount(amount: string): Decimal | null {
     try {
       return new Decimal(amount);
-    } catch (parseError) {
-      this.context.logger.error("Failed to compare permit amounts after unique violation", {
-        err: parseError,
-        nonce: insertData.nonce,
-        beneficiary_id: insertData.beneficiary_id,
-      });
+    } catch {
       return null;
     }
   }
@@ -999,10 +971,9 @@ export class PaymentModule extends BaseModule {
     insertData: Database["public"]["Tables"]["permits"]["Insert"],
     existingPermit: ExistingPermitRecord,
     incomingAmount: Decimal,
-    metadata: PermitMetadata,
-    insertErrorForLog: PostgrestError
+    metadata: PermitMetadata
   ): Promise<boolean> {
-    const currentAmount = this._parsePermitAmount(existingPermit.amount, insertData);
+    const currentAmount = this._parsePermitAmount(existingPermit.amount);
     if (!currentAmount) {
       return false;
     }
@@ -1028,21 +999,15 @@ export class PaymentModule extends BaseModule {
       return true;
     }
 
-    return this._handlePermitUpdateRace(insertData, incomingAmount, metadata, insertErrorForLog);
+    return this._handlePermitUpdateRace(insertData, incomingAmount, metadata);
   }
 
   private async _handlePermitUpdateRace(
     insertData: Database["public"]["Tables"]["permits"]["Insert"],
     incomingAmount: Decimal,
-    metadata: PermitMetadata,
-    insertErrorForLog: PostgrestError
+    metadata: PermitMetadata
   ): Promise<boolean> {
-    const refreshedPermit = await this._loadExistingPermit(
-      metadata,
-      insertData,
-      "Failed to reload existing permit after RPC fallback update race",
-      insertErrorForLog
-    );
+    const refreshedPermit = await this._loadExistingPermit(metadata, insertData);
     if (!refreshedPermit) {
       return false;
     }
@@ -1054,7 +1019,7 @@ export class PaymentModule extends BaseModule {
       });
       return true;
     }
-    const refreshedAmount = this._parsePermitAmount(refreshedPermit.amount, insertData);
+    const refreshedAmount = this._parsePermitAmount(refreshedPermit.amount);
     if (!refreshedAmount) {
       return false;
     }
@@ -1108,7 +1073,6 @@ export class PaymentModule extends BaseModule {
       .is("transaction", null)
       .select("id");
     if (updateError) {
-      this.context.logger.error("Failed to update permit after RPC fallback", { err: updateError });
       return "error";
     }
     if (updatedPermits && updatedPermits.length > 0) {

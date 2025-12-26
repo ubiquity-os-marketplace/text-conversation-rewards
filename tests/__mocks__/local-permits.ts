@@ -1,6 +1,6 @@
 import { decrypt, parseDecryptedPrivateKey } from "@ubiquity-os/permit-generation/utils";
 import { ethers, utils } from "ethers";
-import { Context } from "@ubiquity-os/permit-generation";
+import { Context, TokenType } from "@ubiquity-os/permit-generation";
 
 type PermitDetails = {
   token: string; // address
@@ -124,27 +124,134 @@ export async function generatePermitUrlPayload(
   };
   const signature = await signPermit2(privateKey, permit2Address, chainId, permitSingle);
   const permit = {
-    type: "erc20-permit",
-    permit: {
-      permitted: {
-        // token: config.permitRequests[0].tokenAddress,
-        token: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
-        amount: convertedAmount,
-      },
-      nonce: nonce.toString(),
-      deadline: deadline,
-    },
-    transferDetails: {
-      to: walletAddress,
-      requestedAmount: convertedAmount,
-    },
+    tokenType: TokenType.ERC20,
+    tokenAddress: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
+    beneficiary: walletAddress,
+    nonce: nonce.toString(),
+    deadline,
+    amount: convertedAmount,
     owner: spenderWallet.address,
-    signature: signature,
+    signature,
     networkId: chainId,
   };
   return [permit];
 }
 
-export function customEncodePermits(obj: object) {
-  return Buffer.from(JSON.stringify(obj)).toString("base64");
+type NftMetadata = {
+  GITHUB_ORGANIZATION_NAME: string;
+  GITHUB_REPOSITORY_NAME: string;
+  GITHUB_ISSUE_NODE_ID: string;
+  GITHUB_USERNAME: string;
+  GITHUB_CONTRIBUTION_TYPE: string;
+};
+
+type EncodedPermit =
+  | {
+      type: "erc20-permit";
+      permit: {
+        permitted: {
+          token: string;
+          amount: unknown;
+        };
+        nonce: string;
+        deadline: string;
+      };
+      transferDetails: {
+        to: string;
+        requestedAmount: unknown;
+      };
+      owner: string;
+      signature: string;
+      networkId: number;
+    }
+  | {
+      type: "erc721-permit";
+      permit: {
+        permitted: {
+          token: string;
+          amount: string;
+        };
+        nonce: string;
+        deadline: string;
+      };
+      transferDetails: {
+        to: string;
+        requestedAmount: string;
+      };
+      owner: string;
+      signature: string;
+      networkId: number;
+      nftMetadata: NftMetadata;
+      request: {
+        beneficiary: string;
+        deadline: string;
+        keys: string[];
+        nonce: string;
+        values: string[];
+      };
+    };
+
+export function customEncodePermits(obj: Array<Record<string, unknown>>) {
+  const permitsDto = obj
+    .map((permit) => {
+      const tokenType = permit.tokenType as TokenType | undefined;
+      if (tokenType === TokenType.ERC20) {
+        return {
+          type: "erc20-permit",
+          permit: {
+            permitted: {
+              token: permit.tokenAddress as string,
+              amount: permit.amount,
+            },
+            nonce: permit.nonce as string,
+            deadline: permit.deadline as string,
+          },
+          transferDetails: {
+            to: permit.beneficiary as string,
+            requestedAmount: permit.amount,
+          },
+          owner: permit.owner as string,
+          signature: permit.signature as string,
+          networkId: permit.networkId as number,
+        } satisfies EncodedPermit;
+      }
+
+      const erc721Request = permit.erc721Request as {
+        metadata?: NftMetadata;
+        keys?: string[];
+        values?: string[];
+      };
+      if (tokenType !== TokenType.ERC721 || !erc721Request?.metadata || !erc721Request.keys || !erc721Request.values) {
+        return null;
+      }
+
+      return {
+        type: "erc721-permit",
+        permit: {
+          permitted: {
+            token: permit.tokenAddress as string,
+            amount: permit.amount as string,
+          },
+          nonce: permit.nonce as string,
+          deadline: permit.deadline as string,
+        },
+        transferDetails: {
+          to: permit.beneficiary as string,
+          requestedAmount: permit.amount as string,
+        },
+        owner: permit.owner as string,
+        signature: permit.signature as string,
+        networkId: permit.networkId as number,
+        nftMetadata: erc721Request.metadata,
+        request: {
+          beneficiary: permit.beneficiary as string,
+          deadline: permit.deadline as string,
+          keys: erc721Request.keys,
+          nonce: permit.nonce as string,
+          values: erc721Request.values,
+        },
+      } satisfies EncodedPermit;
+    })
+    .filter((permit): permit is EncodedPermit => permit !== null);
+  return Buffer.from(JSON.stringify(permitsDto)).toString("base64");
 }

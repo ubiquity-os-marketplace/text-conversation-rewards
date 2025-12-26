@@ -144,10 +144,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(true);
     expect(mockInsert).toHaveBeenCalledTimes(1);
-    expect(context.logger.warn).toHaveBeenCalledWith(
-      "upsert_permit_max RPC unavailable; falling back to insert",
-      expect.objectContaining({ err: expect.anything() })
-    );
   });
 
   it("falls back to insert when RPC is missing in schema cache", async () => {
@@ -162,10 +158,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(true);
     expect(mockInsert).toHaveBeenCalledTimes(1);
-    expect(context.logger.warn).toHaveBeenCalledWith(
-      "upsert_permit_max RPC unavailable; falling back to insert",
-      expect.objectContaining({ err: expect.anything() })
-    );
   });
 
   it("falls back to insert when RPC permission is denied", async () => {
@@ -177,10 +169,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(true);
     expect(mockInsert).toHaveBeenCalledTimes(1);
-    expect(context.logger.warn).toHaveBeenCalledWith(
-      "upsert_permit_max RPC unavailable; falling back to insert",
-      expect.objectContaining({ err: expect.anything(), reason: "permission denied" })
-    );
   });
 
   it("returns false when RPC fails for other errors", async () => {
@@ -190,10 +178,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(false);
     expect(mockInsert).not.toHaveBeenCalled();
-    expect(context.logger.error).toHaveBeenCalledWith(
-      "Failed to upsert permit via RPC",
-      expect.objectContaining({ err: expect.anything() })
-    );
   });
 
   it("returns false when insert fails after RPC fallback", async () => {
@@ -203,10 +187,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
     const paymentModule = new PaymentModule(context);
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(false);
-    expect(context.logger.error).toHaveBeenCalledWith(
-      "Failed to insert permit after RPC fallback",
-      expect.objectContaining({ err: expect.anything() })
-    );
   });
 
   it("updates existing unclaimed permit when incoming amount is higher", async () => {
@@ -258,14 +238,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(false);
     expect(mockUpdate).not.toHaveBeenCalled();
-    expect(context.logger.error).toHaveBeenCalledWith(
-      "Failed to load existing permit after unique violation",
-      expect.objectContaining({
-        err: expect.anything(),
-        nonce: baseInsertData.nonce,
-        beneficiary_id: baseInsertData.beneficiary_id,
-      })
-    );
   });
 
   it("returns false when existing permit is missing after unique violation", async () => {
@@ -281,14 +253,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
     const paymentModule = new PaymentModule(context);
     const didUpsert = await (paymentModule as unknown as UpsertModule)._upsertPermitRecord(baseInsertData);
     expect(didUpsert).toBe(false);
-    expect(context.logger.error).toHaveBeenCalledWith(
-      "Failed to load existing permit after unique violation",
-      expect.objectContaining({
-        err: expect.anything(),
-        nonce: baseInsertData.nonce,
-        beneficiary_id: baseInsertData.beneficiary_id,
-      })
-    );
   });
 
   it("returns false when amount comparison fails after unique violation", async () => {
@@ -314,14 +278,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
       amount: "2",
     });
     expect(didUpsert).toBe(false);
-    expect(context.logger.error).toHaveBeenCalledWith(
-      "Failed to compare permit amounts after unique violation",
-      expect.objectContaining({
-        err: expect.anything(),
-        nonce: baseInsertData.nonce,
-        beneficiary_id: baseInsertData.beneficiary_id,
-      })
-    );
   });
 
   it("returns false when update fails after RPC fallback", async () => {
@@ -349,10 +305,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
       amount: "2",
     });
     expect(didUpsert).toBe(false);
-    expect(context.logger.error).toHaveBeenCalledWith(
-      "Failed to update permit after RPC fallback",
-      expect.objectContaining({ err: expect.anything() })
-    );
   });
 
   it("skips update when permit changes concurrently after RPC fallback", async () => {
@@ -464,14 +416,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
       network_id: null,
     });
     expect(didUpsert).toBe(false);
-    expect(context.logger.warn).toHaveBeenCalledWith(
-      "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
-      expect.objectContaining({
-        nonce: baseInsertData.nonce,
-        signature: baseInsertData.signature,
-        missingFields: ["network_id"],
-      })
-    );
   });
 
   it("returns false when permit2 metadata is missing", async () => {
@@ -482,14 +426,6 @@ describe("PaymentModule _upsertPermitRecord", () => {
       permit2_address: null,
     });
     expect(didUpsert).toBe(false);
-    expect(context.logger.warn).toHaveBeenCalledWith(
-      "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
-      expect.objectContaining({
-        nonce: baseInsertData.nonce,
-        signature: baseInsertData.signature,
-        missingFields: ["permit2_address"],
-      })
-    );
   });
 
   it("returns false when partner metadata is missing", async () => {
@@ -500,13 +436,5 @@ describe("PaymentModule _upsertPermitRecord", () => {
       partner_id: null,
     });
     expect(didUpsert).toBe(false);
-    expect(context.logger.warn).toHaveBeenCalledWith(
-      "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
-      expect.objectContaining({
-        nonce: baseInsertData.nonce,
-        signature: baseInsertData.signature,
-        missingFields: ["partner_id"],
-      })
-    );
   });
 });
