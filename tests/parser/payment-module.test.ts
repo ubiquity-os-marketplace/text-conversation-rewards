@@ -15,9 +15,6 @@ import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
 import { mockWeb3Module } from "../helpers/web3-mocks";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-let PaymentModule: typeof import("../../src/parser/payment-module").PaymentModule;
-
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 const PAYOUT_MODE_TRANSFER = '"payoutMode": "transfer"';
@@ -149,8 +146,7 @@ jest.mock("@supabase/supabase-js", () => {
   };
 });
 
-beforeAll(async () => {
-  ({ PaymentModule } = await import("../../src/parser/payment-module"));
+beforeAll(() => {
   server.listen();
 });
 afterEach(() => server.resetHandlers());

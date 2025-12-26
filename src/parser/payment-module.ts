@@ -740,77 +740,102 @@ export class PaymentModule extends BaseModule {
     const userId = rewardResult.userId;
 
     for (const permit of permits) {
-      const amount = new Decimal(permit.amount.toString());
-      if (!amount.gt(0)) {
-        this.context.logger.warn("Skipping permit persistence because amount is zero.", {
-          beneficiaryId: userId,
-          issueId: issue.issueId,
-          nonce: permit.nonce,
-        });
-        continue;
-      }
-      try {
-        const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
-        const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
-        const tokenId = await this._getOrCreateToken(permit.tokenAddress, permit.networkId);
-        const partnerId = await this._getOrCreatePartner(permit.owner);
-
-        if (userData) {
-          const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
-            amount: String(permit.amount),
-            nonce: String(permit.nonce),
-            deadline: String(permit.deadline),
-            signature: permit.signature,
-            beneficiary_id: userData.id,
-            location_id: locationId,
-            token_id: tokenId,
-            partner_id: partnerId,
-            network_id: permit.networkId,
-            permit2_address: permit2Address,
-          };
-          const missingMetadata = this._getMissingPermitMetadata(insertData);
-          if (missingMetadata.length > 0) {
-            errors.push({
-              message: `Permit missing required metadata for upsert: ${missingMetadata.join(", ")}`,
-              nonce: insertData.nonce,
-              amount: insertData.amount,
-              signature: insertData.signature,
-              partnerId,
-              beneficiaryId: userData.id,
-            });
-            continue;
-          }
-          const didUpsert = await this._upsertPermitRecord(insertData);
-          if (!didUpsert) {
-            errors.push({
-              message: "Failed to save permit via upsert_permit_max.",
-              nonce: insertData.nonce,
-              amount: insertData.amount,
-              signature: insertData.signature,
-              partnerId,
-              beneficiaryId: userData.id,
-            });
-          }
-        } else {
-          errors.push({
-            message: `Failed to save permit: could not find user ${userId}.`,
-            nonce: String(permit.nonce),
-            amount: String(permit.amount),
-            beneficiaryId: userId,
-          });
-        }
-      } catch (e) {
-        errors.push({
-          message: `Failed to save permit: ${e instanceof Error ? e.message : "unknown error"}.`,
-          nonce: String(permit.nonce),
-          amount: String(permit.amount),
-          beneficiaryId: userId,
-        });
+      const error = await this._tryPersistPermit({
+        permit,
+        issue,
+        userId,
+        permit2Address,
+      });
+      if (error) {
+        errors.push(error);
       }
     }
 
     if (errors.length > 0) {
       rewardResult.permitSaveErrors = [...(rewardResult.permitSaveErrors ?? []), ...errors];
+    }
+  }
+
+  private async _tryPersistPermit({
+    permit,
+    issue,
+    userId,
+    permit2Address,
+  }: {
+    permit: PermitReward;
+    issue: { issueId: number; issueUrl: string };
+    userId: number;
+    permit2Address: string;
+  }): Promise<PermitSaveError | null> {
+    const amount = new Decimal(permit.amount.toString());
+    if (!amount.gt(0)) {
+      this.context.logger.warn("Skipping permit persistence because amount is zero.", {
+        beneficiaryId: userId,
+        issueId: issue.issueId,
+        nonce: permit.nonce,
+      });
+      return null;
+    }
+
+    try {
+      const { data: userData } = await this._supabase.from("users").select("id").eq("id", userId).single();
+      if (!userData) {
+        return {
+          message: `Failed to save permit: could not find user ${userId}.`,
+          nonce: String(permit.nonce),
+          amount: String(permit.amount),
+          beneficiaryId: userId,
+        };
+      }
+
+      const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
+      const tokenId = await this._getOrCreateToken(permit.tokenAddress, permit.networkId);
+      const partnerId = await this._getOrCreatePartner(permit.owner);
+      const insertData: Database["public"]["Tables"]["permits"]["Insert"] = {
+        amount: String(permit.amount),
+        nonce: String(permit.nonce),
+        deadline: String(permit.deadline),
+        signature: permit.signature,
+        beneficiary_id: userData.id,
+        location_id: locationId,
+        token_id: tokenId,
+        partner_id: partnerId,
+        network_id: permit.networkId,
+        permit2_address: permit2Address,
+      };
+
+      const missingMetadata = this._getMissingPermitMetadata(insertData);
+      if (missingMetadata.length > 0) {
+        return {
+          message: `Permit missing required metadata for upsert: ${missingMetadata.join(", ")}`,
+          nonce: insertData.nonce,
+          amount: insertData.amount,
+          signature: insertData.signature,
+          partnerId,
+          beneficiaryId: userData.id,
+        };
+      }
+
+      const didUpsert = await this._upsertPermitRecord(insertData);
+      if (!didUpsert) {
+        return {
+          message: "Failed to save permit via upsert_permit_max.",
+          nonce: insertData.nonce,
+          amount: insertData.amount,
+          signature: insertData.signature,
+          partnerId,
+          beneficiaryId: userData.id,
+        };
+      }
+
+      return null;
+    } catch (e) {
+      return {
+        message: `Failed to save permit: ${e instanceof Error ? e.message : "unknown error"}.`,
+        nonce: String(permit.nonce),
+        amount: String(permit.amount),
+        beneficiaryId: userId,
+      };
     }
   }
 
