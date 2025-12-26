@@ -6,6 +6,7 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { PullRequestData } from "../src/helpers/pull-request-data";
+import { ReviewIncentivizerModule } from "../src/parser/review-incentivizer-module";
 
 type MockGetContent = jest.Mock<
   (
@@ -28,8 +29,6 @@ const ctx = {
   octokit: mockOctokit,
   payload: { repository: { owner: { login: "test-owner" }, name: "test-repo" } },
 } as unknown as ContextPlugin;
-
-const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
 beforeAll(() => server.listen());
 afterEach(() => {

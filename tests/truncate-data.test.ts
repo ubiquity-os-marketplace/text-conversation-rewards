@@ -12,7 +12,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   context: {
     runId: "1",
     payload: {
@@ -23,11 +23,11 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@ubiquity-os/plugin-sdk", () => ({
+jest.mock("@ubiquity-os/plugin-sdk", () => ({
   postComment: jest.fn(),
 }));
 
-jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
+jest.mock("@octokit/plugin-paginate-graphql", () => ({
   paginateGraphQL() {
     return {
       graphql: {
@@ -83,7 +83,7 @@ describe("Payload truncate tests", () => {
   });
 
   it("Should truncate the returned data if the payload is too large", async () => {
-    jest.unstable_mockModule("../src/parser/processor", () => ({
+    jest.mock("../src/parser/processor", () => ({
       Processor: jest.fn(() => ({
         dump: jest.fn(() =>
           JSON.stringify({
@@ -99,7 +99,7 @@ describe("Payload truncate tests", () => {
         run: jest.fn(),
       })),
     }));
-    jest.unstable_mockModule("../src/issue-activity", () => {
+    jest.mock("../src/issue-activity", () => {
       return { IssueActivity: jest.fn(() => ({ init: jest.fn(), linkedPullRequests: [] })) };
     });
     const listEventsForTimeline = jest.fn();

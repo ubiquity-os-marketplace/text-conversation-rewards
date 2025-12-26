@@ -37,14 +37,14 @@ const mockFrom = jest.fn(() => ({
   update: mockUpdate,
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => ({
+jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({
     rpc: mockRpc,
     from: mockFrom,
   })),
 }));
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   context: {
     payload: {
       repository: {
@@ -55,7 +55,12 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-const { PaymentModule } = await import("../src/parser/payment-module");
+// eslint-disable-next-line @typescript-eslint/naming-convention
+let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
+
+beforeAll(async () => {
+  PaymentModule = (await import("../src/parser/payment-module")).PaymentModule;
+});
 
 function makeContext(): ContextPlugin {
   return {
