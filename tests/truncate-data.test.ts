@@ -83,20 +83,19 @@ describe("Payload truncate tests", () => {
   });
 
   it("Should truncate the returned data if the payload is too large", async () => {
+    const resultPayload = {
+      user: {
+        total: 1,
+        userId: "1",
+        task: "1",
+        permitUrl: "http",
+        comments: "1".repeat(70000),
+      },
+    };
     jest.mock("../src/parser/processor", () => ({
       Processor: jest.fn(() => ({
-        dump: jest.fn(() =>
-          JSON.stringify({
-            user: {
-              total: 1,
-              userId: "1",
-              task: "1",
-              permitUrl: "http",
-              comments: "1".repeat(70000),
-            },
-          })
-        ),
-        run: jest.fn(),
+        dump: jest.fn(() => JSON.stringify(resultPayload)),
+        run: jest.fn(() => resultPayload),
       })),
     }));
     jest.mock("../src/issue-activity", () => {

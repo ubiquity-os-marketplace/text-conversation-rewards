@@ -21,7 +21,7 @@ jest.mock("@ubiquity-os/permit-generation", () => {
         tokenAddress: string;
       }[]
     ) => generatePermitUrlPayload(context, permitRequests),
-    encodePermits: (obj: object) => customEncodePermits(obj),
+    encodePermits: (obj: Array<Record<string, unknown>>) => customEncodePermits(obj),
     createAdapters: jest.fn(() => {
       return {
         supabase: {

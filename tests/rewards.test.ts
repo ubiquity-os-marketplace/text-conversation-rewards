@@ -18,6 +18,9 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
 
+const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
+
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 mockWeb3Module();
@@ -135,6 +138,9 @@ const ctx = {
     supabase: {
       wallet: {
         getWalletByUserId: jest.fn(async () => "0x1"),
+      },
+      location: {
+        getOrCreateIssueLocation: jest.fn(async () => 1),
       },
     },
   },
