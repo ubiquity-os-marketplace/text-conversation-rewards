@@ -37,7 +37,7 @@ import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { PERMIT2_ADDRESS } from "../types/permit2";
 import { RewardSettings } from "../types/plugin-input";
-import { PayoutMode, Result } from "../types/results";
+import { PayoutMode, PermitSaveError, Result } from "../types/results";
 import chains from "../types/rpcs.json";
 import type { Database } from "../adapters/supabase/types/database";
 
@@ -71,6 +71,8 @@ type PermitMetadata = {
   partnerId: number;
 };
 
+type ResultEntry = Result[string];
+
 type ExistingPermitRecord = {
   id: number;
   amount: string;
@@ -78,13 +80,6 @@ type ExistingPermitRecord = {
 };
 
 type RpcFallbackReason = "permission denied" | "unavailable";
-
-class PermitPersistenceError extends Error {
-  constructor(message: string, readonly context: Record<string, unknown>) {
-    super(message);
-    this.name = "PermitPersistenceError";
-  }
-}
 
 export class PaymentModule extends BaseModule {
   readonly _configuration: PaymentConfiguration | null = this.context.config.incentives.payment;
@@ -260,9 +255,6 @@ export class PaymentModule extends BaseModule {
       try {
         await this._tryDirectTransfer(result, config, networkExplorer, issueId, payload.issueUrl, privateKey);
       } catch (e) {
-        if (e instanceof PermitPersistenceError) {
-          throw e;
-        }
         this.context.logger.warn(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
       }
@@ -314,7 +306,7 @@ export class PaymentModule extends BaseModule {
 
         result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
         result[username].payoutMode = "permit";
-        await this._savePermitsToDatabase(result[username].userId, { issueUrl: payload.issueUrl, issueId }, permits);
+        await this._savePermitsToDatabase(result[username], { issueUrl: payload.issueUrl, issueId }, permits);
       }
     }
 
@@ -343,7 +335,7 @@ export class PaymentModule extends BaseModule {
       beneficiaries.map(async (beneficiary, idx) => {
         result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
         result[beneficiary.username].payoutMode = "transfer";
-        await this._savePermitsToDatabase(result[beneficiary.username].userId, { issueUrl, issueId }, [permits[idx]]);
+        await this._savePermitsToDatabase(result[beneficiary.username], { issueUrl, issueId }, [permits[idx]]);
       })
     );
   }
@@ -737,9 +729,15 @@ export class PaymentModule extends BaseModule {
     return partnerId;
   }
 
-  async _savePermitsToDatabase(userId: number, issue: { issueId: number; issueUrl: string }, permits: PermitReward[]) {
+  async _savePermitsToDatabase(
+    rewardResult: ResultEntry,
+    issue: { issueId: number; issueUrl: string },
+    permits: PermitReward[]
+  ) {
     // Normalize here so fallback inserts (when RPC is unavailable) stay lowercased.
     const permit2Address = PERMIT2_ADDRESS.toLowerCase();
+    const errors: PermitSaveError[] = [];
+    const userId = rewardResult.userId;
 
     for (const permit of permits) {
       const amount = new Decimal(permit.amount.toString());
@@ -772,31 +770,35 @@ export class PaymentModule extends BaseModule {
           };
           const didUpsert = await this._upsertPermitRecord(insertData);
           if (!didUpsert) {
-            throw new PermitPersistenceError("Failed to save permit", {
-              beneficiaryId: userData.id,
+            errors.push({
+              message: "Failed to save permit via upsert_permit_max.",
               nonce: insertData.nonce,
+              amount: insertData.amount,
               signature: insertData.signature,
               partnerId,
+              beneficiaryId: userData.id,
             });
           }
         } else {
-          throw new PermitPersistenceError(`Failed to save the permit: could not find user ${userId}`, {
+          errors.push({
+            message: `Failed to save permit: could not find user ${userId}.`,
+            nonce: String(permit.nonce),
+            amount: String(permit.amount),
             beneficiaryId: userId,
-            nonce: permit.nonce,
           });
         }
       } catch (e) {
-        if (e instanceof PermitPersistenceError) {
-          this.context.logger.error(e.message, e.context);
-          throw e;
-        }
-        this.context.logger.error("Failed to save permits to the database", { e });
-        throw new PermitPersistenceError("Failed to save permits to the database", {
+        errors.push({
+          message: `Failed to save permit: ${e instanceof Error ? e.message : "unknown error"}.`,
+          nonce: String(permit.nonce),
+          amount: String(permit.amount),
           beneficiaryId: userId,
-          nonce: permit.nonce,
-          error: e,
         });
       }
+    }
+
+    if (errors.length > 0) {
+      rewardResult.permitSaveErrors = [...(rewardResult.permitSaveErrors ?? []), ...errors];
     }
   }
 

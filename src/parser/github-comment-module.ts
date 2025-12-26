@@ -491,6 +491,28 @@ export class GithubCommentModule extends BaseModule {
     return "";
   }
 
+  _createPermitSaveWarning(result: Result[0]) {
+    if (!result.permitSaveErrors?.length) {
+      return "";
+    }
+    const items = result.permitSaveErrors
+      .map((error) => {
+        const parts = [];
+        if (error.amount) {
+          parts.push(`amount ${error.amount}`);
+        }
+        if (error.nonce) {
+          parts.push(`nonce ${error.nonce}`);
+        }
+        if (error.message) {
+          parts.push(error.message);
+        }
+        return `<li>${this._encodeHTML(parts.join(" - "))}</li>`;
+      })
+      .join("");
+    return `<h6>⚠️ Permit not saved to database</h6><ul>${items}</ul>`;
+  }
+
   async _createRewardLink(result: Result[0], tokenSymbol: string) {
     if (result.permitUrl || result.explorerUrl) {
       return `<a href="${result.permitUrl || result.explorerUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
@@ -541,6 +563,7 @@ export class GithubCommentModule extends BaseModule {
         </b>
       </summary>
       ${await this._createWalletWarning(username, result.walletAddress)}
+      ${this._createPermitSaveWarning(result)}
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       ${isCapped ? `<h6>⚠️ Your rewards have been limited to the task price of ${taskReward} ${tokenSymbol}.</h6>` : ""}
       <h6>Contributions Overview</h6>
