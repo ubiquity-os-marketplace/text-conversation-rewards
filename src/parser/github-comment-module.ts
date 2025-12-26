@@ -507,7 +507,7 @@ export class GithubCommentModule extends BaseModule {
         return `<tr><td>${amount}</td><td>${nonce}</td><td>${message}</td><td>${linkCell}</td></tr>`;
       })
       .join("");
-    return `<h6>⚠️ Permit not saved to database</h6><table><thead><tr><th>Amount</th><th>Nonce</th><th>Reason</th><th>Claim</th></tr></thead><tbody>${rows}</tbody></table>`;
+    return `<table><thead><tr><th>Amount</th><th>Nonce</th><th>Reason</th><th>Claim</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
 
   async _createRewardLink(result: Result[0], tokenSymbol: string) {
@@ -516,6 +516,13 @@ export class GithubCommentModule extends BaseModule {
     }
     const isRewardClaimed = await this.isRewardClaimed(result);
     return `[ ${result.total} ${tokenSymbol} ]${isRewardClaimed ? " ☑️" : ""}`;
+  }
+
+  _createPermitSaveWarningLabel(result: Result[0]) {
+    if (!result.permitSaveErrors?.length) {
+      return "";
+    }
+    return "&nbsp;⚠️ Error saving permit to database";
   }
 
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
@@ -555,7 +562,7 @@ export class GithubCommentModule extends BaseModule {
             &nbsp;
           </h3>
           <h6>
-            @${username}
+            @${username}${this._createPermitSaveWarningLabel(result)}
           </h6>
         </b>
       </summary>
