@@ -1,0 +1,101 @@
+{
+  "sha": "a12318e0a42de7481154b8162170e4a644199fc2",
+  "node_id": "C_kwDOLUK0B9oAKGExMjMxOGUwYTQyZGU3NDgxMTU0YjgxNjIxNzBlNGE2NDQxOTlmYzI",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-22T12:48:30Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-22T12:48:30Z"
+    },
+    "message": "chore: un-nested GitHub comment module functions to reduce reading complexity",
+    "tree": {
+      "sha": "2128a089c35bcfd11c7c394e0898e161c2be6d90",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/2128a089c35bcfd11c7c394e0898e161c2be6d90"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/a12318e0a42de7481154b8162170e4a644199fc2",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/a12318e0a42de7481154b8162170e4a644199fc2",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a12318e0a42de7481154b8162170e4a644199fc2",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/a12318e0a42de7481154b8162170e4a644199fc2/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "a22cec2655aa355cb50cb69c3938a9bb94860777",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/a22cec2655aa355cb50cb69c3938a9bb94860777",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a22cec2655aa355cb50cb69c3938a9bb94860777"
+    }
+  ],
+  "stats": {
+    "total": 198,
+    "additions": 100,
+    "deletions": 98
+  },
+  "files": [
+    {
+      "sha": "e7622191781510b97e6461760bc94f21054131c3",
+      "filename": "src/parser/github-comment-module.ts",
+      "status": "modified",
+      "additions": 100,
+      "deletions": 98,
+      "changes": 198,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/a12318e0a42de7481154b8162170e4a644199fc2/src%2Fparser%2Fgithub-comment-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/a12318e0a42de7481154b8162170e4a644199fc2/src%2Fparser%2Fgithub-comment-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fgithub-comment-module.ts?ref=a12318e0a42de7481154b8162170e4a644199fc2",
+      "patch": "@@ -11,6 +11,11 @@ import { getPayoutConfigByNetworkId } from \"../types/payout\";\n import program from \"./command-line\";\n import { GithubCommentScore, Module, Result } from \"./processor\";\n \n+interface SortedTasks {\n+  issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n+  reviews: GithubCommentScore[];\n+}\n+\n /**\n  * Posts a GitHub comment according to the given results.\n  */\n@@ -56,10 +61,7 @@ export class GithubCommentModule implements Module {\n   }\n \n   _generateHtml(username: string, result: Result[0]) {\n-    const sorted = result.comments?.reduce<{\n-      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n-      reviews: GithubCommentScore[];\n-    }>(\n+    const sortedTasks = result.comments?.reduce<SortedTasks>(\n       (acc, curr) => {\n         if (curr.type & CommentType.ISSUE) {\n           if (curr.type & CommentType.TASK) {\n@@ -75,98 +77,6 @@ export class GithubCommentModule implements Module {\n       { issues: { task: null, comments: [] }, reviews: [] }\n     );\n \n-    function createContributionRows() {\n-      const content: string[] = [];\n-\n-      if (!sorted) {\n-        return content.join(\"\");\n-      }\n-\n-      function generateContributionRow(\n-        view: string,\n-        contribution: string,\n-        count: number,\n-        reward: number | Decimal | undefined\n-      ) {\n-        return `\n-          <tr>\n-            <td>${view}</td>\n-            <td>${contribution}</td>\n-            <td>${count}</td>\n-            <td>${reward || \"-\"}</td>\n-          </tr>`;\n-      }\n-\n-      if (result.task?.reward) {\n-        content.push(generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n-      }\n-      if (sorted.issues.task) {\n-        content.push(generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward));\n-      }\n-      if (sorted.issues.comments.length) {\n-        content.push(\n-          generateContributionRow(\n-            \"Issue\",\n-            \"Comment\",\n-            sorted.issues.comments.length,\n-            sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n-          )\n-        );\n-      }\n-      if (sorted.reviews.length) {\n-        content.push(\n-          generateContributionRow(\n-            \"Review\",\n-            \"Comment\",\n-            sorted.reviews.length,\n-            sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n-          )\n-        );\n-      }\n-      return content.join(\"\");\n-    }\n-\n-    function createIncentiveRows() {\n-      const content: string[] = [];\n-\n-      if (!sorted) {\n-        return content.join(\"\");\n-      }\n-\n-      function buildIncentiveRow(commentScore: GithubCommentScore) {\n-        // Properly escape carriage returns for HTML rendering\n-        const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\\n\\r]/g, \"&#13;\");\n-        return `\n-          <tr>\n-            <td>\n-              <h6>\n-                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n-              </h6>\n-            </td>\n-            <td>\n-            <details>\n-              <summary>\n-                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n-                  return acc.add(curr.score * curr.count);\n-                }, new Decimal(0))}\n-              </summary>\n-              <pre>${formatting}</pre>\n-             </details>\n-            </td>\n-            <td>${commentScore.score?.relevance || \"-\"}</td>\n-            <td>${commentScore.score?.reward || \"-\"}</td>\n-          </tr>`;\n-      }\n-\n-      for (const issueComment of sorted.issues.comments) {\n-        content.push(buildIncentiveRow(issueComment));\n-      }\n-      for (const reviewComment of sorted.reviews) {\n-        content.push(buildIncentiveRow(reviewComment));\n-      }\n-      return content.join(\"\");\n-    }\n-\n     return `\n     <details>\n       <summary>\n@@ -192,7 +102,7 @@ export class GithubCommentModule implements Module {\n           </tr>\n         </thead>\n         <tbody>\n-          ${createContributionRows()}\n+          ${this._createContributionRows(result, sortedTasks)}\n         </tbody>\n       </table>\n       <h6>Conversation Incentives</h6>\n@@ -206,12 +116,104 @@ export class GithubCommentModule implements Module {\n           </tr>\n         </thead>\n         <tbody>\n-          ${createIncentiveRows()}\n+          ${this._createIncentiveRows(sortedTasks)}\n         </tbody>\n       </table>\n     </details>\n     `\n       .replace(/\\s+/g, \" \")\n       .trim();\n   }\n+\n+  _createContributionRows(result: Result[0], sortedTasks: SortedTasks | undefined) {\n+    const content: string[] = [];\n+\n+    if (!sortedTasks) {\n+      return content.join(\"\");\n+    }\n+\n+    function buildContributionRow(\n+      view: string,\n+      contribution: string,\n+      count: number,\n+      reward: number | Decimal | undefined\n+    ) {\n+      return `\n+          <tr>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n+          </tr>`;\n+    }\n+\n+    if (result.task?.reward) {\n+      content.push(buildContributionRow(\"Issue\", \"Task\", 1, result.task.reward));\n+    }\n+    if (sortedTasks.issues.task) {\n+      content.push(buildContributionRow(\"Issue\", \"Specification\", 1, sortedTasks.issues.task.score?.reward));\n+    }\n+    if (sortedTasks.issues.comments.length) {\n+      content.push(\n+        buildContributionRow(\n+          \"Issue\",\n+          \"Comment\",\n+          sortedTasks.issues.comments.length,\n+          sortedTasks.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+        )\n+      );\n+    }\n+    if (sortedTasks.reviews.length) {\n+      content.push(\n+        buildContributionRow(\n+          \"Review\",\n+          \"Comment\",\n+          sortedTasks.reviews.length,\n+          sortedTasks.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+        )\n+      );\n+    }\n+    return content.join(\"\");\n+  }\n+\n+  _createIncentiveRows(sortedTasks: SortedTasks | undefined) {\n+    const content: string[] = [];\n+\n+    if (!sortedTasks) {\n+      return content.join(\"\");\n+    }\n+\n+    function buildIncentiveRow(commentScore: GithubCommentScore) {\n+      // Properly escape carriage returns for HTML rendering\n+      const formatting = stringify(commentScore.score?.formatting?.content).replace(/[\\n\\r]/g, \"&#13;\");\n+      return `\n+          <tr>\n+            <td>\n+              <h6>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n+              </h6>\n+            </td>\n+            <td>\n+            <details>\n+              <summary>\n+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc.add(curr.score * curr.count);\n+                }, new Decimal(0))}\n+              </summary>\n+              <pre>${formatting}</pre>\n+             </details>\n+            </td>\n+            <td>${commentScore.score?.relevance || \"-\"}</td>\n+            <td>${commentScore.score?.reward || \"-\"}</td>\n+          </tr>`;\n+    }\n+\n+    for (const issueComment of sortedTasks.issues.comments) {\n+      content.push(buildIncentiveRow(issueComment));\n+    }\n+    for (const reviewComment of sortedTasks.reviews) {\n+      content.push(buildIncentiveRow(reviewComment));\n+    }\n+    return content.join(\"\");\n+  }\n }"
+    }
+  ]
+}

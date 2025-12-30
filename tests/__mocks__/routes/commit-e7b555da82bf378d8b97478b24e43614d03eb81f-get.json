@@ -1,0 +1,173 @@
+{
+  "sha": "e7b555da82bf378d8b97478b24e43614d03eb81f",
+  "node_id": "C_kwDOLUK0B9oAKGU3YjU1NWRhODJiZjM3OGQ4Yjk3NDc4YjI0ZTQzNjE0ZDAzZWI4MWY",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-12T06:51:49Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-12T06:51:49Z"
+    },
+    "message": "chore: comment html generation (WIP)",
+    "tree": {
+      "sha": "2e1fe5531a60a17284f724646be47ceafc8fc5ad",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/2e1fe5531a60a17284f724646be47ceafc8fc5ad"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/e7b555da82bf378d8b97478b24e43614d03eb81f",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/e7b555da82bf378d8b97478b24e43614d03eb81f",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/e7b555da82bf378d8b97478b24e43614d03eb81f",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/e7b555da82bf378d8b97478b24e43614d03eb81f/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "02b9c96541cedd508b18936a5bde76921e62d4fc",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/02b9c96541cedd508b18936a5bde76921e62d4fc",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/02b9c96541cedd508b18936a5bde76921e62d4fc"
+    }
+  ],
+  "stats": {
+    "total": 197,
+    "additions": 185,
+    "deletions": 12
+  },
+  "files": [
+    {
+      "sha": "abefe44ce85518fcaa99ec21e7239b1b5c88ddbc",
+      "filename": "rewards-configuration.default.yml",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 0,
+      "changes": 3,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/e7b555da82bf378d8b97478b24e43614d03eb81f/rewards-configuration.default.yml",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/e7b555da82bf378d8b97478b24e43614d03eb81f/rewards-configuration.default.yml",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/rewards-configuration.default.yml?ref=e7b555da82bf378d8b97478b24e43614d03eb81f",
+      "patch": "@@ -53,3 +53,6 @@ formattingEvaluator:\n       wordValue: 0.1\n permitGeneration:\n   enabled: true\n+githubComment:\n+  enabled: true\n+  post: true"
+    },
+    {
+      "sha": "977bdd79023261393310a62b10f602c97427df9e",
+      "filename": "src/configuration/github-comment-config.ts",
+      "status": "added",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Fconfiguration%2Fgithub-comment-config.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Fconfiguration%2Fgithub-comment-config.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fconfiguration%2Fgithub-comment-config.ts?ref=e7b555da82bf378d8b97478b24e43614d03eb81f",
+      "patch": "@@ -0,0 +1,10 @@\n+import { Static, Type } from \"@sinclair/typebox\";\n+\n+const githubCommentConfigurationType = Type.Object({\n+  enabled: Type.Boolean({ default: true }),\n+  post: Type.Boolean({ default: true }),\n+});\n+\n+export type GithubCommentConfiguration = Static<typeof githubCommentConfigurationType>;\n+\n+export default githubCommentConfigurationType;"
+    },
+    {
+      "sha": "de56c3ecb24745afc7efac8ea1ce4251aff80cb3",
+      "filename": "src/parser/github-comment-module.ts",
+      "status": "added",
+      "additions": 142,
+      "deletions": 0,
+      "changes": 142,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Fparser%2Fgithub-comment-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Fparser%2Fgithub-comment-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fgithub-comment-module.ts?ref=e7b555da82bf378d8b97478b24e43614d03eb81f",
+      "patch": "@@ -0,0 +1,142 @@\n+import { Value } from \"@sinclair/typebox/value\";\n+import configuration from \"../configuration/config-reader\";\n+import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { getPayoutConfigByNetworkId } from \"../types/payout\";\n+import program from \"./command-line\";\n+import { GithubCommentScore, Module, Result } from \"./processor\";\n+\n+/**\n+ * Posts a GitHub comment according to the given results.\n+ */\n+export class GithubContentModule implements Module {\n+  private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+\n+  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    for (const [key, value] of Object.entries(result)) {\n+      result[key].evaluationCommentHtml = this._generateHtml(key, value);\n+      console.log(result[key].evaluationCommentHtml);\n+    }\n+    if (this._configuration.post) {\n+      console.log(\"post comment\");\n+    }\n+    return Promise.resolve(result);\n+  }\n+\n+  get enabled(): boolean {\n+    if (!Value.Check(githubCommentConfig, this._configuration)) {\n+      console.warn(\"Invalid configuration detected for GithubContentModule, disabling.\");\n+      return false;\n+    }\n+    return true;\n+  }\n+\n+  _generateHtml(username: string, result: Result[0]) {\n+    const sorted = result.comments?.reduce<{\n+      issues: { issuer: GithubCommentScore[]; comments: GithubCommentScore[] };\n+      reviews: GithubCommentScore[];\n+    }>(\n+      (acc, curr) => {\n+        if (curr.type & CommentType.ISSUE) {\n+          if (curr.type & CommentType.ISSUER) {\n+            acc.issues.issuer.push(curr);\n+          } else {\n+            acc.issues.comments.push(curr);\n+          }\n+        } else if (curr.type & CommentType.REVIEW) {\n+          acc.reviews.push(curr);\n+        }\n+        return acc;\n+      },\n+      { issues: { issuer: [], comments: [] }, reviews: [] }\n+    );\n+\n+    function createContributionRows() {\n+      let content = \"\";\n+\n+      if (!sorted) {\n+        return \"\";\n+      }\n+      if (result.task?.reward) {\n+        content += `\n+          <tr>\n+            <td>Issue</td>\n+            <td>Task</td>\n+            <td>Count</td>\n+            <td>1</td>\n+            <td>${result.task.reward}</td>\n+          </tr>`;\n+      }\n+      for (const issue of sorted.issues.issuer) {\n+        content += `\n+          <tr>\n+            <td>Issue</td>\n+            <td>Specification</td>\n+            <td>Count</td>\n+            <td>1</td>\n+            <td>${issue.score?.reward ?? \"-\"}</td>\n+          </tr>`;\n+      }\n+      content += `\n+          <tr>\n+            <td>Issue</td>\n+            <td>Comment</td>\n+            <td>Count</td>\n+            <td>${sorted.issues.comments.length}</td>\n+            <td>${sorted.issues.comments.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) ?? \"-\"}</td>\n+          </tr>`;\n+      return content;\n+    }\n+\n+    function createIncentiveRows() {\n+      return \"\";\n+    }\n+\n+    return `\n+    <details>\n+      <summary>\n+        <b>\n+          <h3>\n+            <a href=\"${result.permitUrl}\" target=\"_blank\" rel=\"noopener\">\n+              [ ${result.total} ${getPayoutConfigByNetworkId(program.opts().evmNetworkId).symbol} ]\n+            </a>\n+          </h3>\n+          <h6>\n+            @${username}\n+          </h6>\n+        </b>\n+      </summary>\n+      <h6>Contributions Overview</h6>\n+      <table>\n+        <thead>\n+          <tr>\n+            <th>View</th>\n+            <th>Contribution</th>\n+            <th>Count</th>\n+            <th>Reward</th>\n+          </tr>\n+        </thead>\n+        <tbody>\n+          ${createContributionRows()}\n+        </tbody>\n+      </table>\n+      <h6>Conversation Incentives</h6>\n+      <table>\n+        <thead>\n+          <tr>\n+            <th>Comment</th>\n+            <th>Formatting</th>\n+            <th>Relevance</th>\n+            <th>Reward</th>\n+          </tr>\n+        </thead>\n+        <tbody>\n+            ${createIncentiveRows()}\n+        </tbody>\n+      </table>\n+    </details>\n+    `\n+      .replace(/\\s+/g, \" \")\n+      .trim();\n+  }\n+}"
+    },
+    {
+      "sha": "88d86fde302b28f17017751d6137579c11bd1285",
+      "filename": "src/parser/permit-generation-module.ts",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 10,
+      "changes": 13,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Fparser%2Fpermit-generation-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Fparser%2Fpermit-generation-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fpermit-generation-module.ts?ref=e7b555da82bf378d8b97478b24e43614d03eb81f",
+      "patch": "@@ -26,7 +26,7 @@ interface Payload {\n \n export class PermitGenerationModule implements Module {\n   readonly _configuration: PermitGenerationModule = configuration.permitGeneration;\n-  readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);\n+  readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);\n \n   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n     const payload: Context[\"payload\"] & Payload = {\n@@ -69,7 +69,7 @@ export class PermitGenerationModule implements Module {\n           permitRequests: [\n             {\n               amount: value.total,\n-              userId: value.userId,\n+              username: key,\n               contributionType: \"\",\n               type: TokenType.ERC20,\n             },\n@@ -93,14 +93,7 @@ export class PermitGenerationModule implements Module {\n             octokit,\n             config,\n           },\n-          [\n-            {\n-              type: \"ERC20\",\n-              userId: value.userId,\n-              amount: value.total,\n-              contributionType: \"\",\n-            },\n-          ]\n+          config.permitRequests\n         );\n         result[key].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;\n       } catch (e) {"
+    },
+    {
+      "sha": "d10d0cc83039c23c1b0c4d48c348ad691fbe9b5e",
+      "filename": "src/parser/processor.ts",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 1,
+      "changes": 5,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Fparser%2Fprocessor.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Fparser%2Fprocessor.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fprocessor.ts?ref=e7b555da82bf378d8b97478b24e43614d03eb81f",
+      "patch": "@@ -6,6 +6,7 @@ import program from \"./command-line\";\n import { ContentEvaluatorModule } from \"./content-evaluator-module\";\n import { DataPurgeModule } from \"./data-purge-module\";\n import { FormattingEvaluatorModule } from \"./formatting-evaluator-module\";\n+import { GithubContentModule } from \"./github-comment-module\";\n import { PermitGenerationModule } from \"./permit-generation-module\";\n import { UserExtractorModule } from \"./user-extractor-module\";\n \n@@ -19,7 +20,8 @@ export class Processor {\n       .add(new DataPurgeModule())\n       .add(new FormattingEvaluatorModule())\n       .add(new ContentEvaluatorModule())\n-      .add(new PermitGenerationModule());\n+      .add(new PermitGenerationModule())\n+      .add(new GithubContentModule());\n   }\n \n   add(transformer: Module) {\n@@ -100,6 +102,7 @@ export interface Result {\n     };\n     permitUrl?: string;\n     userId: number;\n+    evaluationCommentHtml?: string;\n   };\n }\n "
+    },
+    {
+      "sha": "7ff10c0bc2c85a38170bedf3455b059e070a652e",
+      "filename": "src/types/env.d.ts",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Ftypes%2Fenv.d.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Ftypes%2Fenv.d.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Ftypes%2Fenv.d.ts?ref=e7b555da82bf378d8b97478b24e43614d03eb81f",
+      "patch": "@@ -4,7 +4,7 @@ declare global {\n       GITHUB_TOKEN: string;\n       OPENAI_API_KEY: string;\n       X25519_PRIVATE_KEY: string;\n-      SUPABASE_ANON_KEY: string;\n+      SUPABASE_KEY: string;\n       SUPABASE_URL: string;\n       NFT_MINTER_PRIVATE_KEY: string;\n       NFT_CONTRACT_ADDRESS: string;"
+    },
+    {
+      "sha": "19be8c5642b4269be388ef29f7eb3990ee453542",
+      "filename": "src/types/payout.ts",
+      "status": "added",
+      "additions": 22,
+      "deletions": 0,
+      "changes": 22,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Ftypes%2Fpayout.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/e7b555da82bf378d8b97478b24e43614d03eb81f/src%2Ftypes%2Fpayout.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Ftypes%2Fpayout.ts?ref=e7b555da82bf378d8b97478b24e43614d03eb81f",
+      "patch": "@@ -0,0 +1,22 @@\n+// available tokens for payouts\n+export const PAYMENT_TOKEN_PER_NETWORK: Record<string, { rpc: string; token: string; symbol: string }> = {\n+  \"1\": {\n+    rpc: \"https://rpc-bot.ubq.fi/v1/mainnet\",\n+    token: \"0x6B175474E89094C44Da98b954EedeAC495271d0F\",\n+    symbol: \"DAI\",\n+  },\n+  \"100\": {\n+    rpc: \"https://rpc.gnosischain.com\",\n+    token: \"0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d\",\n+    symbol: \"WXDAI\",\n+  },\n+};\n+\n+export function getPayoutConfigByNetworkId(evmNetworkId: number) {\n+  const paymentToken = PAYMENT_TOKEN_PER_NETWORK[evmNetworkId.toString()];\n+  if (!paymentToken) {\n+    throw new Error(`No config setup for evmNetworkId: ${evmNetworkId}`);\n+  }\n+\n+  return paymentToken;\n+}"
+    }
+  ]
+}

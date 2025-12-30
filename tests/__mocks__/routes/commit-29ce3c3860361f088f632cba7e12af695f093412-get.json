@@ -1,0 +1,101 @@
+{
+  "sha": "29ce3c3860361f088f632cba7e12af695f093412",
+  "node_id": "C_kwDOLUK0B9oAKDI5Y2UzYzM4NjAzNjFmMDg4ZjYzMmNiYTdlMTJhZjY5NWYwOTM0MTI",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-15T06:37:36Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-15T06:37:36Z"
+    },
+    "message": "chore: comment posting to github",
+    "tree": {
+      "sha": "4af72ae4e4a780c14e0e4d6db4c27cee06040fb9",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/4af72ae4e4a780c14e0e4d6db4c27cee06040fb9"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/29ce3c3860361f088f632cba7e12af695f093412",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/29ce3c3860361f088f632cba7e12af695f093412",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/29ce3c3860361f088f632cba7e12af695f093412",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/29ce3c3860361f088f632cba7e12af695f093412/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "c9897e2cdb010848e77f6fd6eb45a09f4a639a6b",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/c9897e2cdb010848e77f6fd6eb45a09f4a639a6b",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c9897e2cdb010848e77f6fd6eb45a09f4a639a6b"
+    }
+  ],
+  "stats": {
+    "total": 58,
+    "additions": 35,
+    "deletions": 23
+  },
+  "files": [
+    {
+      "sha": "a3158cfeb644e7e70e0331a6a0964af5456aeca4",
+      "filename": "src/parser/github-comment-module.ts",
+      "status": "modified",
+      "additions": 35,
+      "deletions": 23,
+      "changes": 58,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/29ce3c3860361f088f632cba7e12af695f093412/src%2Fparser%2Fgithub-comment-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/29ce3c3860361f088f632cba7e12af695f093412/src%2Fparser%2Fgithub-comment-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fgithub-comment-module.ts?ref=29ce3c3860361f088f632cba7e12af695f093412",
+      "patch": "@@ -4,7 +4,9 @@ import * as fs from \"fs\";\n import { stringify } from \"yaml\";\n import configuration from \"../configuration/config-reader\";\n import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n+import { getOctokitInstance } from \"../get-authentication-token\";\n import { CommentType, IssueActivity } from \"../issue-activity\";\n+import { parseGitHubUrl } from \"../start\";\n import { getPayoutConfigByNetworkId } from \"../types/payout\";\n import program from \"./command-line\";\n import { GithubCommentScore, Module, Result } from \"./processor\";\n@@ -14,19 +16,32 @@ import { GithubCommentScore, Module, Result } from \"./processor\";\n  */\n export class GithubContentModule implements Module {\n   private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n+  private readonly _debugFilePath = \"./output.html\";\n+\n+  async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    let body = \"\";\n \n-  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n-    if (this._configuration.debug) {\n-      fs.writeFileSync(\"./output.html\", \"\");\n-    }\n     for (const [key, value] of Object.entries(result)) {\n       result[key].evaluationCommentHtml = this._generateHtml(key, value);\n-      if (this._configuration.debug) {\n-        fs.appendFileSync(\"./output.html\", result[key].evaluationCommentHtml as string);\n-      }\n+      body += result[key].evaluationCommentHtml;\n+    }\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(this._debugFilePath, body);\n     }\n     if (this._configuration.post) {\n-      console.log(\"post comment\");\n+      try {\n+        const octokit = getOctokitInstance();\n+        const { owner, repo, issue_number } = parseGitHubUrl(program.opts().issue);\n+\n+        await octokit.issues.createComment({\n+          body,\n+          repo,\n+          owner,\n+          issue_number,\n+        });\n+      } catch (e) {\n+        console.error(`Could not post GitHub comment: ${e}`);\n+      }\n     }\n     return Promise.resolve(result);\n   }\n@@ -41,13 +56,13 @@ export class GithubContentModule implements Module {\n \n   _generateHtml(username: string, result: Result[0]) {\n     const sorted = result.comments?.reduce<{\n-      issues: { task: GithubCommentScore[]; comments: GithubCommentScore[] };\n+      issues: { task: GithubCommentScore | null; comments: GithubCommentScore[] };\n       reviews: GithubCommentScore[];\n     }>(\n       (acc, curr) => {\n         if (curr.type & CommentType.ISSUE) {\n           if (curr.type & CommentType.TASK) {\n-            acc.issues.task.push(curr);\n+            acc.issues.task = curr;\n           } else {\n             acc.issues.comments.push(curr);\n           }\n@@ -56,7 +71,7 @@ export class GithubContentModule implements Module {\n         }\n         return acc;\n       },\n-      { issues: { task: [], comments: [] }, reviews: [] }\n+      { issues: { task: null, comments: [] }, reviews: [] }\n     );\n \n     function createContributionRows() {\n@@ -70,46 +85,43 @@ export class GithubContentModule implements Module {\n           <tr>\n             <td>Issue</td>\n             <td>Task</td>\n-            <td>Count</td>\n             <td>1</td>\n             <td>${result.task.reward}</td>\n           </tr>`;\n       }\n-      for (const issue of sorted.issues.task) {\n+      if (sorted.issues.task) {\n         content += `\n           <tr>\n             <td>Issue</td>\n             <td>Specification</td>\n-            <td>Count</td>\n             <td>1</td>\n-            <td>${issue.score?.reward ?? \"-\"}</td>\n+            <td>${sorted.issues.task.score?.reward || \"-\"}</td>\n           </tr>`;\n       }\n       if (sorted.issues.comments.length) {\n         content += `\n           <tr>\n             <td>Issue</td>\n             <td>Comment</td>\n-            <td>Count</td>\n             <td>${sorted.issues.comments.length}</td>\n-            <td>${sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) ?? \"-\"}</td>\n+            <td>${sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) || \"-\"}</td>\n           </tr>`;\n       }\n       if (sorted.reviews.length) {\n         content += `\n           <tr>\n             <td>Review</td>\n             <td>Comment</td>\n-            <td>Count</td>\n             <td>${sorted.reviews.length}</td>\n-            <td>${sorted.reviews.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) ?? \"-\"}</td>\n+            <td>${sorted.reviews.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) || \"-\"}</td>\n           </tr>`;\n       }\n       return content;\n     }\n \n     function createIncentiveRows() {\n       let content = \"\";\n+\n       if (!sorted) {\n         return \"\";\n       }\n@@ -119,7 +131,7 @@ export class GithubContentModule implements Module {\n           <tr>\n             <td>\n               <h6>\n-                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content}</a>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content.replace(/(.{64})..+/, \"$1…\")}</a>\n               </h6>\n             </td>\n             <td>\n@@ -136,8 +148,8 @@ export class GithubContentModule implements Module {\n               </pre>\n              </details>\n             </td>\n-            <td>${commentScore.score?.relevance ?? \"-\"}</td>\n-            <td>${commentScore.score?.reward ?? \"-\"}</td>\n+            <td>${commentScore.score?.relevance || \"-\"}</td>\n+            <td>${commentScore.score?.reward || \"-\"}</td>\n           </tr>`;\n       }\n \n@@ -189,7 +201,7 @@ export class GithubContentModule implements Module {\n           </tr>\n         </thead>\n         <tbody>\n-            ${createIncentiveRows()}\n+          ${createIncentiveRows()}\n         </tbody>\n       </table>\n     </details>"
+    }
+  ]
+}

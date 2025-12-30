@@ -1,0 +1,101 @@
+{
+  "sha": "c9897e2cdb010848e77f6fd6eb45a09f4a639a6b",
+  "node_id": "C_kwDOLUK0B9oAKGM5ODk3ZTJjZGIwMTA4NDhlNzdmNmZkNmViNDVhMDlmNGE2MzlhNmI",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-15T05:29:31Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-15T05:29:31Z"
+    },
+    "message": "chore: incentive rows generation",
+    "tree": {
+      "sha": "d26732b0a2afcb3782a566f260bc190d851ace72",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/d26732b0a2afcb3782a566f260bc190d851ace72"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/c9897e2cdb010848e77f6fd6eb45a09f4a639a6b",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/c9897e2cdb010848e77f6fd6eb45a09f4a639a6b",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c9897e2cdb010848e77f6fd6eb45a09f4a639a6b",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/c9897e2cdb010848e77f6fd6eb45a09f4a639a6b/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "df2c34f172b9e4eb3cfd1a20dde7fcb142102053",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/df2c34f172b9e4eb3cfd1a20dde7fcb142102053",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/df2c34f172b9e4eb3cfd1a20dde7fcb142102053"
+    }
+  ],
+  "stats": {
+    "total": 22,
+    "additions": 15,
+    "deletions": 7
+  },
+  "files": [
+    {
+      "sha": "b23e4c78216935f9c56f7ac203f6c1d423779b37",
+      "filename": "src/parser/github-comment-module.ts",
+      "status": "modified",
+      "additions": 15,
+      "deletions": 7,
+      "changes": 22,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/c9897e2cdb010848e77f6fd6eb45a09f4a639a6b/src%2Fparser%2Fgithub-comment-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/c9897e2cdb010848e77f6fd6eb45a09f4a639a6b/src%2Fparser%2Fgithub-comment-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fgithub-comment-module.ts?ref=c9897e2cdb010848e77f6fd6eb45a09f4a639a6b",
+      "patch": "@@ -113,32 +113,40 @@ export class GithubContentModule implements Module {\n       if (!sorted) {\n         return \"\";\n       }\n-      for (const issueComment of sorted.issues.comments) {\n-        content += `\n+\n+      function buildIncentiveRow(commentScore: GithubCommentScore) {\n+        return `\n           <tr>\n             <td>\n               <h6>\n-                <a href=\"${issueComment.url}\" target=\"_blank\" rel=\"noopener\">${issueComment.content}</a>\n+                <a href=\"${commentScore.url}\" target=\"_blank\" rel=\"noopener\">${commentScore.content}</a>\n               </h6>\n             </td>\n             <td>\n             <details>\n               <summary>\n-                ${Object.values(issueComment.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                ${Object.values(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n                   return acc.add(curr.score * curr.count);\n                 }, new Decimal(0))}\n               </summary>\n               <pre>\n-                ${Object.entries(issueComment.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                ${Object.entries(commentScore.score?.formatting?.content || {}).reduce((acc, curr) => {\n                   return acc + stringify(curr);\n                 }, \"\")}\n               </pre>\n              </details>\n             </td>\n-            <td>${issueComment.score?.relevance ?? \"-\"}</td>\n-            <td>${issueComment.score?.reward ?? \"-\"}</td>\n+            <td>${commentScore.score?.relevance ?? \"-\"}</td>\n+            <td>${commentScore.score?.reward ?? \"-\"}</td>\n           </tr>`;\n       }\n+\n+      for (const issueComment of sorted.issues.comments) {\n+        content += buildIncentiveRow(issueComment);\n+      }\n+      for (const reviewComment of sorted.reviews) {\n+        content += buildIncentiveRow(reviewComment);\n+      }\n       return content;\n     }\n "
+    }
+  ]
+}

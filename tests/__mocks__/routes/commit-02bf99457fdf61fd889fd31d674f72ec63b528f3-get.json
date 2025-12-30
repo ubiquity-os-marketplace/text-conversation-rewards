@@ -1,0 +1,233 @@
+{
+  "sha": "02bf99457fdf61fd889fd31d674f72ec63b528f3",
+  "node_id": "C_kwDOLUK0B9oAKDAyYmY5OTQ1N2ZkZjYxZmQ4ODlmZDMxZDY3NGY3MmVjNjNiNTI4ZjM",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-18T08:35:26Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-18T08:35:26Z"
+    },
+    "message": "chore: tests for data purge module",
+    "tree": {
+      "sha": "9e6362a7d32bd695a7ad1fc854cd39beddc92248",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/9e6362a7d32bd695a7ad1fc854cd39beddc92248"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/02bf99457fdf61fd889fd31d674f72ec63b528f3",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/02bf99457fdf61fd889fd31d674f72ec63b528f3",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/02bf99457fdf61fd889fd31d674f72ec63b528f3",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/02bf99457fdf61fd889fd31d674f72ec63b528f3/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "abbcf3365cf8401033442120b4639d5b2bdcec67",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/abbcf3365cf8401033442120b4639d5b2bdcec67",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/abbcf3365cf8401033442120b4639d5b2bdcec67"
+    }
+  ],
+  "stats": {
+    "total": 137,
+    "additions": 129,
+    "deletions": 8
+  },
+  "files": [
+    {
+      "sha": "891d167893f4d269daf9457407fffa1cde08e6ce",
+      "filename": "tests/__mocks__/handlers.ts",
+      "status": "modified",
+      "additions": 7,
+      "deletions": 7,
+      "changes": 14,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Fhandlers.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Fhandlers.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Fhandlers.ts?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "patch": "@@ -1,11 +1,11 @@\n import { http, HttpResponse } from \"msw\";\n-import issueGet from \"./issue-get.json\";\n-import issueEventsGet from \"./issue-events-get.json\";\n-import issueCommentsGet from \"./issue-comments-get.json\";\n-import issueTimelineGet from \"./issue-timeline-get.json\";\n-import pullsGet from \"./pulls-get.json\";\n-import pullsReviewsGet from \"./pulls-reviews-get.json\";\n-import pullsCommentsGet from \"./pulls-comments-get.json\";\n+import issueGet from \"./routes/issue-get.json\";\n+import issueEventsGet from \"./routes/issue-events-get.json\";\n+import issueCommentsGet from \"./routes/issue-comments-get.json\";\n+import issueTimelineGet from \"./routes/issue-timeline-get.json\";\n+import pullsGet from \"./routes/pulls-get.json\";\n+import pullsReviewsGet from \"./routes/pulls-reviews-get.json\";\n+import pullsCommentsGet from \"./routes/pulls-comments-get.json\";\n \n /**\n  * Intercepts the routes and returns a custom payload"
+    },
+    {
+      "sha": "3eb341c92591238904a0f5bacbce7e011a9c51d4",
+      "filename": "tests/__mocks__/results/data-purge-result.json",
+      "status": "added",
+      "additions": 98,
+      "deletions": 0,
+      "changes": 98,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Fresults%2Fdata-purge-result.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Fresults%2Fdata-purge-result.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Fresults%2Fdata-purge-result.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "patch": "@@ -0,0 +1,98 @@\n+{\n+  \"molecula451\": {\n+    \"total\": 0,\n+    \"userId\": 41552663,\n+    \"comments\": [\n+      {\n+        \"content\": \"pavlovcik i think we need to update a bit the readme !   dm what to whom?\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948916343\",\n+        \"type\": \"ISSUE|CONTRIBUTOR|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"let us know when done\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948989989\",\n+        \"type\": \"ISSUE|CONTRIBUTOR|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"https://github.com/ubiquibot/comment-incentives/actions/runs/7935268560 invalid input sounds unexpected @gitcoindev ??\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949195772\",\n+        \"type\": \"ISSUE|CONTRIBUTOR|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"@pavlovcik permitted with hard debug (tho no funds in the private key)\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949564869\",\n+        \"type\": \"ISSUE|CONTRIBUTOR|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"pavlovcik i re-generated the X25519 to trigger the permit, what you don't understand? using a private key i own, but also did many commits to reach the root cause\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949635137\",\n+        \"type\": \"ISSUE|CONTRIBUTOR|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"sure thing\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639196\",\n+        \"type\": \"ISSUE|CONTRIBUTOR|COMMENTED\"\n+      }\n+    ]\n+  },\n+  \"0x4007\": {\n+    \"total\": 0,\n+    \"userId\": 4975670,\n+    \"comments\": [\n+      {\n+        \"content\": \"Link below for conversation context. It was to me. Anyways you need to create a new private key for this task!\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1948930217\",\n+        \"type\": \"ISSUE|ISSUER|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"In the repository secrets I think I need to change the key to match @gitcoindev's\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949201722\",\n+        \"type\": \"ISSUE|ISSUER|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"I just changed it to `627H-BcWbcp_O3YmQGIA6MqgxVsFuplFCA9DK3iC7GQ` I hope that it doesn't break production for some reason (it should get it from Netlify secrets, but not sure if we implemented this correctly!) I fear that we might need to build a feature for this to support development key pair and production. Unfortunately I'm already winding down for the day so I'll leave you guys to try and investigate.\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949203681\",\n+        \"type\": \"ISSUE|ISSUER|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"I don't understand what you mean by this\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949633751\",\n+        \"type\": \"ISSUE|ISSUER|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"I'll investigate more on my computer later.\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949639054\",\n+        \"type\": \"ISSUE|ISSUER|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"Will it be an issue if I revert to the commit and secret that I had before? It was the production x25519 key in the GitHub repository secrets when it was working like eight hours ago.  Posting this message before checking on my computer to get you before you log off.\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949642845\",\n+        \"type\": \"ISSUE|ISSUER|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"Can somebody work on generating a new `X25519_PRIVATE_KEY` for the ubiquibot organization? We need to share it for development purposes. 1. Generate a new key 2. Encrypt a new `evmPrivateKeyEncrypted` (no funds!) and add to the org bot config 3. Add the shared test key to the `comment-incentives` readme.  https://github.com/ubiquibot/comment-incentives/pull/21/commits/567419d9688e92edf698f64c697f1a7cafe1d02e _Originally posted by @pavlovcik in https://github.com/ubiquibot/comment-incentives/issues/19#issuecomment-1948876653_\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22\",\n+        \"type\": \"ISSUE|ISSUER|TASK\"\n+      }\n+    ]\n+  },\n+  \"gitcoindev\": {\n+    \"total\": 37.5,\n+    \"task\": {\n+      \"reward\": 37.5\n+    },\n+    \"userId\": 88761781,\n+    \"comments\": [\n+      {\n+        \"content\": \"@molecula451 I tried to override X25519_PRIVATE_KEY but it did not help. It seems that https://github.com/ubiquibot/production/blob/1937a6ba75588f51d1bf07fed1f6384f79090465/.github/ubiquibot-config.yml#L2 takes precedence over https://github.com/ubiquibot/comment-incentives/blob/main/.github/ubiquibot-config.yml#L2 (I see the first one in logs).\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/issues/22#issuecomment-1949333227\",\n+        \"type\": \"ISSUE|ASSIGNEE|COMMENTED\"\n+      },\n+      {\n+        \"content\": \"The new evmPrivateKeyEncrypted generated for address 0x3a2E44e10AbEf5CB4a6E492c5ba93d30068d2D95 (no funds). Resolves: https://github.com/ubiquibot/comment-incentives/issues/22\",\n+        \"url\": \"https://github.com/ubiquibot/comment-incentives/pull/25\",\n+        \"type\": \"REVIEW|ISSUER|SPECIFICATION\"\n+      }\n+    ]\n+  }\n+}"
+    },
+    {
+      "sha": "ed4dd6a1f045495d8380d3ec69366935280b5d10",
+      "filename": "tests/__mocks__/results/user-comment-results.json",
+      "status": "added",
+      "additions": 17,
+      "deletions": 0,
+      "changes": 17,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Fresults%2Fuser-comment-results.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Fresults%2Fuser-comment-results.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Fresults%2Fuser-comment-results.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "patch": "@@ -0,0 +1,17 @@\n+{\n+  \"molecula451\": {\n+    \"total\": 0,\n+    \"userId\": 41552663\n+  },\n+  \"0x4007\": {\n+    \"total\": 0,\n+    \"userId\": 4975670\n+  },\n+  \"gitcoindev\": {\n+    \"total\": 37.5,\n+    \"task\": {\n+      \"reward\": 37.5\n+    },\n+    \"userId\": 88761781\n+  }\n+}"
+    },
+    {
+      "sha": "75d0060d1dcdf761b04965e643953edfcb535ae6",
+      "filename": "tests/__mocks__/routes/issue-comments-get.json",
+      "status": "renamed",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fissue-comments-get.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fissue-comments-get.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Froutes%2Fissue-comments-get.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "previous_filename": "tests/__mocks__/issue-comments-get.json"
+    },
+    {
+      "sha": "4fe6b8f65259a66d065c722ef0c93cf6e906eba7",
+      "filename": "tests/__mocks__/routes/issue-events-get.json",
+      "status": "renamed",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fissue-events-get.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fissue-events-get.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Froutes%2Fissue-events-get.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "previous_filename": "tests/__mocks__/issue-events-get.json"
+    },
+    {
+      "sha": "d01d343f84954783cb6c5a64503aa0edbea0ceae",
+      "filename": "tests/__mocks__/routes/issue-get.json",
+      "status": "renamed",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fissue-get.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fissue-get.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Froutes%2Fissue-get.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "previous_filename": "tests/__mocks__/issue-get.json"
+    },
+    {
+      "sha": "ec5ab455ece0479142905650c933866f674d6ff8",
+      "filename": "tests/__mocks__/routes/issue-timeline-get.json",
+      "status": "renamed",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fissue-timeline-get.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fissue-timeline-get.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Froutes%2Fissue-timeline-get.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "previous_filename": "tests/__mocks__/issue-timeline-get.json"
+    },
+    {
+      "sha": "41b42e677b97324ff33450d619b6812449bc3abe",
+      "filename": "tests/__mocks__/routes/pulls-comments-get.json",
+      "status": "renamed",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fpulls-comments-get.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fpulls-comments-get.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Froutes%2Fpulls-comments-get.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "previous_filename": "tests/__mocks__/pulls-comments-get.json"
+    },
+    {
+      "sha": "48c160403b7c1e348e5fd4155f7067fe726acc4d",
+      "filename": "tests/__mocks__/routes/pulls-get.json",
+      "status": "renamed",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fpulls-get.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fpulls-get.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Froutes%2Fpulls-get.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "previous_filename": "tests/__mocks__/pulls-get.json"
+    },
+    {
+      "sha": "41b42e677b97324ff33450d619b6812449bc3abe",
+      "filename": "tests/__mocks__/routes/pulls-reviews-get.json",
+      "status": "renamed",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fpulls-reviews-get.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2F__mocks__%2Froutes%2Fpulls-reviews-get.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Froutes%2Fpulls-reviews-get.json?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "previous_filename": "tests/__mocks__/pulls-reviews-get.json"
+    },
+    {
+      "sha": "07109499bd154e78061d8d2f960363c14892cf02",
+      "filename": "tests/process.issue.test.ts",
+      "status": "modified",
+      "additions": 6,
+      "deletions": 0,
+      "changes": 6,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2Fprocess.issue.test.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/tests%2Fprocess.issue.test.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2Fprocess.issue.test.ts?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "patch": "@@ -4,6 +4,8 @@ import { Processor } from \"../src/parser/processor\";\n import { UserExtractorModule } from \"../src/parser/user-extractor-module\";\n import { server } from \"./__mocks__/node\";\n import { DataPurgeModule } from \"../src/parser/data-purge-module\";\n+import userCommentResults from \"./__mocks__/results/user-comment-results.json\";\n+import dataPurgeResults from \"./__mocks__/results/data-purge-result.json\";\n \n const issueUrl = process.env.TEST_ISSUE_URL || \"https://github.com/ubiquibot/comment-incentives/issues/22\";\n \n@@ -20,16 +22,20 @@ describe(\"Modules tests\", () => {\n   });\n \n   it(\"Should extract users from comments\", async () => {\n+    const logSpy = jest.spyOn(console, \"log\");\n     const processor = new Processor();\n     processor[\"_transformers\"] = [new UserExtractorModule()];\n     await processor.run(activity);\n     processor.dump();\n+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(userCommentResults, undefined, 2));\n   });\n \n   it(\"Should purge data\", async () => {\n+    const logSpy = jest.spyOn(console, \"log\");\n     const processor = new Processor();\n     processor[\"_transformers\"] = [new UserExtractorModule(), new DataPurgeModule()];\n     await processor.run(activity);\n     processor.dump();\n+    expect(logSpy).toHaveBeenCalledWith(JSON.stringify(dataPurgeResults, undefined, 2));\n   });\n });"
+    },
+    {
+      "sha": "a02f22f6181d07c019d332767a12eab807bcf745",
+      "filename": "yarn.lock",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/02bf99457fdf61fd889fd31d674f72ec63b528f3/yarn.lock",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/02bf99457fdf61fd889fd31d674f72ec63b528f3/yarn.lock",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/yarn.lock?ref=02bf99457fdf61fd889fd31d674f72ec63b528f3",
+      "patch": "@@ -6664,7 +6664,7 @@ ms@^2.0.0:\n   resolved \"https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2\"\n   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==\n \n-msw@^2.2.14:\n+msw@2.2.14:\n   version \"2.2.14\"\n   resolved \"https://registry.yarnpkg.com/msw/-/msw-2.2.14.tgz#ed16b89f99ffc105a84b0295a6fcae2ee99f5c62\"\n   integrity sha512-64i8rNCa1xzDK8ZYsTrVMli05D687jty8+Th+PU5VTbJ2/4P7fkQFVyDQ6ZFT5FrNR8z2BHhbY47fKNvfHrumA=="
+    }
+  ]
+}

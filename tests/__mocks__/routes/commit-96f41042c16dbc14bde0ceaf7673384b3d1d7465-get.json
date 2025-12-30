@@ -1,0 +1,125 @@
+{
+  "sha": "96f41042c16dbc14bde0ceaf7673384b3d1d7465",
+  "node_id": "C_kwDOLUK0B9oAKDk2ZjQxMDQyYzE2ZGJjMTRiZGUwY2VhZjc2NzMzODRiM2QxZDc0NjU",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-16T10:59:02Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-16T10:59:02Z"
+    },
+    "message": "chore: update package version",
+    "tree": {
+      "sha": "602cf09cd7cadbe113ace9f68f503095c9a8fcb4",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/602cf09cd7cadbe113ace9f68f503095c9a8fcb4"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/96f41042c16dbc14bde0ceaf7673384b3d1d7465",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/96f41042c16dbc14bde0ceaf7673384b3d1d7465",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/96f41042c16dbc14bde0ceaf7673384b3d1d7465",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/96f41042c16dbc14bde0ceaf7673384b3d1d7465/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "ad141fd53c4bb912164d54aa38f10d84ea07ff0f",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/ad141fd53c4bb912164d54aa38f10d84ea07ff0f",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ad141fd53c4bb912164d54aa38f10d84ea07ff0f"
+    }
+  ],
+  "stats": {
+    "total": 16,
+    "additions": 8,
+    "deletions": 8
+  },
+  "files": [
+    {
+      "sha": "7fc33edda968e994b20649314c9e6ad60d7583a9",
+      "filename": "package.json",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/96f41042c16dbc14bde0ceaf7673384b3d1d7465/package.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/96f41042c16dbc14bde0ceaf7673384b3d1d7465/package.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/package.json?ref=96f41042c16dbc14bde0ceaf7673384b3d1d7465",
+      "patch": "@@ -30,7 +30,7 @@\n     \"@octokit/rest\": \"20.1.0\",\n     \"@sinclair/typebox\": \"0.32.20\",\n     \"@supabase/supabase-js\": \"2.42.0\",\n-    \"@ubiquibot/permit-generation\": \"1.0.3\",\n+    \"@ubiquibot/permit-generation\": \"1.2.0\",\n     \"commander\": \"12.0.0\",\n     \"decimal.js\": \"10.4.3\",\n     \"dotenv\": \"16.4.5\",\n@@ -56,7 +56,7 @@\n     \"@types/node\": \"20.11.28\",\n     \"@typescript-eslint/eslint-plugin\": \"6.21.0\",\n     \"@typescript-eslint/parser\": \"6.21.0\",\n-    \"babel-jest\": \"^29.7.0\",\n+    \"babel-jest\": \"29.7.0\",\n     \"cspell\": \"8.3.2\",\n     \"eslint\": \"8.56.0\",\n     \"eslint-plugin-sonarjs\": \"0.23.0\","
+    },
+    {
+      "sha": "dee0626d0569480349e28b035a32e801b0afd4ee",
+      "filename": "src/parser/permit-generation-module.ts",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/96f41042c16dbc14bde0ceaf7673384b3d1d7465/src%2Fparser%2Fpermit-generation-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/96f41042c16dbc14bde0ceaf7673384b3d1d7465/src%2Fparser%2Fpermit-generation-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fpermit-generation-module.ts?ref=96f41042c16dbc14bde0ceaf7673384b3d1d7465",
+      "patch": "@@ -9,7 +9,7 @@ import {\n   generatePayoutPermit,\n   SupportedEvents,\n   TokenType,\n-} from \"@ubiquibot/permit-generation\";\n+} from \"@ubiquibot/permit-generation/core\";\n import configuration from \"../configuration/config-reader\";\n import permitGenerationConfigurationType, {\n   PermitGenerationConfiguration,"
+    },
+    {
+      "sha": "7a85d98594e681afecbf34c4af508843e1aea84f",
+      "filename": "yarn.lock",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 5,
+      "changes": 10,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/96f41042c16dbc14bde0ceaf7673384b3d1d7465/yarn.lock",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/96f41042c16dbc14bde0ceaf7673384b3d1d7465/yarn.lock",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/yarn.lock?ref=96f41042c16dbc14bde0ceaf7673384b3d1d7465",
+      "patch": "@@ -3110,10 +3110,10 @@\n     \"@typescript-eslint/types\" \"6.21.0\"\n     eslint-visitor-keys \"^3.4.1\"\n \n-\"@ubiquibot/permit-generation@1.0.3\":\n-  version \"1.0.3\"\n-  resolved \"https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.0.3.tgz#1f47a090b600f2ab9f0a298abbd0d0cda0aaedff\"\n-  integrity sha512-ATsWYPsMauMrYY+xAZmMsxB57y/8L5bnsUfpYdwGqSlYgDL+8kaLfkGDJH3EVTssZa5asmh7tcU7RP75FZRM+g==\n+\"@ubiquibot/permit-generation@1.2.0\":\n+  version \"1.2.0\"\n+  resolved \"https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.2.0.tgz#17e5cf71099ce22ef1b5f0ea5a19ac1e7bca1844\"\n+  integrity sha512-29qzOtC50NBRZLOIepqOoqPGsyr7ig6XPTE/Fcyj0Nb+0hHrWYA6VfLtGBFBH72EgKbGLV3dXwz68J8Cz9uKOw==\n   dependencies:\n     \"@actions/core\" \"^1.10.1\"\n     \"@actions/github\" \"^6.0.0\"\n@@ -3378,7 +3378,7 @@ available-typed-arrays@^1.0.7:\n   dependencies:\n     possible-typed-array-names \"^1.0.0\"\n \n-babel-jest@^29.7.0:\n+babel-jest@29.7.0, babel-jest@^29.7.0:\n   version \"29.7.0\"\n   resolved \"https://registry.yarnpkg.com/babel-jest/-/babel-jest-29.7.0.tgz#f4369919225b684c56085998ac63dbd05be020d5\"\n   integrity sha512-BrvGY3xZSwEcCzKvKsCi2GgHqDqsYkOP4/by5xCgIwGXQxIEh+8ew3gmrE1y7XRR6LHZIj6yLYnUi/mm2KXKBg=="
+    }
+  ]
+}

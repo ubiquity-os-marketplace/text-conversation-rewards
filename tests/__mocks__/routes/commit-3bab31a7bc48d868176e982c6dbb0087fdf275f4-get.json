@@ -1,0 +1,113 @@
+{
+  "sha": "3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+  "node_id": "C_kwDOLUK0B9oAKDNiYWIzMWE3YmM0OGQ4NjgxNzZlOTgyYzZkYmIwMDg3ZmRmMjc1ZjQ",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-17T05:09:00Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-17T05:09:00Z"
+    },
+    "message": "chore: env check for permit generation module",
+    "tree": {
+      "sha": "5ab6aac867cfd4ae8969df95dc2548e419a8ccab",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/5ab6aac867cfd4ae8969df95dc2548e419a8ccab"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/3bab31a7bc48d868176e982c6dbb0087fdf275f4/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "1f9b05032f3edb8492567f009860e4f277bc3ffa",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/1f9b05032f3edb8492567f009860e4f277bc3ffa",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1f9b05032f3edb8492567f009860e4f277bc3ffa"
+    }
+  ],
+  "stats": {
+    "total": 18,
+    "additions": 18,
+    "deletions": 0
+  },
+  "files": [
+    {
+      "sha": "8d2c865da1fe697a4641bc4ac0628560ef9642c7",
+      "filename": "src/parser/permit-generation-module.ts",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 0,
+      "changes": 5,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/3bab31a7bc48d868176e982c6dbb0087fdf275f4/src%2Fparser%2Fpermit-generation-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/3bab31a7bc48d868176e982c6dbb0087fdf275f4/src%2Fparser%2Fpermit-generation-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fpermit-generation-module.ts?ref=3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+      "patch": "@@ -16,6 +16,7 @@ import permitGenerationConfigurationType, {\n } from \"../configuration/permit-generation-configuration\";\n import { getOctokitInstance } from \"../get-authentication-token\";\n import { IssueActivity } from \"../issue-activity\";\n+import envConfigSchema from \"../types/env-type\";\n import program from \"./command-line\";\n import { Module, Result } from \"./processor\";\n \n@@ -42,6 +43,10 @@ export class PermitGenerationModule implements Module {\n       id: issueId,\n     };\n     const env = process.env;\n+    if (!Value.Check(envConfigSchema, env)) {\n+      console.warn(\"[PermitGenerationModule] Invalid env detected, skipping.\");\n+      return Promise.resolve(result);\n+    }\n     const eventName = context.eventName as SupportedEvents;\n     const octokit = getOctokitInstance();\n     const logger = {"
+    },
+    {
+      "sha": "2a18a237d26f270222607cf2c006d17bc73c392d",
+      "filename": "src/types/env-type.ts",
+      "status": "added",
+      "additions": 13,
+      "deletions": 0,
+      "changes": 13,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/3bab31a7bc48d868176e982c6dbb0087fdf275f4/src%2Ftypes%2Fenv-type.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/3bab31a7bc48d868176e982c6dbb0087fdf275f4/src%2Ftypes%2Fenv-type.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Ftypes%2Fenv-type.ts?ref=3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+      "patch": "@@ -0,0 +1,13 @@\n+import { Type, Static } from \"@sinclair/typebox\";\n+\n+const envConfigSchema = Type.Object({\n+  SUPABASE_URL: Type.String({ format: \"uri\" }),\n+  SUPABASE_KEY: Type.String(),\n+  GITHUB_TOKEN: Type.String(),\n+  X25519_PRIVATE_KEY: Type.String(),\n+  OPENAI_API_KEY: Type.String(),\n+});\n+\n+export type EnvConfigType = Static<typeof envConfigSchema>;\n+\n+export default envConfigSchema;"
+    }
+  ]
+}

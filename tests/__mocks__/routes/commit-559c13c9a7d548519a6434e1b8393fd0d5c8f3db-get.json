@@ -1,0 +1,185 @@
+{
+  "sha": "559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+  "node_id": "C_kwDOLUK0B9oAKDU1OWMxM2M5YTdkNTQ4NTE5YTY0MzRlMWI4MzkzZmQwZDVjOGYzZGI",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-18T07:44:05Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-18T07:44:05Z"
+    },
+    "message": "chore: fix knip and change COMMENT to COMMENTED, added jsdocs on enum",
+    "tree": {
+      "sha": "68078356a2f914bf38bcd79b38d8a70d97ae5fc5",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/68078356a2f914bf38bcd79b38d8a70d97ae5fc5"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "6567feb96e652df68887744b0dab2a52ddedfaf2",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/6567feb96e652df68887744b0dab2a52ddedfaf2",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/6567feb96e652df68887744b0dab2a52ddedfaf2"
+    }
+  ],
+  "stats": {
+    "total": 134,
+    "additions": 49,
+    "deletions": 85
+  },
+  "files": [
+    {
+      "sha": "e7f75a5d1cf4c528b146bba3133c4c2d653eecb7",
+      "filename": "knip.ts",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/knip.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/knip.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/knip.ts?ref=559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+      "patch": "@@ -5,7 +5,7 @@ const config: KnipConfig = {\n   project: [\"src/**/*.ts\"],\n   ignore: [\"src/data-collection/examples/*.ts\", \"src/configuration/common-config-type.ts\"],\n   ignoreExportsUsedInFile: true,\n-  ignoreDependencies: [\"ts-node\"],\n+  ignoreDependencies: [\"ts-node\", \"msw\"],\n   jest: {\n     config: [\"jest.config.ts\"],\n     entry: [\"src/**/*.test.ts\"],"
+    },
+    {
+      "sha": "aaf667b152e1718be5e2dffa20d77ac25a065c1b",
+      "filename": "package.json",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/package.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/package.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/package.json?ref=559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+      "patch": "@@ -50,7 +50,6 @@\n     \"@cspell/dict-node\": \"4.0.3\",\n     \"@cspell/dict-software-terms\": \"3.3.18\",\n     \"@cspell/dict-typescript\": \"3.1.2\",\n-    \"@mswjs/data\": \"0.16.1\",\n     \"@types/jest\": \"29.5.12\",\n     \"@types/jsdom\": \"21.1.6\",\n     \"@types/markdown-it\": \"13.0.7\",\n@@ -66,6 +65,7 @@\n     \"jest-junit\": \"16.0.0\",\n     \"knip\": \"5.7.0\",\n     \"lint-staged\": \"15.2.2\",\n+    \"msw\": \"2.2.14\",\n     \"npm-run-all\": \"4.1.5\",\n     \"prettier\": \"3.2.5\",\n     \"ts-node\": \"10.9.2\","
+    },
+    {
+      "sha": "0ab07260781e53d72750654bf0750802fb3c0c32",
+      "filename": "rewards-configuration.default.yml",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 8,
+      "changes": 16,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/rewards-configuration.default.yml",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/rewards-configuration.default.yml",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/rewards-configuration.default.yml?ref=559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+      "patch": "@@ -30,31 +30,31 @@ formattingEvaluator:\n     - type: [ISSUE, ISSUER, TASK]:\n       formattingMultiplier: 1\n       wordValue: 0.1\n-    - type: [ISSUE, ISSUER, COMMENT]:\n+    - type: [ISSUE, ISSUER, COMMENTED]:\n       formattingMultiplier: 1\n       wordValue: 0.2\n-    - type: [ISSUE, ASSIGNEE, COMMENT]:\n+    - type: [ISSUE, ASSIGNEE, COMMENTED]:\n       formattingMultiplier: 0\n       wordValue: 0\n-    - type: [ISSUE, COLLABORATOR, COMMENT]:\n+    - type: [ISSUE, COLLABORATOR, COMMENTED]:\n       formattingMultiplier: 1\n       wordValue: 0.1\n-    - type: [ISSUE, CONTRIBUTOR, COMMENT]:\n+    - type: [ISSUE, CONTRIBUTOR, COMMENTED]:\n       formattingMultiplier: 0.25\n       wordValue: 0.1\n     - type: [REVIEW, ISSUER, SPECIFICATION]:\n       formattingMultiplier: 0\n       wordValue: 0\n-    - type: [REVIEW, ISSUER, COMMENT]:\n+    - type: [REVIEW, ISSUER, COMMENTED]:\n       formattingMultiplier: 2\n       wordValue: 0.2\n-    - type: [REVIEW, ASSIGNEE, COMMENT]:\n+    - type: [REVIEW, ASSIGNEE, COMMENTED]:\n       formattingMultiplier: 1\n       wordValue: 0.1\n-    - type: [REVIEW, COLLABORATOR, COMMENT]:\n+    - type: [REVIEW, COLLABORATOR, COMMENTED]:\n       formattingMultiplier: 1\n       wordValue: 0.1\n-    - type: [REVIEW, CONTRIBUTOR, COMMENT]:\n+    - type: [REVIEW, CONTRIBUTOR, COMMENTED]:\n       formattingMultiplier: 0.25\n       wordValue: 0.1\n permitGeneration:"
+    },
+    {
+      "sha": "4b67e34edb36398f4414a301e78926dcd2d0a709",
+      "filename": "src/issue-activity.ts",
+      "status": "modified",
+      "additions": 30,
+      "deletions": 3,
+      "changes": 33,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/src%2Fissue-activity.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/src%2Fissue-activity.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fissue-activity.ts?ref=559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+      "patch": "@@ -19,14 +19,41 @@ import {\n } from \"./start\";\n \n export enum CommentType {\n+  /**\n+   * Review related item\n+   */\n   REVIEW = 0b1,\n+  /**\n+   * Issue related item\n+   */\n   ISSUE = 0b10,\n+  /**\n+   * User assigned to the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ASSIGNEE = 0b100,\n+  /**\n+   * The author of the {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n   ISSUER = 0b1000,\n+  /**\n+   * A user that is part of the organization or owner of the repo\n+   */\n   COLLABORATOR = 0b10000,\n+  /**\n+   * A user that is NOT part of the organization nor owner of the repo\n+   */\n   CONTRIBUTOR = 0b100000,\n-  COMMENT = 0b1000000,\n+  /**\n+   * A user comment action on a {@link CommentType.ISSUE} or {@link CommentType.REVIEW}\n+   */\n+  COMMENTED = 0b1000000,\n+  /**\n+   * Pull request opening item\n+   */\n   TASK = 0b10000000,\n+  /**\n+   * Issue opening item\n+   */\n   SPECIFICATION = 0b100000000,\n }\n \n@@ -80,13 +107,13 @@ export class IssueActivity {\n     if (comment.id === self?.id) {\n       ret |= ret & CommentType.ISSUE ? CommentType.TASK : CommentType.SPECIFICATION;\n     } else {\n-      ret |= CommentType.COMMENT;\n+      ret |= CommentType.COMMENTED;\n     }\n     if (comment.user?.id === self?.user?.id) {\n       ret |= CommentType.ISSUER;\n     } else if (comment.user?.id === self?.assignee?.id) {\n       ret |= CommentType.ASSIGNEE;\n-    } else if (comment.author_association === \"MEMBER\") {\n+    } else if (comment.author_association === \"MEMBER\" || comment.author_association === \"COLLABORATOR\") {\n       ret |= CommentType.COLLABORATOR;\n     } else if (comment.author_association === \"CONTRIBUTOR\") {\n       ret |= CommentType.CONTRIBUTOR;"
+    },
+    {
+      "sha": "81a1b1a6e83c3529f7947a3d4d9384ffd93fb9a2",
+      "filename": "src/parser/permit-generation-module.ts",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/src%2Fparser%2Fpermit-generation-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/src%2Fparser%2Fpermit-generation-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fpermit-generation-module.ts?ref=559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+      "patch": "@@ -16,7 +16,7 @@ import permitGenerationConfigurationType, {\n } from \"../configuration/permit-generation-configuration\";\n import { getOctokitInstance } from \"../get-authentication-token\";\n import { IssueActivity } from \"../issue-activity\";\n-import envConfigSchema from \"../types/env-type\";\n+import envConfigSchema, { EnvConfigType } from \"../types/env-type\";\n import program from \"./command-line\";\n import { Module, Result } from \"./processor\";\n \n@@ -42,7 +42,7 @@ export class PermitGenerationModule implements Module {\n     payload.issue = {\n       id: issueId,\n     };\n-    const env = process.env;\n+    const env: EnvConfigType = process.env;\n     if (!Value.Check(envConfigSchema, env)) {\n       console.warn(\"[PermitGenerationModule] Invalid env detected, skipping.\");\n       return Promise.resolve(result);"
+    },
+    {
+      "sha": "c03becd27624a489742b72440bccc03fc4481b72",
+      "filename": "src/types/env-type.ts",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 0,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/src%2Ftypes%2Fenv-type.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/src%2Ftypes%2Fenv-type.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Ftypes%2Fenv-type.ts?ref=559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+      "patch": "@@ -6,6 +6,8 @@ const envConfigSchema = Type.Object({\n   GITHUB_TOKEN: Type.String(),\n   X25519_PRIVATE_KEY: Type.String(),\n   OPENAI_API_KEY: Type.String(),\n+  NFT_MINTER_PRIVATE_KEY: Type.String(),\n+  NFT_CONTRACT_ADDRESS: Type.String(),\n });\n \n export type EnvConfigType = Static<typeof envConfigSchema>;"
+    },
+    {
+      "sha": "7df690c0b2fe0eff23fbc5d561128f830567fe3c",
+      "filename": "tests/__mocks__/db.ts",
+      "status": "removed",
+      "additions": 0,
+      "deletions": 12,
+      "changes": 12,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/6567feb96e652df68887744b0dab2a52ddedfaf2/tests%2F__mocks__%2Fdb.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/6567feb96e652df68887744b0dab2a52ddedfaf2/tests%2F__mocks__%2Fdb.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2F__mocks__%2Fdb.ts?ref=6567feb96e652df68887744b0dab2a52ddedfaf2",
+      "patch": "@@ -1,12 +0,0 @@\n-// cSpell:disable\n-import { factory, primaryKey } from \"@mswjs/data\";\n-\n-/**\n- * Creates an object that can be used as a db to persist data within tests\n- */\n-export const db = factory({\n-  users: {\n-    id: primaryKey(Number),\n-    name: String,\n-  },\n-});"
+    },
+    {
+      "sha": "e9c524bc9037307c1485561f44ed5abce203821d",
+      "filename": "yarn.lock",
+      "status": "modified",
+      "additions": 5,
+      "deletions": 58,
+      "changes": 63,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/yarn.lock",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/559c13c9a7d548519a6434e1b8393fd0d5c8f3db/yarn.lock",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/yarn.lock?ref=559c13c9a7d548519a6434e1b8393fd0d5c8f3db",
+      "patch": "@@ -1011,7 +1011,7 @@\n   resolved \"https://registry.yarnpkg.com/@babel/regjsgen/-/regjsgen-0.8.0.tgz#f0ba69b075e1f05fb2825b7fad991e7adbb18310\"\n   integrity sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==\n \n-\"@babel/runtime@^7.21.0\", \"@babel/runtime@^7.8.4\":\n+\"@babel/runtime@^7.8.4\":\n   version \"7.24.4\"\n   resolved \"https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.24.4.tgz#de795accd698007a66ba44add6cc86542aff1edd\"\n   integrity sha512-dkxf7+hn8mFBwKjs9bvBlArzLVxVbS8usaPUDd5p2a9JCL9tB8OaOVN1isD4+Xyk4ns89/xeOmbQvgdK7IIVdA==\n@@ -2433,27 +2433,6 @@\n   resolved \"https://registry.yarnpkg.com/@mswjs/cookies/-/cookies-1.1.0.tgz#1528eb43630caf83a1d75d5332b30e75e9bb1b5b\"\n   integrity sha512-0ZcCVQxifZmhwNBoQIrystCb+2sWBY2Zw8lpfJBPCHGCA/HWqehITeCRVIv4VMy8MPlaHo2w2pTHFV2pFfqKPw==\n \n-\"@mswjs/data@^0.16.1\":\n-  version \"0.16.1\"\n-  resolved \"https://registry.yarnpkg.com/@mswjs/data/-/data-0.16.1.tgz#ee41b95b8f2e954a07b0eb54154592a2459064d1\"\n-  integrity sha512-VhJvL/VmgAuU9/tDOcKcxHfNd+8nxYntZnrkaQEQPvZZnFwQQR9bzI1FTRROGxCHVoyfv9v84AEkl/7CIw4FAg==\n-  dependencies:\n-    \"@types/lodash\" \"^4.14.172\"\n-    \"@types/md5\" \"^2.3.0\"\n-    \"@types/pluralize\" \"^0.0.29\"\n-    \"@types/uuid\" \"^8.3.0\"\n-    date-fns \"^2.21.1\"\n-    debug \"^4.3.1\"\n-    graphql \"^16.8.1\"\n-    lodash \"^4.17.21\"\n-    md5 \"^2.3.0\"\n-    outvariant \"^1.2.1\"\n-    pluralize \"^8.0.0\"\n-    strict-event-emitter \"^0.5.0\"\n-    uuid \"^8.3.1\"\n-  optionalDependencies:\n-    msw \"^2.0.8\"\n-\n \"@mswjs/interceptors@^0.26.14\":\n   version \"0.26.15\"\n   resolved \"https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.26.15.tgz#256ad5c89f325c87d972cc27fc7d0d6d382ce804\"\n@@ -3035,11 +3014,6 @@\n   resolved \"https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-3.0.5.tgz#1e78a3ac2428e6d7e6c05c1665c242023a4601d8\"\n   integrity sha512-yg6E+u0/+Zjva+buc3EIb+29XEg4wltq7cSmd4Uc2EE/1nUVmxyzpX6gUXD0V8jIrG0r7YeOGVIbYRkxeooCtw==\n \n-\"@types/lodash@^4.14.172\":\n-  version \"4.17.0\"\n-  resolved \"https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.0.tgz#d774355e41f372d5350a4d0714abb48194a489c3\"\n-  integrity sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==\n-\n \"@types/markdown-it@13.0.7\":\n   version \"13.0.7\"\n   resolved \"https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-13.0.7.tgz#4a495115f470075bd4434a0438ac477a49c2e152\"\n@@ -3048,11 +3022,6 @@\n     \"@types/linkify-it\" \"*\"\n     \"@types/mdurl\" \"*\"\n \n-\"@types/md5@^2.3.0\":\n-  version \"2.3.5\"\n-  resolved \"https://registry.yarnpkg.com/@types/md5/-/md5-2.3.5.tgz#481cef0a896e3a5dcbfc5a8a8b02c05958af48a5\"\n-  integrity sha512-/i42wjYNgE6wf0j2bcTX6kuowmdL/6PE4IVitMpm2eYKBUuYCprdcWVK+xEF0gcV6ufMCRhtxmReGfc6hIK7Jw==\n-\n \"@types/mdurl@*\":\n   version \"1.0.5\"\n   resolved \"https://registry.yarnpkg.com/@types/mdurl/-/mdurl-1.0.5.tgz#3e0d2db570e9fb6ccb2dc8fde0be1d79ac810d39\"\n@@ -3119,11 +3088,6 @@\n   resolved \"https://registry.yarnpkg.com/@types/picomatch/-/picomatch-2.3.3.tgz#be60498568c19e989e43fb39aa84be1ed3655e92\"\n   integrity sha512-Yll76ZHikRFCyz/pffKGjrCwe/le2CDwOP5F210KQo27kpRE46U2rDnzikNlVn6/ezH3Mhn46bJMTfeVTtcYMg==\n \n-\"@types/pluralize@^0.0.29\":\n-  version \"0.0.29\"\n-  resolved \"https://registry.yarnpkg.com/@types/pluralize/-/pluralize-0.0.29.tgz#6ffa33ed1fc8813c469b859681d09707eb40d03c\"\n-  integrity sha512-BYOID+l2Aco2nBik+iYS4SZX0Lf20KPILP5RGmM1IgzdwNdTs0eebiFriOPcej1sX9mLnSoiNte5zcFxssgpGA==\n-\n \"@types/semver@^7.5.0\":\n   version \"7.5.8\"\n   resolved \"https://registry.yarnpkg.com/@types/semver/-/semver-7.5.8.tgz#8268a8c57a3e4abd25c165ecd36237db7948a55e\"\n@@ -3144,11 +3108,6 @@\n   resolved \"https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-4.0.5.tgz#cb6e2a691b70cb177c6e3ae9c1d2e8b2ea8cd304\"\n   integrity sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==\n \n-\"@types/uuid@^8.3.0\":\n-  version \"8.3.4\"\n-  resolved \"https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc\"\n-  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==\n-\n \"@types/wrap-ansi@^3.0.0\":\n   version \"3.0.0\"\n   resolved \"https://registry.yarnpkg.com/@types/wrap-ansi/-/wrap-ansi-3.0.0.tgz#18b97a972f94f60a679fd5c796d96421b9abb9fd\"\n@@ -4246,13 +4205,6 @@ data-view-byte-offset@^1.0.0:\n     es-errors \"^1.3.0\"\n     is-data-view \"^1.0.1\"\n \n-date-fns@^2.21.1:\n-  version \"2.30.0\"\n-  resolved \"https://registry.yarnpkg.com/date-fns/-/date-fns-2.30.0.tgz#f367e644839ff57894ec6ac480de40cae4b0f4d0\"\n-  integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==\n-  dependencies:\n-    \"@babel/runtime\" \"^7.21.0\"\n-\n debug@4, debug@4.3.4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:\n   version \"4.3.4\"\n   resolved \"https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865\"\n@@ -6445,7 +6397,7 @@ lodash.upperfirst@^4.3.1:\n   resolved \"https://registry.yarnpkg.com/lodash.upperfirst/-/lodash.upperfirst-4.3.1.tgz#1365edf431480481ef0d1c68957a5ed99d49f7ce\"\n   integrity sha512-sReKOYJIJf74dhJONhU4e0/shzi1trVbSWDOhKYE5XV2O+H7Sb2Dihwuc7xWxVl+DgFPyTqIN3zMfT9cq5iWDg==\n \n-lodash@^4.17.15, lodash@^4.17.21:\n+lodash@^4.17.15:\n   version \"4.17.21\"\n   resolved \"https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c\"\n   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==\n@@ -6712,7 +6664,7 @@ ms@^2.0.0:\n   resolved \"https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2\"\n   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==\n \n-msw@^2.0.8:\n+msw@^2.2.14:\n   version \"2.2.14\"\n   resolved \"https://registry.yarnpkg.com/msw/-/msw-2.2.14.tgz#ed16b89f99ffc105a84b0295a6fcae2ee99f5c62\"\n   integrity sha512-64i8rNCa1xzDK8ZYsTrVMli05D687jty8+Th+PU5VTbJ2/4P7fkQFVyDQ6ZFT5FrNR8z2BHhbY47fKNvfHrumA==\n@@ -7183,11 +7135,6 @@ pkg-dir@^4.2.0:\n   dependencies:\n     find-up \"^4.0.0\"\n \n-pluralize@^8.0.0:\n-  version \"8.0.0\"\n-  resolved \"https://registry.yarnpkg.com/pluralize/-/pluralize-8.0.0.tgz#1a6fa16a38d12a1901e0320fa017051c539ce3b1\"\n-  integrity sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==\n-\n possible-typed-array-names@^1.0.0:\n   version \"1.0.0\"\n   resolved \"https://registry.yarnpkg.com/possible-typed-array-names/-/possible-typed-array-names-1.0.0.tgz#89bb63c6fada2c3e90adc4a647beeeb39cc7bf8f\"\n@@ -7759,7 +7706,7 @@ statuses@^2.0.1:\n   resolved \"https://registry.yarnpkg.com/statuses/-/statuses-2.0.1.tgz#55cb000ccf1d48728bd23c685a063998cf1a1b63\"\n   integrity sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==\n \n-strict-event-emitter@^0.5.0, strict-event-emitter@^0.5.1:\n+strict-event-emitter@^0.5.1:\n   version \"0.5.1\"\n   resolved \"https://registry.yarnpkg.com/strict-event-emitter/-/strict-event-emitter-0.5.1.tgz#1602ece81c51574ca39c6815e09f1a3e8550bd93\"\n   integrity sha512-vMgjE/GGEPEFnhFub6pa4FmJBRBVOLpIII2hvCZ8Kzb7K0hlHo7mQv6xYrBvCL2LtAIBwFUK8wvuJgTVSQ5MFQ==\n@@ -8317,7 +8264,7 @@ util-deprecate@^1.0.1:\n   resolved \"https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf\"\n   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==\n \n-uuid@^8.3.1, uuid@^8.3.2:\n+uuid@^8.3.2:\n   version \"8.3.2\"\n   resolved \"https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2\"\n   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg=="
+    }
+  ]
+}

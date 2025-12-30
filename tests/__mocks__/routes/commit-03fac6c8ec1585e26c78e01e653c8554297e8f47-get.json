@@ -1,0 +1,139 @@
+{
+  "sha": "03fac6c8ec1585e26c78e01e653c8554297e8f47",
+  "node_id": "C_kwDOLUK0B9oAKDAzZmFjNmM4ZWMxNTg1ZTI2Yzc4ZTAxZTY1M2M4NTU0Mjk3ZThmNDc",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-17T07:24:44Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "fernand.veyrier@epitech.eu",
+      "date": "2024-04-17T07:24:44Z"
+    },
+    "message": "chore: added ignore words to cspell",
+    "tree": {
+      "sha": "814b95cacedb417a793e46f72d3e47bc25a8f9a7",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/814b95cacedb417a793e46f72d3e47bc25a8f9a7"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/03fac6c8ec1585e26c78e01e653c8554297e8f47",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/03fac6c8ec1585e26c78e01e653c8554297e8f47",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/03fac6c8ec1585e26c78e01e653c8554297e8f47",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/03fac6c8ec1585e26c78e01e653c8554297e8f47/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/3bab31a7bc48d868176e982c6dbb0087fdf275f4",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/3bab31a7bc48d868176e982c6dbb0087fdf275f4"
+    }
+  ],
+  "stats": {
+    "total": 23,
+    "additions": 12,
+    "deletions": 11
+  },
+  "files": [
+    {
+      "sha": "6bf60054c2f8edc8bf8716d0b7bf157fd9678f1e",
+      "filename": ".cspell.json",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/03fac6c8ec1585e26c78e01e653c8554297e8f47/.cspell.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/03fac6c8ec1585e26c78e01e653c8554297e8f47/.cspell.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/.cspell.json?ref=03fac6c8ec1585e26c78e01e653c8554297e8f47",
+      "patch": "@@ -4,7 +4,7 @@\n   \"ignorePaths\": [\"**/*.json\", \"**/*.css\", \"node_modules\", \"**/*.log\"],\n   \"useGitignore\": true,\n   \"language\": \"en\",\n-  \"words\": [\"dataurl\", \"devpool\", \"outdir\", \"servedir\", \"ubiquibot\", \"tiktoken\", \"typebox\"],\n+  \"words\": [\"dataurl\", \"devpool\", \"outdir\", \"servedir\", \"ubiquibot\", \"tiktoken\", \"typebox\", \"supabase\", \"wxdai\", \"noopener\"],\n   \"dictionaries\": [\"typescript\", \"node\", \"software-terms\"],\n   \"import\": [\"@cspell/dict-typescript/cspell-ext.json\", \"@cspell/dict-node/cspell-ext.json\", \"@cspell/dict-software-terms\"],\n   \"ignoreRegExpList\": [\"[0-9a-fA-F]{6}\"]"
+    },
+    {
+      "sha": "33422f94dd1d4cf377ad12d56369dcdd9585cbf3",
+      "filename": ".github/workflows/cspell.yml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/03fac6c8ec1585e26c78e01e653c8554297e8f47/.github%2Fworkflows%2Fcspell.yml",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/03fac6c8ec1585e26c78e01e653c8554297e8f47/.github%2Fworkflows%2Fcspell.yml",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/.github%2Fworkflows%2Fcspell.yml?ref=03fac6c8ec1585e26c78e01e653c8554297e8f47",
+      "patch": "@@ -2,6 +2,7 @@ name: Spell Check\n \n on:\n   push:\n+  pull_request:\n \n jobs:\n   spellcheck:"
+    },
+    {
+      "sha": "c48623612efca8eede3a2363c3ab736186e3d99c",
+      "filename": "tests/collect-linked-pulls.test.ts",
+      "status": "renamed",
+      "additions": 7,
+      "deletions": 7,
+      "changes": 14,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/03fac6c8ec1585e26c78e01e653c8554297e8f47/tests%2Fcollect-linked-pulls.test.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/03fac6c8ec1585e26c78e01e653c8554297e8f47/tests%2Fcollect-linked-pulls.test.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2Fcollect-linked-pulls.test.ts?ref=03fac6c8ec1585e26c78e01e653c8554297e8f47",
+      "patch": "@@ -1,12 +1,12 @@\n-import { IssueParams, parseGitHubUrl } from \"../start\";\n+import { IssueParams, parseGitHubUrl } from \"../src/start\";\n \n-import ISSUE_CROSS_REPO_LINK from \"./fixtures/issue-89.json\"; // pr188 is linked to this issue\n-import ISSUE_SAME_REPO_LINK from \"./fixtures/issue-90.json\"; // pr91 is linked to this issue\n-import ISSUE_NO_LINK from \"./fixtures/issue-92.json\"; // no link\n+import ISSUE_CROSS_REPO_LINK from \"../src/data-collection/fixtures/issue-89.json\"; // pr188 is linked to this issue\n+import ISSUE_SAME_REPO_LINK from \"../src/data-collection/fixtures/issue-90.json\"; // pr91 is linked to this issue\n+import ISSUE_NO_LINK from \"../src/data-collection/fixtures/issue-92.json\"; // no link\n \n-import { collectLinkedMergedPulls, collectLinkedPulls } from \"./collect-linked-pulls\";\n-import PR_CROSS_REPO_LINK from \"./fixtures/pr-188.json\";\n-import PR_SAME_REPO_LINK from \"./fixtures/pr-91.json\";\n+import { collectLinkedMergedPulls, collectLinkedPulls } from \"../src/data-collection/collect-linked-pulls\";\n+import PR_CROSS_REPO_LINK from \"../src/data-collection/fixtures/pr-188.json\";\n+import PR_SAME_REPO_LINK from \"../src/data-collection/fixtures/pr-91.json\";\n \n const PARAMS_ISSUE_CROSS_REPO_LINK: IssueParams = parseGitHubUrl(ISSUE_CROSS_REPO_LINK.html_url); // cross repo link\n const PARAMS_ISSUE_SAME_REPO_LINK: IssueParams = parseGitHubUrl(ISSUE_SAME_REPO_LINK.html_url); // same repo link",
+      "previous_filename": "src/data-collection/collect-linked-pulls.test.ts"
+    },
+    {
+      "sha": "d0f5fa1d0067876f52ed496ad552d37672e691a8",
+      "filename": "tests/get-activity.test.ts",
+      "status": "renamed",
+      "additions": 3,
+      "deletions": 3,
+      "changes": 6,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/03fac6c8ec1585e26c78e01e653c8554297e8f47/tests%2Fget-activity.test.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/03fac6c8ec1585e26c78e01e653c8554297e8f47/tests%2Fget-activity.test.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tests%2Fget-activity.test.ts?ref=03fac6c8ec1585e26c78e01e653c8554297e8f47",
+      "patch": "@@ -1,6 +1,6 @@\n-import { IssueActivity } from \"./issue-activity\";\n-import { Processor } from \"./parser/processor\";\n-import { parseGitHubUrl } from \"./start\";\n+import { IssueActivity } from \"../src/issue-activity\";\n+import { Processor } from \"../src/parser/processor\";\n+import { parseGitHubUrl } from \"../src/start\";\n \n // Mock process.argv\n const issueUrl = process.env.TEST_ISSUE_URL || \"https://github.com/ubiquibot/comment-incentives/issues/22\";",
+      "previous_filename": "src/get-activity.test.ts"
+    }
+  ]
+}
