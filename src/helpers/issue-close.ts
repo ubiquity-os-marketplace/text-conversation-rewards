@@ -1,4 +1,4 @@
-import { RestEndpointMethodTypes } from "@octokit/types";
+import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import { ContextPlugin } from "../types/plugin-input";
 
 type TimelineEvent = RestEndpointMethodTypes["issues"]["listEventsForTimeline"]["response"]["data"][number];

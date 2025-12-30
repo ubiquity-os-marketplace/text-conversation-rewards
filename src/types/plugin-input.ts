@@ -89,15 +89,15 @@ export const pluginSettingsSchema = T.Object(
           default: true,
           description: "If false, will allow contributors to generate permits.",
         }),
-        contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()], { default: {} }),
-        userExtractor: T.Union([userExtractorConfigurationType, T.Null()], { default: {} }),
-        dataPurge: T.Union([dataPurgeConfigurationType, T.Null()], { default: {} }),
-        reviewIncentivizer: T.Union([reviewIncentivizerConfigurationType, T.Null()], { default: {} }),
-        eventIncentives: T.Union([eventIncentivesConfigurationType, T.Null()], { default: {} }),
-        simplificationIncentivizer: T.Union([simplificationIncentivizerConfigurationType, T.Null()], { default: {} }),
-        formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()], { default: {} }),
-        payment: T.Union([paymentConfigurationType, T.Null()], { default: {} }),
-        githubComment: T.Union([githubCommentConfigurationType, T.Null()], { default: {} }),
+        contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()], { default: null }),
+        userExtractor: T.Union([userExtractorConfigurationType, T.Null()], { default: null }),
+        dataPurge: T.Union([dataPurgeConfigurationType, T.Null()], { default: null }),
+        reviewIncentivizer: T.Union([reviewIncentivizerConfigurationType, T.Null()], { default: null }),
+        eventIncentives: T.Union([eventIncentivesConfigurationType, T.Null()], { default: null }),
+        simplificationIncentivizer: T.Union([simplificationIncentivizerConfigurationType, T.Null()], { default: null }),
+        formattingEvaluator: T.Union([formattingEvaluatorConfigurationType, T.Null()], { default: null }),
+        payment: T.Union([paymentConfigurationType, T.Null()], { default: null }),
+        githubComment: T.Union([githubCommentConfigurationType, T.Null()], { default: null }),
         specialUsers: T.Array(
           T.Array(
             T.String({
@@ -118,7 +118,7 @@ export const pluginSettingsSchema = T.Object(
               "Optional alias groups for users whose logins should be treated as interchangeable when validating linked pull requests. Use this when a contributor appears under one login on the issue and another on the pull request, but they represent the same special user.",
           }
         ),
-        externalContent: T.Union([externalContentConfigurationType, T.Null()], { default: {} }),
+        externalContent: T.Union([externalContentConfigurationType, T.Null()], { default: null }),
       },
       { default: {} }
     ),

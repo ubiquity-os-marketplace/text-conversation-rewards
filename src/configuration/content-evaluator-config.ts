@@ -13,7 +13,7 @@ export function openAiType(overrides?: { tokenCountLimit?: number; maxRetries?: 
       maxRetries: Type.Number({
         default: overrides?.maxRetries ?? 10,
         description: "Maximum number of retries to make",
-        examples: ["10"],
+        examples: [10],
       }),
     },
     { default: {} }

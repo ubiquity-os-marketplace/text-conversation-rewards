@@ -97,12 +97,8 @@ function extractStatusFromMessage(error: unknown): number | null {
 
   if (!message) return null;
 
-  const patterns = [
-    /\bstatus(?:\s*code)?\s*[:=]?\s*(\d{3})\b/i,
-    /\bHTTP\s+(\d{3})\b/i,
-    /LLM API error:\s*(\d{3})/i,
-    /ai\.ubq\.fi error:\s*(\d{3})/i,
-  ];
+  // Best-effort parsing for message-only errors; keep patterns generic.
+  const patterns = [/\bstatus(?:\s*code)?\s*[:=]?\s*(\d{3})\b/i, /\bHTTP\s+(\d{3})\b/i, /\berror\s*[:=]\s*(\d{3})\b/i];
   for (const pattern of patterns) {
     const match = pattern.exec(message);
     const statusText = match?.[1];

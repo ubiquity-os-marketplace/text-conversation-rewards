@@ -35,13 +35,33 @@ import pull101CommentsGet from "./routes/pull-101-work-ubq-fi/pull-101-comments-
 import pull101Get from "./routes/pull-101-work-ubq-fi/pull-101-get.json";
 import pull101ReviewsGet from "./routes/pull-101-work-ubq-fi/pull-101-reviews-get.json";
 import issue12CommentsGet from "./routes/pull-12-conversation-rewards/issue-12-comments-get.json";
+import issue12TimelineGet from "./routes/pull-12-conversation-rewards/issue-12-timeline-get.json";
 import pull12CommentsGet from "./routes/pull-12-conversation-rewards/pull-12-comments-get.json";
+import pull12FilesGet from "./routes/pull-12-conversation-rewards/pull-12-files-get.json";
 import pull12Get from "./routes/pull-12-conversation-rewards/pull-12-get.json";
 import pull12ReviewsGet from "./routes/pull-12-conversation-rewards/pull-12-reviews-get.json";
 import pull71Get from "./routes/pull-71-work-ubq-fi/pull-71-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
+
+const issueCommentReactionsById: Record<string, { content: string; user: { login: string } }[]> = {
+  "2036516869": [{ content: "eyes", user: { login: "0x4007" } }],
+  "2053332029": [{ content: "eyes", user: { login: "0x4007" } }],
+  "2055783331": [{ content: "+1", user: { login: "whilefoo" } }],
+};
+
+const pullReviewCommentReactionsById: Record<string, { content: string; user: { login: string } }[]> = {
+  "1570133378": [{ content: "+1", user: { login: "0x4007" } }],
+  "1570591425": [{ content: "rocket", user: { login: "gentlementlegen" } }],
+  "1573413974": [{ content: "eyes", user: { login: "gentlementlegen" } }],
+  "1573733603": [{ content: "+1", user: { login: "gentlementlegen" } }],
+  "1574702577": [{ content: "+1", user: { login: "gentlementlegen" } }],
+  "1575659438": [{ content: "eyes", user: { login: "gentlementlegen" } }],
+  "1574427305": [{ content: "+1", user: { login: "gentlementlegen" } }],
+  "1578040543": [{ content: "+1", user: { login: "gentlementlegen" } }],
+  "1579556333": [{ content: "+1", user: { login: "gentlementlegen" } }],
+};
 
 /**
  * Intercepts the routes and returns a custom payload
@@ -90,8 +110,26 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/comments", () => {
     return HttpResponse.json(issue5CommentsGet);
   }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/reactions", () => {
+    return HttpResponse.json([]);
+  }),
+  http.get(
+    "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/:comment_id/reactions",
+    ({ params }) => {
+      return HttpResponse.json(issueCommentReactionsById[params.comment_id.toString()] ?? []);
+    }
+  ),
+  http.get(
+    "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/:comment_id/reactions",
+    ({ params }) => {
+      return HttpResponse.json(pullReviewCommentReactionsById[params.comment_id.toString()] ?? []);
+    }
+  ),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/comments", () => {
     return HttpResponse.json(issue12CommentsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/timeline", () => {
+    return HttpResponse.json(issue12TimelineGet);
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/timeline", () => {
     return HttpResponse.json(issue5TimelineGet);
@@ -110,6 +148,9 @@ export const handlers = [
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12", () => {
     return HttpResponse.json(pull12Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/files", () => {
+    return HttpResponse.json(pull12FilesGet);
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/reviews", () => {
     return HttpResponse.json(pull12ReviewsGet);
@@ -356,6 +397,6 @@ export const handlers = [
     return HttpResponse.json({ message: "Not Found" }, { status: 404 });
   }),
   http.all("https://api.github.com/*", ({ request }) => {
-    return HttpResponse.json({ message: "Unhandled mock request", url: request.url }, { status: 404 });
+    return HttpResponse.json({ message: `Unhandled mock request: ${request.url}` }, { status: 404 });
   }),
 ];
