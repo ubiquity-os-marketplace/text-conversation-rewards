@@ -9,7 +9,7 @@ type ClosingIssueEdge =
 export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
   if (!labels) return [];
   const sortedPriceLabels = labels
-    .reduce((acc, label: IssueLabel) => {
+    .reduce((acc: number[], label: IssueLabel) => {
       const labelName = typeof label === "string" ? label : label.name;
       if (labelName?.startsWith("Price: ")) {
         const price = parseFloat(labelName.replace("Price: ", ""));
@@ -19,7 +19,7 @@ export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
       }
       return acc;
     }, [] as number[])
-    .sort((a, b) => a - b);
+    .sort((a: number, b: number) => a - b);
   if (!sortedPriceLabels.length) {
     console.warn("There are no price labels in this repository.");
     return [];
