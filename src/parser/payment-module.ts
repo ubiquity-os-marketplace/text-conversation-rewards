@@ -869,15 +869,27 @@ export class PaymentModule extends BaseModule {
     const fallbackReason = this._getRpcFallbackReason(error);
 
     if (!fallbackReason) {
+      this.context.logger.error("Failed to upsert permit via RPC", { err: error });
       return false;
     }
-
+    this.context.logger.warn("upsert_permit_max RPC unavailable; falling back to insert", {
+      err: error,
+      reason: fallbackReason,
+    });
     return this._insertPermitWithFallback(insertData, metadata);
   }
 
   private _resolvePermitMetadata(insertData: Database["public"]["Tables"]["permits"]["Insert"]): PermitMetadata | null {
     const missingFields = this._getMissingPermitMetadata(insertData);
     if (missingFields.length > 0) {
+      this.context.logger.warn(
+        "Permit missing required metadata for upsert (network_id, permit2_address, partner_id)",
+        {
+          nonce: insertData.nonce,
+          signature: insertData.signature,
+          missingFields,
+        }
+      );
       return null;
     }
     const { network_id: networkId, permit2_address: permit2Address, partner_id: partnerId } = insertData;
@@ -932,6 +944,7 @@ export class PaymentModule extends BaseModule {
     }
 
     if (!this._isUniqueViolation(insertError)) {
+      this.context.logger.error("Failed to insert permit after RPC fallback", { err: insertError });
       return false;
     }
 
