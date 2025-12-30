@@ -4,12 +4,12 @@
   "commit": {
     "author": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-15T11:14:54Z"
     },
     "committer": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-15T11:14:54Z"
     },
     "message": "chore: fix pre div formatting",

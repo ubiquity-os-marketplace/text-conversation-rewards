@@ -4,12 +4,12 @@
   "commit": {
     "author": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-18T05:34:34Z"
     },
     "committer": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-18T05:34:34Z"
     },
     "message": "chore: always return content on empty string",

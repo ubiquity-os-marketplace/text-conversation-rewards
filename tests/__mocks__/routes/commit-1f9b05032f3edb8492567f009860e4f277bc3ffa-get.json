@@ -4,12 +4,12 @@
   "commit": {
     "author": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-17T04:24:09Z"
     },
     "committer": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-17T04:24:09Z"
     },
     "message": "chore: updated permit generation package",

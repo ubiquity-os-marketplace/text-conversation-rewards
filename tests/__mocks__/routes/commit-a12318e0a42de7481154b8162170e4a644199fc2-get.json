@@ -4,12 +4,12 @@
   "commit": {
     "author": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-22T12:48:30Z"
     },
     "committer": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-22T12:48:30Z"
     },
     "message": "chore: un-nested GitHub comment module functions to reduce reading complexity",

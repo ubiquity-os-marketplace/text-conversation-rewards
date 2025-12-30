@@ -4,12 +4,12 @@
   "commit": {
     "author": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-18T06:33:27Z"
     },
     "committer": {
       "name": "gentlementlegen",
-      "email": "fernand.veyrier@epitech.eu",
+      "email": "user@example.com",
       "date": "2024-04-18T06:33:27Z"
     },
     "message": "chore: testing suite for modules (WIP)",

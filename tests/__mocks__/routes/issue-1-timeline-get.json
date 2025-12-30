@@ -6,12 +6,12 @@
     "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c4ad90732a3ba25098866ecb09103d8b780f05c8",
     "author": {
       "name": "アレクサンダー.eth",
-      "email": "gpg@pavlovcik.com",
+      "email": "user@example.com",
       "date": "2024-02-18T21:36:23Z"
     },
     "committer": {
       "name": "アレクサンダー.eth",
-      "email": "gpg@pavlovcik.com",
+      "email": "user@example.com",
       "date": "2024-02-18T21:36:23Z"
     },
     "tree": {
@@ -30,7 +30,7 @@
       "verified": true,
       "reason": "valid",
       "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQjTGDqn3ysb8/TVXP8luvKFQSKTQUCZdJ4WgAKCRD8luvKFQSK\nTZejAQD1fRgsOiYe2xzWii5UgQ7WetIMBQwK0uUDP6Fz6ztVfgD/Y4ictXzUv122\n+1JQsa7BhOCgxMua/i5CXloFs98O1QM=\n=RNa6\n-----END PGP SIGNATURE-----",
-      "payload": "tree 3b6044867ba8a0c3ef55cc111c2f5a0d8ac2f728\nparent 9cde7029cd010bf6d13f1cb59481c004b437ce04\nauthor アレクサンダー.eth <gpg@pavlovcik.com> 1708292183 +0900\ncommitter アレクサンダー.eth <gpg@pavlovcik.com> 1708292183 +0900\n\nfix: types\n",
+      "payload": "tree 3b6044867ba8a0c3ef55cc111c2f5a0d8ac2f728\nparent 9cde7029cd010bf6d13f1cb59481c004b437ce04\nauthor アレクサンダー.eth <user@example.com> 1708292183 +0900\ncommitter アレクサンダー.eth <user@example.com> 1708292183 +0900\n\nfix: types\n",
       "verified_at": "2024-11-08T07:10:56Z"
     },
     "event": "committed"
@@ -42,12 +42,12 @@
     "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/147ba83525c8626ebfccae97c30f368e087f4029",
     "author": {
       "name": "アレクサンダー.eth",
-      "email": "gpg@pavlovcik.com",
+      "email": "user@example.com",
       "date": "2024-02-18T22:49:07Z"
     },
     "committer": {
       "name": "アレクサンダー.eth",
-      "email": "gpg@pavlovcik.com",
+      "email": "user@example.com",
       "date": "2024-02-18T22:49:07Z"
     },
     "tree": {
@@ -66,7 +66,7 @@
       "verified": true,
       "reason": "valid",
       "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQjTGDqn3ysb8/TVXP8luvKFQSKTQUCZdKJZwAKCRD8luvKFQSK\nTaz3AQC0g6+Jx4lqRD/GJ/CQW67bOhL3zR0dwzZL9E3QUwIEqgD9G4zWEoKUkbK4\nOVi6Iz6Zwlu0G27vcaQ1mZds8q9MewU=\n=BLku\n-----END PGP SIGNATURE-----",
-      "payload": "tree defeddb4f97fe015e3b87380972f856598625777\nparent c4ad90732a3ba25098866ecb09103d8b780f05c8\nauthor アレクサンダー.eth <gpg@pavlovcik.com> 1708296547 +0900\ncommitter アレクサンダー.eth <gpg@pavlovcik.com> 1708296547 +0900\n\nfeat: collect all user events\n",
+      "payload": "tree defeddb4f97fe015e3b87380972f856598625777\nparent c4ad90732a3ba25098866ecb09103d8b780f05c8\nauthor アレクサンダー.eth <user@example.com> 1708296547 +0900\ncommitter アレクサンダー.eth <user@example.com> 1708296547 +0900\n\nfeat: collect all user events\n",
       "verified_at": "2024-11-08T07:10:56Z"
     },
     "event": "committed"
