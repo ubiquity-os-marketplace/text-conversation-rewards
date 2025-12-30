@@ -74,13 +74,12 @@ export const pluginSettingsSchema = T.Object(
         ),
         /**
          * If set to false, the plugin runs even if the price label is missing.
-         * If set to 'auto', it will attempt to fetch the price from an external API if no price label is found.
          * If set to true (default), the plugin requires a price label to be present.
          */
-        requirePriceLabel: T.Union([T.Boolean(), T.Literal("auto")], {
+        requirePriceLabel: T.Boolean({
           default: true,
           description:
-            "If set to false, the plugin runs even if the price label is missing. If set to 'auto', it will attempt to fetch the price from an external API if no price label is found. If set to true (default), the plugin requires a price label to be present.",
+            "If set to false, the plugin runs even if the price label is missing. If set to true (default), the plugin requires a price label to be present.",
         }),
         limitRewards: T.Boolean({
           default: true,
