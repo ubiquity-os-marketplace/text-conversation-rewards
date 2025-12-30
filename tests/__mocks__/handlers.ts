@@ -312,6 +312,37 @@ export const handlers = [
       role_name: "admin",
     });
   }),
+  http.get("https://api.github.com/repos/:owner/:repo/compare/:basehead", () => {
+    return HttpResponse.json({
+      files: [
+        {
+          filename: "src/index.ts",
+          additions: 10,
+          deletions: 2,
+          status: "modified",
+        },
+        {
+          filename: "dist/generated.ts",
+          additions: 5,
+          deletions: 1,
+          status: "modified",
+        },
+      ],
+    });
+  }),
+  http.get("https://api.github.com/repos/:owner/:repo/commits/:ref", () => {
+    return HttpResponse.json({
+      files: [
+        {
+          filename: "src/index.ts",
+          additions: 10,
+          deletions: 2,
+          status: "modified",
+        },
+      ],
+      url: "https://api.github.com/repos/mock/commit",
+    });
+  }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.gitattributes", () => {
     return HttpResponse.json({
       data: {
@@ -320,5 +351,11 @@ export const handlers = [
         ).toString("base64"),
       },
     });
+  }),
+  http.get("https://api.github.com/repos/:owner/:repo/contents/:path", () => {
+    return HttpResponse.json({ message: "Not Found" }, { status: 404 });
+  }),
+  http.all("https://api.github.com/*", ({ request }) => {
+    return HttpResponse.json({ message: "Unhandled mock request", url: request.url }, { status: 404 });
   }),
 ];

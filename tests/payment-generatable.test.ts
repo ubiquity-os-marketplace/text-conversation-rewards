@@ -1,9 +1,8 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { paginateGraphQL } from "@octokit/plugin-paginate-graphql";
-import { Octokit } from "@octokit/rest";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { http, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
@@ -81,7 +80,7 @@ const ctx = {
   },
   config: cfg,
   logger: new Logs("debug"),
-  octokit: new (Octokit.plugin(paginateGraphQL).defaults({ auth: process.env.GITHUB_TOKEN }))(),
+  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,

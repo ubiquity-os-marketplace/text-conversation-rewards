@@ -13,10 +13,10 @@ export async function handlePriceLabelValidation(
 ): Promise<boolean> {
   const { config, logger, payload } = context;
 
-  const requiresPriceLabel = config.incentives.requirePriceLabel;
+  const isPriceLabelRequired = config.incentives.requirePriceLabel;
   const hasPriceLabel = getSortedPrices(activity.self?.labels).length > 0;
 
-  if (requiresPriceLabel && !hasPriceLabel && !isPullRequest(context)) {
+  if (isPriceLabelRequired && !hasPriceLabel && !isPullRequest(context)) {
     const issue = "issue" in payload ? payload.issue : payload.pull_request;
     await logInvalidIssue(logger, issue.html_url);
     logger.error("No price label has been set. Skipping permit generation.");

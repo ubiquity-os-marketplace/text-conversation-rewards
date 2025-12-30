@@ -39,7 +39,7 @@ export async function retry<T>(fn: () => Promise<T>, options: RetryOptions): Pro
 
 export function checkLlmRetryableState(error: unknown) {
   const maybe = error as { status?: unknown; headers?: unknown; message?: unknown };
-  const status = typeof maybe?.status === "number" ? maybe.status : extractStatusFromMessage(error);
+  const status = extractStatus(error) ?? extractStatusFromMessage(error);
 
   if (!status) return false;
 
@@ -63,6 +63,26 @@ export function checkLlmRetryableState(error: unknown) {
   return false;
 }
 
+function extractStatus(error: unknown): number | null {
+  if (typeof error !== "object" || error === null) return null;
+  const maybeError = error as {
+    status?: unknown;
+    statusCode?: unknown;
+    response?: { status?: unknown };
+    cause?: unknown;
+  };
+  const candidates: unknown[] = [maybeError.status, maybeError.statusCode, maybeError.response?.status];
+  const maybeCause = maybeError.cause;
+  if (typeof maybeCause === "object" && maybeCause !== null) {
+    const cause = maybeCause as { status?: unknown; statusCode?: unknown; response?: { status?: unknown } };
+    candidates.push(cause.status, cause.statusCode, cause.response?.status);
+  }
+  for (const candidate of candidates) {
+    if (typeof candidate === "number") return candidate;
+  }
+  return null;
+}
+
 function extractStatusFromMessage(error: unknown): number | null {
   let message: string | undefined;
 
@@ -77,7 +97,12 @@ function extractStatusFromMessage(error: unknown): number | null {
 
   if (!message) return null;
 
-  const patterns = [/LLM API error:\s*(\d{3})/i, /ai\.ubq\.fi error:\s*(\d{3})/i];
+  const patterns = [
+    /\bstatus(?:\s*code)?\s*[:=]?\s*(\d{3})\b/i,
+    /\bHTTP\s+(\d{3})\b/i,
+    /LLM API error:\s*(\d{3})/i,
+    /ai\.ubq\.fi error:\s*(\d{3})/i,
+  ];
   for (const pattern of patterns) {
     const match = pattern.exec(message);
     const statusText = match?.[1];

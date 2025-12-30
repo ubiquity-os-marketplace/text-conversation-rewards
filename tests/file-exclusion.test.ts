@@ -57,7 +57,7 @@ describe("ReviewIncentivizerModule file exclusion", () => {
       "repo",
       "baseSha",
       "headSha",
-      new PullRequestData({} as never, "", "", 0)
+      new PullRequestData({} as never, "test-owner", "test-repo", 1)
     );
     expect(result).toEqual({ addition: 250, deletion: 250 });
   });
@@ -68,7 +68,7 @@ describe("ReviewIncentivizerModule file exclusion", () => {
       "repo",
       "baseSha",
       "headSha",
-      new PullRequestData({} as never, "", "", 0),
+      new PullRequestData({} as never, "test-owner", "test-repo", 1),
       ["dist/**", "tests/**"]
     );
     expect(result).toEqual({ addition: 100, deletion: 100 });

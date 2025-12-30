@@ -1,6 +1,10 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
-import { ClosedByPullRequestsReferences, collectLinkedPulls } from "./data-collection/collect-linked-pulls";
+import {
+  ClosedByPullRequestsReferences,
+  collectLinkedPulls,
+  LinkedPullRequest,
+} from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -106,24 +110,24 @@ export class IssueActivity {
               .map((assignee) => assignee?.login)
               .filter((login): login is string => Boolean(login))
           : [];
-      pulls.push(
-        ...(await collectLinkedPulls(this._context, this._issueParams))
-          .filter((pullRequest) => {
-            // This can happen when a user deleted its account
-            if (!pullRequest?.author?.login) {
-              return false;
-            }
-            if (pullRequest.state !== "MERGED") {
-              return false;
-            }
+      const linkedPulls: LinkedPullRequest[] = await collectLinkedPulls(this._context, this._issueParams);
+      const linkedPullUrls = linkedPulls
+        .filter((pullRequest) => {
+          // This can happen when a user deleted its account
+          if (!pullRequest?.author?.login) {
+            return false;
+          }
+          if (pullRequest.state !== "MERGED") {
+            return false;
+          }
 
-            const specialUserGroups = this._context.config.incentives.specialUsers ?? [];
-            return issueAssigneeLogins.some((assigneeLogin) =>
-              areLoginsEquivalent(assigneeLogin, pullRequest.author.login, specialUserGroups)
-            );
-          })
-          .map((pullRequest) => pullRequest.url)
-      );
+          const specialUserGroups = this._context.config.incentives.specialUsers ?? [];
+          return issueAssigneeLogins.some((assigneeLogin) =>
+            areLoginsEquivalent(assigneeLogin, pullRequest.author.login, specialUserGroups)
+          );
+        })
+        .map((pullRequest) => pullRequest.url);
+      pulls.push(...linkedPullUrls);
     }
     this._context.logger.debug(`Collected linked pull-requests: ${pulls.join(", ")}`);
 

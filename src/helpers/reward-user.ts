@@ -25,7 +25,7 @@ class CloseRewardModule extends BaseModule {
             reward: this.context.config.incentives.closeTaskReward.rewardAmount,
             multiplier: 1,
             timestamp: new Date().toISOString(),
-            url: data.self?.html_url ?? "",
+            url: data.self?.html_url ?? "unknown",
             category: "stale",
           },
           total: 0,
