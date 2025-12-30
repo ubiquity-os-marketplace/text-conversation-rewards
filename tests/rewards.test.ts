@@ -342,11 +342,16 @@ describe("Rewards tests", () => {
     let labelIdx = -1;
     const labels = activity.self?.labels as GitHubIssue["labels"] | undefined;
     if (labels) {
-      const idx = labels.findIndex((item) => typeof item !== "string" && item.name?.includes("Price"));
-      if (typeof labels[idx] !== "string") {
-        originalLabel = labels[idx].name;
-        labelIdx = idx;
-        labels[idx].name = `Price: ${taskPrice} USD`;
+      const idx = labels.findIndex((item: NonNullable<GitHubIssue["labels"]>[number]) => {
+        return typeof item !== "string" && item.name?.includes("Price");
+      });
+      if (idx >= 0) {
+        const label = labels[idx];
+        if (label && typeof label !== "string") {
+          originalLabel = label.name;
+          labelIdx = idx;
+          label.name = `Price: ${taskPrice} USD`;
+        }
       }
     }
     const processor = new Processor(ctx);
