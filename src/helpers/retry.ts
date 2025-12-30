@@ -56,8 +56,11 @@ export function checkLlmRetryableState(error: unknown) {
     const retryAfterRequests = typeof retryAfterRequestsHeader === "string" ? retryAfterRequestsHeader : undefined;
     if (!retryAfterTokens || !retryAfterRequests) return true;
 
-    const retryAfter = Math.max(ms(retryAfterTokens as StringValue), ms(retryAfterRequests as StringValue));
-    return Number.isFinite(retryAfter) ? retryAfter : true;
+    const tokenDelay = ms(retryAfterTokens as StringValue);
+    const requestDelay = ms(retryAfterRequests as StringValue);
+    const validDelays = [tokenDelay, requestDelay].filter(Number.isFinite);
+    if (!validDelays.length) return true;
+    return Math.max(...validDelays);
   }
 
   return false;
