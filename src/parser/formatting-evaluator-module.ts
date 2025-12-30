@@ -25,6 +25,8 @@ interface Multiplier {
   wordValue: number;
 }
 
+type IssueEditNode = IssueEdits["repository"]["issue"]["userContentEdits"]["nodes"][number];
+
 export class FormattingEvaluatorModule extends BaseModule {
   private readonly _configuration: FormattingEvaluatorConfiguration | null =
     this.context.config.incentives.formattingEvaluator;
@@ -131,7 +133,7 @@ export class FormattingEvaluatorModule extends BaseModule {
       issue_number,
     });
 
-    const userEdits = data.repository.issue.userContentEdits.nodes.sort((a, b) => {
+    const userEdits = data.repository.issue.userContentEdits.nodes.sort((a: IssueEditNode, b: IssueEditNode) => {
       return new Date(a.editedAt).getTime() - new Date(b.editedAt).getTime();
     });
 
@@ -353,8 +355,13 @@ export class FormattingEvaluatorModule extends BaseModule {
 
   private _extractUrlsFromElement(element: Element, urlSet: Set<string>) {
     const bodyContent = element.textContent;
-    const matches = bodyContent?.match(urlRegex);
-    matches?.map((url) => url.split(/[#?]/)[0]).forEach((url) => urlSet.add(url));
+    if (!bodyContent) return;
+    urlRegex.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = urlRegex.exec(bodyContent)) !== null) {
+      const url = match[0].split(/[#?]/)[0];
+      urlSet.add(url);
+    }
   }
 
   private _addUrlsToFormatting(

@@ -2,6 +2,10 @@ import { ContextPlugin } from "../types/plugin-input";
 import { PullRequestCommitsQuery } from "../types/pull-request-commits";
 import { QUERY_PULL_REQUEST_COMMITS } from "../types/requests";
 
+type PullRequestCommits = NonNullable<NonNullable<PullRequestCommitsQuery["repository"]>["pullRequest"]>["commits"];
+type CommitEdge = PullRequestCommits["edges"][number];
+type CommitParent = NonNullable<CommitEdge["node"]["commit"]["parents"]["nodes"]>[number];
+
 interface LightweightCommit {
   sha: string;
   parentCount: number;
@@ -36,14 +40,14 @@ export class PullRequestData {
         pull_number: this._pullNumber,
       }
     );
-    const commitEdges = commitsData?.repository?.pullRequest?.commits?.edges || [];
+    const commitEdges: CommitEdge[] = commitsData?.repository?.pullRequest?.commits?.edges || [];
     this._pullCommits = commitEdges
-      .map((edge) => ({
+      .map((edge: CommitEdge) => ({
         sha: edge.node.commit.oid,
         parentCount: edge.node.commit.parents.totalCount,
-        parents: edge.node.commit.parents.nodes?.map((p) => ({ sha: p.oid })),
+        parents: edge.node.commit.parents.nodes?.map((p: CommitParent) => ({ sha: p.oid })),
       }))
-      .filter((commit) => commit.parentCount < 2);
+      .filter((commit: LightweightCommit) => commit.parentCount < 2);
 
     for (const commit of this._pullCommits) {
       // We need to manually paginate because the API acts differently for getCommits.

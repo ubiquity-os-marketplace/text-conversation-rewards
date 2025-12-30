@@ -18,6 +18,8 @@ import { SimplificationIncentivizerModule } from "./simplification-incentivizer-
 import { UserExtractorModule } from "./user-extractor-module";
 import { ExternalContentProcessor } from "./external-content-module";
 
+type IssueAssignee = NonNullable<GitHubIssue["assignees"]>[number];
+
 export class Processor {
   protected readonly _transformers: Module[] = [];
   protected _result: Result = {};
@@ -66,7 +68,7 @@ export class Processor {
       }
       // Aggregate total result
       for (const username of Object.keys(this._result)) {
-        if (data.self?.assignees?.map((v) => v.login).includes(username)) {
+        if (data.self?.assignees?.map((assignee: IssueAssignee) => assignee.login).includes(username)) {
           this._result[username].total = this._sumRewards(this._result[username], rewardLimit);
         } else {
           this._result[username].total = Math.min(this._sumRewards(this._result[username], rewardLimit), rewardLimit);
