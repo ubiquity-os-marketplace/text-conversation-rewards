@@ -42,11 +42,32 @@ import pull71Get from "./routes/pull-71-work-ubq-fi/pull-71-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
+import issue12Get from "./routes/issue-12-get.json";
+import issue12EventsGet from "./routes/issue-12-events-get.json";
+import issue12TimelineGet from "./routes/issue-12-timeline-get.json";
+import contentsPrettierignoreDevelopmentGet from "./routes/contents-prettierignore-development-get.json";
+import contentsTsconfigDevelopmentGet from "./routes/contents-tsconfig-development-get.json";
+import issue5ReactionsGet from "./routes/issue-5-reactions-get.json";
+import issueComment2036516869ReactionsGet from "./routes/issue-comment-2036516869-reactions-get.json";
+import issueComment2053332029ReactionsGet from "./routes/issue-comment-2053332029-reactions-get.json";
+import issueComment2055783331ReactionsGet from "./routes/issue-comment-2055783331-reactions-get.json";
+import pullComment1570133378ReactionsGet from "./routes/pull-comment-1570133378-reactions-get.json";
+import pullComment1570591425ReactionsGet from "./routes/pull-comment-1570591425-reactions-get.json";
+import pullComment1573413974ReactionsGet from "./routes/pull-comment-1573413974-reactions-get.json";
+import pullComment1573733603ReactionsGet from "./routes/pull-comment-1573733603-reactions-get.json";
+import pullComment1574427305ReactionsGet from "./routes/pull-comment-1574427305-reactions-get.json";
+import pullComment1574702577ReactionsGet from "./routes/pull-comment-1574702577-reactions-get.json";
+import pullComment1575659438ReactionsGet from "./routes/pull-comment-1575659438-reactions-get.json";
+import pullComment1578040543ReactionsGet from "./routes/pull-comment-1578040543-reactions-get.json";
+import pullComment1579556333ReactionsGet from "./routes/pull-comment-1579556333-reactions-get.json";
 
 /**
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
+  http.get("https://123-not-valid-url.com/", () => {
+    return HttpResponse.error();
+  }),
   http.post("https://api.github.com/graphql", async (args) => {
     // Check if this is a request for issue edits
     const body = await args.request.text();
@@ -93,8 +114,52 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/comments", () => {
     return HttpResponse.json(issue12CommentsGet);
   }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12", () => {
+    return HttpResponse.json(issue12Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/events", () => {
+    return HttpResponse.json(issue12EventsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/timeline", () => {
+    return HttpResponse.json(issue12TimelineGet);
+  }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/timeline", () => {
     return HttpResponse.json(issue5TimelineGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/reactions", () => {
+    return HttpResponse.json(issue5ReactionsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/:commentId/reactions", ({ params }) => {
+    const commentId = params.commentId.toString();
+    if (commentId === "2036516869") return HttpResponse.json(issueComment2036516869ReactionsGet);
+    if (commentId === "2053332029") return HttpResponse.json(issueComment2053332029ReactionsGet);
+    if (commentId === "2055783331") return HttpResponse.json(issueComment2055783331ReactionsGet);
+    return HttpResponse.json(
+      {
+        error: "Missing MSW fixture for issue comment reactions",
+        commentId,
+      },
+      { status: 500 }
+    );
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/:commentId/reactions", ({ params }) => {
+    const commentId = params.commentId.toString();
+    if (commentId === "1570133378") return HttpResponse.json(pullComment1570133378ReactionsGet);
+    if (commentId === "1570591425") return HttpResponse.json(pullComment1570591425ReactionsGet);
+    if (commentId === "1573413974") return HttpResponse.json(pullComment1573413974ReactionsGet);
+    if (commentId === "1573733603") return HttpResponse.json(pullComment1573733603ReactionsGet);
+    if (commentId === "1574427305") return HttpResponse.json(pullComment1574427305ReactionsGet);
+    if (commentId === "1574702577") return HttpResponse.json(pullComment1574702577ReactionsGet);
+    if (commentId === "1575659438") return HttpResponse.json(pullComment1575659438ReactionsGet);
+    if (commentId === "1578040543") return HttpResponse.json(pullComment1578040543ReactionsGet);
+    if (commentId === "1579556333") return HttpResponse.json(pullComment1579556333ReactionsGet);
+    return HttpResponse.json(
+      {
+        error: "Missing MSW fixture for pull comment reactions",
+        commentId,
+      },
+      { status: 500 }
+    );
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71", () => {
     return HttpResponse.json(issue71Get);
@@ -320,5 +385,11 @@ export const handlers = [
         ).toString("base64"),
       },
     });
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.prettierignore", () => {
+    return HttpResponse.json(contentsPrettierignoreDevelopmentGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/tsconfig.json", () => {
+    return HttpResponse.json(contentsTsconfigDevelopmentGet);
   }),
 ];
