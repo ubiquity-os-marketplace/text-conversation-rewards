@@ -12,7 +12,7 @@ import { IssueActivity } from "./issue-activity";
 import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
-import { Result } from "./types/results";
+import { PermitSaveError, Result } from "./types/results";
 
 async function handlePullRequestEvent(context: ContextPlugin<"pull_request.closed">, activity: IssueActivity) {
   const { logger } = context;
@@ -128,11 +128,11 @@ export async function run(context: ContextPlugin) {
 
 async function generateResults(context: ContextPlugin, activity: IssueActivity) {
   const processor = new Processor(context);
-  await processor.run(activity);
+  const resultObject = await processor.run(activity);
   let result = processor.dump();
+  const permitSaveErrors = collectPermitSaveErrors(resultObject);
   if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
     context.logger.info("Truncating payload as it will trigger an error.");
-    const resultObject = JSON.parse(result) as Result;
     for (const [key, value] of Object.entries(resultObject)) {
       resultObject[key] = {
         userId: value.userId,
@@ -143,7 +143,21 @@ async function generateResults(context: ContextPlugin, activity: IssueActivity) 
     }
     result = JSON.stringify(resultObject);
   }
+  if (permitSaveErrors.length > 0) {
+    context.logger.error("Permit persistence failures detected.", { permitSaveErrors });
+    throw new Error("Permit persistence failures detected. See comment for details.");
+  }
   return JSON.parse(result);
+}
+
+function collectPermitSaveErrors(result: Result) {
+  const errors: Array<{ username: string; errors: PermitSaveError[] }> = [];
+  for (const [username, reward] of Object.entries(result)) {
+    if (reward.permitSaveErrors?.length) {
+      errors.push({ username, errors: reward.permitSaveErrors });
+    }
+  }
+  return errors;
 }
 
 async function preCheck(context: ContextPlugin) {
