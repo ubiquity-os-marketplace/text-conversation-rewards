@@ -80,14 +80,30 @@
     "sha": "01e62759dd720fa1809610af7440358d13f2bf2c"
   },
   "_links": {
-    "self": { "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101" },
-    "html": { "href": "https://github.com/ubiquity/work.ubq.fi/pull/101" },
-    "issue": { "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/101" },
-    "comments": { "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/101/comments" },
-    "review_comments": { "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/comments" },
-    "review_comment": { "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/comments{/number}" },
-    "commits": { "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/commits" },
-    "statuses": { "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/statuses/4f12fd195d55573047260ef9f4e7841aa9defad4" }
+    "self": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101"
+    },
+    "html": {
+      "href": "https://github.com/ubiquity/work.ubq.fi/pull/101"
+    },
+    "issue": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/101"
+    },
+    "comments": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/issues/101/comments"
+    },
+    "review_comments": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/comments"
+    },
+    "review_comment": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/comments{/number}"
+    },
+    "commits": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/commits"
+    },
+    "statuses": {
+      "href": "https://api.github.com/repos/ubiquity/work.ubq.fi/statuses/4f12fd195d55573047260ef9f4e7841aa9defad4"
+    }
   },
   "author_association": "CONTRIBUTOR",
   "auto_merge": null,

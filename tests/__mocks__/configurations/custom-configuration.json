@@ -11,7 +11,9 @@
       },
       "multipliers": [
         {
-          "role": ["ISSUE_SPECIFICATION"],
+          "role": [
+            "ISSUE_SPECIFICATION"
+          ],
           "relevance": 1
         }
       ]
@@ -24,7 +26,9 @@
     "formattingEvaluator": {
       "multipliers": [
         {
-          "role": ["ISSUE_SPECIFICATION"],
+          "role": [
+            "ISSUE_SPECIFICATION"
+          ],
           "multiplier": 3,
           "rewards": {
             "wordValue": 0.1,
@@ -113,7 +117,11 @@
           }
         },
         {
-          "role": ["ISSUE_AUTHOR", "ISSUE_COLLABORATOR", "PULL_COLLABORATOR"],
+          "role": [
+            "ISSUE_AUTHOR",
+            "ISSUE_COLLABORATOR",
+            "PULL_COLLABORATOR"
+          ],
           "multiplier": 1,
           "rewards": {
             "wordValue": 0.1,
@@ -202,7 +210,10 @@
           }
         },
         {
-          "role": ["ISSUE_CONTRIBUTOR", "PULL_CONTRIBUTOR"],
+          "role": [
+            "ISSUE_CONTRIBUTOR",
+            "PULL_CONTRIBUTOR"
+          ],
           "multiplier": 0.25,
           "rewards": {
             "wordValue": 0.1,
@@ -291,7 +302,12 @@
           }
         },
         {
-          "role": ["PULL_SPECIFICATION", "PULL_AUTHOR", "ISSUE_ASSIGNEE", "PULL_ASSIGNEE"],
+          "role": [
+            "PULL_SPECIFICATION",
+            "PULL_AUTHOR",
+            "ISSUE_ASSIGNEE",
+            "PULL_ASSIGNEE"
+          ],
           "multiplier": 0,
           "rewards": {
             "wordValue": 0,

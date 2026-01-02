@@ -13,7 +13,7 @@
                   "messageHeadline": "chore: comment html generation (WIP)",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-12T06:51:49Z",
                   "parents": {
@@ -36,7 +36,7 @@
                   "messageHeadline": "chore: added missing types for comments",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-15T02:51:11Z",
                   "parents": {
@@ -59,7 +59,7 @@
                   "messageHeadline": "chore: debug mode and review comments for github comment module",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-15T03:30:20Z",
                   "parents": {
@@ -82,7 +82,7 @@
                   "messageHeadline": "chore: comment incentive rows (WIP)",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-15T04:18:55Z",
                   "parents": {
@@ -105,7 +105,7 @@
                   "messageHeadline": "chore: incentive rows generation",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-15T05:29:31Z",
                   "parents": {
@@ -128,7 +128,7 @@
                   "messageHeadline": "chore: comment posting to github",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-15T06:37:36Z",
                   "parents": {
@@ -151,7 +151,7 @@
                   "messageHeadline": "chore: fix pre div formatting",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-15T11:14:54Z",
                   "parents": {
@@ -174,7 +174,7 @@
                   "messageHeadline": "Merge branch 'feat/permit-generation' into feat/github-comment",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-16T00:25:15Z",
                   "parents": {
@@ -200,7 +200,7 @@
                   "messageHeadline": "chore: update package version",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-16T10:59:02Z",
                   "parents": {
@@ -223,7 +223,7 @@
                   "messageHeadline": "chore: updated .gitignore",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-16T10:59:40Z",
                   "parents": {
@@ -246,7 +246,7 @@
                   "messageHeadline": "chore: updated permit generation package",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-17T04:24:09Z",
                   "parents": {
@@ -269,7 +269,7 @@
                   "messageHeadline": "chore: env check for permit generation module",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-17T05:09:00Z",
                   "parents": {
@@ -292,7 +292,7 @@
                   "messageHeadline": "chore: added ignore words to cspell",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-17T07:24:44Z",
                   "parents": {
@@ -315,7 +315,7 @@
                   "messageHeadline": "Merge branch 'refs/heads/development' into feat/github-comment",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-17T08:40:38Z",
                   "parents": {
@@ -341,7 +341,7 @@
                   "messageHeadline": "chore: simplified code github comment module",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-17T09:01:50Z",
                   "parents": {
@@ -364,7 +364,7 @@
                   "messageHeadline": "chore: always return content on empty string",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-18T05:34:34Z",
                   "parents": {
@@ -387,7 +387,7 @@
                   "messageHeadline": "chore: changed rpc for DAI",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-18T05:44:20Z",
                   "parents": {
@@ -410,7 +410,7 @@
                   "messageHeadline": "chore: testing suite for modules (WIP)",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-18T06:33:27Z",
                   "parents": {
@@ -433,7 +433,7 @@
                   "messageHeadline": "chore: fix knip and change COMMENT to COMMENTED, added jsdocs on enum",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-18T07:44:05Z",
                   "parents": {
@@ -456,7 +456,7 @@
                   "messageHeadline": "chore: changed content to be an array of strings instead of a single …",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-18T07:55:43Z",
                   "parents": {
@@ -479,7 +479,7 @@
                   "messageHeadline": "chore: tests for data purge module",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-18T08:35:26Z",
                   "parents": {
@@ -502,7 +502,7 @@
                   "messageHeadline": "chore: removed invalid type check",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-19T08:29:34Z",
                   "parents": {
@@ -525,7 +525,7 @@
                   "messageHeadline": "chore: set comment type to contributor if author_association is none",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-20T21:20:52Z",
                   "parents": {
@@ -548,7 +548,7 @@
                   "messageHeadline": "chore: changed body type to an array of string",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-21T12:39:40Z",
                   "parents": {
@@ -571,7 +571,7 @@
                   "messageHeadline": "chore: changed RPC for mainnet",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-22T04:35:53Z",
                   "parents": {
@@ -594,7 +594,7 @@
                   "messageHeadline": "chore: removed spurious Promise resolves",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-22T11:44:03Z",
                   "parents": {
@@ -617,7 +617,7 @@
                   "messageHeadline": "chore: un-nested GitHub comment module functions to reduce reading co…",
                   "author": {
                     "name": "gentlementlegen",
-                    "email": "fernand.veyrier@epitech.eu"
+                    "email": "user@example.com"
                   },
                   "committedDate": "2024-04-22T12:48:30Z",
                   "parents": {
