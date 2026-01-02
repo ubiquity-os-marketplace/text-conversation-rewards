@@ -544,11 +544,11 @@ export class PaymentModule extends BaseModule {
     const env = this.context.env;
     // validate fee related env variables
     if (!env.PERMIT_FEE_RATE || Number(env.PERMIT_FEE_RATE) === 0) {
-      this.context.logger.info("PERMIT_FEE_RATE is not set, skipping permit fee generation");
+      this.context.logger.debug("PERMIT_FEE_RATE is not set, skipping permit fee generation");
       return result;
     }
     if (!env.PERMIT_TREASURY_GITHUB_USERNAME) {
-      this.context.logger.info("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
+      this.context.logger.debug("PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation");
       return result;
     }
     if (env.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST) {
@@ -774,7 +774,7 @@ export class PaymentModule extends BaseModule {
         throw this.context.logger.error(`Failed to create user with ID ${userId} in database.`, { createError });
       }
 
-      this.context.logger.info(`Successfully created user with ID ${userId} in database.`);
+      this.context.logger.ok(`Successfully created user with ID ${userId} in database.`);
       beneficiaryId = newUserData.id;
     } else {
       beneficiaryId = userData.id;
@@ -841,11 +841,11 @@ export class PaymentModule extends BaseModule {
 
     for (const [key, value] of Object.entries(result)) {
       if (key === this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
-        this.context.logger.info(`Skipping XP recording for treasury user ${key}.`);
+        this.context.logger.debug(`Skipping XP recording for treasury user ${key}.`);
         continue;
       }
       if (!value.userId) {
-        this.context.logger.error(`[PaymentModule] Missing userId for user ${key}, cannot record XP.`);
+        this.context.logger.warn(`[PaymentModule] Missing userId for user ${key}, cannot record XP.`);
         continue;
       }
 

@@ -18,13 +18,13 @@ async function handlePullRequestEvent(context: ContextPlugin<"pull_request.close
   const { logger } = context;
 
   if (!context.payload.pull_request.merged) {
-    return logger.error("Pull requests must be merged to generate rewards.").logMessage.raw;
+    return logger.warn("Pull requests must be merged to generate rewards.").logMessage.raw;
   }
   if (!context.config.incentives.shouldProcessUnlinkedPullRequests) {
     await activity.init();
     const linkedIssues = activity.linkedIssues;
     if (!linkedIssues.length) {
-      return logger.info("Unlinked pull-requests evaluation is disabled.").logMessage.raw;
+      return logger.debug("Unlinked pull-requests evaluation is disabled.").logMessage.raw;
     }
   }
 }
@@ -36,19 +36,19 @@ async function handleEventTypeChecks(context: ContextPlugin, activity: IssueActi
     if (context.command.name === "finish") {
       return null;
     }
-    return logger.error(`The command ${context.command.name} is not supported, skipping.`).logMessage.raw;
+    return logger.warn(`The command ${context.command.name} is not supported, skipping.`).logMessage.raw;
   }
 
   if (isIssueClosedEvent(context)) {
     return await handleClosedIssueEventChecks(context as ContextPlugin<"issues.closed">, activity);
   } else if (isIssueCommentedEvent(context)) {
     if (!context.payload.comment.body.trim().startsWith("/finish")) {
-      return logger.error(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
+      return logger.warn(`${context.payload.comment.body} is not a valid command, skipping.`).logMessage.raw;
     }
   } else if (isPullRequestEvent(context)) {
     return await handlePullRequestEvent(context, activity);
   } else {
-    return logger.error(`${eventName} is not supported, skipping.`).logMessage.raw;
+    return logger.warn(`${eventName} is not supported, skipping.`).logMessage.raw;
   }
 
   return null;
@@ -61,11 +61,11 @@ async function handleClosedIssueEventChecks(context: ContextPlugin<"issues.close
     return tryCreatingClosingReward(context, activity);
   }
   if (await checkIfClosedByCommand(context)) {
-    return logger.info("The issue was closed through the /finish command. Skipping.").logMessage.raw;
+    return logger.debug("The issue was closed through the /finish command. Skipping.").logMessage.raw;
   }
   if (!(await preCheck(context))) {
     await logInvalidIssue(logger, context.payload.issue.html_url);
-    const result = logger.error("All linked pull requests must be closed to generate rewards.");
+    const result = logger.warn("All linked pull requests must be closed to generate rewards.");
     await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
@@ -88,12 +88,12 @@ export async function run(context: ContextPlugin) {
     const result =
       payload.sender.type === "Bot"
         ? logger.warn("Bots can not generate rewards.")
-        : logger.error("You are not allowed to generate rewards.");
+        : logger.warn("You are not allowed to generate rewards.");
     await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
 
-  logger.debug("Will use the following configuration:", { config });
+  logger.info("Will use the following configuration:", { config });
 
   if (config.incentives.githubComment?.post) {
     await commentHandler.postComment(context, logger.info("Evaluating results. Please wait..."));
@@ -131,7 +131,7 @@ async function generateResults(context: ContextPlugin, activity: IssueActivity) 
   await processor.run(activity);
   let result = processor.dump();
   if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
-    context.logger.info("Truncating payload as it will trigger an error.");
+    context.logger.debug("Truncating payload as it will trigger an error.");
     const resultObject = JSON.parse(result) as Result;
     for (const [key, value] of Object.entries(resultObject)) {
       resultObject[key] = {
@@ -165,7 +165,7 @@ async function preCheck(context: ContextPlugin) {
     }
     return assigneeLogins.some((assigneeLogin) => areLoginsEquivalent(assigneeLogin, authorLogin, specialUserGroups));
   });
-  logger.debug("Checking open linked pull-requests for", {
+  logger.info("Checking open linked pull-requests for", {
     issue,
     linkedPulls: linkedPulls.map((pull) => pull.url),
   });

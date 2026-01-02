@@ -73,7 +73,7 @@ export async function tryCreatingClosingReward(context: ContextPlugin<"issues.cl
     const result = await processor.run(activity);
     return JSON.stringify(result);
   }
-  return logger.info("Issue does not meet criteria for closing reward. Skipping.", {
+  return logger.debug("Issue does not meet criteria for closing reward. Skipping.", {
     stalenessDuration: config.incentives.closeTaskReward.stalenessDuration,
     dateDiff: `${dateDiff / (1000 * 60 * 60 * 24)} days`,
     taskReward,

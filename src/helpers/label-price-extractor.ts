@@ -1,3 +1,4 @@
+import { ClosedByPullRequestsReferences } from "../data-collection/collect-linked-pulls";
 import { GitHubIssue } from "../github-types";
 import { ContextPlugin } from "../types/plugin-input";
 import { LINKED_ISSUES, PullRequestClosingIssue } from "../types/requests";
@@ -37,9 +38,9 @@ export async function getTaskReward(context: ContextPlugin, issue: GitHubIssue |
       });
 
       const perIssueMinimums = linkedIssues.repository.pullRequest.closingIssuesReferences.edges
-        .map((edge) => getSortedPrices(edge.node.labels?.nodes))
-        .filter((prices) => prices.length)
-        .map((prices) => prices[0]);
+        .map((edge: ClosedByPullRequestsReferences) => getSortedPrices(edge.node.labels?.nodes))
+        .filter((prices: number[]) => prices.length)
+        .map((prices: number[]) => prices[0]);
 
       if (perIssueMinimums.length) {
         return Math.max(...perIssueMinimums);

@@ -149,7 +149,7 @@ async function getFileContent(
     return null;
   } catch (err) {
     if (err instanceof Error && "status" in err && err.status === 404) {
-      context.logger.info(`[${path}] was not found for ${owner}/${repo}`, { err });
+      context.logger.debug(`[${path}] was not found for ${owner}/${repo}`, { err });
       return null;
     }
     throw context.logger.error(`Could not fetch the list of files to be excluded.`, {

@@ -25,6 +25,8 @@ interface Multiplier {
   wordValue: number;
 }
 
+type IssueEditNode = IssueEdits["repository"]["issue"]["userContentEdits"]["nodes"][number];
+
 export class FormattingEvaluatorModule extends BaseModule {
   private readonly _configuration: FormattingEvaluatorConfiguration | null =
     this.context.config.incentives.formattingEvaluator;
@@ -131,7 +133,8 @@ export class FormattingEvaluatorModule extends BaseModule {
       issue_number,
     });
 
-    const userEdits = data.repository.issue.userContentEdits.nodes.sort((a, b) => {
+    const userEdits: IssueEditNode[] = data.repository.issue.userContentEdits.nodes;
+    userEdits.sort((a: IssueEditNode, b: IssueEditNode) => {
       return new Date(a.editedAt).getTime() - new Date(b.editedAt).getTime();
     });
 
