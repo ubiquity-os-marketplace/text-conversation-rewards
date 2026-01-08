@@ -1,0 +1,137 @@
+{
+  "sha": "1f9b05032f3edb8492567f009860e4f277bc3ffa",
+  "node_id": "C_kwDOLUK0B9oAKDFmOWIwNTAzMmYzZWRiODQ5MjU2N2YwMDk4NjBlNGYyNzdiYzNmZmE",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "user@example.com",
+      "date": "2024-04-17T04:24:09Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "user@example.com",
+      "date": "2024-04-17T04:24:09Z"
+    },
+    "message": "chore: updated permit generation package",
+    "tree": {
+      "sha": "4672ce204e3fc72dc66bfd3ed1de586652da9eb1",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/4672ce204e3fc72dc66bfd3ed1de586652da9eb1"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/1f9b05032f3edb8492567f009860e4f277bc3ffa",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/1f9b05032f3edb8492567f009860e4f277bc3ffa",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1f9b05032f3edb8492567f009860e4f277bc3ffa",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/1f9b05032f3edb8492567f009860e4f277bc3ffa/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "43b1912bde2a1689b5fe5b0f443593d3c7de6f92",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/43b1912bde2a1689b5fe5b0f443593d3c7de6f92",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/43b1912bde2a1689b5fe5b0f443593d3c7de6f92"
+    }
+  ],
+  "stats": {
+    "total": 60,
+    "additions": 33,
+    "deletions": 27
+  },
+  "files": [
+    {
+      "sha": "07583d7332e07b26ff21593e23341dbe6c6966e7",
+      "filename": "package.json",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/1f9b05032f3edb8492567f009860e4f277bc3ffa/package.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/1f9b05032f3edb8492567f009860e4f277bc3ffa/package.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/package.json?ref=1f9b05032f3edb8492567f009860e4f277bc3ffa",
+      "patch": "@@ -30,7 +30,7 @@\n     \"@octokit/rest\": \"20.1.0\",\n     \"@sinclair/typebox\": \"0.32.20\",\n     \"@supabase/supabase-js\": \"2.42.0\",\n-    \"@ubiquibot/permit-generation\": \"1.2.0\",\n+    \"@ubiquibot/permit-generation\": \"1.2.1\",\n     \"commander\": \"12.0.0\",\n     \"decimal.js\": \"10.4.3\",\n     \"dotenv\": \"16.4.5\","
+    },
+    {
+      "sha": "2c56d7d10905656fe45a411ed27922c7c6f6ea74",
+      "filename": "src/parser/permit-generation-module.ts",
+      "status": "modified",
+      "additions": 7,
+      "deletions": 1,
+      "changes": 8,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/1f9b05032f3edb8492567f009860e4f277bc3ffa/src%2Fparser%2Fpermit-generation-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/1f9b05032f3edb8492567f009860e4f277bc3ffa/src%2Fparser%2Fpermit-generation-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fpermit-generation-module.ts?ref=1f9b05032f3edb8492567f009860e4f277bc3ffa",
+      "patch": "@@ -16,6 +16,7 @@ import permitGenerationConfigurationType, {\n } from \"../configuration/permit-generation-configuration\";\n import { getOctokitInstance } from \"../get-authentication-token\";\n import { IssueActivity } from \"../issue-activity\";\n+import program from \"./command-line\";\n import { Module, Result } from \"./processor\";\n \n interface Payload {\n@@ -30,7 +31,12 @@ export class PermitGenerationModule implements Module {\n   readonly _supabase = createClient<Database>(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);\n \n   async transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n-    const payload: Context[\"payload\"] & Payload = context.payload.inputs;\n+    const payload: Context[\"payload\"] & Payload = {\n+      ...context.payload.inputs,\n+      issueUrl: program.opts().issue,\n+      evmPrivateEncrypted: program.opts().evmPrivateEncrypted,\n+      evmNetworkId: program.opts().evmNetworkId,\n+    };\n     const issueId = Number(payload.issueUrl.match(/[0-9]+$/)?.[1]);\n     payload.issue = {\n       id: issueId,"
+    },
+    {
+      "sha": "8fe01bab2a11bdcd255ae5146b48243bbd8d954d",
+      "filename": "tsconfig.json",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/1f9b05032f3edb8492567f009860e4f277bc3ffa/tsconfig.json",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/1f9b05032f3edb8492567f009860e4f277bc3ffa/tsconfig.json",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/tsconfig.json?ref=1f9b05032f3edb8492567f009860e4f277bc3ffa",
+      "patch": "@@ -11,7 +11,7 @@\n     // \"disableReferencedProjectLoad\": true,             /* Reduce the number of projects loaded automatically by TypeScript. */\n \n     /* Language and Environment */\n-    \"target\": \"es2016\" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,\n+    \"target\": \"ES2022\" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,\n     // \"lib\": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */\n     // \"jsx\": \"preserve\",                                /* Specify what JSX code is generated. */\n     // \"experimentalDecorators\": true,                   /* Enable experimental support for legacy experimental decorators. */"
+    },
+    {
+      "sha": "8f92ef489649c936cd505aeff7015661a9bad2ca",
+      "filename": "yarn.lock",
+      "status": "modified",
+      "additions": 24,
+      "deletions": 24,
+      "changes": 48,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/1f9b05032f3edb8492567f009860e4f277bc3ffa/yarn.lock",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/1f9b05032f3edb8492567f009860e4f277bc3ffa/yarn.lock",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/yarn.lock?ref=1f9b05032f3edb8492567f009860e4f277bc3ffa",
+      "patch": "@@ -2520,10 +2520,10 @@\n   resolved \"https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-20.0.0.tgz#9ec2daa0090eeb865ee147636e0c00f73790c6e5\"\n   integrity sha512-EtqRBEjp1dL/15V7WiX5LJMIxxkdiGJnabzYx5Apx4FkQIFgAfKumXeYAqqJCj1s+BMX4cPFIFC4OLCR6stlnA==\n \n-\"@octokit/openapi-types@^22.0.1\":\n-  version \"22.0.1\"\n-  resolved \"https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-22.0.1.tgz#41f5b1c4dad3e547906ea9258837fcbea7cc72b4\"\n-  integrity sha512-1yN5m1IMNXthoBDUXFF97N1gHop04B3H8ws7wtOr8GgRyDO1gKALjwMHARNBoMBiB/2vEe/vxstrApcJZzQbnQ==\n+\"@octokit/openapi-types@^22.1.0\":\n+  version \"22.1.0\"\n+  resolved \"https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-22.1.0.tgz#6aa72f35fb29318064e4ab60972f40429857eb2e\"\n+  integrity sha512-pGUdSP+eEPfZiQHNkZI0U01HLipxncisdJQB4G//OAmfeO8sqTQ9KRa0KF03TUPCziNsoXUrTg4B2Q1EX++T0Q==\n \n \"@octokit/openapi-webhooks-types@8.1.1\":\n   version \"8.1.1\"\n@@ -2559,9 +2559,9 @@\n     once \"^1.4.0\"\n \n \"@octokit/request-error@^6.0.1\":\n-  version \"6.1.0\"\n-  resolved \"https://registry.yarnpkg.com/@octokit/request-error/-/request-error-6.1.0.tgz#8b69a5c6db3674369a84722ce3d06b58f1d71584\"\n-  integrity sha512-xcLJv4IgfWIOEEVZwfhUN3yHNWJL0AMw1J1Ba8BofM9RdDTbapg6MO4zNxlPS4XXX9aAIsbDRa47K57EhgeVAw==\n+  version \"6.1.1\"\n+  resolved \"https://registry.yarnpkg.com/@octokit/request-error/-/request-error-6.1.1.tgz#bed1b5f52ce7fefb1077a92bf42124ff36f73f2c\"\n+  integrity sha512-1mw1gqT3fR/WFvnoVpY/zUM2o/XkMs/2AszUUG9I69xn0JFLv6PGkPhNk5lbfvROs79wiS0bqiJNxfCZcRJJdg==\n   dependencies:\n     \"@octokit/types\" \"^13.0.0\"\n \n@@ -2593,11 +2593,11 @@\n     \"@octokit/openapi-types\" \"^20.0.0\"\n \n \"@octokit/types@^13.0.0\", \"@octokit/types@^13.1.0\":\n-  version \"13.4.0\"\n-  resolved \"https://registry.yarnpkg.com/@octokit/types/-/types-13.4.0.tgz#b9f6865a6fc491387352d7f327e1f030fa7be1cd\"\n-  integrity sha512-WlMegy3lPXYWASe3k9Jslc5a0anrYAYMWtsFrxBTdQjS70hvLH6C+PGvHbOsgy3RA3LouGJoU/vAt4KarecQLQ==\n+  version \"13.4.1\"\n+  resolved \"https://registry.yarnpkg.com/@octokit/types/-/types-13.4.1.tgz#ad3574488cce6792e5d981a1bdf4b694e1ca349f\"\n+  integrity sha512-Y73oOAzRBAUzR/iRAbGULzpNkX8vaxKCqEtg6K74Ff3w9f5apFnWtE/2nade7dMWWW3bS5Kkd6DJS4HF04xreg==\n   dependencies:\n-    \"@octokit/openapi-types\" \"^22.0.1\"\n+    \"@octokit/openapi-types\" \"^22.1.0\"\n \n \"@octokit/webhooks-methods@^5.0.0\":\n   version \"5.1.0\"\n@@ -3110,10 +3110,10 @@\n     \"@typescript-eslint/types\" \"6.21.0\"\n     eslint-visitor-keys \"^3.4.1\"\n \n-\"@ubiquibot/permit-generation@1.2.0\":\n-  version \"1.2.0\"\n-  resolved \"https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.2.0.tgz#17e5cf71099ce22ef1b5f0ea5a19ac1e7bca1844\"\n-  integrity sha512-29qzOtC50NBRZLOIepqOoqPGsyr7ig6XPTE/Fcyj0Nb+0hHrWYA6VfLtGBFBH72EgKbGLV3dXwz68J8Cz9uKOw==\n+\"@ubiquibot/permit-generation@1.2.1\":\n+  version \"1.2.1\"\n+  resolved \"https://registry.yarnpkg.com/@ubiquibot/permit-generation/-/permit-generation-1.2.1.tgz#e4cbeedf5aca9f1b088e4bcf06e97991fe428131\"\n+  integrity sha512-OSr4Pfcuy51AeasAKVVGuRcgUE9de7erLiv67dMxewMpCMdM0xZn+ash1FbV5EtbxkNRyO2uu1wCTV/z5cbhUg==\n   dependencies:\n     \"@actions/core\" \"^1.10.1\"\n     \"@actions/github\" \"^6.0.0\"\n@@ -3837,9 +3837,9 @@ convert-source-map@^2.0.0:\n   integrity sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==\n \n core-js-compat@^3.31.0, core-js-compat@^3.34.0:\n-  version \"3.36.1\"\n-  resolved \"https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.36.1.tgz#1818695d72c99c25d621dca94e6883e190cea3c8\"\n-  integrity sha512-Dk997v9ZCt3X/npqzyGdTlq6t7lDBhZwGvV94PKzDArjp7BTRm7WlDAXYd/OWdeFHO8OChQYRJNJvUCqCbrtKA==\n+  version \"3.37.0\"\n+  resolved \"https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.37.0.tgz#d9570e544163779bb4dff1031c7972f44918dc73\"\n+  integrity sha512-vYq4L+T8aS5UuFg4UwDhc7YNRWVeVZwltad9C/jV3R2LgVOpS9BDr7l/WL6BN0dbV3k1XejPTHqqEzJgsa0frA==\n   dependencies:\n     browserslist \"^4.23.0\"\n \n@@ -4233,9 +4233,9 @@ easy-table@1.2.0:\n     wcwidth \"^1.0.1\"\n \n electron-to-chromium@^1.4.668:\n-  version \"1.4.736\"\n-  resolved \"https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.736.tgz#ecb4348f4d5c70fb1e31c347e5bad6b751066416\"\n-  integrity sha512-Rer6wc3ynLelKNM4lOCg7/zPQj8tPOCB2hzD32PX9wd3hgRRi9MxEbmkFCokzcEhRVMiOVLjnL9ig9cefJ+6+Q==\n+  version \"1.4.738\"\n+  resolved \"https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.738.tgz#9a7fca98abaee61e20c9c25013d5ce60bb533436\"\n+  integrity sha512-lwKft2CLFztD+vEIpesrOtCrko/TFnEJlHFdRhazU7Y/jx5qc4cqsocfVrBg4So4gGe9lvxnbLIoev47WMpg+A==\n \n elliptic@6.5.4:\n   version \"6.5.4\"\n@@ -6996,9 +6996,9 @@ proc-log@^3.0.0:\n   integrity sha512-++Vn7NS4Xf9NacaU9Xq3URUuqZETPsf8L4j5/ckhaRYsfPeRyzGw+iDjFhV/Jr3uNmTvvddEJFWh5R1gRgUH8A==\n \n proc-log@^4.0.0:\n-  version \"4.1.0\"\n-  resolved \"https://registry.yarnpkg.com/proc-log/-/proc-log-4.1.0.tgz#ab6c1552b454e9e467cb58119179e4557d109b34\"\n-  integrity sha512-dmQ2iPw2nJMi9/4dpaG1wd0m1GE+K5kW7RGbjy5hoEEGnhPIzsm+klBO5RGGdcoYbWsNtU2KSNAdEldts+icLg==\n+  version \"4.2.0\"\n+  resolved \"https://registry.yarnpkg.com/proc-log/-/proc-log-4.2.0.tgz#b6f461e4026e75fdfe228b265e9f7a00779d7034\"\n+  integrity sha512-g8+OnU/L2v+wyiVK+D5fA34J7EH8jZ8DDlvwhRCMxmMj7UCBvxiO1mGeN+36JXIKF4zevU4kRBd8lVgG9vLelA==\n \n promise-inflight@^1.0.1:\n   version \"1.0.1\""
+    }
+  ]
+}

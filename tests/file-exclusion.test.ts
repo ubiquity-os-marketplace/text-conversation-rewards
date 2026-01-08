@@ -6,6 +6,7 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { PullRequestData } from "../src/helpers/pull-request-data";
+import { ReviewIncentivizerModule } from "../src/parser/review-incentivizer-module";
 
 type MockGetContent = jest.Mock<
   (
@@ -28,8 +29,6 @@ const ctx = {
   octokit: mockOctokit,
   payload: { repository: { owner: { login: "test-owner" }, name: "test-repo" } },
 } as unknown as ContextPlugin;
-
-const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
 
 beforeAll(() => server.listen());
 afterEach(() => {
@@ -57,7 +56,7 @@ describe("ReviewIncentivizerModule file exclusion", () => {
       "repo",
       "baseSha",
       "headSha",
-      new PullRequestData({} as never, "test-owner", "test-repo", 1)
+      new PullRequestData({} as never, "owner", "repo", 0)
     );
     expect(result).toEqual({ addition: 250, deletion: 250 });
   });
@@ -68,7 +67,7 @@ describe("ReviewIncentivizerModule file exclusion", () => {
       "repo",
       "baseSha",
       "headSha",
-      new PullRequestData({} as never, "test-owner", "test-repo", 1),
+      new PullRequestData({} as never, "owner", "repo", 0),
       ["dist/**", "tests/**"]
     );
     expect(result).toEqual({ addition: 100, deletion: 100 });

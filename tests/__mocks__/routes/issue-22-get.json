@@ -34,7 +34,7 @@
       "id": 6439650896,
       "node_id": "LA_kwDOK87YcM8AAAABf9VGUA",
       "url": "https://api.github.com/repos/ubiquity-os/comment-incentives/labels/Time:%20%3C1%20Hour",
-      "name": "Time: \u003C1 Hour",
+      "name": "Time: <1 Hour",
       "color": "ededed",
       "default": false,
       "description": null

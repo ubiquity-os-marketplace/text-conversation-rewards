@@ -27,7 +27,7 @@ export function mockWeb3Module(modulePath?: string) {
       getBalance: jest.fn().mockReturnValue(parseUnits("1", 18)),
     })),
   };
-  jest.unstable_mockModule(modulePath ?? "../src/helpers/web3", () => {
+  jest.mock(modulePath ?? "../../src/helpers/web3", () => {
     class MockErc20Wrapper {
       getBalance = mocks.Erc20Wrapper.getBalance;
       getSymbol = mocks.Erc20Wrapper.getSymbol;

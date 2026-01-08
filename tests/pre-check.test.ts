@@ -13,7 +13,7 @@ import "./helpers/permit-mock";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-jest.unstable_mockModule("@actions/github", () => {
+jest.mock("@actions/github", () => {
   const context = {
     runId: "1",
     payload: {
@@ -48,7 +48,7 @@ describe("Pre-check tests", () => {
   });
 
   it("Should reopen the issue and not generate rewards if linked pull-requests are still open", async () => {
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: jest.fn(() => [
         {
           id: "PR_kwDOKzVPS85zXUoj",
@@ -127,7 +127,7 @@ describe("Pre-check tests", () => {
   });
 
   it("Should match special user aliases when checking linked pull-requests", async () => {
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: jest.fn(() => [
         {
           id: "PR_alias_test",
@@ -190,7 +190,7 @@ describe("Pre-check tests", () => {
   });
 
   it("Should match configured Copilot aliases", async () => {
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: jest.fn(() => [
         {
           id: "PR_copilot_alias",
@@ -255,7 +255,7 @@ describe("Pre-check tests", () => {
   });
 
   it("Should not generate a permit if non-collaborator user is merging / closing the issue", async () => {
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: jest.fn(() => []),
     }));
     const patchMock = jest.fn(() => HttpResponse.json({}));
@@ -314,8 +314,11 @@ describe("Pre-check tests", () => {
   });
 
   it("Should post a warning message that bots cannot trigger reward generation", async () => {
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: jest.fn(() => []),
+    }));
+    jest.mock("@ubiquity-os/plugin-sdk", () => ({
+      postComment: jest.fn(),
     }));
     const { run } = await import("../src/run");
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
@@ -425,7 +428,7 @@ describe("Pre-check tests", () => {
   });
 
   it("Should deny unknown commands and accept know commands", async () => {
-    jest.unstable_mockModule("../src/issue-activity", () => ({
+    jest.mock("../src/issue-activity", () => ({
       IssueActivity: jest.fn(() => ({
         init: jest.fn(),
       })),

@@ -4,12 +4,11 @@ import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { mockWeb3Module } from "./helpers/web3-mocks";
-
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -58,6 +57,8 @@ describe("GithubCommentModule Fee Tests", () => {
   });
 
   it("should display the fee message when a fee percentage is applied", async () => {
+    const testTimestamp = "2024-01-01T00:00:00.000Z";
+    const testUrl = "https://example.test/issues/1";
     const result: Result = {
       "ubiquity-os": {
         comments: [],
@@ -65,14 +66,13 @@ describe("GithubCommentModule Fee Tests", () => {
         task: {
           reward: 50, // Example value
           multiplier: 1.5, // Example value
-          timestamp: "2024-01-01T00:00:00Z",
-          url: "https://github.com/ubiquity-os/conversation-rewards/issues/1",
+          timestamp: testTimestamp,
+          url: testUrl,
         },
         feeRate: 0.2, // This implies a 5% fee
         permitUrl: "https://pay.ubq.fi", // Example URL
         payoutMode: "permit",
         userId: 12345, // Example user ID
-        evaluationCommentHtml: "<p>None</p>",
         walletAddress: "0x1",
       },
     };
@@ -93,8 +93,8 @@ describe("GithubCommentModule Fee Tests", () => {
         '      "task": {\n' +
         '        "reward": 50,\n' +
         '        "multiplier": 1.5,\n' +
-        '        "timestamp": "2024-01-01T00:00:00Z",\n' +
-        '        "url": "https://github.com/ubiquity-os/conversation-rewards/issues/1"\n' +
+        `        "timestamp": "${testTimestamp}",\n` +
+        `        "url": "${testUrl}"\n` +
         "      },\n" +
         '      "feeRate": 0.2,\n' +
         '      "permitUrl": "https://pay.ubq.fi",\n' +

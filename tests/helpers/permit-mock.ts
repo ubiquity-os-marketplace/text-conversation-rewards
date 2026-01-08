@@ -6,9 +6,7 @@ import { customEncodePermits, generatePermitUrlPayload } from "../__mocks__/loca
 import { db as mockDb } from "../__mocks__/db";
 import { Context } from "@ubiquity-os/permit-generation";
 
-process.env.X25519_PRIVATE_KEY ||= "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
-
-jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
+jest.mock("@ubiquity-os/permit-generation", () => {
   const originalModule: object = jest.requireActual("@ubiquity-os/permit-generation");
 
   return {

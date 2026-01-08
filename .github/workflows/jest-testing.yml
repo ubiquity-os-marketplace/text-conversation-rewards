@@ -23,7 +23,7 @@ jobs:
       PERMIT_TREASURY_GITHUB_USERNAME: ""
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ""
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "20.10.0"
 
@@ -35,7 +35,7 @@ jobs:
 
       - name: Jest With Coverage
         # we install with bun but test with Jest because bun doesn't support network mocking yet
-        run: bun install && bun run test
+        run: bun install && bun run jest:test
 
       - name: Add Jest Report to Summary
         if: always()

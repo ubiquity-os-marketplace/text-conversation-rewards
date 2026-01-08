@@ -1,11 +1,42 @@
 import { http, HttpResponse } from "msw";
 import { db } from "./db";
 import gqlPullCommits from "./results/gql-commits.json";
+import commit02bf99457fdf61fd889fd31d674f72ec63b528f3Get from "./routes/commit-02bf99457fdf61fd889fd31d674f72ec63b528f3-get.json";
+import commit03fac6c8ec1585e26c78e01e653c8554297e8f47Get from "./routes/commit-03fac6c8ec1585e26c78e01e653c8554297e8f47-get.json";
+import commit119c633bb499a97dfd272d9a3a836d1417f604bbGet from "./routes/commit-119c633bb499a97dfd272d9a3a836d1417f604bb-get.json";
+import commit1f9b05032f3edb8492567f009860e4f277bc3ffaGet from "./routes/commit-1f9b05032f3edb8492567f009860e4f277bc3ffa-get.json";
+import commit24c748dc2cdf4cd94f81540167da2e6fd09aa5e2Get from "./routes/commit-24c748dc2cdf4cd94f81540167da2e6fd09aa5e2-get.json";
+import commit29ce3c3860361f088f632cba7e12af695f093412Get from "./routes/commit-29ce3c3860361f088f632cba7e12af695f093412-get.json";
+import commit3bab2b8fe8d648facc3f6274bbad60841f59db6aGet from "./routes/commit-3bab2b8fe8d648facc3f6274bbad60841f59db6a-get.json";
+import commit3bab31a7bc48d868176e982c6dbb0087fdf275f4Get from "./routes/commit-3bab31a7bc48d868176e982c6dbb0087fdf275f4-get.json";
+import commit43b1912bde2a1689b5fe5b0f443593d3c7de6f92Get from "./routes/commit-43b1912bde2a1689b5fe5b0f443593d3c7de6f92-get.json";
+import commit559c13c9a7d548519a6434e1b8393fd0d5c8f3dbGet from "./routes/commit-559c13c9a7d548519a6434e1b8393fd0d5c8f3db-get.json";
+import commit5bf432f61b035fee843b7c98ca767574bf0cb298Get from "./routes/commit-5bf432f61b035fee843b7c98ca767574bf0cb298-get.json";
+import commit5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5Get from "./routes/commit-5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5-get.json";
+import commit6567feb96e652df68887744b0dab2a52ddedfaf2Get from "./routes/commit-6567feb96e652df68887744b0dab2a52ddedfaf2-get.json";
+import commit73c650ffb68ba521c73b717dd66eba639abfba70Get from "./routes/commit-73c650ffb68ba521c73b717dd66eba639abfba70-get.json";
+import commit7e71e303ed86c0a64310e273fc3d868abc5c591fGet from "./routes/commit-7e71e303ed86c0a64310e273fc3d868abc5c591f-get.json";
+import commit8dea21d6eb08cbe6c0e80ec8744ab511090e003cGet from "./routes/commit-8dea21d6eb08cbe6c0e80ec8744ab511090e003c-get.json";
+import commit96f41042c16dbc14bde0ceaf7673384b3d1d7465Get from "./routes/commit-96f41042c16dbc14bde0ceaf7673384b3d1d7465-get.json";
+import commitA12318e0a42de7481154b8162170e4a644199fc2Get from "./routes/commit-a12318e0a42de7481154b8162170e4a644199fc2-get.json";
+import commitA22cec2655aa355cb50cb69c3938a9bb94860777Get from "./routes/commit-a22cec2655aa355cb50cb69c3938a9bb94860777-get.json";
+import commitAbbcf3365cf8401033442120b4639d5b2bdcec67Get from "./routes/commit-abbcf3365cf8401033442120b4639d5b2bdcec67-get.json";
+import commitC9897e2cdb010848e77f6fd6eb45a09f4a639a6bGet from "./routes/commit-c9897e2cdb010848e77f6fd6eb45a09f4a639a6b-get.json";
+import commitD29427ae2e5a253f3ac7a57979886e8dcab8a9adGet from "./routes/commit-d29427ae2e5a253f3ac7a57979886e8dcab8a9ad-get.json";
+import commitDf2c34f172b9e4eb3cfd1a20dde7fcb142102053Get from "./routes/commit-df2c34f172b9e4eb3cfd1a20dde7fcb142102053-get.json";
+import commitE61436b97e425d2cd6f9696cda279a14c5e471ccGet from "./routes/commit-e61436b97e425d2cd6f9696cda279a14c5e471cc-get.json";
+import commitE7b555da82bf378d8b97478b24e43614d03eb81fGet from "./routes/commit-e7b555da82bf378d8b97478b24e43614d03eb81f-get.json";
+import contentsPrettierignoreDevelopmentGet from "./routes/contents-prettierignore-development-get.json";
+import contentsTsconfigDevelopmentGet from "./routes/contents-tsconfig-development-get.json";
+import issue1TimelineGet from "./routes/issue-1-timeline-get.json";
 import issue100CommentsGet from "./routes/issue-100-comments-get.json";
 import issue100Edits from "./routes/issue-100-edits.json";
 import issue100EventsGet from "./routes/issue-100-events-get.json";
 import issue100Get from "./routes/issue-100-get.json";
 import issue100TimelineGet from "./routes/issue-100-timeline-get.json";
+import issue12EventsGet from "./routes/issue-12-events-get.json";
+import issue12Get from "./routes/issue-12-get.json";
+import issue12TimelineGet from "./routes/issue-12-timeline-get.json";
 import issue13CommentsGet from "./routes/issue-13-comments-get.json";
 import issue13EventsGet from "./routes/issue-13-events-get.json";
 import issue13Get from "./routes/issue-13-get.json";
@@ -16,6 +47,7 @@ import issue5CommentsGet from "./routes/issue-5-conversation-rewards/issue-5-com
 import issue5EventsGet from "./routes/issue-5-conversation-rewards/issue-5-events-get.json";
 import issue5Get from "./routes/issue-5-conversation-rewards/issue-5-get.json";
 import issue5TimelineGet from "./routes/issue-5-conversation-rewards/issue-5-timeline-get.json";
+import issue5ReactionsGet from "./routes/issue-5-reactions-get.json";
 import issue69CommentsGet from "./routes/issue-69-comments-get.json";
 import issue69EventsGet from "./routes/issue-69-events-get.json";
 import issue69Get from "./routes/issue-69-get.json";
@@ -27,6 +59,9 @@ import issue71EventsGet from "./routes/issue-71-events-get.json";
 import issue71Get from "./routes/issue-71-get.json";
 import issue71TimelineGet from "./routes/issue-71-timeline-get.json";
 import issue71WorkUbqFiCommentsGet from "./routes/issue-71-work-ubq-fi-comments-get.json";
+import issueComment2036516869ReactionsGet from "./routes/issue-comment-2036516869-reactions-get.json";
+import issueComment2053332029ReactionsGet from "./routes/issue-comment-2053332029-reactions-get.json";
+import issueComment2055783331ReactionsGet from "./routes/issue-comment-2055783331-reactions-get.json";
 import issueEvents2Get from "./routes/issue-events-2-get.json";
 import issueEventsGet from "./routes/issue-events-get.json";
 import issueTimelineGet from "./routes/issue-timeline-get.json";
@@ -39,6 +74,15 @@ import pull12CommentsGet from "./routes/pull-12-conversation-rewards/pull-12-com
 import pull12Get from "./routes/pull-12-conversation-rewards/pull-12-get.json";
 import pull12ReviewsGet from "./routes/pull-12-conversation-rewards/pull-12-reviews-get.json";
 import pull71Get from "./routes/pull-71-work-ubq-fi/pull-71-get.json";
+import pullComment1570133378ReactionsGet from "./routes/pull-comment-1570133378-reactions-get.json";
+import pullComment1570591425ReactionsGet from "./routes/pull-comment-1570591425-reactions-get.json";
+import pullComment1573413974ReactionsGet from "./routes/pull-comment-1573413974-reactions-get.json";
+import pullComment1573733603ReactionsGet from "./routes/pull-comment-1573733603-reactions-get.json";
+import pullComment1574427305ReactionsGet from "./routes/pull-comment-1574427305-reactions-get.json";
+import pullComment1574702577ReactionsGet from "./routes/pull-comment-1574702577-reactions-get.json";
+import pullComment1575659438ReactionsGet from "./routes/pull-comment-1575659438-reactions-get.json";
+import pullComment1578040543ReactionsGet from "./routes/pull-comment-1578040543-reactions-get.json";
+import pullComment1579556333ReactionsGet from "./routes/pull-comment-1579556333-reactions-get.json";
 import pullsCommentsGet from "./routes/pulls-comments-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
@@ -47,6 +91,9 @@ import pullsReviewsGet from "./routes/pulls-reviews-get.json";
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
+  http.get("https://123-not-valid-url.com/", () => {
+    return HttpResponse.error();
+  }),
   http.post("https://api.github.com/graphql", async (args) => {
     // Check if this is a request for issue edits
     const body = await args.request.text();
@@ -93,8 +140,90 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/comments", () => {
     return HttpResponse.json(issue12CommentsGet);
   }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12", () => {
+    return HttpResponse.json(issue12Get);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/events", () => {
+    return HttpResponse.json(issue12EventsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/timeline", () => {
+    return HttpResponse.json(issue12TimelineGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/1/timeline", () => {
+    return HttpResponse.json(issue1TimelineGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/commits/:sha", ({ params }) => {
+    const sha = params.sha.toString().toLowerCase();
+    if (sha === "e7b555da82bf378d8b97478b24e43614d03eb81f") return HttpResponse.json(commitE7b555da82bf378d8b97478b24e43614d03eb81fGet);
+    if (sha === "7e71e303ed86c0a64310e273fc3d868abc5c591f") return HttpResponse.json(commit7e71e303ed86c0a64310e273fc3d868abc5c591fGet);
+    if (sha === "8dea21d6eb08cbe6c0e80ec8744ab511090e003c") return HttpResponse.json(commit8dea21d6eb08cbe6c0e80ec8744ab511090e003cGet);
+    if (sha === "df2c34f172b9e4eb3cfd1a20dde7fcb142102053") return HttpResponse.json(commitDf2c34f172b9e4eb3cfd1a20dde7fcb142102053Get);
+    if (sha === "c9897e2cdb010848e77f6fd6eb45a09f4a639a6b") return HttpResponse.json(commitC9897e2cdb010848e77f6fd6eb45a09f4a639a6bGet);
+    if (sha === "29ce3c3860361f088f632cba7e12af695f093412") return HttpResponse.json(commit29ce3c3860361f088f632cba7e12af695f093412Get);
+    if (sha === "d29427ae2e5a253f3ac7a57979886e8dcab8a9ad") return HttpResponse.json(commitD29427ae2e5a253f3ac7a57979886e8dcab8a9adGet);
+    if (sha === "96f41042c16dbc14bde0ceaf7673384b3d1d7465") return HttpResponse.json(commit96f41042c16dbc14bde0ceaf7673384b3d1d7465Get);
+    if (sha === "43b1912bde2a1689b5fe5b0f443593d3c7de6f92") return HttpResponse.json(commit43b1912bde2a1689b5fe5b0f443593d3c7de6f92Get);
+    if (sha === "1f9b05032f3edb8492567f009860e4f277bc3ffa") return HttpResponse.json(commit1f9b05032f3edb8492567f009860e4f277bc3ffaGet);
+    if (sha === "3bab31a7bc48d868176e982c6dbb0087fdf275f4") return HttpResponse.json(commit3bab31a7bc48d868176e982c6dbb0087fdf275f4Get);
+    if (sha === "03fac6c8ec1585e26c78e01e653c8554297e8f47") return HttpResponse.json(commit03fac6c8ec1585e26c78e01e653c8554297e8f47Get);
+    if (sha === "119c633bb499a97dfd272d9a3a836d1417f604bb") return HttpResponse.json(commit119c633bb499a97dfd272d9a3a836d1417f604bbGet);
+    if (sha === "24c748dc2cdf4cd94f81540167da2e6fd09aa5e2") return HttpResponse.json(commit24c748dc2cdf4cd94f81540167da2e6fd09aa5e2Get);
+    if (sha === "5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5") return HttpResponse.json(commit5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5Get);
+    if (sha === "6567feb96e652df68887744b0dab2a52ddedfaf2") return HttpResponse.json(commit6567feb96e652df68887744b0dab2a52ddedfaf2Get);
+    if (sha === "559c13c9a7d548519a6434e1b8393fd0d5c8f3db") return HttpResponse.json(commit559c13c9a7d548519a6434e1b8393fd0d5c8f3dbGet);
+    if (sha === "abbcf3365cf8401033442120b4639d5b2bdcec67") return HttpResponse.json(commitAbbcf3365cf8401033442120b4639d5b2bdcec67Get);
+    if (sha === "02bf99457fdf61fd889fd31d674f72ec63b528f3") return HttpResponse.json(commit02bf99457fdf61fd889fd31d674f72ec63b528f3Get);
+    if (sha === "5bf432f61b035fee843b7c98ca767574bf0cb298") return HttpResponse.json(commit5bf432f61b035fee843b7c98ca767574bf0cb298Get);
+    if (sha === "3bab2b8fe8d648facc3f6274bbad60841f59db6a") return HttpResponse.json(commit3bab2b8fe8d648facc3f6274bbad60841f59db6aGet);
+    if (sha === "e61436b97e425d2cd6f9696cda279a14c5e471cc") return HttpResponse.json(commitE61436b97e425d2cd6f9696cda279a14c5e471ccGet);
+    if (sha === "73c650ffb68ba521c73b717dd66eba639abfba70") return HttpResponse.json(commit73c650ffb68ba521c73b717dd66eba639abfba70Get);
+    if (sha === "a22cec2655aa355cb50cb69c3938a9bb94860777") return HttpResponse.json(commitA22cec2655aa355cb50cb69c3938a9bb94860777Get);
+    if (sha === "a12318e0a42de7481154b8162170e4a644199fc2") return HttpResponse.json(commitA12318e0a42de7481154b8162170e4a644199fc2Get);
+    return HttpResponse.json(
+      {
+        error: "Missing MSW fixture for commit",
+        sha,
+      },
+      { status: 500 }
+    );
+  }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/timeline", () => {
     return HttpResponse.json(issue5TimelineGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/reactions", () => {
+    return HttpResponse.json(issue5ReactionsGet);
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/:commentId/reactions", ({ params }) => {
+    const commentId = params.commentId.toString();
+    if (commentId === "2036516869") return HttpResponse.json(issueComment2036516869ReactionsGet);
+    if (commentId === "2053332029") return HttpResponse.json(issueComment2053332029ReactionsGet);
+    if (commentId === "2055783331") return HttpResponse.json(issueComment2055783331ReactionsGet);
+    return HttpResponse.json(
+      {
+        error: "Missing MSW fixture for issue comment reactions",
+        commentId,
+      },
+      { status: 500 }
+    );
+  }),
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/:commentId/reactions", ({ params }) => {
+    const commentId = params.commentId.toString();
+    if (commentId === "1570133378") return HttpResponse.json(pullComment1570133378ReactionsGet);
+    if (commentId === "1570591425") return HttpResponse.json(pullComment1570591425ReactionsGet);
+    if (commentId === "1573413974") return HttpResponse.json(pullComment1573413974ReactionsGet);
+    if (commentId === "1573733603") return HttpResponse.json(pullComment1573733603ReactionsGet);
+    if (commentId === "1574427305") return HttpResponse.json(pullComment1574427305ReactionsGet);
+    if (commentId === "1574702577") return HttpResponse.json(pullComment1574702577ReactionsGet);
+    if (commentId === "1575659438") return HttpResponse.json(pullComment1575659438ReactionsGet);
+    if (commentId === "1578040543") return HttpResponse.json(pullComment1578040543ReactionsGet);
+    if (commentId === "1579556333") return HttpResponse.json(pullComment1579556333ReactionsGet);
+    return HttpResponse.json(
+      {
+        error: "Missing MSW fixture for pull comment reactions",
+        commentId,
+      },
+      { status: 500 }
+    );
   }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71", () => {
     return HttpResponse.json(issue71Get);
@@ -312,37 +441,6 @@ export const handlers = [
       role_name: "admin",
     });
   }),
-  http.get("https://api.github.com/repos/:owner/:repo/compare/:basehead", () => {
-    return HttpResponse.json({
-      files: [
-        {
-          filename: "src/index.ts",
-          additions: 10,
-          deletions: 2,
-          status: "modified",
-        },
-        {
-          filename: "dist/generated.ts",
-          additions: 5,
-          deletions: 1,
-          status: "modified",
-        },
-      ],
-    });
-  }),
-  http.get("https://api.github.com/repos/:owner/:repo/commits/:ref", () => {
-    return HttpResponse.json({
-      files: [
-        {
-          filename: "src/index.ts",
-          additions: 10,
-          deletions: 2,
-          status: "modified",
-        },
-      ],
-      url: "https://api.github.com/repos/mock/commit",
-    });
-  }),
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.gitattributes", () => {
     return HttpResponse.json({
       data: {
@@ -352,10 +450,10 @@ export const handlers = [
       },
     });
   }),
-  http.get("https://api.github.com/repos/:owner/:repo/contents/:path", () => {
-    return HttpResponse.json({ message: "Not Found" }, { status: 404 });
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.prettierignore", () => {
+    return HttpResponse.json(contentsPrettierignoreDevelopmentGet);
   }),
-  http.all("https://api.github.com/*", ({ request }) => {
-    return HttpResponse.json({ message: "Unhandled mock request", url: request.url }, { status: 404 });
+  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/tsconfig.json", () => {
+    return HttpResponse.json(contentsTsconfigDevelopmentGet);
   }),
 ];

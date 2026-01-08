@@ -1,11 +1,11 @@
 /* eslint-disable sonarjs/no-nested-functions */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { RestEndpointMethodTypes } from "@octokit/rest";
 import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
-import { http, passthrough } from "msw";
+import { http, HttpResponse, passthrough } from "msw";
+import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
@@ -32,16 +32,8 @@ import { mockWeb3Module } from "./helpers/web3-mocks";
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 const web3Mocks = mockWeb3Module();
-const PLACEHOLDER_TIMESTAMP = "1970-01-01T00:00:00Z";
-const PLACEHOLDER_URL = "https://example.com";
-const PLACEHOLDER_CONTENT = "placeholder";
 
-function getErrorStatus(error: unknown): number | undefined {
-  const status = (error as { status?: unknown }).status;
-  return typeof status === "number" ? status : undefined;
-}
-
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -54,7 +46,7 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
@@ -91,13 +83,19 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new customOctokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
   },
 } as unknown as ContextPlugin;
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+const PLACEHOLDER_TIMESTAMP = "2024-01-01T00:00:00.000Z";
+const PLACEHOLDER_URL = "https://example.test/resource";
+const PLACEHOLDER_CONTENT = "placeholder content";
+const OPENAI_SYSTEM_PROMPT = "system prompt";
+
+jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
@@ -123,7 +121,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+jest.mock("../src/data-collection/collect-linked-pulls", () => ({
   collectLinkedPulls: jest.fn(() => [
     {
       id: "PR_kwDOLUK0B85soGlu",
@@ -145,46 +143,66 @@ jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
   ]),
 }));
 
-const { IssueActivity } = await import("../src/issue-activity");
-const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
-const { DataPurgeModule } = await import("../src/parser/data-purge-module");
-const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PaymentModule } = await import("../src/parser/payment-module");
-const { Processor } = await import("../src/parser/processor");
-const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
-const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
-const { EventIncentivesModule } = await import("../src/parser/event-incentives-module");
-const { SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module");
-const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
+/* eslint-disable @typescript-eslint/naming-convention */
+let IssueActivity: typeof import("../src/issue-activity").IssueActivity;
+let ContentEvaluatorModule: typeof import("../src/parser/content-evaluator-module").ContentEvaluatorModule;
+let DataPurgeModule: typeof import("../src/parser/data-purge-module").DataPurgeModule;
+let FormattingEvaluatorModule: typeof import("../src/parser/formatting-evaluator-module").FormattingEvaluatorModule;
+let GithubCommentModule: typeof import("../src/parser/github-comment-module").GithubCommentModule;
+let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
+let Processor: typeof import("../src/parser/processor").Processor;
+let UserExtractorModule: typeof import("../src/parser/user-extractor-module").UserExtractorModule;
+let ReviewIncentivizerModule: typeof import("../src/parser/review-incentivizer-module").ReviewIncentivizerModule;
+let EventIncentivesModule: typeof import("../src/parser/event-incentives-module").EventIncentivesModule;
+let SimplificationIncentivizerModule: typeof import("../src/parser/simplification-incentivizer-module").SimplificationIncentivizerModule;
+let ExternalContentProcessor: typeof import("../src/parser/external-content-module").ExternalContentProcessor;
+/* eslint-enable @typescript-eslint/naming-convention */
 
-jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
-  return {
-    "test.ts": {
-      addition: 50,
-      deletion: 50,
-    },
-  };
-});
+let activity: InstanceType<typeof IssueActivity>;
 
 function getExternalContentProcessor(context: ContextPlugin) {
-  return new ExternalContentProcessor(context);
+  const instance = new ExternalContentProcessor(context);
+  Reflect.set(instance, "_llmWebsite", { chat: { completions: { create: jest.fn() } } });
+  Reflect.set(instance, "_llmImage", { chat: { completions: { create: jest.fn() } } });
+  return instance;
 }
 
-beforeAll(() => {
+beforeAll(async () => {
   server.listen();
+
+  ({ IssueActivity } = await import("../src/issue-activity"));
+  ({ ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module"));
+  ({ DataPurgeModule } = await import("../src/parser/data-purge-module"));
+  ({ FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module"));
+  ({ GithubCommentModule } = await import("../src/parser/github-comment-module"));
+  ({ PaymentModule } = await import("../src/parser/payment-module"));
+  ({ Processor } = await import("../src/parser/processor"));
+  ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
+  ({ ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module"));
+  ({ EventIncentivesModule } = await import("../src/parser/event-incentives-module"));
+  ({ SimplificationIncentivizerModule } = await import("../src/parser/simplification-incentivizer-module"));
+  ({ ExternalContentProcessor } = await import("../src/parser/external-content-module"));
+
+  jest.spyOn(ReviewIncentivizerModule.prototype, "getTripleDotDiffAsObject").mockImplementation(async () => {
+    return {
+      "test.ts": {
+        addition: 50,
+        deletion: 50,
+      },
+    };
+  });
+
   // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };
+  const issue = parseGitHubUrl(issueUrl);
+  activity = new IssueActivity(ctx, issue);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("Modules tests", () => {
-  const issue = parseGitHubUrl(issueUrl);
-  const activity = new IssueActivity(ctx, issue);
-
   beforeAll(async () => {
     await activity.init();
     for (const item of dbSeed.users) {
@@ -212,6 +230,9 @@ describe("Modules tests", () => {
           })()
         );
       });
+    jest
+      .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
+      .mockImplementation(() => Promise.resolve(Infinity));
 
     jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementation(async () => {
       return {
@@ -225,7 +246,7 @@ describe("Modules tests", () => {
             },
           ],
         },
-      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
+      } as unknown as ReturnType<Awaited<typeof ctx.octokit.rest.repos.compareCommits>>;
     });
   });
 
@@ -390,6 +411,7 @@ describe("Modules tests", () => {
       logger: new Logs("debug"),
       octokit: new customOctokit({ auth: process.env.GITHUB_TOKEN }),
       env: {
+        OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
         SUPABASE_KEY: process.env.SUPABASE_KEY,
         SUPABASE_URL: process.env.SUPABASE_URL,
         X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
@@ -724,55 +746,91 @@ describe("Modules tests", () => {
 });
 
 describe("Retry", () => {
+  const openAi = new OpenAI({ apiKey: process.env.OPENROUTER_API_KEY, maxRetries: 0 });
+
+  async function testFunction() {
+    return openAi.chat.completions.create({
+      model: "gpt-4o-2024-08-06",
+      messages: [
+        {
+          role: "system",
+          content: OPENAI_SYSTEM_PROMPT,
+        },
+      ],
+    });
+  }
+
   it("should return correct value", async () => {
-    const res = await retry(async () => "Hello", { maxRetries: 3 });
-    expect(res).toBe("Hello");
+    server.use(
+      http.post("https://api.openai.com/v1/*", () => {
+        return HttpResponse.json({ choices: [{ text: "Hello" }] });
+      })
+    );
+
+    const res = await retry(testFunction, { maxRetries: 3 });
+    expect(res).toMatchObject({ choices: [{ text: "Hello" }] });
   });
 
   it("should retry on any error", async () => {
     let called = 0;
-    const res = await retry(
-      async () => {
+    server.use(
+      http.post("https://api.openai.com/v1/*", () => {
         called += 1;
-        if (called < 3) throw new Error("boom");
-        return "Hello";
-      },
-      { maxRetries: 3, isErrorRetryable: () => 0 }
+        if (called === 1) {
+          return HttpResponse.text("error", { status: 500 });
+        } else if (called === 2) {
+          return HttpResponse.text("rate limited", { status: 429 });
+        } else {
+          return HttpResponse.json({ choices: [{ text: "Hello" }] });
+        }
+      })
     );
-    expect(res).toBe("Hello");
+
+    const res = await retry(testFunction, { maxRetries: 3 });
+    expect(res).toMatchObject({ choices: [{ text: "Hello" }] });
   });
 
   it("should throw error if maxRetries is reached", async () => {
+    server.use(
+      http.post("https://api.openai.com/v1/*", () => {
+        return HttpResponse.text("error", { status: 500 });
+      })
+    );
+
     await expect(
-      retry(
-        async () => {
-          throw Object.assign(new Error("LLM API error: 500"), { status: 500 });
+      retry(testFunction, {
+        maxRetries: 3,
+        isErrorRetryable: (err) => {
+          return err instanceof OpenAI.APIError && err.status === 500;
         },
-        { maxRetries: 3, isErrorRetryable: () => 0 }
-      )
+      })
     ).rejects.toMatchObject({ status: 500 });
   });
 
   it("should retry on 500 but fail on 429", async () => {
     let called = 0;
+    server.use(
+      http.post("https://api.openai.com/v1/*", () => {
+        called += 1;
+        if (called === 1) {
+          return HttpResponse.text("error", { status: 500 });
+        } else if (called === 2) {
+          return HttpResponse.text("rate limited", { status: 429 });
+        } else {
+          return HttpResponse.json({ choices: [{ text: "Hello" }] });
+        }
+      })
+    );
     const onErrorHandler = jest.fn<() => void>();
 
     await expect(
-      retry(
-        async () => {
-          called += 1;
-          if (called === 1) throw Object.assign(new Error("LLM API error: 500"), { status: 500 });
-          throw Object.assign(new Error("LLM API error: 429"), { status: 429 });
+      retry(testFunction, {
+        maxRetries: 3,
+        isErrorRetryable: (err) => {
+          return err instanceof OpenAI.APIError && err.status === 500;
         },
-        {
-          maxRetries: 3,
-          isErrorRetryable: (err) => {
-            const status = getErrorStatus(err);
-            return status === 500 ? 0 : false;
-          },
-          onError: onErrorHandler,
-        }
-      )
+        onError: onErrorHandler,
+      })
     ).rejects.toMatchObject({ status: 429 });
     expect(onErrorHandler).toHaveBeenCalledTimes(2);
   });

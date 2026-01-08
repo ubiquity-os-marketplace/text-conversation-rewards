@@ -1,13 +1,9 @@
 import type { Config } from "jest";
 
 const cfg: Config = {
+  testEnvironment: "node",
   transform: {
-    "^.+\\.tsx?$": [
-      "ts-jest",
-      {
-        useESM: true,
-      },
-    ],
+    "^.+\\.[jt]s$": "@swc/jest",
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   coveragePathIgnorePatterns: ["node_modules", "mocks"],
@@ -17,10 +13,12 @@ const cfg: Config = {
   coverageDirectory: "coverage",
   testTimeout: 90000,
   roots: ["<rootDir>", "tests"],
-  extensionsToTreatAsEsm: [".ts"],
+  transformIgnorePatterns: [
+    "/node_modules/(?!(hex-rgb|rgb-hex|@ubiquity-os|@octokit|universal-user-agent|before-after-hook)/)",
+  ],
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
-    "^@uniswap/permit2-sdk$": "<rootDir>/node_modules/@uniswap/permit2-sdk/dist/cjs/src/index.js",
   },
   setupFilesAfterEnv: ["dotenv/config"],
 };
