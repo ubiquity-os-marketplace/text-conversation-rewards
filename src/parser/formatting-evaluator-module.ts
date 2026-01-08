@@ -356,8 +356,13 @@ export class FormattingEvaluatorModule extends BaseModule {
 
   private _extractUrlsFromElement(element: Element, urlSet: Set<string>) {
     const bodyContent = element.textContent;
-    const matches = bodyContent?.match(urlRegex);
-    matches?.map((url) => url.split(/[#?]/)[0]).forEach((url) => urlSet.add(url));
+    if (!bodyContent) return;
+    urlRegex.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = urlRegex.exec(bodyContent)) !== null) {
+      const url = match[0].split(/[#?]/)[0];
+      urlSet.add(url);
+    }
   }
 
   private _addUrlsToFormatting(

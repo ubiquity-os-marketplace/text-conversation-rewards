@@ -1,4 +1,4 @@
-import { RestEndpointMethodTypes } from "@octokit/rest";
+import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import { ContextPlugin } from "../types/plugin-input";
 
 type TimelineEvent = RestEndpointMethodTypes["issues"]["listEventsForTimeline"]["response"]["data"][number];
@@ -7,7 +7,7 @@ type IssueComment = RestEndpointMethodTypes["issues"]["listComments"]["response"
 export async function manuallyCloseIssue(context: ContextPlugin<"issue_comment.created">) {
   const { payload, octokit, logger } = context;
 
-  logger.info(`Trying to manually close ${payload.issue.html_url}`);
+  logger.debug(`Trying to manually close ${payload.issue.html_url}`);
   try {
     await octokit.rest.issues.update({
       owner: payload.repository.owner.login,
@@ -16,7 +16,7 @@ export async function manuallyCloseIssue(context: ContextPlugin<"issue_comment.c
       state: "closed",
     });
   } catch (e) {
-    logger.error("Failed to close the issue.", { e });
+    logger.warn("Failed to close the issue.", { e });
   }
 }
 
@@ -83,7 +83,7 @@ export async function checkIfClosedByCommand(context: ContextPlugin<"issues.clos
 
     return commandComments.length > 0;
   } catch (e) {
-    logger.error("Failed to check if the issue was closed by a command", { e });
+    logger.warn("Failed to check if the issue was closed by a command", { e });
     return false;
   }
 }

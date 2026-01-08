@@ -2,6 +2,10 @@ import { ContextPlugin } from "../types/plugin-input";
 import { PullRequestCommitsQuery } from "../types/pull-request-commits";
 import { QUERY_PULL_REQUEST_COMMITS } from "../types/requests";
 
+type PullRequestCommits = NonNullable<NonNullable<PullRequestCommitsQuery["repository"]>["pullRequest"]>["commits"];
+type CommitEdge = PullRequestCommits["edges"][number];
+type CommitParent = NonNullable<CommitEdge["node"]["commit"]["parents"]["nodes"]>[number];
+
 interface LightweightCommit {
   sha: string;
   parentCount: number;
@@ -15,11 +19,6 @@ interface PullRequestFile {
   deletions: number;
   status?: string;
 }
-
-type CommitEdge = NonNullable<
-  NonNullable<PullRequestCommitsQuery["repository"]>["pullRequest"]
->["commits"]["edges"][number];
-type CommitParent = NonNullable<CommitEdge["node"]["commit"]["parents"]["nodes"]>[number];
 
 export class PullRequestData {
   private readonly _fileMap = new Map<string, PullRequestFile>();

@@ -6,6 +6,7 @@ import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
+import { GitHubIssue } from "../src/github-types";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
@@ -360,12 +361,18 @@ describe("Rewards tests", () => {
     const taskPrice = 0.01;
     let originalLabel: string | undefined = undefined;
     let labelIdx = -1;
-    if (activity.self) {
-      const idx = activity.self.labels.findIndex((item) => typeof item !== "string" && item.name?.includes("Price"));
-      if (typeof activity.self.labels[idx] !== "string") {
-        originalLabel = activity.self.labels[idx].name;
-        labelIdx = idx;
-        activity.self.labels[idx].name = `Price: ${taskPrice} USD`;
+    const labels = activity.self?.labels as GitHubIssue["labels"] | undefined;
+    if (labels) {
+      const idx = labels.findIndex((item: NonNullable<GitHubIssue["labels"]>[number]) => {
+        return typeof item !== "string" && item.name?.includes("Price");
+      });
+      if (idx >= 0) {
+        const label = labels[idx];
+        if (label && typeof label !== "string") {
+          originalLabel = label.name;
+          labelIdx = idx;
+          label.name = `Price: ${taskPrice} USD`;
+        }
       }
     }
     const processor = new Processor(ctx);
@@ -379,9 +386,11 @@ describe("Rewards tests", () => {
     ];
     await processor.run(activity);
     const result: Result = JSON.parse(processor.dump());
-    if (activity.self && labelIdx > -1 && originalLabel) {
-      // @ts-expect-error This is checked earlier
-      activity.self.labels[labelIdx].name = originalLabel;
+    if (labels && labelIdx > -1 && originalLabel) {
+      const label = labels[labelIdx];
+      if (label && typeof label !== "string") {
+        label.name = originalLabel;
+      }
     }
     expect(Object.values(result)?.[0].evaluationCommentHtml).toMatch(
       `Your rewards have been limited to the task price of ${taskPrice} WXDAI`
