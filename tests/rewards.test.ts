@@ -6,6 +6,8 @@ import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
+import { GitHubIssue } from "../src/github-types";
+import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import { db } from "./__mocks__/db";
@@ -17,11 +19,14 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
 
+const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
+
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
 mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -34,7 +39,7 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
@@ -56,6 +61,7 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
           })),
         })),
       })),
+      rpc: jest.fn(() => ({ error: null })),
     })),
   };
 });
@@ -80,93 +86,108 @@ const collectLinkedPulls = jest.fn(() => [
   },
 ]);
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+jest.mock("../src/data-collection/collect-linked-pulls", () => ({
   collectLinkedPulls: collectLinkedPulls,
 }));
 
-beforeAll(() => {
+/* eslint-disable @typescript-eslint/naming-convention */
+let IssueActivity: typeof import("../src/issue-activity").IssueActivity;
+let ContentEvaluatorModule: typeof import("../src/parser/content-evaluator-module").ContentEvaluatorModule;
+let DataPurgeModule: typeof import("../src/parser/data-purge-module").DataPurgeModule;
+let FormattingEvaluatorModule: typeof import("../src/parser/formatting-evaluator-module").FormattingEvaluatorModule;
+let GithubCommentModule: typeof import("../src/parser/github-comment-module").GithubCommentModule;
+let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
+let Processor: typeof import("../src/parser/processor").Processor;
+let UserExtractorModule: typeof import("../src/parser/user-extractor-module").UserExtractorModule;
+let ExternalContentProcessor: typeof import("../src/parser/external-content-module").ExternalContentProcessor;
+/* eslint-enable @typescript-eslint/naming-convention */
+
+let activity: InstanceType<typeof IssueActivity>;
+
+const issue = parseGitHubUrl(issueUrl);
+const ctx = {
+  eventName: "issues.closed",
+  payload: {
+    issue: {
+      html_url: issueUrl,
+      number: 69,
+      state_reason: "completed",
+      assignees: [
+        {
+          id: 1,
+          login: "gentlementlegen",
+        },
+        {
+          id: 2,
+          login: "0x4007",
+        },
+      ],
+    },
+    repository: {
+      name: "conversation-rewards",
+      owner: {
+        login: "ubiquity-os",
+        id: 76412717, // https://github.com/ubiquity
+      },
+    },
+  },
+  adapters: {
+    supabase: {
+      location: {
+        getOrCreateIssueLocation: jest.fn(async () => 1),
+      },
+      wallet: {
+        getWalletByUserId: jest.fn(async () => "0x1"),
+      },
+    },
+  },
+  config: cfg,
+  logger: new Logs("debug"),
+  octokit: new Octokit(),
+  env: process.env,
+} as unknown as ContextPlugin;
+
+beforeAll(async () => {
   server.listen();
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
+  ({ IssueActivity } = await import("../src/issue-activity"));
+  ({ ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module"));
+  ({ DataPurgeModule } = await import("../src/parser/data-purge-module"));
+  ({ FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module"));
+  ({ GithubCommentModule } = await import("../src/parser/github-comment-module"));
+  ({ PaymentModule } = await import("../src/parser/payment-module"));
+  ({ Processor } = await import("../src/parser/processor"));
+  ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
+  ({ ExternalContentProcessor } = await import("../src/parser/external-content-module"));
+
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };
+
+  jest
+    .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+    .mockImplementation((specificationBody, userId, comments) => {
+      return Promise.resolve(
+        (() => {
+          const relevance: { [k: string]: number } = {};
+          comments.forEach((comment) => {
+            relevance[`${comment.id}`] = 0.8;
+          });
+          return relevance;
+        })()
+      );
+    });
+
+  activity = new IssueActivity(ctx, issue);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const { IssueActivity } = await import("../src/issue-activity");
-const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
-const { DataPurgeModule } = await import("../src/parser/data-purge-module");
-const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { GithubCommentModule } = await import("../src/parser/github-comment-module");
-const { PaymentModule } = await import("../src/parser/payment-module");
-const { Processor } = await import("../src/parser/processor");
-const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
-const { parseGitHubUrl } = await import("../src/start");
-const { ExternalContentProcessor } = await import("../src/parser/external-content-module");
-
-jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, userId, comments) => {
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        return relevance;
-      })()
-    );
-  });
-
-jest.spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens").mockImplementation(() => Promise.resolve(Infinity));
-
 describe("Rewards tests", () => {
-  const issue = parseGitHubUrl(issueUrl);
-  const ctx = {
-    eventName: "issues.closed",
-    payload: {
-      issue: {
-        html_url: issueUrl,
-        number: 69,
-        state_reason: "completed",
-        assignees: [
-          {
-            id: 1,
-            login: "gentlementlegen",
-          },
-          {
-            id: 2,
-            login: "0x4007",
-          },
-        ],
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-          id: 76412717, // https://github.com/ubiquity
-        },
-      },
-    },
-    adapters: {
-      supabase: {
-        wallet: {
-          getWalletByUserId: jest.fn(async () => "0x1"),
-        },
-      },
-    },
-    config: cfg,
-    logger: new Logs("debug"),
-    octokit: new Octokit(),
-    env: process.env,
-  } as unknown as ContextPlugin;
-  const activity = new IssueActivity(ctx, issue);
-
   beforeEach(async () => {
     drop(db);
     for (const table of Object.keys(dbSeed)) {
@@ -341,12 +362,18 @@ describe("Rewards tests", () => {
     const taskPrice = 0.01;
     let originalLabel: string | undefined = undefined;
     let labelIdx = -1;
-    if (activity.self) {
-      const idx = activity.self.labels.findIndex((item) => typeof item !== "string" && item.name?.includes("Price"));
-      if (typeof activity.self.labels[idx] !== "string") {
-        originalLabel = activity.self.labels[idx].name;
-        labelIdx = idx;
-        activity.self.labels[idx].name = `Price: ${taskPrice} USD`;
+    const labels = activity.self?.labels as GitHubIssue["labels"] | undefined;
+    if (labels) {
+      const idx = labels.findIndex((item: NonNullable<GitHubIssue["labels"]>[number]) => {
+        return typeof item !== "string" && item.name?.includes("Price");
+      });
+      if (idx >= 0) {
+        const label = labels[idx];
+        if (label && typeof label !== "string") {
+          originalLabel = label.name;
+          labelIdx = idx;
+          label.name = `Price: ${taskPrice} USD`;
+        }
       }
     }
     const processor = new Processor(ctx);
@@ -360,9 +387,11 @@ describe("Rewards tests", () => {
     ];
     await processor.run(activity);
     const result: Result = JSON.parse(processor.dump());
-    if (activity.self && labelIdx > -1 && originalLabel) {
-      // @ts-expect-error This is checked earlier
-      activity.self.labels[labelIdx].name = originalLabel;
+    if (labels && labelIdx > -1 && originalLabel) {
+      const label = labels[labelIdx];
+      if (label && typeof label !== "string") {
+        label.name = originalLabel;
+      }
     }
     expect(Object.values(result)?.[0].evaluationCommentHtml).toMatch(
       `Your rewards have been limited to the task price of ${taskPrice} WXDAI`
@@ -372,15 +401,11 @@ describe("Rewards tests", () => {
   it("Should ignore invalid links", async () => {
     ctx.config.incentives.externalContent = {
       llmWebsiteModel: {
-        model: "model",
         tokenCountLimit: 1000,
-        endpoint: "endopint",
         maxRetries: 1,
       },
       llmImageModel: {
-        model: "model",
         tokenCountLimit: 1000,
-        endpoint: "endpoint",
         maxRetries: 1,
       },
     };

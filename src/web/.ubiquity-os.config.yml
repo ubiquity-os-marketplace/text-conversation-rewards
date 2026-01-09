@@ -47,7 +47,7 @@ rewards:
 incentives:
   payment:
     automaticTransferMode: false
-  requirePriceLabel: "auto"
+  requirePriceLabel: false
   externalContent:
     llmImageModel:
       model: meta-llama/llama-3.2-11b-vision-instruct:free

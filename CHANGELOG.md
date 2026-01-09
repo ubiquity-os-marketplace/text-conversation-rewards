@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.7.9](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.8...v1.7.9) (2025-11-27)
+
+
+### Bug Fixes
+
+* adjust role resolution and add missing treasury item handling ([9698f5a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/9698f5ab3d66029454d8b0e8478dc32500452e82))
+* clamp flesch readability score ([833fc85](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/833fc852a73f87b66e6f41d7a2d2ef71133e84cd))
+* clamp flesch readability score ([32119d4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/32119d4cb5d759b94d454360651edc5cbff12293))
+* display file additions in GitHub comments table ([cfddba6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/cfddba6094dec77c5715a707594dac629457057a))
+* handle token limit overflow in comment evaluation ([2254ed9](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2254ed93eaa68040fe3e7917216a7a3059736a5a))
+* pass userId to comment evaluation methods for user-specific relevance scoring ([d6a5bc6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d6a5bc6c066ea15266d72662a144e71960759ff0))
+* refine comment filtering to exclude specification-associated comments and add sorting by ID ([ace76aa](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ace76aa11900f2cc8a3ccea08f724f5437c9edd8))
+* refine handling of review tasks in comment processing ([d486b2e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d486b2e246447d52743cd535b72248c514bf2227))
+* update role resolution logic to account for missing roles ([410e71a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/410e71a74f2c17d012415cdcbf13aa96e6402aaf))
+* validate user permissions for generating rewards in review flow ([74fcbcc](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/74fcbcc2ac4528ea604619dc9852be1262056819))
+
 ## [1.7.8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.7...v1.7.8) (2025-09-06)
 
 

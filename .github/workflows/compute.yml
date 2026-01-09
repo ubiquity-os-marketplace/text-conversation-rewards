@@ -19,6 +19,11 @@ on:
         description: "Payload signature from the kernel"
       command:
         description: "Command"
+      ubiquityKernelToken:
+        description: "Kernel attestation token (optional)"
+      kernelPublicKey:
+        description: "Kernel public key PEM for signature verification (optional)"
+        required: false
 
 jobs:
   compute:
@@ -30,7 +35,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PLUGIN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       X25519_PRIVATE_KEY: ${{ secrets.X25519_PRIVATE_KEY }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
@@ -39,7 +43,7 @@ jobs:
       PERMIT_FEE_RATE: ${{ secrets.PERMIT_FEE_RATE }}
       PERMIT_TREASURY_GITHUB_USERNAME: ${{ secrets.PERMIT_TREASURY_GITHUB_USERNAME }}
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
-      KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
+      KERNEL_PUBLIC_KEY: ${{ (endsWith(github.actor, '[bot]') && github.event.inputs.kernelPublicKey != '') && github.event.inputs.kernelPublicKey || secrets.KERNEL_PUBLIC_KEY }}
       LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
 
     steps:

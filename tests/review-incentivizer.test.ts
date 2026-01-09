@@ -40,7 +40,6 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
-    OPENROUTER_API_KEY: "1234",
     SUPABASE_KEY: "1234",
     SUPABASE_URL: "http://localhost:6543",
     X25519_PRIVATE_KEY: "1234",
@@ -61,7 +60,7 @@ describe("Review Incentivizer", () => {
 
   it("Should not run when no PR is linked to this issue", async () => {
     const collectLinkedPulls: Mock<() => Array<object>> = jest.fn(() => []);
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: collectLinkedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
@@ -111,7 +110,7 @@ describe("Review Incentivizer", () => {
       },
     };
     const collectLinkedPulls: Mock<() => Array<object>> = jest.fn(() => [pr]);
-    jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
       collectLinkedPulls: collectLinkedPulls,
     }));
     const { IssueActivity } = await import("../src/issue-activity");
@@ -172,7 +171,7 @@ describe("Review Incentivizer", () => {
             },
           ],
         },
-      } as unknown as RestEndpointMethodTypes["repos"]["compareCommits"]["response"];
+      } as unknown as ReturnType<Awaited<typeof ctx.octokit.rest.repos.compareCommits>>;
     });
 
     const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");

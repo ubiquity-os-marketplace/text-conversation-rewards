@@ -1,25 +1,33 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
+import { PermitReward, TokenType } from "@ubiquity-os/permit-generation";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { parseUnits } from "ethers/lib/utils";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { IssueActivity } from "../../src/issue-activity";
+import { ReviewIncentivizerModule } from "../../src/parser/review-incentivizer-module";
 import { ContextPlugin, RewardSettings } from "../../src/types/plugin-input";
+import { Result } from "../../src/types/results";
 import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
 import cfg from "../__mocks__/results/valid-configuration.json";
 import { mockWeb3Module } from "../helpers/web3-mocks";
-import { ReviewIncentivizerModule } from "../../src/parser/review-incentivizer-module";
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+let PaymentModule: typeof import("../../src/parser/payment-module").PaymentModule;
 
 const DOLLAR_ADDRESS = "0xb6919Ef2ee4aFC163BC954C5678e2BB570c2D103";
 const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 const PAYOUT_MODE_TRANSFER = '"payoutMode": "transfer"';
 const PAYOUT_MODE_PERMIT = '"payoutMode": "permit"';
-const DEFAULT_TIMESTAMP = "";
-const DEFAULT_URL = "";
+const DEFAULT_TIMESTAMP = "2024-01-01T00:00:00.000Z";
+const DEFAULT_URL = "https://example.test/issues/1";
+const NO_MARKER_BODY = "no payout markers";
 const EMPTY_STRING = "";
+const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
 const ctx = {
   eventName: "issues.closed",
   payload: {
@@ -45,7 +53,6 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
-    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
@@ -59,11 +66,15 @@ const ctx = {
   },
 } as unknown as ContextPlugin;
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(),
   };
 });
+
+function unsetEnvValue<TKey extends keyof ContextPlugin["env"]>(env: ContextPlugin["env"], key: TKey): void {
+  (env as Partial<ContextPlugin["env"]>)[key] = undefined;
+}
 
 const web3Mocks = mockWeb3Module("../../src/helpers/web3");
 
@@ -122,7 +133,7 @@ function getResultOriginal() {
   };
 }
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
@@ -141,13 +152,9 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-const { PaymentModule } = await import("../../src/parser/payment-module");
-beforeAll(() => {
+beforeAll(async () => {
+  ({ PaymentModule } = await import("../../src/parser/payment-module"));
   server.listen();
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
-    return "https://rpc";
-  };
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -202,8 +209,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
-      process.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
-      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
+      unsetEnvValue(ctx.env, "PERMIT_TREASURY_GITHUB_USERNAME");
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -254,7 +260,7 @@ describe("payment-module.ts", () => {
 
   describe("_getBeneficiaries()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      unsetEnvValue(ctx.env, "PERMIT_FEE_RATE");
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -277,9 +283,84 @@ describe("payment-module.ts", () => {
     });
   });
 
+  describe("_savePermitsToDatabase()", () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("should skip inserting permits with zero amount", async () => {
+      const insert = jest.fn<() => Promise<{ error: null }>>().mockResolvedValue({ error: null });
+      const supabaseMock = {
+        from: jest.fn((table: string) => {
+          if (table === "users") {
+            return {
+              // eslint-disable-next-line sonarjs/no-nested-functions
+              select: jest.fn(() => ({
+                eq: jest.fn(() => ({
+                  single: jest.fn(() => Promise.resolve({ data: { id: 1 } })),
+                })),
+              })),
+            };
+          }
+          if (table === "permits") {
+            return { insert };
+          }
+          return {
+            // eslint-disable-next-line sonarjs/no-nested-functions
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                single: jest.fn(() => Promise.resolve({ data: null })),
+              })),
+            })),
+          };
+        }),
+      };
+
+      const paymentModule = new PaymentModule({
+        ...ctx,
+        adapters: {
+          supabase: {
+            location: { getOrCreateIssueLocation: jest.fn<() => Promise<number>>().mockResolvedValue(5) },
+          },
+        },
+      } as unknown as ContextPlugin);
+
+      (paymentModule as unknown as { _supabase: typeof supabaseMock })._supabase = supabaseMock;
+      jest
+        .spyOn(paymentModule as unknown as { _getOrCreateToken: () => Promise<number> }, "_getOrCreateToken")
+        .mockResolvedValue(10);
+      jest
+        .spyOn(paymentModule as unknown as { _getOrCreatePartner: () => Promise<number> }, "_getOrCreatePartner")
+        .mockResolvedValue(20);
+
+      const zeroAmountPermit: PermitReward = {
+        tokenType: TokenType.ERC20,
+        tokenAddress: "0xtoken",
+        beneficiary: "0xbeneficiary",
+        nonce: "1",
+        deadline: "0",
+        owner: "0xowner",
+        signature: "sig",
+        networkId: 1,
+        amount: "0",
+      };
+
+      const rewardResult: Result[string] = {
+        userId: 1,
+        total: 0,
+      };
+
+      await paymentModule._savePermitsToDatabase(rewardResult, { issueId: 99, issueUrl: "https://example.com" }, [
+        zeroAmountPermit,
+      ]);
+
+      expect(insert).not.toHaveBeenCalled();
+    });
+  });
+
   describe("_automaticTransferMode", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      unsetEnvValue(ctx.env, "PERMIT_FEE_RATE");
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -289,6 +370,8 @@ describe("payment-module.ts", () => {
       }
     });
     it("Should set correct value for _automaticTransferMode", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.config.incentives.payment = { automaticTransferMode: false };
       let paymentModule = new PaymentModule(ctx);
       expect(paymentModule._autoTransferMode).toEqual(false);
@@ -311,7 +394,7 @@ describe("payment-module.ts", () => {
   });
   describe("_getPayoutMode()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      unsetEnvValue(ctx.env, "PERMIT_FEE_RATE");
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -352,7 +435,7 @@ describe("payment-module.ts", () => {
       expect(payoutMode).toEqual("permit");
 
       payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: EMPTY_STRING, user: { type: "Bot" } }],
+        comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
     });
@@ -373,7 +456,7 @@ describe("payment-module.ts", () => {
       const paymentModule = new PaymentModule(ctx);
 
       const payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: EMPTY_STRING, user: { type: "Bot" } }],
+        comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("transfer");
     });
@@ -382,7 +465,7 @@ describe("payment-module.ts", () => {
   const fundingWalletPrivateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   describe("_canTransferDirectly()", () => {
     beforeEach(() => {
-      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      unsetEnvValue(ctx.env, "PERMIT_FEE_RATE");
       ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
     });
 
@@ -455,6 +538,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should reject if the funding wallet has insufficient reward tokens", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       web3Mocks.getEvmWallet.mockImplementationOnce(() => ({
         address: "0xOverriddenAddress",
         getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),

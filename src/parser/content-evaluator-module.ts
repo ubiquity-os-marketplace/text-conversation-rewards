@@ -1,11 +1,12 @@
 import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import { callLlm } from "@ubiquity-os/plugin-sdk";
 import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
-import OpenAI from "openai";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
 import { checkLlmRetryableState, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
@@ -21,15 +22,20 @@ import { ContextPlugin } from "../types/plugin-input";
 import { LINKED_ISSUES, PullRequestClosingIssue } from "../types/requests";
 import { GithubCommentScore, Result } from "../types/results";
 
+function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    Symbol.asyncIterator in value &&
+    typeof (value as { [Symbol.asyncIterator]?: unknown })[Symbol.asyncIterator] === "function"
+  );
+}
+
 /**
  * Evaluates and rates comments.
  */
 export class ContentEvaluatorModule extends BaseModule {
   readonly _configuration: ContentEvaluatorConfiguration | null = this.context.config.incentives.contentEvaluator;
-  readonly _openAi = new OpenAI({
-    apiKey: this.context.env.OPENROUTER_API_KEY,
-    ...(this._configuration?.openAi.endpoint && { baseURL: this._configuration.openAi.endpoint }),
-  });
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
   private readonly _originalAuthorWeight: number = 0.5;
@@ -69,23 +75,11 @@ export class ContentEvaluatorModule extends BaseModule {
     return true;
   }
 
-  async _getRateLimitTokens() {
-    const res = await this._openAi.chat.completions
-      .create({
-        model: this._configuration?.openAi.model ?? "gpt-4o-2024-08-06",
-        messages: [{ role: "system", content: "a" }],
-        max_tokens: 1,
-      })
-      .asResponse();
-    const tokenLimit = res.headers.get("x-ratelimit-limit-tokens");
-    return tokenLimit && Number.isFinite(Number(tokenLimit)) ? Number(tokenLimit) : Infinity;
-  }
-
   async transform(data: Readonly<IssueActivity>, result: Result) {
     if (!this._configuration?.openAi.tokenCountLimit) {
       throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
     }
-    this._tokenLimit = Math.min(this._configuration?.openAi.tokenCountLimit, await this._getRateLimitTokens());
+    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
@@ -548,30 +542,52 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     try {
-      const res = await this._openAi.chat.completions.create({
-        model: this._configuration?.openAi.model ?? "gpt-4o-2024-08-06",
-        response_format: {
-          type: "json_object",
+      const res = await callLlm(
+        {
+          response_format: { type: "json_object" },
+          messages: [{ role: "system", content: prompt }],
+          max_tokens: maxTokens,
+          top_p: 1,
+          temperature: 0.5,
+          frequency_penalty: 0,
+          presence_penalty: 0,
         },
-        messages: [
-          {
-            role: "system",
-            content: prompt,
-          },
-        ],
-        max_tokens: maxTokens,
-        top_p: 1,
-        temperature: 0.5,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-      });
+        this.context
+      );
 
-      // Strip any potential Markdown formatting like ```json or ``` from the response, because some LLMs love do to so
-      const rawResponse = String(res.choices[0].message.content).replace(/^.*?{/, "{").replace(/}.*$/, "}");
+      if (isAsyncIterable(res)) {
+        throw this.context.logger.error("Unexpected streaming response from the LLM");
+      }
 
-      this.context.logger.debug(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
+      const answer = res.choices[0]?.message?.content;
+      if (typeof answer !== "string" || !answer.trim()) {
+        throw this.context.logger.error("Unexpected response format: Expected JSON string in message content");
+      }
 
-      const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
+      const trimmedAnswer = answer.trim();
+
+      let parsedJson: unknown;
+      const parseErrors: unknown[] = [];
+
+      try {
+        parsedJson = JSON.parse(trimmedAnswer);
+      } catch (e) {
+        parseErrors.push(e);
+        try {
+          const extracted = extractFirstJsonObject(trimmedAnswer);
+          this.context.logger.debug(`LLM extracted JSON (using max_tokens: ${maxTokens}): ${extracted}`);
+          parsedJson = JSON.parse(extracted);
+        } catch (e2) {
+          parseErrors.push(e2);
+          throw this.context.logger.error("Failed to parse a JSON object from the LLM response", {
+            maxTokens,
+            parseErrors,
+            answerPreview: trimmedAnswer.slice(0, 500),
+          });
+        }
+      }
+
+      const relevances = Value.Decode(openAiRelevanceResponseSchema, parsedJson);
       this.context.logger.debug(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {

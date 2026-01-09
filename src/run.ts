@@ -1,4 +1,4 @@
-import { collectLinkedPulls } from "./data-collection/collect-linked-pulls";
+import { collectLinkedPulls, LinkedPullRequest } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
 import { areLoginsEquivalent } from "./helpers/github";
 import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
@@ -12,7 +12,7 @@ import { IssueActivity } from "./issue-activity";
 import { Processor } from "./parser/processor";
 import { parseGitHubUrl } from "./start";
 import { ContextPlugin } from "./types/plugin-input";
-import { Result } from "./types/results";
+import { PermitSaveError, Result } from "./types/results";
 
 async function handlePullRequestEvent(context: ContextPlugin<"pull_request.closed">, activity: IssueActivity) {
   const { logger } = context;
@@ -128,11 +128,11 @@ export async function run(context: ContextPlugin) {
 
 async function generateResults(context: ContextPlugin, activity: IssueActivity) {
   const processor = new Processor(context);
-  await processor.run(activity);
+  const resultObject = await processor.run(activity);
   let result = processor.dump();
+  const permitSaveErrors = collectPermitSaveErrors(resultObject);
   if (result.length > GITHUB_DISPATCH_PAYLOAD_LIMIT) {
     context.logger.info("Truncating payload as it will trigger an error.");
-    const resultObject = JSON.parse(result) as Result;
     for (const [key, value] of Object.entries(resultObject)) {
       resultObject[key] = {
         userId: value.userId,
@@ -143,7 +143,21 @@ async function generateResults(context: ContextPlugin, activity: IssueActivity) 
     }
     result = JSON.stringify(resultObject);
   }
+  if (permitSaveErrors.length > 0) {
+    context.logger.error("Permit persistence failures detected.", { permitSaveErrors });
+    throw new Error("Permit persistence failures detected. See comment for details.");
+  }
   return JSON.parse(result);
+}
+
+function collectPermitSaveErrors(result: Result) {
+  const errors: Array<{ username: string; errors: PermitSaveError[] }> = [];
+  for (const [username, reward] of Object.entries(result)) {
+    if (reward.permitSaveErrors?.length) {
+      errors.push({ username, errors: reward.permitSaveErrors });
+    }
+  }
+  return errors;
 }
 
 async function preCheck(context: ContextPlugin) {
@@ -157,7 +171,7 @@ async function preCheck(context: ContextPlugin) {
     .map((assignee) => assignee?.login)
     .filter((login): login is string => Boolean(login));
   const specialUserGroups = context.config.incentives.specialUsers ?? [];
-  const linkedPulls = (await collectLinkedPulls(context, issue)).filter((pullRequest) => {
+  const linkedPulls: LinkedPullRequest[] = (await collectLinkedPulls(context, issue)).filter((pullRequest) => {
     // This can happen when a user deleted its account
     const authorLogin = pullRequest?.author?.login;
     if (!authorLogin) {
@@ -167,7 +181,7 @@ async function preCheck(context: ContextPlugin) {
   });
   logger.debug("Checking open linked pull-requests for", {
     issue,
-    linkedPulls: linkedPulls.map((o) => o.url),
+    linkedPulls: linkedPulls.map((pull) => pull.url),
   });
   if (linkedPulls.some((linkedPull) => linkedPull?.state === "OPEN")) {
     await octokit.rest.issues.update({

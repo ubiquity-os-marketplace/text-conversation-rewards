@@ -1,0 +1,113 @@
+{
+  "sha": "119c633bb499a97dfd272d9a3a836d1417f604bb",
+  "node_id": "C_kwDOLUK0B9oAKDExOWM2MzNiYjQ5OWE5N2RmZDI3MmQ5YTNhODM2ZDE0MTdmNjA0YmI",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "user@example.com",
+      "date": "2024-04-17T09:01:50Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "user@example.com",
+      "date": "2024-04-17T09:01:50Z"
+    },
+    "message": "chore: simplified code github comment module",
+    "tree": {
+      "sha": "e99b8b6b5c65b4518d4cabc79cdf2e3bc3139da6",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/e99b8b6b5c65b4518d4cabc79cdf2e3bc3139da6"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/119c633bb499a97dfd272d9a3a836d1417f604bb",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/119c633bb499a97dfd272d9a3a836d1417f604bb",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/119c633bb499a97dfd272d9a3a836d1417f604bb",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/119c633bb499a97dfd272d9a3a836d1417f604bb/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "efe17cb7018e1a45bc48fbcc66f1215d48871476",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/efe17cb7018e1a45bc48fbcc66f1215d48871476",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/efe17cb7018e1a45bc48fbcc66f1215d48871476"
+    }
+  ],
+  "stats": {
+    "total": 62,
+    "additions": 32,
+    "deletions": 30
+  },
+  "files": [
+    {
+      "sha": "083eb2c47775e9d282392e1fc650f5ddb265af69",
+      "filename": "src/parser/github-comment-module.ts",
+      "status": "modified",
+      "additions": 30,
+      "deletions": 28,
+      "changes": 58,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/119c633bb499a97dfd272d9a3a836d1417f604bb/src%2Fparser%2Fgithub-comment-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/119c633bb499a97dfd272d9a3a836d1417f604bb/src%2Fparser%2Fgithub-comment-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fgithub-comment-module.ts?ref=119c633bb499a97dfd272d9a3a836d1417f604bb",
+      "patch": "@@ -14,7 +14,7 @@ import { GithubCommentScore, Module, Result } from \"./processor\";\n /**\n  * Posts a GitHub comment according to the given results.\n  */\n-export class GithubContentModule implements Module {\n+export class GithubCommentModule implements Module {\n   private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n   private readonly _debugFilePath = \"./output.html\";\n \n@@ -80,41 +80,43 @@ export class GithubContentModule implements Module {\n       if (!sorted) {\n         return \"\";\n       }\n-      if (result.task?.reward) {\n-        content += `\n+\n+      function generateContributionRow(\n+        view: string,\n+        contribution: string,\n+        count: number,\n+        reward: number | Decimal | undefined\n+      ) {\n+        return `\n           <tr>\n-            <td>Issue</td>\n-            <td>Task</td>\n-            <td>1</td>\n-            <td>${result.task.reward}</td>\n+            <td>${view}</td>\n+            <td>${contribution}</td>\n+            <td>${count}</td>\n+            <td>${reward || \"-\"}</td>\n           </tr>`;\n       }\n+\n+      if (result.task?.reward) {\n+        content += generateContributionRow(\"Issue\", \"Task\", 1, result.task.reward);\n+      }\n       if (sorted.issues.task) {\n-        content += `\n-          <tr>\n-            <td>Issue</td>\n-            <td>Specification</td>\n-            <td>1</td>\n-            <td>${sorted.issues.task.score?.reward || \"-\"}</td>\n-          </tr>`;\n+        content += generateContributionRow(\"Issue\", \"Specification\", 1, sorted.issues.task.score?.reward);\n       }\n       if (sorted.issues.comments.length) {\n-        content += `\n-          <tr>\n-            <td>Issue</td>\n-            <td>Comment</td>\n-            <td>${sorted.issues.comments.length}</td>\n-            <td>${sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0)) || \"-\"}</td>\n-          </tr>`;\n+        content += generateContributionRow(\n+          \"Issue\",\n+          \"Comment\",\n+          sorted.issues.comments.length,\n+          sorted.issues.comments.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+        );\n       }\n       if (sorted.reviews.length) {\n-        content += `\n-          <tr>\n-            <td>Review</td>\n-            <td>Comment</td>\n-            <td>${sorted.reviews.length}</td>\n-            <td>${sorted.reviews.reduce((acc, curr) => acc + (curr.score?.reward ?? 0), 0) || \"-\"}</td>\n-          </tr>`;\n+        content += generateContributionRow(\n+          \"Review\",\n+          \"Comment\",\n+          sorted.reviews.length,\n+          sorted.reviews.reduce((acc, curr) => acc.add(curr.score?.reward ?? 0), new Decimal(0))\n+        );\n       }\n       return content;\n     }"
+    },
+    {
+      "sha": "4e744da32f054f6285d23813a88f8af8d2c82123",
+      "filename": "src/parser/processor.ts",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/119c633bb499a97dfd272d9a3a836d1417f604bb/src%2Fparser%2Fprocessor.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/119c633bb499a97dfd272d9a3a836d1417f604bb/src%2Fparser%2Fprocessor.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fprocessor.ts?ref=119c633bb499a97dfd272d9a3a836d1417f604bb",
+      "patch": "@@ -6,7 +6,7 @@ import program from \"./command-line\";\n import { ContentEvaluatorModule } from \"./content-evaluator-module\";\n import { DataPurgeModule } from \"./data-purge-module\";\n import { FormattingEvaluatorModule } from \"./formatting-evaluator-module\";\n-import { GithubContentModule } from \"./github-comment-module\";\n+import { GithubCommentModule } from \"./github-comment-module\";\n import { PermitGenerationModule } from \"./permit-generation-module\";\n import { UserExtractorModule } from \"./user-extractor-module\";\n \n@@ -21,7 +21,7 @@ export class Processor {\n       .add(new FormattingEvaluatorModule())\n       .add(new ContentEvaluatorModule())\n       .add(new PermitGenerationModule())\n-      .add(new GithubContentModule());\n+      .add(new GithubCommentModule());\n   }\n \n   add(transformer: Module) {"
+    }
+  ]
+}

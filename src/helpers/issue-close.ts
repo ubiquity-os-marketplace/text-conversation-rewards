@@ -1,4 +1,8 @@
+import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import { ContextPlugin } from "../types/plugin-input";
+
+type TimelineEvent = RestEndpointMethodTypes["issues"]["listEventsForTimeline"]["response"]["data"][number];
+type IssueComment = RestEndpointMethodTypes["issues"]["listComments"]["response"]["data"][number];
 
 export async function manuallyCloseIssue(context: ContextPlugin<"issue_comment.created">) {
   const { payload, octokit, logger } = context;
@@ -26,12 +30,12 @@ export async function checkIfClosedByCommand(context: ContextPlugin<"issues.clos
   const issueNumber = payload.issue.number;
 
   try {
-    const timeline = await octokit.paginate(octokit.rest.issues.listEventsForTimeline, {
+    const timeline = (await octokit.paginate(octokit.rest.issues.listEventsForTimeline, {
       owner,
       repo,
       issue_number: issueNumber,
       per_page: 100,
-    });
+    })) as TimelineEvent[];
 
     const lastReopenedEvent = timeline
       .filter((event) => event.event === "reopened" && "created_at" in event)
@@ -55,12 +59,12 @@ export async function checkIfClosedByCommand(context: ContextPlugin<"issues.clos
       return false;
     }
 
-    const allComments = await octokit.paginate(octokit.rest.issues.listComments, {
+    const allComments = (await octokit.paginate(octokit.rest.issues.listComments, {
       owner,
       repo,
       issue_number: issueNumber,
       per_page: 100,
-    });
+    })) as IssueComment[];
 
     if (lastReopenedEvent && (!("created_at" in lastReopenedEvent) || !("created_at" in lastClosedEvent))) {
       return false;
