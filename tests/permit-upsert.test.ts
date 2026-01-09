@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import type { Database } from "../src/adapters/supabase/types/database";
 import type { ContextPlugin } from "../src/types/plugin-input";
 
