@@ -127,13 +127,9 @@ beforeAll(async () => {
   ({ Processor } = await import("../src/parser/processor"));
   ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };
-  // jest
-  //   .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
-  //   .mockImplementation(() => Promise.resolve(Infinity));
 
   jest
     .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")

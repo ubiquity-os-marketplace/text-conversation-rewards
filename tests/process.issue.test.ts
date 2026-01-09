@@ -34,9 +34,6 @@ process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
 
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 const web3Mocks = mockWeb3Module();
-const PLACEHOLDER_TIMESTAMP = "1970-01-01T00:00:00Z";
-const PLACEHOLDER_URL = "https://example.com";
-const PLACEHOLDER_CONTENT = "placeholder";
 
 function getErrorStatus(error: unknown): number | undefined {
   const status = (error as { status?: unknown }).status;
@@ -105,7 +102,6 @@ const ctx = {
 const PLACEHOLDER_TIMESTAMP = "2024-01-01T00:00:00.000Z";
 const PLACEHOLDER_URL = "https://example.test/resource";
 const PLACEHOLDER_CONTENT = "placeholder content";
-const OPENAI_SYSTEM_PROMPT = "system prompt";
 
 jest.mock("@supabase/supabase-js", () => {
   return {
@@ -202,7 +198,6 @@ beforeAll(async () => {
     };
   });
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };

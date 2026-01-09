@@ -72,6 +72,10 @@ jest.mock("@supabase/supabase-js", () => {
   };
 });
 
+function unsetEnvValue<TKey extends keyof ContextPlugin["env"]>(env: ContextPlugin["env"], key: TKey): void {
+  (env as Partial<ContextPlugin["env"]>)[key] = undefined;
+}
+
 const web3Mocks = mockWeb3Module("../../src/helpers/web3");
 
 function getResultOriginal() {

@@ -1,10 +1,10 @@
 // @ts-check
 import eslint from "@eslint/js";
-import { defineConfig } from "eslint/config";
-import tsEslint from "typescript-eslint";
+import noEmptyStrings from "@ubiquity-os/eslint-plugin-no-empty-strings";
 import checkFile from "eslint-plugin-check-file";
 import sonarjs from "eslint-plugin-sonarjs";
-import noEmptyStrings from "@ubiquity-os/eslint-plugin-no-empty-strings";
+import { defineConfig } from "eslint/config";
+import tsEslint from "typescript-eslint";
 
 export default defineConfig(
   {
@@ -99,6 +99,11 @@ export default defineConfig(
             regex: "^I[A-Z]",
             match: false,
           },
+        },
+        {
+          selector: "parameter",
+          format: ["strictCamelCase"],
+          leadingUnderscore: "allow",
         },
         {
           selector: "memberLike",

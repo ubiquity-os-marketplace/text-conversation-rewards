@@ -3,7 +3,6 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { http, passthrough } from "msw";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
@@ -179,7 +178,6 @@ beforeAll(async () => {
 
   server.listen();
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };

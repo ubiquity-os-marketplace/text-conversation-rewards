@@ -1,10 +1,10 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { http, HttpResponse } from "msw";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
-import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import "./helpers/permit-mock";
 
 beforeAll(() => server.listen());
@@ -136,13 +136,13 @@ describe("Action tests", () => {
       } as unknown as ContextPlugin)
     ).rejects.toEqual({
       logMessage: {
-        diff: '> [!CAUTION]\n> Could not fetch issue data: HttpError: Unknown error: {"error":"fail"}',
+        diff: "> [!CAUTION]\n> Could not fetch issue data: HttpError: server error",
         level: "error",
-        raw: 'Could not fetch issue data: HttpError: Unknown error: {"error":"fail"}',
+        raw: "Could not fetch issue data: HttpError: server error",
         type: "error",
       },
       metadata: {
-        caller: "IssueActivity.error",
+        caller: "IssueActivity.init",
       },
     });
   }, 60000);
