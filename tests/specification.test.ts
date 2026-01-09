@@ -20,7 +20,7 @@ const issueUrl = "https://github.com/ubiquity-os/conversation-rewards/issues/71"
 
 mockWeb3Module();
 
-jest.unstable_mockModule("@actions/github", () => ({
+jest.mock("@actions/github", () => ({
   default: {},
   context: {
     runId: "1",
@@ -33,7 +33,7 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@supabase/supabase-js", () => {
+jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
@@ -59,31 +59,24 @@ jest.unstable_mockModule("@supabase/supabase-js", () => {
   };
 });
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 
-jest.unstable_mockModule("../src/data-collection/collect-linked-pulls", () => ({
+jest.mock("../src/data-collection/collect-linked-pulls", () => ({
   collectLinkedPulls: jest.fn(() => []),
 }));
 
-beforeAll(() => {
-  server.listen();
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
-    return "https://rpc";
-  };
-});
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-const { IssueActivity } = await import("../src/issue-activity");
-const { ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module");
-const { DataPurgeModule } = await import("../src/parser/data-purge-module");
-const { FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module");
-const { PaymentModule } = await import("../src/parser/payment-module");
-const { Processor } = await import("../src/parser/processor");
-const { UserExtractorModule } = await import("../src/parser/user-extractor-module");
+/* eslint-disable @typescript-eslint/naming-convention */
+let IssueActivity: typeof import("../src/issue-activity").IssueActivity;
+let ContentEvaluatorModule: typeof import("../src/parser/content-evaluator-module").ContentEvaluatorModule;
+let DataPurgeModule: typeof import("../src/parser/data-purge-module").DataPurgeModule;
+let FormattingEvaluatorModule: typeof import("../src/parser/formatting-evaluator-module").FormattingEvaluatorModule;
+let PaymentModule: typeof import("../src/parser/payment-module").PaymentModule;
+let Processor: typeof import("../src/parser/processor").Processor;
+let UserExtractorModule: typeof import("../src/parser/user-extractor-module").UserExtractorModule;
+/* eslint-enable @typescript-eslint/naming-convention */
+let activity: InstanceType<typeof IssueActivity>;
 
 jest
   .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
@@ -143,6 +136,12 @@ describe("Content Evaluator Module Test", () => {
   } as unknown as ContextPlugin;
   const activity = new IssueActivity(ctx, issue);
 
+  activity = new IssueActivity(ctx, issue);
+});
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+describe("Content Evaluator Module Test", () => {
   beforeEach(async () => {
     drop(db);
     for (const table of Object.keys(dbSeed)) {
@@ -167,6 +166,7 @@ describe("Content Evaluator Module Test", () => {
         id: 12345678,
         node_id: "MDQ6VXNlcjEyMzQ1Njc4",
         avatar_url: "https://avatars.githubusercontent.com/u/12345678?v=4",
+        gravatar_id: null,
         url: "https://api.github.com/users/test-user",
         html_url: "https://github.com/test-user",
         type: "User",

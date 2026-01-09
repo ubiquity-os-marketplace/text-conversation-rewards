@@ -50,7 +50,11 @@
     "deepseek",
     "summarise",
     "basehead",
-    "millis"
+    "millis",
+    "dedupe",
+    "plpgsql",
+    "PGRST",
+    "Postgrest"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

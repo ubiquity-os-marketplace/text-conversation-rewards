@@ -1,0 +1,18 @@
+{
+  "name": ".prettierignore",
+  "path": ".prettierignore",
+  "sha": "9e873adf713ba51d4e41f87fffdb3c03dfe95b9d",
+  "size": 87,
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/.prettierignore?ref=development",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/development/.prettierignore",
+  "git_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/blobs/9e873adf713ba51d4e41f87fffdb3c03dfe95b9d",
+  "download_url": "https://raw.githubusercontent.com/ubiquity-os-marketplace/text-conversation-rewards/development/.prettierignore",
+  "type": "file",
+  "content": "b3V0cHV0Lmh0bWwKdGVzdHMvX19tb2Nrc19fLyoKZGlzdApzcmMvYWRhcHRl\ncnMvc3VwYWJhc2UvdHlwZXMvZGF0YWJhc2UudHMKQ0hBTkdFTE9HLm1k\n",
+  "encoding": "base64",
+  "_links": {
+    "self": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/.prettierignore?ref=development",
+    "git": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/blobs/9e873adf713ba51d4e41f87fffdb3c03dfe95b9d",
+    "html": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/development/.prettierignore"
+  }
+}

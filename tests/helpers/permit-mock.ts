@@ -8,7 +8,7 @@ import { Context } from "@ubiquity-os/permit-generation";
 
 process.env.X25519_PRIVATE_KEY ||= "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
 
-jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
+jest.mock("@ubiquity-os/permit-generation", () => {
   const originalModule: object = jest.requireActual("@ubiquity-os/permit-generation");
 
   return {
@@ -23,7 +23,7 @@ jest.unstable_mockModule("@ubiquity-os/permit-generation", () => {
         tokenAddress: string;
       }[]
     ) => generatePermitUrlPayload(context, permitRequests),
-    encodePermits: (obj: object) => customEncodePermits(obj),
+    encodePermits: (obj: Array<Record<string, unknown>>) => customEncodePermits(obj),
     createAdapters: jest.fn(() => {
       return {
         supabase: {

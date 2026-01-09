@@ -1,0 +1,101 @@
+{
+  "sha": "df2c34f172b9e4eb3cfd1a20dde7fcb142102053",
+  "node_id": "C_kwDOLUK0B9oAKGRmMmMzNGYxNzJiOWU0ZWIzY2ZkMWEyMGRkZTdmY2IxNDIxMDIwNTM",
+  "commit": {
+    "author": {
+      "name": "gentlementlegen",
+      "email": "user@example.com",
+      "date": "2024-04-15T04:18:55Z"
+    },
+    "committer": {
+      "name": "gentlementlegen",
+      "email": "user@example.com",
+      "date": "2024-04-15T04:18:55Z"
+    },
+    "message": "chore: comment incentive rows (WIP)",
+    "tree": {
+      "sha": "d0bbf752f5498467248226cf3e118d5ae8e202c6",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/trees/d0bbf752f5498467248226cf3e118d5ae8e202c6"
+    },
+    "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/git/commits/df2c34f172b9e4eb3cfd1a20dde7fcb142102053",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/df2c34f172b9e4eb3cfd1a20dde7fcb142102053",
+  "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/df2c34f172b9e4eb3cfd1a20dde7fcb142102053",
+  "comments_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/df2c34f172b9e4eb3cfd1a20dde7fcb142102053/comments",
+  "author": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "gentlementlegen",
+    "id": 9807008,
+    "node_id": "MDQ6VXNlcjk4MDcwMDg=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/9807008?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gentlementlegen",
+    "html_url": "https://github.com/gentlementlegen",
+    "followers_url": "https://api.github.com/users/gentlementlegen/followers",
+    "following_url": "https://api.github.com/users/gentlementlegen/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gentlementlegen/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gentlementlegen/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gentlementlegen/subscriptions",
+    "organizations_url": "https://api.github.com/users/gentlementlegen/orgs",
+    "repos_url": "https://api.github.com/users/gentlementlegen/repos",
+    "events_url": "https://api.github.com/users/gentlementlegen/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gentlementlegen/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "8dea21d6eb08cbe6c0e80ec8744ab511090e003c",
+      "url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/commits/8dea21d6eb08cbe6c0e80ec8744ab511090e003c",
+      "html_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8dea21d6eb08cbe6c0e80ec8744ab511090e003c"
+    }
+  ],
+  "stats": {
+    "total": 36,
+    "additions": 35,
+    "deletions": 1
+  },
+  "files": [
+    {
+      "sha": "b292c31e726a0cb6a9540c734366ed84b6ee79b9",
+      "filename": "src/parser/github-comment-module.ts",
+      "status": "modified",
+      "additions": 35,
+      "deletions": 1,
+      "changes": 36,
+      "blob_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/blob/df2c34f172b9e4eb3cfd1a20dde7fcb142102053/src%2Fparser%2Fgithub-comment-module.ts",
+      "raw_url": "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/raw/df2c34f172b9e4eb3cfd1a20dde7fcb142102053/src%2Fparser%2Fgithub-comment-module.ts",
+      "contents_url": "https://api.github.com/repos/ubiquity-os-marketplace/text-conversation-rewards/contents/src%2Fparser%2Fgithub-comment-module.ts?ref=df2c34f172b9e4eb3cfd1a20dde7fcb142102053",
+      "patch": "@@ -1,6 +1,7 @@\n import { Value } from \"@sinclair/typebox/value\";\n import Decimal from \"decimal.js\";\n import * as fs from \"fs\";\n+import { stringify } from \"yaml\";\n import configuration from \"../configuration/config-reader\";\n import githubCommentConfig, { GithubCommentConfiguration } from \"../configuration/github-comment-config\";\n import { CommentType, IssueActivity } from \"../issue-activity\";\n@@ -15,6 +16,9 @@ export class GithubContentModule implements Module {\n   private readonly _configuration: GithubCommentConfiguration = configuration.githubComment;\n \n   transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {\n+    if (this._configuration.debug) {\n+      fs.writeFileSync(\"./output.html\", \"\");\n+    }\n     for (const [key, value] of Object.entries(result)) {\n       result[key].evaluationCommentHtml = this._generateHtml(key, value);\n       if (this._configuration.debug) {\n@@ -105,7 +109,37 @@ export class GithubContentModule implements Module {\n     }\n \n     function createIncentiveRows() {\n-      return \"\";\n+      let content = \"\";\n+      if (!sorted) {\n+        return \"\";\n+      }\n+      for (const issueComment of sorted.issues.comments) {\n+        content += `\n+          <tr>\n+            <td>\n+              <h6>\n+                <a href=\"${issueComment.url}\" target=\"_blank\" rel=\"noopener\">${issueComment.content}</a>\n+              </h6>\n+            </td>\n+            <td>\n+            <details>\n+              <summary>\n+                ${Object.values(issueComment.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc.add(curr.score * curr.count);\n+                }, new Decimal(0))}\n+              </summary>\n+              <pre>\n+                ${Object.entries(issueComment.score?.formatting?.content || {}).reduce((acc, curr) => {\n+                  return acc + stringify(curr);\n+                }, \"\")}\n+              </pre>\n+             </details>\n+            </td>\n+            <td>${issueComment.score?.relevance ?? \"-\"}</td>\n+            <td>${issueComment.score?.reward ?? \"-\"}</td>\n+          </tr>`;\n+      }\n+      return content;\n     }\n \n     return `"
+    }
+  ]
+}
