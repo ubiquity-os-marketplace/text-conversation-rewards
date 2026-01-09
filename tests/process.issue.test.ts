@@ -30,6 +30,9 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
 
+const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
+
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 const web3Mocks = mockWeb3Module();
 
@@ -74,6 +77,9 @@ const ctx = {
   },
   adapters: {
     supabase: {
+      location: {
+        getOrCreateIssueLocation: jest.fn(async () => 1),
+      },
       wallet: {
         getWalletByUserId: jest.fn(async () => "0x1"),
       },
@@ -98,6 +104,7 @@ const OPENAI_SYSTEM_PROMPT = "system prompt";
 jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
+      rpc: jest.fn(async () => ({ error: null })),
       from: jest.fn(() => ({
         insert: jest.fn(() => ({})),
         select: jest.fn(() => ({
@@ -402,6 +409,9 @@ describe("Modules tests", () => {
       },
       adapters: {
         supabase: {
+          location: {
+            getOrCreateIssueLocation: jest.fn(async () => 1),
+          },
           wallet: {
             getWalletByUserId: jest.fn(async () => "0x1"),
           },
@@ -682,6 +692,9 @@ describe("Modules tests", () => {
       adapters: {
         ...ctx.adapters,
         supabase: {
+          location: {
+            getOrCreateIssueLocation: jest.fn(async () => 1),
+          },
           wallet: {
             getWalletByUserId: jest.fn(async (userId: number) => {
               if (userId === githubCommentResults["whilefoo"].userId) {
@@ -716,6 +729,9 @@ describe("Modules tests", () => {
       adapters: {
         ...ctx.adapters,
         supabase: {
+          location: {
+            getOrCreateIssueLocation: jest.fn(async () => 1),
+          },
           wallet: {
             getWalletByUserId: jest.fn(async (userId: number) => {
               if (userId === githubCommentResults["whilefoo"].userId) {

@@ -8,6 +8,7 @@ import { CommentKind } from "../../src/configuration/comment-types";
 import { IssueActivity } from "../../src/issue-activity";
 import { ReviewIncentivizerModule } from "../../src/parser/review-incentivizer-module";
 import { ContextPlugin, RewardSettings } from "../../src/types/plugin-input";
+import { Result } from "../../src/types/results";
 import { db } from "../__mocks__/db";
 import dbSeed from "../__mocks__/db-seed.json";
 import { server } from "../__mocks__/node";
@@ -25,6 +26,8 @@ const DEFAULT_TIMESTAMP = "2024-01-01T00:00:00.000Z";
 const DEFAULT_URL = "https://example.test/issues/1";
 const NO_MARKER_BODY = "no payout markers";
 const EMPTY_STRING = "";
+const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
 const ctx = {
   eventName: "issues.closed",
   payload: {
@@ -340,7 +343,12 @@ describe("payment-module.ts", () => {
         amount: "0",
       };
 
-      await paymentModule._savePermitsToDatabase(1, { issueId: 99, issueUrl: "https://example.com" }, [
+      const rewardResult: Result[string] = {
+        userId: 1,
+        total: 0,
+      };
+
+      await paymentModule._savePermitsToDatabase(rewardResult, { issueId: 99, issueUrl: "https://example.com" }, [
         zeroAmountPermit,
       ]);
 
@@ -360,6 +368,8 @@ describe("payment-module.ts", () => {
       }
     });
     it("Should set correct value for _automaticTransferMode", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
+
       ctx.config.incentives.payment = { automaticTransferMode: false };
       let paymentModule = new PaymentModule(ctx);
       expect(paymentModule._autoTransferMode).toEqual(false);
@@ -526,6 +536,7 @@ describe("payment-module.ts", () => {
     });
 
     it("Should reject if the funding wallet has insufficient reward tokens", async () => {
+      const { PaymentModule } = await import("../../src/parser/payment-module");
       web3Mocks.getEvmWallet.mockImplementationOnce(() => ({
         address: "0xOverriddenAddress",
         getBalance: jest.fn().mockReturnValue(parseUnits("0.004", 18)),
