@@ -78,63 +78,79 @@ let UserExtractorModule: typeof import("../src/parser/user-extractor-module").Us
 /* eslint-enable @typescript-eslint/naming-convention */
 let activity: InstanceType<typeof IssueActivity>;
 
-jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specificationBody, userId, comments, allComments, prComments) => {
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        prComments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.7;
-        });
-        return relevance;
-      })()
-    );
-  });
+const issue = parseGitHubUrl(issueUrl);
+const ctx = {
+  eventName: "issues.closed",
+  payload: {
+    issue: {
+      html_url: issueUrl,
+      number: 71,
+      state_reason: "completed",
+      assignees: [
+        {
+          id: 87654321,
+          login: "developer-1",
+        },
+      ],
+      user: {
+        login: "test-user",
+      },
+    },
+    repository: {
+      name: "conversation-rewards",
+      owner: {
+        login: "ubiquity-os",
+        id: 76412717,
+      },
+    },
+  },
+  adapters: {
+    supabase: {
+      wallet: {
+        getWalletByUserId: jest.fn(async () => "0x1"),
+      },
+    },
+  },
+  config: cfg,
+  logger: new Logs("debug"),
+  octokit: new Octokit(),
+  env: process.env,
+} as unknown as ContextPlugin;
 
-describe("Content Evaluator Module Test", () => {
-  const issue = parseGitHubUrl(issueUrl);
-  const ctx = {
-    eventName: "issues.closed",
-    payload: {
-      issue: {
-        html_url: issueUrl,
-        number: 71,
-        state_reason: "completed",
-        assignees: [
-          {
-            id: 87654321,
-            login: "developer-1",
-          },
-        ],
-        user: {
-          login: "test-user",
-        },
-      },
-      repository: {
-        name: "conversation-rewards",
-        owner: {
-          login: "ubiquity-os",
-          id: 76412717,
-        },
-      },
-    },
-    adapters: {
-      supabase: {
-        wallet: {
-          getWalletByUserId: jest.fn(async () => "0x1"),
-        },
-      },
-    },
-    config: cfg,
-    logger: new Logs("debug"),
-    octokit: new Octokit(),
-    env: process.env,
-  } as unknown as ContextPlugin;
-  const activity = new IssueActivity(ctx, issue);
+beforeAll(async () => {
+  server.listen();
+  ({ IssueActivity } = await import("../src/issue-activity"));
+  ({ ContentEvaluatorModule } = await import("../src/parser/content-evaluator-module"));
+  ({ DataPurgeModule } = await import("../src/parser/data-purge-module"));
+  ({ FormattingEvaluatorModule } = await import("../src/parser/formatting-evaluator-module"));
+  ({ PaymentModule } = await import("../src/parser/payment-module"));
+  ({ Processor } = await import("../src/parser/processor"));
+  ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
+    return "https://rpc";
+  };
+  // jest
+  //   .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
+  //   .mockImplementation(() => Promise.resolve(Infinity));
+
+  jest
+    .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+    .mockImplementation((specificationBody, userId, comments, allComments, prComments) => {
+      return Promise.resolve(
+        (() => {
+          const relevance: { [k: string]: number } = {};
+          comments.forEach((comment) => {
+            relevance[`${comment.id}`] = 0.8;
+          });
+          prComments.forEach((comment) => {
+            relevance[`${comment.id}`] = 0.7;
+          });
+          return relevance;
+        })()
+      );
+    });
 
   activity = new IssueActivity(ctx, issue);
 });
