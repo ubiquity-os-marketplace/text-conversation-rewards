@@ -156,9 +156,6 @@ export const handlers = [
   http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/comments", () => {
     return HttpResponse.json(issue5CommentsGet);
   }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/reactions", () => {
-    return HttpResponse.json([]);
-  }),
   http.get(
     "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/:comment_id/reactions",
     ({ params }) => {
