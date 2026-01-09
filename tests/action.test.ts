@@ -142,7 +142,7 @@ describe("Action tests", () => {
         type: "error",
       },
       metadata: {
-        caller: "IssueActivity.init",
+        caller: "IssueActivity.error",
       },
     });
   }, 60000);
