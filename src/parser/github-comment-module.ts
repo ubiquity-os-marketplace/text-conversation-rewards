@@ -232,7 +232,7 @@ export class GithubCommentModule extends BaseModule {
           });
         }
       } else {
-        const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
+        const errorLog = this.context.logger.warn("Issue is non-collaborative. Skipping permit generation.");
         await this.context.commentHandler.postComment(this.context, errorLog);
       }
     } catch (e) {

@@ -53,6 +53,7 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
@@ -71,10 +72,6 @@ jest.mock("@supabase/supabase-js", () => {
     createClient: jest.fn(),
   };
 });
-
-function unsetEnvValue<TKey extends keyof ContextPlugin["env"]>(env: ContextPlugin["env"], key: TKey): void {
-  (env as Partial<ContextPlugin["env"]>)[key] = undefined;
-}
 
 const web3Mocks = mockWeb3Module("../../src/helpers/web3");
 
@@ -209,7 +206,8 @@ describe("payment-module.ts", () => {
     });
 
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
-      unsetEnvValue(ctx.env, "PERMIT_TREASURY_GITHUB_USERNAME");
+      process.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
+      ctx.env.PERMIT_TREASURY_GITHUB_USERNAME = EMPTY_STRING;
       const paymentModule = new PaymentModule(ctx);
       const spyConsoleLog = jest.spyOn(console, "info");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
@@ -260,7 +258,7 @@ describe("payment-module.ts", () => {
 
   describe("_getBeneficiaries()", () => {
     beforeEach(() => {
-      unsetEnvValue(ctx.env, "PERMIT_FEE_RATE");
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -360,7 +358,7 @@ describe("payment-module.ts", () => {
 
   describe("_automaticTransferMode", () => {
     beforeEach(() => {
-      unsetEnvValue(ctx.env, "PERMIT_FEE_RATE");
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -394,7 +392,7 @@ describe("payment-module.ts", () => {
   });
   describe("_getPayoutMode()", () => {
     beforeEach(() => {
-      unsetEnvValue(ctx.env, "PERMIT_FEE_RATE");
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       drop(db);
       for (const table of Object.keys(dbSeed)) {
         const tableName = table as keyof typeof dbSeed;
@@ -465,7 +463,7 @@ describe("payment-module.ts", () => {
   const fundingWalletPrivateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
   describe("_canTransferDirectly()", () => {
     beforeEach(() => {
-      unsetEnvValue(ctx.env, "PERMIT_FEE_RATE");
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       ctx.env.X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
     });
 

@@ -12,6 +12,7 @@ const envConfigSchema = Type.Object({
   PERMIT_TREASURY_GITHUB_USERNAME: Type.String(),
   PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: Type.String(),
   KERNEL_PUBLIC_KEY: Type.Optional(Type.String()),
+  UOS_AI_TOKEN: Type.Optional(Type.String()),
   LOG_LEVEL: Type.Enum(LOG_LEVEL, { default: LOG_LEVEL.INFO }),
 });
 

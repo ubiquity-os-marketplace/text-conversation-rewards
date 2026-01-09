@@ -1,0 +1,87 @@
+import ms from "ms";
+import { GitHubIssue } from "../github-types";
+import { IssueActivity } from "../issue-activity";
+import { GithubCommentModule } from "../parser/github-comment-module";
+import { PaymentModule } from "../parser/payment-module";
+import { Processor } from "../parser/processor";
+import { UserExtractorModule } from "../parser/user-extractor-module";
+import { BaseModule } from "../types/module";
+import { ContextPlugin } from "../types/plugin-input";
+import { Result } from "../types/results";
+import { getTaskReward } from "./label-price-extractor";
+
+class CloseRewardModule extends BaseModule {
+  get enabled(): boolean {
+    return true;
+  }
+
+  transform(data: Readonly<IssueActivity>, result: Result): Promise<Result> {
+    const closingUser = this.context.payload.sender?.login;
+
+    if (closingUser) {
+      const issueUrl =
+        data.self?.html_url ?? ("issue" in this.context.payload ? this.context.payload.issue?.html_url : undefined);
+      if (!issueUrl) {
+        this.context.logger.warn("Missing issue URL for closing reward; skipping reward entry.");
+        return Promise.resolve(result);
+      }
+      result = {
+        [closingUser]: {
+          task: {
+            reward: this.context.config.incentives.closeTaskReward.rewardAmount,
+            multiplier: 1,
+            timestamp: new Date().toISOString(),
+            url: issueUrl,
+            category: "stale",
+          },
+          total: 0,
+          userId: this.context.payload.sender?.id ?? 0,
+        },
+      };
+    }
+    return Promise.resolve(result);
+  }
+}
+
+class CustomProcessor extends Processor {
+  async run(data: Readonly<IssueActivity>): Promise<Result> {
+    for (const transformer of this._transformers) {
+      if (transformer.enabled) {
+        this._result = await transformer.transform(data, this._result);
+      }
+      for (const username of Object.keys(this._result)) {
+        this._result[username].total = this._sumRewards(this._result[username]);
+      }
+    }
+    return this._result;
+  }
+}
+
+export async function tryCreatingClosingReward(context: ContextPlugin<"issues.closed">, activity: IssueActivity) {
+  const { logger, config } = context;
+
+  const taskReward = await getTaskReward(context, context.payload.issue as GitHubIssue);
+  const closingDate = context.payload.issue.closed_at;
+  const creationDate = context.payload.issue.created_at;
+  if (!closingDate || !creationDate) {
+    return logger.warn("The issue was closed but the closing date or creation date is missing, no rewards can be sent.")
+      .logMessage.raw;
+  }
+  const dateDiff = new Date(closingDate).getTime() - new Date(creationDate).getTime();
+  if (taskReward > 0 && dateDiff >= ms(config.incentives.closeTaskReward.stalenessDuration as ms.StringValue)) {
+    const processor = new CustomProcessor(context, [
+      new UserExtractorModule(context),
+      new CloseRewardModule(context),
+      new PaymentModule(context),
+      new GithubCommentModule(context),
+    ]);
+    await activity.init();
+    const result = await processor.run(activity);
+    return JSON.stringify(result);
+  }
+  return logger.info("Issue does not meet criteria for closing reward. Skipping.", {
+    stalenessDuration: config.incentives.closeTaskReward.stalenessDuration,
+    dateDiff: `${dateDiff / (1000 * 60 * 60 * 24)} days`,
+    taskReward,
+  }).logMessage.raw;
+}

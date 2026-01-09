@@ -133,7 +133,8 @@ export class FormattingEvaluatorModule extends BaseModule {
       issue_number,
     });
 
-    const userEdits = data.repository.issue.userContentEdits.nodes.sort((a: IssueEditNode, b: IssueEditNode) => {
+    const userEdits: IssueEditNode[] = data.repository.issue.userContentEdits.nodes;
+    userEdits.sort((a: IssueEditNode, b: IssueEditNode) => {
       return new Date(a.editedAt).getTime() - new Date(b.editedAt).getTime();
     });
 

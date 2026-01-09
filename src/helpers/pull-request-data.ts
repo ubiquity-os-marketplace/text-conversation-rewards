@@ -40,13 +40,15 @@ export class PullRequestData {
         pull_number: this._pullNumber,
       }
     );
-    const commitEdges: CommitEdge[] = commitsData?.repository?.pullRequest?.commits?.edges || [];
+    const commitEdges: CommitEdge[] = commitsData?.repository?.pullRequest?.commits?.edges ?? [];
     this._pullCommits = commitEdges
-      .map((edge: CommitEdge) => ({
-        sha: edge.node.commit.oid,
-        parentCount: edge.node.commit.parents.totalCount,
-        parents: edge.node.commit.parents.nodes?.map((p: CommitParent) => ({ sha: p.oid })),
-      }))
+      .map(
+        (edge: CommitEdge): LightweightCommit => ({
+          sha: edge.node.commit.oid,
+          parentCount: edge.node.commit.parents.totalCount,
+          parents: edge.node.commit.parents.nodes?.map((parent: CommitParent) => ({ sha: parent.oid })),
+        })
+      )
       .filter((commit: LightweightCommit) => commit.parentCount < 2);
 
     for (const commit of this._pullCommits) {

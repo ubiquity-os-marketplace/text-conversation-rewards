@@ -59,7 +59,7 @@ export class IssueActivity {
 
   async init() {
     if (this.self) {
-      this._context.logger.info("The Issue Activity is already initialized.");
+      this._context.logger.debug("The Issue Activity is already initialized.");
       return;
     }
     try {
@@ -96,7 +96,7 @@ export class IssueActivity {
   }
 
   private async _getLinkedPullRequests(): Promise<PullRequest[]> {
-    this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
+    this._context.logger.info("Trying to fetch linked pull-requests for", this._issueParams);
 
     const pulls: string[] = [];
     if (isPullRequestEvent(this._context)) {
@@ -129,13 +129,13 @@ export class IssueActivity {
         .map((pullRequest) => pullRequest.url);
       pulls.push(...linkedPullUrls);
     }
-    this._context.logger.debug(`Collected linked pull-requests: ${pulls.join(", ")}`);
+    this._context.logger.info(`Collected linked pull-requests: ${pulls.join(", ")}`);
 
     const promises = pulls
       .map(async (pull) => {
         const { owner, repo, issue_number } = parseGitHubUrl(pull);
         if (!owner) {
-          this._context.logger.error(`No repository found.`, { pull });
+          this._context.logger.warn(`No repository found.`, { pull });
           return null;
         } else {
           const pullParams = {

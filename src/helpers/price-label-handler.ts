@@ -17,10 +17,18 @@ export async function handlePriceLabelValidation(
   const hasPriceLabel = getSortedPrices(activity.self?.labels).length > 0;
 
   if (isPriceLabelRequired && !hasPriceLabel && !isPullRequest(context)) {
-    const issue = "issue" in payload ? payload.issue : payload.pull_request;
-    await logInvalidIssue(logger, issue.html_url);
-    logger.error("No price label has been set. Skipping permit generation.");
-    return false;
+    if (isPriceLabelRequired === "auto") {
+      await tryAutoFetchingPrice(logger, activity);
+      if (!getSortedPrices(activity.self?.labels).length) {
+        logger.warn("Proceeding without a price label after auto-fetch attempt failed to add one.");
+      }
+      return true;
+    } else {
+      const issue = "issue" in payload ? payload.issue : payload.pull_request;
+      await logInvalidIssue(logger, issue.html_url);
+      logger.error("No price label has been set. Skipping permit generation.");
+      return false;
+    }
   }
   return true;
 }

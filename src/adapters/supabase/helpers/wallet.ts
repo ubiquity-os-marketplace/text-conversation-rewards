@@ -15,7 +15,7 @@ export class Wallet extends Super {
       throw error;
     }
 
-    this.context.logger.info("Successfully fetched wallet", { userId, address: data?.wallets?.address });
+    this.context.logger.ok("Successfully fetched wallet", { userId, address: data?.wallets?.address });
     return data?.wallets?.address ?? null;
   }
 }
