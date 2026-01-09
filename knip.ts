@@ -2,7 +2,7 @@ import type { KnipConfig } from "knip";
 
 const config: KnipConfig = {
   entry: ["src/index.ts", "scripts/**/*.ts"],
-  project: ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"],
+  project: ["src/**/*.{js,ts}", "!src/web/dist/**"],
   ignore: ["src/data-collection/examples/*.ts", "src/configuration/common-config-type.ts", "dist/**"],
   ignoreExportsUsedInFile: true,
   ignoreDependencies: ["@uniswap/permit2-sdk", "@octokit/plugin-paginate-graphql"],
