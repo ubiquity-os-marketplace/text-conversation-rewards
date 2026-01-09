@@ -6,6 +6,7 @@ import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
 import { checkLlmRetryableState, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
@@ -563,12 +564,30 @@ export class ContentEvaluatorModule extends BaseModule {
         throw this.context.logger.error("Unexpected response format: Expected JSON string in message content");
       }
 
-      // Strip any potential Markdown formatting like ```json or ``` from the response, because some LLMs love do to so
-      const rawResponse = answer.replace(/^.*?{/, "{").replace(/}.*$/, "}");
+      const trimmedAnswer = answer.trim();
 
-      this.context.logger.debug(`LLM raw response (using max_tokens: ${maxTokens}): ${rawResponse}`);
+      let parsedJson: unknown;
+      const parseErrors: unknown[] = [];
 
-      const relevances = Value.Decode(openAiRelevanceResponseSchema, JSON.parse(rawResponse));
+      try {
+        parsedJson = JSON.parse(trimmedAnswer);
+      } catch (e) {
+        parseErrors.push(e);
+        try {
+          const extracted = extractFirstJsonObject(trimmedAnswer);
+          this.context.logger.debug(`LLM extracted JSON (using max_tokens: ${maxTokens}): ${extracted}`);
+          parsedJson = JSON.parse(extracted);
+        } catch (e2) {
+          parseErrors.push(e2);
+          throw this.context.logger.error("Failed to parse a JSON object from the LLM response", {
+            maxTokens,
+            parseErrors,
+            answerPreview: trimmedAnswer.slice(0, 500),
+          });
+        }
+      }
+
+      const relevances = Value.Decode(openAiRelevanceResponseSchema, parsedJson);
       this.context.logger.debug(`Relevances by the LLM: ${JSON.stringify(relevances)}`);
       return relevances;
     } catch (e) {
