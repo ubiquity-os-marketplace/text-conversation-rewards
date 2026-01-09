@@ -36,7 +36,6 @@ import issue100Get from "./routes/issue-100-get.json";
 import issue100TimelineGet from "./routes/issue-100-timeline-get.json";
 import issue12EventsGet from "./routes/issue-12-events-get.json";
 import issue12Get from "./routes/issue-12-get.json";
-import issue12TimelineGet from "./routes/issue-12-timeline-get.json";
 import issue13CommentsGet from "./routes/issue-13-comments-get.json";
 import issue13EventsGet from "./routes/issue-13-events-get.json";
 import issue13Get from "./routes/issue-13-get.json";

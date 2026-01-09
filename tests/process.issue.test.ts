@@ -202,7 +202,6 @@ beforeAll(async () => {
     };
   });
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };

@@ -1,4 +1,3 @@
- 
 import { afterAll, afterEach, beforeAll, expect, it, jest } from "@jest/globals";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { ContextPlugin } from "../src/types/plugin-input";

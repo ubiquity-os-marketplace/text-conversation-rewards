@@ -93,7 +93,7 @@ const ctx = {
   },
 } as unknown as ContextPlugin;
 
-const createEqChain = () => {
+function createEqChain() {
   const chain = {
     eq: jest.fn(() => chain),
     single: jest.fn(() => ({
@@ -103,7 +103,7 @@ const createEqChain = () => {
     })),
   };
   return chain;
-};
+}
 
 jest.mock("@supabase/supabase-js", () => {
   return {
@@ -179,7 +179,6 @@ beforeAll(async () => {
 
   server.listen();
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };

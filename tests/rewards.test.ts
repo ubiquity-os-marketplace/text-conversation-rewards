@@ -6,8 +6,8 @@ import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
-import { parseGitHubUrl } from "../src/start";
 import { GitHubIssue } from "../src/github-types";
+import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import { db } from "./__mocks__/db";
@@ -137,6 +137,9 @@ const ctx = {
   },
   adapters: {
     supabase: {
+      location: {
+        getOrCreateIssueLocation: jest.fn(async () => 1),
+      },
       wallet: {
         getWalletByUserId: jest.fn(async () => "0x1"),
       },
@@ -161,7 +164,6 @@ beforeAll(async () => {
   ({ UserExtractorModule } = await import("../src/parser/user-extractor-module"));
   ({ ExternalContentProcessor } = await import("../src/parser/external-content-module"));
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };
@@ -179,10 +181,6 @@ beforeAll(async () => {
         })()
       );
     });
-
-  jest
-    .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
-    .mockImplementation(() => Promise.resolve(Infinity));
 
   activity = new IssueActivity(ctx, issue);
 });
