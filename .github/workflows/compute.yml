@@ -38,7 +38,6 @@ jobs:
       X25519_PRIVATE_KEY: ${{ secrets.X25519_PRIVATE_KEY }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       NFT_MINTER_PRIVATE_KEY: ${{ secrets.NFT_MINTER_PRIVATE_KEY }}
       NFT_CONTRACT_ADDRESS: ${{ secrets.NFT_CONTRACT_ADDRESS }}
       PERMIT_FEE_RATE: ${{ secrets.PERMIT_FEE_RATE }}
