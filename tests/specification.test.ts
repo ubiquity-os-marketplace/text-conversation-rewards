@@ -131,9 +131,9 @@ beforeAll(async () => {
   PaymentModule.prototype._getNetworkExplorer = (_networkId: number) => {
     return "https://rpc";
   };
-  jest
-    .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
-    .mockImplementation(() => Promise.resolve(Infinity));
+  // jest
+  //   .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
+  //   .mockImplementation(() => Promise.resolve(Infinity));
 
   jest
     .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")

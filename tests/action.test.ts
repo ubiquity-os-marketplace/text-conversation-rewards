@@ -98,7 +98,7 @@ describe("Action tests", () => {
       "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/comments",
       "https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/timeline",
     ].forEach((url) => {
-      server.use(http.get(url, () => HttpResponse.json({ error: "fail" }, { status: 500 })));
+      server.use(http.get(url, () => HttpResponse.json({ message: "server error" }, { status: 500 })));
     });
     const { run } = await import("../src/run");
     await expect(

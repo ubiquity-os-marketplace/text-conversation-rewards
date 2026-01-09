@@ -6,8 +6,8 @@ import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, HttpResponse } from "msw";
-import { GitHubIssue } from "../src/github-types";
 import { parseGitHubUrl } from "../src/start";
+import { GitHubIssue } from "../src/github-types";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
 import { db } from "./__mocks__/db";
@@ -18,6 +18,9 @@ import rewardSplitResult from "./__mocks__/results/reward-split.json";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
+
+const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 

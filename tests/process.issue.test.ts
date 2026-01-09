@@ -5,7 +5,6 @@ import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
-import OpenAI from "openai";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
@@ -30,8 +29,16 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
 
+const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
+process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
+
 const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/conversation-rewards/issues/5";
 const web3Mocks = mockWeb3Module();
+
+function getErrorStatus(error: unknown): number | undefined {
+  const status = (error as { status?: unknown }).status;
+  return typeof status === "number" ? status : undefined;
+}
 
 jest.mock("@actions/github", () => ({
   default: {},
@@ -74,6 +81,9 @@ const ctx = {
   },
   adapters: {
     supabase: {
+      location: {
+        getOrCreateIssueLocation: jest.fn(async () => 1),
+      },
       wallet: {
         getWalletByUserId: jest.fn(async () => "0x1"),
       },
@@ -93,11 +103,11 @@ const ctx = {
 const PLACEHOLDER_TIMESTAMP = "2024-01-01T00:00:00.000Z";
 const PLACEHOLDER_URL = "https://example.test/resource";
 const PLACEHOLDER_CONTENT = "placeholder content";
-const OPENAI_SYSTEM_PROMPT = "system prompt";
 
 jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
+      rpc: jest.fn(async () => ({ error: null })),
       from: jest.fn(() => ({
         insert: jest.fn(() => ({})),
         select: jest.fn(() => ({
@@ -402,6 +412,9 @@ describe("Modules tests", () => {
       },
       adapters: {
         supabase: {
+          location: {
+            getOrCreateIssueLocation: jest.fn(async () => 1),
+          },
           wallet: {
             getWalletByUserId: jest.fn(async () => "0x1"),
           },
@@ -682,6 +695,9 @@ describe("Modules tests", () => {
       adapters: {
         ...ctx.adapters,
         supabase: {
+          location: {
+            getOrCreateIssueLocation: jest.fn(async () => 1),
+          },
           wallet: {
             getWalletByUserId: jest.fn(async (userId: number) => {
               if (userId === githubCommentResults["whilefoo"].userId) {
@@ -716,6 +732,9 @@ describe("Modules tests", () => {
       adapters: {
         ...ctx.adapters,
         supabase: {
+          location: {
+            getOrCreateIssueLocation: jest.fn(async () => 1),
+          },
           wallet: {
             getWalletByUserId: jest.fn(async (userId: number) => {
               if (userId === githubCommentResults["whilefoo"].userId) {
@@ -746,91 +765,66 @@ describe("Modules tests", () => {
 });
 
 describe("Retry", () => {
-  const openAi = new OpenAI({ apiKey: process.env.OPENROUTER_API_KEY, maxRetries: 0 });
-
-  async function testFunction() {
-    return openAi.chat.completions.create({
-      model: "gpt-4o-2024-08-06",
-      messages: [
-        {
-          role: "system",
-          content: OPENAI_SYSTEM_PROMPT,
-        },
-      ],
-    });
-  }
-
   it("should return correct value", async () => {
     server.use(
-      http.post("https://api.openai.com/v1/*", () => {
-        return HttpResponse.json({ choices: [{ text: "Hello" }] });
+      http.post("https://api.openai.com/v1/chat/completions", () => {
+        return HttpResponse.json({ choices: [{ message: { content: "Hello" } }] });
       })
     );
 
-    const res = await retry(testFunction, { maxRetries: 3 });
-    expect(res).toMatchObject({ choices: [{ text: "Hello" }] });
+    const res = (await retry(
+      async () => {
+        return "Hello";
+      },
+      { maxRetries: 3 }
+    )) as string;
+    expect(res).toBe("Hello");
   });
 
   it("should retry on any error", async () => {
     let called = 0;
-    server.use(
-      http.post("https://api.openai.com/v1/*", () => {
+    const res = await retry(
+      async () => {
         called += 1;
-        if (called === 1) {
-          return HttpResponse.text("error", { status: 500 });
-        } else if (called === 2) {
-          return HttpResponse.text("rate limited", { status: 429 });
-        } else {
-          return HttpResponse.json({ choices: [{ text: "Hello" }] });
-        }
-      })
+        if (called < 3) throw new Error("boom");
+        return "Hello";
+      },
+      { maxRetries: 3, isErrorRetryable: () => 0 }
     );
-
-    const res = await retry(testFunction, { maxRetries: 3 });
-    expect(res).toMatchObject({ choices: [{ text: "Hello" }] });
+    expect(res).toBe("Hello");
   });
 
   it("should throw error if maxRetries is reached", async () => {
-    server.use(
-      http.post("https://api.openai.com/v1/*", () => {
-        return HttpResponse.text("error", { status: 500 });
-      })
-    );
-
     await expect(
-      retry(testFunction, {
-        maxRetries: 3,
-        isErrorRetryable: (err) => {
-          return err instanceof OpenAI.APIError && err.status === 500;
+      retry(
+        async () => {
+          throw Object.assign(new Error("LLM API error: 500"), { status: 500 });
         },
-      })
+        { maxRetries: 3, isErrorRetryable: () => 0 }
+      )
     ).rejects.toMatchObject({ status: 500 });
   });
 
   it("should retry on 500 but fail on 429", async () => {
     let called = 0;
-    server.use(
-      http.post("https://api.openai.com/v1/*", () => {
-        called += 1;
-        if (called === 1) {
-          return HttpResponse.text("error", { status: 500 });
-        } else if (called === 2) {
-          return HttpResponse.text("rate limited", { status: 429 });
-        } else {
-          return HttpResponse.json({ choices: [{ text: "Hello" }] });
-        }
-      })
-    );
     const onErrorHandler = jest.fn<() => void>();
 
     await expect(
-      retry(testFunction, {
-        maxRetries: 3,
-        isErrorRetryable: (err) => {
-          return err instanceof OpenAI.APIError && err.status === 500;
+      retry(
+        async () => {
+          called += 1;
+          if (called === 1) throw Object.assign(new Error("LLM API error: 500"), { status: 500 });
+          throw Object.assign(new Error("LLM API error: 429"), { status: 429 });
         },
-        onError: onErrorHandler,
-      })
+        {
+          maxRetries: 3,
+          isErrorRetryable: (err: unknown) => {
+            const status = getErrorStatus(err);
+            return status === 500 ? 0 : false;
+          },
+          onError: onErrorHandler,
+        }
+      )
     ).rejects.toMatchObject({ status: 429 });
     expect(onErrorHandler).toHaveBeenCalledTimes(2);
   });

@@ -67,7 +67,7 @@ describe("FormattingEvaluatorModule", () => {
     it("should handle short words and edge cases", () => {
       expect(module["_countSyllables"]("a")).toBe(1);
       expect(module["_countSyllables"]("the")).toBe(1);
-      expect(module["_countSyllables"](" ")).toBe(1);
+      expect(module["_countSyllables"](String())).toBe(1);
     });
   });
 
