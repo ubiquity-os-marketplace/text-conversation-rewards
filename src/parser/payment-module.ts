@@ -18,6 +18,7 @@ import { MaxUint256 } from "@uniswap/permit2-sdk";
 import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
 import { BigNumber, ethers, utils } from "ethers";
+import type { Database } from "../adapters/supabase/types/database";
 import { PaymentConfiguration, paymentConfigurationType } from "../configuration/payment-configuration";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { getUserRewardRole } from "../helpers/permissions";
@@ -39,7 +40,6 @@ import { PERMIT2_ADDRESS } from "../types/permit2";
 import { RewardSettings } from "../types/plugin-input";
 import { PayoutMode, PermitSaveError, Result } from "../types/results";
 import chains from "../types/rpcs.json";
-import type { Database } from "../adapters/supabase/types/database";
 
 interface Payload {
   evmNetworkId: number;
@@ -715,7 +715,7 @@ export class PaymentModule extends BaseModule {
         .single();
 
       if (error || !insertedPartner) {
-        this.context.logger.error("Failed to insert a new token:", { err: error });
+        this.context.logger.error("Failed to insert a new partner:", { err: error });
       } else {
         partnerId = insertedPartner.id;
       }
