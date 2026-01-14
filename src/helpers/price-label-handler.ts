@@ -19,7 +19,7 @@ export async function handlePriceLabelValidation(
   if (isPriceLabelRequired && !hasPriceLabel && !isPullRequest(context)) {
     const issue = "issue" in payload ? payload.issue : payload.pull_request;
     await logInvalidIssue(logger, issue.html_url);
-    logger.error("No price label has been set. Skipping permit generation.");
+    logger.warn("No price label has been set. Skipping permit generation.");
     return false;
   }
   return true;

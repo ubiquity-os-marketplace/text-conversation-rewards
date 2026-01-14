@@ -1,3 +1,4 @@
+import { RestEndpointMethodTypes } from "@octokit/rest";
 import { IssueActivity } from "../issue-activity";
 import { IssueParams } from "../start";
 import { ContextPlugin } from "../types/plugin-input";
@@ -13,14 +14,16 @@ export interface UserAssignments {
   [username: string]: AssignmentPeriod[];
 }
 
+type IssueEvent = RestEndpointMethodTypes["issues"]["listEvents"]["response"]["data"][number];
+
 /*
  * Returns the list of assignment periods per user for a given issue.
  */
 export async function getAssignmentPeriods(octokit: ContextPlugin["octokit"], issueParams: IssueParams) {
-  const events = await octokit.paginate(octokit.rest.issues.listEvents, {
+  const events = (await octokit.paginate(octokit.rest.issues.listEvents, {
     ...issueParams,
     per_page: 100,
-  });
+  })) as IssueEvent[];
 
   const userAssignments: UserAssignments = {};
 
