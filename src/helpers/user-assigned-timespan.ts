@@ -1,4 +1,3 @@
-import { RestEndpointMethodTypes } from "@octokit/rest";
 import { IssueActivity } from "../issue-activity";
 import { IssueParams } from "../start";
 import { ContextPlugin } from "../types/plugin-input";
@@ -13,8 +12,6 @@ export interface AssignmentPeriod {
 export interface UserAssignments {
   [username: string]: AssignmentPeriod[];
 }
-
-type IssueEvent = RestEndpointMethodTypes["issues"]["listEvents"]["response"]["data"][number];
 
 /*
  * Returns the list of assignment periods per user for a given issue.
