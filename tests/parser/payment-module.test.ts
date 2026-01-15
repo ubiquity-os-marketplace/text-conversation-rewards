@@ -191,7 +191,7 @@ describe("payment-module.ts", () => {
     it("Should not apply fees if PERMIT_FEE_RATE is empty", async () => {
       ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = jest.spyOn(console, "debug");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
@@ -201,7 +201,7 @@ describe("payment-module.ts", () => {
     it("Should not apply fees if PERMIT_FEE_RATE is 0", async () => {
       ctx.env.PERMIT_FEE_RATE = "0";
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = jest.spyOn(console, "debug");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_FEE_RATE is not set, skipping permit fee generation/);
@@ -211,7 +211,7 @@ describe("payment-module.ts", () => {
     it("Should not apply fees if PERMIT_TREASURY_GITHUB_USERNAME is empty", async () => {
       unsetEnvValue(ctx.env, "PERMIT_TREASURY_GITHUB_USERNAME");
       const paymentModule = new PaymentModule(ctx);
-      const spyConsoleLog = jest.spyOn(console, "info");
+      const spyConsoleLog = jest.spyOn(console, "debug");
       await paymentModule._applyFees(getResultOriginal(), WXDAI_ADDRESS);
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*PERMIT_TREASURY_GITHUB_USERNAME is not set, skipping permit fee generation/);

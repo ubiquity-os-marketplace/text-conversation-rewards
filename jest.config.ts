@@ -20,7 +20,7 @@ const cfg: Config = {
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  setupFilesAfterEnv: ["dotenv/config", "<rootDir>/tests/setup/octokit-graphql.ts"],
+  setupFilesAfterEnv: ["dotenv/config"],
 };
 
 export default cfg;
