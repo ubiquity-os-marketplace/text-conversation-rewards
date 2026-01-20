@@ -64,7 +64,8 @@
     "dedupe",
     "plpgsql",
     "PGRST",
-    "Postgrest"
+    "Postgrest",
+    "xhigh"
   ],
   "dictionaries": ["typescript", "node", "software-terms"],
   "import": [

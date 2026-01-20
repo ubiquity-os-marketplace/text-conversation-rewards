@@ -5,7 +5,7 @@ import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
-import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import { ContentEvaluatorConfiguration, getLlmOptions } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
 import { checkLlmRetryableState, retry } from "../helpers/retry";
@@ -542,8 +542,10 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     try {
+      const llmOptions = getLlmOptions(this._configuration?.openAi.model);
       const res = await callLlm(
         {
+          ...llmOptions,
           response_format: { type: "json_object" },
           messages: [{ role: "system", content: prompt }],
           max_tokens: maxTokens,
