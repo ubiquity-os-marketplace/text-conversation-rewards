@@ -46,7 +46,7 @@ jobs:
       KERNEL_PUBLIC_KEY: ${{ (endsWith(github.actor, '[bot]') && github.event.inputs.kernelPublicKey != '') && github.event.inputs.kernelPublicKey || secrets.KERNEL_PUBLIC_KEY }}
       LOG_LEVEL: ${{ vars.LOG_LEVEL }}
       UOS_AI_URL: ${{ vars.UOS_AI_URL }}
-      UOS_AI_TOKEN: ${{ vars.UOS_AI_TOKEN }}
+      UOS_AI_TOKEN: ${{ secrets.UOS_AI_TOKEN }}
 
     steps:
       # Note: the checkout could potentially be avoided by calling the workflow on the repo/branch directly.
