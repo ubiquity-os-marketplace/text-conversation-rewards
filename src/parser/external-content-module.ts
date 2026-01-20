@@ -10,6 +10,7 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import { CommentKind } from "../configuration/comment-types";
+import { getLlmOptions } from "../configuration/content-evaluator-config";
 
 type LlmPrompt = Parameters<typeof callLlm>[0];
 
@@ -127,7 +128,9 @@ export class ExternalContentProcessor extends BaseModule {
 
           const prompt = await this._buildUserPrompt(linkResponse);
           if (!prompt) return null;
-          const llmResponse = await callLlm(prompt, this.context);
+          const llmConfig = this._configuration[isImage ? "llmImageModel" : "llmWebsiteModel"];
+          const llmOptions = getLlmOptions(llmConfig.model);
+          const llmResponse = await callLlm({ ...prompt, ...llmOptions }, this.context);
           if (isAsyncIterable(llmResponse)) {
             throw this.context.logger.error("Unexpected streaming response from the LLM.");
           }
