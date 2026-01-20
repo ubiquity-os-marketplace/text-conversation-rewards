@@ -44,8 +44,8 @@ jobs:
       PERMIT_TREASURY_GITHUB_USERNAME: ${{ secrets.PERMIT_TREASURY_GITHUB_USERNAME }}
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
       KERNEL_PUBLIC_KEY: ${{ (endsWith(github.actor, '[bot]') && github.event.inputs.kernelPublicKey != '') && github.event.inputs.kernelPublicKey || secrets.KERNEL_PUBLIC_KEY }}
-      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
-      UOS_AI_URL: ${{ secrets.UOS_AI_URL }}
+      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+      UOS_AI_URL: ${{ vars.UOS_AI_URL }}
 
     steps:
       # Note: the checkout could potentially be avoided by calling the workflow on the repo/branch directly.
