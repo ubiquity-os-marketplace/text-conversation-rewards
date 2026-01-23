@@ -406,6 +406,7 @@ describe("Rewards tests", () => {
         model: {
           name: "gpt-5.2",
         },
+        endpoint: "http://localhost:4000",
       },
       llmImageModel: {
         tokenCountLimit: 1000,
@@ -413,6 +414,7 @@ describe("Rewards tests", () => {
         model: {
           name: "gpt-5.2",
         },
+        endpoint: "http://localhost:4000",
       },
     };
     const originalBody = activity.self?.body;
