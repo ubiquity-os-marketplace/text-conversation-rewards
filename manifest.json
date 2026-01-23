@@ -251,6 +251,11 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "endpoint": {
+                        "description": "The endpoint of the LLM",
+                        "default": "https://ai-ubq-fi.deno.dev",
+                        "type": "string"
                       }
                     }
                   },
@@ -2097,6 +2102,11 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "endpoint": {
+                        "description": "The endpoint of the LLM",
+                        "default": "https://ai-ubq-fi.deno.dev",
+                        "type": "string"
                       }
                     }
                   },
@@ -2161,6 +2171,11 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "endpoint": {
+                        "description": "The endpoint of the LLM",
+                        "default": "https://ai-ubq-fi.deno.dev",
+                        "type": "string"
                       }
                     }
                   }
