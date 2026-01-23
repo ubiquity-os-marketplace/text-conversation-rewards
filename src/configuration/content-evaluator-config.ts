@@ -55,6 +55,10 @@ export function openAiType() {
         description: "Maximum number of retries to make",
         examples: [10],
       }),
+      endpoint: Type.String({
+        description: "The endpoint of the LLM",
+        default: process.env.UOS_AI_URL ?? "https://ai-ubq-fi.deno.dev",
+      }),
     },
     { default: {} }
   );

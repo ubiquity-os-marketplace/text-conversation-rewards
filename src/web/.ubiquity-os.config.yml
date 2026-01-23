@@ -50,13 +50,16 @@ incentives:
   requirePriceLabel: false
   externalContent:
     llmImageModel:
-      model: meta-llama/llama-3.2-11b-vision-instruct:free
+      model:
+        name: meta-llama/llama-3.2-11b-vision-instruct:free
     llmWebsiteModel:
-      model: deepseek/deepseek-chat-v3-0324:free
+      model:
+        name: deepseek/deepseek-chat-v3-0324:free
   contentEvaluator:
     openAi:
       endpoint: https://openrouter.ai/api/v1
-      model: deepseek/deepseek-chat-v3-0324:free
+      model:
+        name: deepseek/deepseek-chat-v3-0324:free
     multipliers:
       - role:
           - ISSUE_SPECIFICATION

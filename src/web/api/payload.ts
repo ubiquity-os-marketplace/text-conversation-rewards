@@ -12,18 +12,18 @@ export async function getPayload(owner: string, repo: string, issueId: number, u
   if (!useOpenAi) {
     cfgFile.incentives.contentEvaluator.openAi = {
       ...cfgFile.incentives.contentEvaluator.openAi,
-      endpoint: "http://localhost:4000/openai/contentEvaluator",
+      endpoint: "http://localhost:4000/contentEvaluator",
       tokenCountLimit: Number.MAX_VALUE,
     };
     if (cfgFile.incentives.externalContent) {
       cfgFile.incentives.externalContent.llmImageModel = {
         ...cfgFile.incentives.externalContent.llmImageModel,
-        endpoint: "http://localhost:4000/openai/llmImageModel",
+        endpoint: "http://localhost:4000/llmImageModel",
         tokenCountLimit: Number.MAX_VALUE,
       };
       cfgFile.incentives.externalContent.llmWebsiteModel = {
         ...cfgFile.incentives.externalContent.llmWebsiteModel,
-        endpoint: "http://localhost:4000/openai/llmWebsiteModel",
+        endpoint: "http://localhost:4000/llmWebsiteModel",
         tokenCountLimit: Number.MAX_VALUE,
       };
     }

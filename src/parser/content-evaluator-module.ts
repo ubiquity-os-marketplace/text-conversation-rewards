@@ -546,6 +546,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const res = await callLlm(
         {
           ...llmOptions,
+          baseUrl: this._configuration?.openAi.endpoint,
           response_format: { type: "json_object" },
           messages: [{ role: "system", content: prompt }],
           max_tokens: maxTokens,

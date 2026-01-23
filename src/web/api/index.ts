@@ -201,8 +201,7 @@ app.use(
   })
 );
 
-// Fakes OpenAi routes
-app.post("/openai/:module/*", async (c) => {
+async function llmRouteHandler<T extends Context>(c: T) {
   const text = await c.req.json();
   const regex = /The number of entries in the JSON response MUST equal (\d+)/g;
 
@@ -248,6 +247,16 @@ app.post("/openai/:module/*", async (c) => {
         });
     }
   }
+}
+
+app.post(`/:module/v1/chat/completions`, async (c) => {
+  const response = await llmRouteHandler(c);
+  return response;
+});
+
+// Fakes OpenAi routes
+app.post("/openai/:module/*", async (c) => {
+  return await llmRouteHandler(c);
 });
 
 app.get("/openai/*", () => {
