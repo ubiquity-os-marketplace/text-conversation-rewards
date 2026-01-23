@@ -130,10 +130,7 @@ export class ExternalContentProcessor extends BaseModule {
           if (!prompt) return null;
           const llmConfig = this._configuration[isImage ? "llmImageModel" : "llmWebsiteModel"];
           const llmOptions = getLlmOptions(llmConfig.model);
-          const llmResponse = await callLlm(
-            { ...prompt, ...llmOptions, baseUrl: this._configuration.llmImageModel.endpoint },
-            this.context
-          );
+          const llmResponse = await callLlm({ ...prompt, ...llmOptions, baseUrl: llmConfig.endpoint }, this.context);
           if (isAsyncIterable(llmResponse)) {
             throw this.context.logger.error("Unexpected streaming response from the LLM.");
           }
