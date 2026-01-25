@@ -204,6 +204,8 @@ Reward formula:
 
 Here is a possible valid configuration to enable this plugin. See [these files](./src/configuration/) for more details.
 
+Note: LLM requests use the `UOS_AI_URL` environment variable for the API base URL. Model IDs and reasoning settings are not configured in the plugin config; only limits and retries are set here.
+
 ```yaml
 plugin: ubiquity-os/conversation-rewards
 with:

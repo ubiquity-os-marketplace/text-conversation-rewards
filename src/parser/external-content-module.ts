@@ -10,7 +10,6 @@ import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { GithubCommentScore, Result } from "../types/results";
 import { CommentKind } from "../configuration/comment-types";
-import { getLlmOptions } from "../configuration/content-evaluator-config";
 
 type LlmPrompt = Parameters<typeof callLlm>[0];
 
@@ -99,12 +98,16 @@ export class ExternalContentProcessor extends BaseModule {
   private async _handleExternalElements(htmlElement: HTMLElement, comment: GithubCommentScore) {
     const anchors = htmlElement.getElementsByTagName("a");
     const images = htmlElement.getElementsByTagName("img");
+    const configuration = this._configuration;
+    const context = this.context;
+    const buildUserPrompt = this._buildUserPrompt.bind(this);
 
-    const processElement = async (element: HTMLAnchorElement | HTMLImageElement, isImage: boolean) => {
+    async function processElement(element: HTMLAnchorElement | HTMLImageElement, isImage: boolean) {
       const url = isImage
         ? (element as HTMLImageElement).getAttribute("src")
         : (element as HTMLAnchorElement).getAttribute("href");
       if (!url) return;
+      const llmConfig = configuration[isImage ? "llmImageModel" : "llmWebsiteModel"];
 
       const altContent = await retry(
         async () => {
@@ -112,31 +115,29 @@ export class ExternalContentProcessor extends BaseModule {
           try {
             linkResponse = await fetch(url);
             if (!linkResponse.ok) {
-              this.context.logger.warn("Failed to fetch the content of an external element.", {
+              context.logger.warn("Failed to fetch the content of an external element.", {
                 url,
                 status: linkResponse.status,
               });
               return null;
             }
           } catch (e) {
-            this.context.logger.warn(`The URL [${url}] could not be processed.`, { e });
+            context.logger.warn(`The URL [${url}] could not be processed.`, { e });
             return null;
           }
           const contentType = linkResponse.headers.get("content-type");
           if (!contentType || (!contentType.startsWith("text/") && !contentType.startsWith("image/"))) return null;
           if (isImage && !contentType.startsWith("image/")) return null;
 
-          const prompt = await this._buildUserPrompt(linkResponse);
+          const prompt = await buildUserPrompt(linkResponse);
           if (!prompt) return null;
-          const llmConfig = this._configuration[isImage ? "llmImageModel" : "llmWebsiteModel"];
-          const llmOptions = getLlmOptions(llmConfig.model);
-          const llmResponse = await callLlm({ ...prompt, ...llmOptions, baseUrl: llmConfig.endpoint }, this.context);
+          const llmResponse = await callLlm({ ...prompt }, context);
           if (isAsyncIterable(llmResponse)) {
-            throw this.context.logger.error("Unexpected streaming response from the LLM.");
+            throw context.logger.error("Unexpected streaming response from the LLM.");
           }
           const content = llmResponse.choices[0]?.message?.content;
           if (typeof content !== "string" || !content.trim()) {
-            throw this.context.logger.error("Failed to generate a description for the given external element.", {
+            throw context.logger.error("Failed to generate a description for the given external element.", {
               url,
               contentType,
               llmResponse,
@@ -145,13 +146,13 @@ export class ExternalContentProcessor extends BaseModule {
           return content;
         },
         {
-          maxRetries: this._configuration[isImage ? "llmImageModel" : "llmWebsiteModel"].maxRetries,
+          maxRetries: llmConfig.maxRetries,
           isErrorRetryable: (error) => {
             const llmRetryable = checkLlmRetryableState(error);
             return llmRetryable || error instanceof LogReturn;
           },
           onError: (e) => {
-            this.context.logger.warn("Failed to run the LLM.", { url, e });
+            context.logger.warn("Failed to run the LLM.", { url, e });
           },
         }
       );
@@ -170,7 +171,7 @@ export class ExternalContentProcessor extends BaseModule {
       // Image elements can be either contained in <img> elements or in Markdown format
       const linkRegex = new RegExp(`\\[([^\\]]+)\\]\\(${escapedSrc}\\)`, "g");
       comment.content = comment.content.replace(linkRegex, `[$1](${url} "${he.encode(altContent)}")`);
-    };
+    }
 
     for (const anchor of anchors) {
       await processElement(anchor, false);

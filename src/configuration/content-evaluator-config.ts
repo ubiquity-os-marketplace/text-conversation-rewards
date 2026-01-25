@@ -1,49 +1,9 @@
 import { Static, Type } from "@sinclair/typebox";
 import { commentType } from "./formatting-evaluator-config";
-import { LlmCallOptions } from "@ubiquity-os/plugin-sdk/llm";
-
-const reasoningEffortType = Type.Union(
-  [
-    Type.Literal("none"),
-    Type.Literal("minimal"),
-    Type.Literal("low"),
-    Type.Literal("medium"),
-    Type.Literal("high"),
-    Type.Literal("xhigh"),
-  ],
-  {
-    description: "Reasoning effort level for reasoning-capable models.",
-    examples: ["medium", "low", "high"],
-  }
-);
-
-type ReasoningEffort = Static<typeof reasoningEffortType>;
-
-const defaultLlmModel = { name: "gpt-5.2", reasoningEffort: "low" } satisfies {
-  name: string;
-  reasoningEffort: ReasoningEffort;
-};
-
-const openAiModelType = Type.Object(
-  {
-    name: Type.String({
-      description: "Model ID used when calling the LLM.",
-      examples: ["gpt-4o", "gpt-5.2"],
-    }),
-    reasoningEffort: Type.Optional(reasoningEffortType),
-  },
-  {
-    description: "Model settings including optional reasoning effort.",
-    default: defaultLlmModel,
-  }
-);
-
-type LlmModelType = Static<typeof openAiModelType>;
 
 export function openAiType() {
   return Type.Object(
     {
-      model: openAiModelType,
       tokenCountLimit: Type.Integer({
         default: 124000,
         description:
@@ -54,10 +14,6 @@ export function openAiType() {
         default: 10,
         description: "Maximum number of retries to make",
         examples: [10],
-      }),
-      endpoint: Type.String({
-        description: "The endpoint of the LLM",
-        default: process.env.UOS_AI_URL ?? "https://ai-ubq-fi.deno.dev",
       }),
     },
     { default: {} }
@@ -102,12 +58,3 @@ export const contentEvaluatorConfigurationType = Type.Object({
 });
 
 export type ContentEvaluatorConfiguration = Static<typeof contentEvaluatorConfigurationType>;
-
-export function getLlmOptions(model: LlmModelType | undefined): Pick<LlmCallOptions, "reasoning_effort" | "model"> {
-  const modelConfig = model;
-  if (!modelConfig) throw new Error("LLM configuration not found");
-  return {
-    model: modelConfig.name,
-    reasoning_effort: modelConfig.reasoningEffort as LlmCallOptions["reasoning_effort"],
-  };
-}
