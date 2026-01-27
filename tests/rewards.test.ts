@@ -403,13 +403,11 @@ describe("Rewards tests", () => {
       llmWebsiteModel: {
         model: { name: "model" },
         tokenCountLimit: 1000,
-        endpoint: "endpoint",
         maxRetries: 1,
       },
       llmImageModel: {
         model: { name: "model" },
         tokenCountLimit: 1000,
-        endpoint: "endpoint",
         maxRetries: 1,
       },
     };
