@@ -92,7 +92,7 @@ const ctx = {
   },
 } as unknown as ContextPlugin;
 
-const createEqChain = () => {
+function createEqChain() {
   const chain = {
     eq: jest.fn(() => chain),
     single: jest.fn(() => ({
@@ -102,7 +102,7 @@ const createEqChain = () => {
     })),
   };
   return chain;
-};
+}
 
 jest.mock("@supabase/supabase-js", () => {
   return {

@@ -401,18 +401,14 @@ describe("Rewards tests", () => {
   it("Should ignore invalid links", async () => {
     ctx.config.incentives.externalContent = {
       llmWebsiteModel: {
+        model: { name: "model" },
         tokenCountLimit: 1000,
         maxRetries: 1,
-        model: {
-          name: "gpt-5.2",
-        },
       },
       llmImageModel: {
+        model: { name: "model" },
         tokenCountLimit: 1000,
         maxRetries: 1,
-        model: {
-          name: "gpt-5.2",
-        },
       },
     };
     const originalBody = activity.self?.body;
