@@ -53,7 +53,6 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
-    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,

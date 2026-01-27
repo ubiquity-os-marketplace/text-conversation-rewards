@@ -401,13 +401,13 @@ describe("Rewards tests", () => {
   it("Should ignore invalid links", async () => {
     ctx.config.incentives.externalContent = {
       llmWebsiteModel: {
-        model: "model",
+        model: { name: "model" },
         tokenCountLimit: 1000,
-        endpoint: "endopint",
+        endpoint: "endpoint",
         maxRetries: 1,
       },
       llmImageModel: {
-        model: "model",
+        model: { name: "model" },
         tokenCountLimit: 1000,
         endpoint: "endpoint",
         maxRetries: 1,

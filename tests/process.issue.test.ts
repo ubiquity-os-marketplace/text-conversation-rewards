@@ -93,7 +93,6 @@ const ctx = {
   logger: new Logs("debug"),
   octokit: new customOctokit({ auth: process.env.GITHUB_TOKEN }),
   env: {
-    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
     X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
@@ -239,9 +238,6 @@ describe("Modules tests", () => {
           })()
         );
       });
-    jest
-      .spyOn(ContentEvaluatorModule.prototype, "_getRateLimitTokens")
-      .mockImplementation(() => Promise.resolve(Infinity));
 
     jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementation(async () => {
       return {
@@ -423,7 +419,6 @@ describe("Modules tests", () => {
       logger: new Logs("debug"),
       octokit: new customOctokit({ auth: process.env.GITHUB_TOKEN }),
       env: {
-        OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
         SUPABASE_KEY: process.env.SUPABASE_KEY,
         SUPABASE_URL: process.env.SUPABASE_URL,
         X25519_PRIVATE_KEY: process.env.X25519_PRIVATE_KEY,
