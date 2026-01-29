@@ -14,7 +14,7 @@
         "@supabase/supabase-js": "2.42.0",
         "@ubiquity-os/ethers-decode-error": "^1.1.0",
         "@ubiquity-os/permit-generation": "^2.1.1",
-        "@ubiquity-os/plugin-sdk": "^3.10.0",
+        "@ubiquity-os/plugin-sdk": "^3.11.1",
         "@ubiquity-os/ubiquity-os-logger": "^1.4.0",
         "csv-writer": "^1.6.0",
         "decimal.js": "10.4.3",
@@ -894,7 +894,7 @@
 
     "@ubiquity-os/permit-generation": ["@ubiquity-os/permit-generation@2.1.1", "", { "dependencies": { "@actions/core": "^1.10.1", "@actions/github": "^6.0.0", "@octokit/rest": "^20.1.0", "@octokit/webhooks": "^13.3.0", "@sinclair/typebox": "^0.32.5", "@supabase/supabase-js": "2.42.0", "@uniswap/permit2-sdk": "^1.2.0", "dotenv": "^16.4.4", "ethers": "^5.7.2", "libsodium-wrappers": "^0.7.13" } }, "sha512-u3h5jN2czrKU2VioyYSG8r2j7LeKYpHxy2vLufhSw+42hhN0zTCpxVww6eaWrsZRkP63/M+xpfcQswv93g82uA=="],
 
-    "@ubiquity-os/plugin-sdk": ["@ubiquity-os/plugin-sdk@3.10.0", "", { "dependencies": { "@actions/core": "^1.11.1", "@actions/github": "^6.0.1", "@octokit/core": "^7.0.6", "@octokit/plugin-paginate-graphql": "^6.0.0", "@octokit/plugin-paginate-rest": "^14.0.0", "@octokit/plugin-rest-endpoint-methods": "^17.0.0", "@octokit/plugin-retry": "^8.0.3", "@octokit/plugin-throttling": "^11.0.3", "@octokit/types": "^16.0.0", "@octokit/webhooks": "^14.1.3", "@ubiquity-os/ubiquity-os-logger": "^1.4.0", "hono": "^4.10.6", "js-yaml": "^4.1.1", "openai": "^6.15.0" }, "peerDependencies": { "@sinclair/typebox": "0.34.41" } }, "sha512-ljBfMQaIYrGahhZVXV8ott5OWeFJp0Y5TL1Ra1kyj03Rgi3vi/rUo3LoLSDIKc1dW42FDEpfwJjdLulr95LX5Q=="],
+    "@ubiquity-os/plugin-sdk": ["@ubiquity-os/plugin-sdk@3.11.1", "", { "dependencies": { "@actions/core": "^1.11.1", "@actions/github": "^6.0.1", "@octokit/core": "^7.0.6", "@octokit/plugin-paginate-graphql": "^6.0.0", "@octokit/plugin-paginate-rest": "^14.0.0", "@octokit/plugin-rest-endpoint-methods": "^17.0.0", "@octokit/plugin-retry": "^8.0.3", "@octokit/plugin-throttling": "^11.0.3", "@octokit/types": "^16.0.0", "@octokit/webhooks": "^14.1.3", "@ubiquity-os/ubiquity-os-logger": "^1.4.0", "hono": "^4.10.6", "js-yaml": "^4.1.1", "openai": "^6.15.0" }, "peerDependencies": { "@sinclair/typebox": "0.34.41" } }, "sha512-tYnt+Xh5WqufV3StUJVROlu5KzbBtSHc86302G2x/+CbyH2e52qA2hu77XbWqdwWDRJa1j82U3SIAw8s9efQxA=="],
 
     "@ubiquity-os/ubiquity-os-logger": ["@ubiquity-os/ubiquity-os-logger@1.4.0", "", {}, "sha512-giybluPmu0sreEWi60t9X8NxC5d48X7oQAb9RjXR7wX/ZNYugbAaKgj0TYEqECvSVDqgzpKo7UNerh1UQBscGw=="],
 
