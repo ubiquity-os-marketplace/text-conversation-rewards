@@ -551,6 +551,7 @@ export class ContentEvaluatorModule extends BaseModule {
           temperature: 0.5,
           frequency_penalty: 0,
           presence_penalty: 0,
+          reasoning_effort: this._configuration?.openAi.reasoningEffort,
         },
         this.context
       );

@@ -1,6 +1,22 @@
 import { Static, Type } from "@sinclair/typebox";
 import { commentType } from "./formatting-evaluator-config";
 
+const reasoningEffortType = Type.Union(
+  [
+    Type.Literal("none"),
+    Type.Literal("minimal"),
+    Type.Literal("low"),
+    Type.Literal("medium"),
+    Type.Literal("high"),
+    Type.Literal("xhigh"),
+  ],
+  {
+    description: "Reasoning effort level for reasoning-capable models.",
+    examples: ["medium", "low", "high"],
+    default: "low",
+  }
+);
+
 export function openAiType() {
   return Type.Object(
     {
@@ -15,6 +31,7 @@ export function openAiType() {
         description: "Maximum number of retries to make",
         examples: [10],
       }),
+      reasoningEffort: reasoningEffortType,
     },
     { default: {} }
   );

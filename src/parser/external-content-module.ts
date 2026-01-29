@@ -131,7 +131,7 @@ export class ExternalContentProcessor extends BaseModule {
 
           const prompt = await buildUserPrompt(linkResponse);
           if (!prompt) return null;
-          const llmResponse = await callLlm({ ...prompt }, context);
+          const llmResponse = await callLlm({ ...prompt, reasoning_effort: llmConfig.reasoningEffort }, context);
           if (isAsyncIterable(llmResponse)) {
             throw context.logger.error("Unexpected streaming response from the LLM.");
           }
