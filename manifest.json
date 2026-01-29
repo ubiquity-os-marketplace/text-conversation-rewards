@@ -205,6 +205,37 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "reasoningEffort": {
+                        "description": "Reasoning effort level for reasoning-capable models.",
+                        "examples": ["medium", "low", "high"],
+                        "default": "low",
+                        "anyOf": [
+                          {
+                            "const": "none",
+                            "type": "string"
+                          },
+                          {
+                            "const": "minimal",
+                            "type": "string"
+                          },
+                          {
+                            "const": "low",
+                            "type": "string"
+                          },
+                          {
+                            "const": "medium",
+                            "type": "string"
+                          },
+                          {
+                            "const": "high",
+                            "type": "string"
+                          },
+                          {
+                            "const": "xhigh",
+                            "type": "string"
+                          }
+                        ]
                       }
                     }
                   },
@@ -2005,6 +2036,37 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "reasoningEffort": {
+                        "description": "Reasoning effort level for reasoning-capable models.",
+                        "examples": ["medium", "low", "high"],
+                        "default": "low",
+                        "anyOf": [
+                          {
+                            "const": "none",
+                            "type": "string"
+                          },
+                          {
+                            "const": "minimal",
+                            "type": "string"
+                          },
+                          {
+                            "const": "low",
+                            "type": "string"
+                          },
+                          {
+                            "const": "medium",
+                            "type": "string"
+                          },
+                          {
+                            "const": "high",
+                            "type": "string"
+                          },
+                          {
+                            "const": "xhigh",
+                            "type": "string"
+                          }
+                        ]
                       }
                     }
                   },
@@ -2023,6 +2085,37 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "reasoningEffort": {
+                        "description": "Reasoning effort level for reasoning-capable models.",
+                        "examples": ["medium", "low", "high"],
+                        "default": "low",
+                        "anyOf": [
+                          {
+                            "const": "none",
+                            "type": "string"
+                          },
+                          {
+                            "const": "minimal",
+                            "type": "string"
+                          },
+                          {
+                            "const": "low",
+                            "type": "string"
+                          },
+                          {
+                            "const": "medium",
+                            "type": "string"
+                          },
+                          {
+                            "const": "high",
+                            "type": "string"
+                          },
+                          {
+                            "const": "xhigh",
+                            "type": "string"
+                          }
+                        ]
                       }
                     }
                   }
