@@ -546,11 +546,6 @@ export class ContentEvaluatorModule extends BaseModule {
         {
           response_format: { type: "json_object" },
           messages: [{ role: "system", content: prompt }],
-          max_tokens: maxTokens,
-          top_p: 1,
-          temperature: 0.5,
-          frequency_penalty: 0,
-          presence_penalty: 0,
           reasoning_effort: this._configuration?.openAi.reasoningEffort,
         },
         this.context
