@@ -8,22 +8,21 @@ export async function getPayload(owner: string, repo: string, issueId: number, u
   const filePath = path.resolve(__dirname, "../.ubiquity-os.config.yml");
   const fileContent = await fs.readFile(filePath, "utf8");
   const cfgFile = YAML.parse(fileContent);
+  const env = { ...process.env };
 
   if (!useOpenAi) {
+    env.UOS_AI_URL = "http://localhost:4000";
     cfgFile.incentives.contentEvaluator.openAi = {
       ...cfgFile.incentives.contentEvaluator.openAi,
-      endpoint: "http://localhost:4000/openai/contentEvaluator",
       tokenCountLimit: Number.MAX_VALUE,
     };
     if (cfgFile.incentives.externalContent) {
       cfgFile.incentives.externalContent.llmImageModel = {
         ...cfgFile.incentives.externalContent.llmImageModel,
-        endpoint: "http://localhost:4000/openai/llmImageModel",
         tokenCountLimit: Number.MAX_VALUE,
       };
       cfgFile.incentives.externalContent.llmWebsiteModel = {
         ...cfgFile.incentives.externalContent.llmWebsiteModel,
-        endpoint: "http://localhost:4000/openai/llmWebsiteModel",
         tokenCountLimit: Number.MAX_VALUE,
       };
     }
@@ -68,7 +67,7 @@ export async function getPayload(owner: string, repo: string, issueId: number, u
     signature: "",
     eventName: "issues.closed",
     action: "closed",
-    env: process.env,
+    env,
     command: "null",
     settings: JSON.stringify({
       ...cfgFile,

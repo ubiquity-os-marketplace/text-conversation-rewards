@@ -9,6 +9,7 @@
   },
   "type": "module",
   "scripts": {
+    "build": "bun x @vercel/ncc build src/index.ts -s -o dist",
     "jest:test": "jest --setupFiles dotenv/config --coverage",
     "format": "run-s format:lint format:prettier format:cspell",
     "format:lint": "eslint --fix .",
@@ -37,7 +38,7 @@
     "@supabase/supabase-js": "2.42.0",
     "@ubiquity-os/ethers-decode-error": "^1.1.0",
     "@ubiquity-os/permit-generation": "^2.1.1",
-    "@ubiquity-os/plugin-sdk": "^3.9.0",
+    "@ubiquity-os/plugin-sdk": "^3.11.1",
     "@ubiquity-os/ubiquity-os-logger": "^1.4.0",
     "csv-writer": "^1.6.0",
     "decimal.js": "10.4.3",

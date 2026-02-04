@@ -274,7 +274,7 @@ export class GithubCommentModule extends BaseModule {
             <td>${view}</td>
             <td>${contribution}</td>
             <td>${count}</td>
-            <td>${reward || "-"}</td>
+            <td>${reward ?? "-"}</td>
           </tr>`;
     }
 
@@ -283,15 +283,12 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", taskLabel, result.task.multiplier, result.task.reward));
     }
 
-    if (result.simplificationReward && Object.keys(result.simplificationReward.files).length !== 0) {
-      content.push(
-        buildContributionRow(
-          "Issue",
-          "Task Simplification",
-          1,
-          Object.values(result.simplificationReward.files).reduce((sum, { reward }) => sum + reward, 0)
-        )
+    if (result.simplificationReward && result.simplificationReward.files.length !== 0) {
+      const totalSimplificationReward = result.simplificationReward.files.reduce(
+        (sum, { reward }) => sum.add(reward),
+        new Decimal(0)
       );
+      content.push(buildContributionRow("Issue", "Task Simplification", 1, totalSimplificationReward));
     }
 
     if (result.reviewRewards && this.isPullRequest()) {

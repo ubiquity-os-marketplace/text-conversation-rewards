@@ -194,52 +194,6 @@
                     "default": {},
                     "type": "object",
                     "properties": {
-                      "model": {
-                        "description": "Model settings including optional reasoning effort.",
-                        "default": {
-                          "name": "gpt-5.2",
-                          "reasoningEffort": "low"
-                        },
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "description": "Model ID used when calling the LLM.",
-                            "examples": ["gpt-4o", "gpt-5.2"],
-                            "type": "string"
-                          },
-                          "reasoningEffort": {
-                            "description": "Reasoning effort level for reasoning-capable models.",
-                            "examples": ["medium", "low", "high"],
-                            "anyOf": [
-                              {
-                                "const": "none",
-                                "type": "string"
-                              },
-                              {
-                                "const": "minimal",
-                                "type": "string"
-                              },
-                              {
-                                "const": "low",
-                                "type": "string"
-                              },
-                              {
-                                "const": "medium",
-                                "type": "string"
-                              },
-                              {
-                                "const": "high",
-                                "type": "string"
-                              },
-                              {
-                                "const": "xhigh",
-                                "type": "string"
-                              }
-                            ]
-                          }
-                        },
-                        "required": ["name"]
-                      },
                       "tokenCountLimit": {
                         "default": 124000,
                         "description": "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation.",
@@ -251,6 +205,37 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "reasoningEffort": {
+                        "description": "Reasoning effort level for reasoning-capable models.",
+                        "examples": ["medium", "low", "high"],
+                        "default": "low",
+                        "anyOf": [
+                          {
+                            "const": "none",
+                            "type": "string"
+                          },
+                          {
+                            "const": "minimal",
+                            "type": "string"
+                          },
+                          {
+                            "const": "low",
+                            "type": "string"
+                          },
+                          {
+                            "const": "medium",
+                            "type": "string"
+                          },
+                          {
+                            "const": "high",
+                            "type": "string"
+                          },
+                          {
+                            "const": "xhigh",
+                            "type": "string"
+                          }
+                        ]
                       }
                     }
                   },
@@ -2040,52 +2025,6 @@
                     "default": {},
                     "type": "object",
                     "properties": {
-                      "model": {
-                        "description": "Model settings including optional reasoning effort.",
-                        "default": {
-                          "name": "gpt-5.2",
-                          "reasoningEffort": "low"
-                        },
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "description": "Model ID used when calling the LLM.",
-                            "examples": ["gpt-4o", "gpt-5.2"],
-                            "type": "string"
-                          },
-                          "reasoningEffort": {
-                            "description": "Reasoning effort level for reasoning-capable models.",
-                            "examples": ["medium", "low", "high"],
-                            "anyOf": [
-                              {
-                                "const": "none",
-                                "type": "string"
-                              },
-                              {
-                                "const": "minimal",
-                                "type": "string"
-                              },
-                              {
-                                "const": "low",
-                                "type": "string"
-                              },
-                              {
-                                "const": "medium",
-                                "type": "string"
-                              },
-                              {
-                                "const": "high",
-                                "type": "string"
-                              },
-                              {
-                                "const": "xhigh",
-                                "type": "string"
-                              }
-                            ]
-                          }
-                        },
-                        "required": ["name"]
-                      },
                       "tokenCountLimit": {
                         "default": 124000,
                         "description": "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation.",
@@ -2097,6 +2036,37 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "reasoningEffort": {
+                        "description": "Reasoning effort level for reasoning-capable models.",
+                        "examples": ["medium", "low", "high"],
+                        "default": "low",
+                        "anyOf": [
+                          {
+                            "const": "none",
+                            "type": "string"
+                          },
+                          {
+                            "const": "minimal",
+                            "type": "string"
+                          },
+                          {
+                            "const": "low",
+                            "type": "string"
+                          },
+                          {
+                            "const": "medium",
+                            "type": "string"
+                          },
+                          {
+                            "const": "high",
+                            "type": "string"
+                          },
+                          {
+                            "const": "xhigh",
+                            "type": "string"
+                          }
+                        ]
                       }
                     }
                   },
@@ -2104,52 +2074,6 @@
                     "default": {},
                     "type": "object",
                     "properties": {
-                      "model": {
-                        "description": "Model settings including optional reasoning effort.",
-                        "default": {
-                          "name": "gpt-5.2",
-                          "reasoningEffort": "low"
-                        },
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "description": "Model ID used when calling the LLM.",
-                            "examples": ["gpt-4o", "gpt-5.2"],
-                            "type": "string"
-                          },
-                          "reasoningEffort": {
-                            "description": "Reasoning effort level for reasoning-capable models.",
-                            "examples": ["medium", "low", "high"],
-                            "anyOf": [
-                              {
-                                "const": "none",
-                                "type": "string"
-                              },
-                              {
-                                "const": "minimal",
-                                "type": "string"
-                              },
-                              {
-                                "const": "low",
-                                "type": "string"
-                              },
-                              {
-                                "const": "medium",
-                                "type": "string"
-                              },
-                              {
-                                "const": "high",
-                                "type": "string"
-                              },
-                              {
-                                "const": "xhigh",
-                                "type": "string"
-                              }
-                            ]
-                          }
-                        },
-                        "required": ["name"]
-                      },
                       "tokenCountLimit": {
                         "default": 124000,
                         "description": "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation.",
@@ -2161,6 +2085,37 @@
                         "description": "Maximum number of retries to make",
                         "examples": [10],
                         "type": "number"
+                      },
+                      "reasoningEffort": {
+                        "description": "Reasoning effort level for reasoning-capable models.",
+                        "examples": ["medium", "low", "high"],
+                        "default": "low",
+                        "anyOf": [
+                          {
+                            "const": "none",
+                            "type": "string"
+                          },
+                          {
+                            "const": "minimal",
+                            "type": "string"
+                          },
+                          {
+                            "const": "low",
+                            "type": "string"
+                          },
+                          {
+                            "const": "medium",
+                            "type": "string"
+                          },
+                          {
+                            "const": "high",
+                            "type": "string"
+                          },
+                          {
+                            "const": "xhigh",
+                            "type": "string"
+                          }
+                        ]
                       }
                     }
                   }
@@ -2195,5 +2150,5 @@
       }
     }
   },
-  "short_name": "ubiquity-os-marketplace/text-conversation-rewards@development"
+  "short_name": "ubiquity-os-marketplace/text-conversation-rewards@fix/trailing-zeroes-task"
 }
