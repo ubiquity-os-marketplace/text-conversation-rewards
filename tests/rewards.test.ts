@@ -403,10 +403,12 @@ describe("Rewards tests", () => {
       llmWebsiteModel: {
         tokenCountLimit: 1000,
         maxRetries: 1,
+        reasoningEffort: "low",
       },
       llmImageModel: {
         tokenCountLimit: 1000,
         maxRetries: 1,
+        reasoningEffort: "low",
       },
     };
     const originalBody = activity.self?.body;
