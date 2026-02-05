@@ -272,7 +272,7 @@ app.post(`/:module/v1/chat/completions`, async (c) => {
 
 // Fakes OpenAi routes
 app.post("/openai/:module/*", async (c) => {
-  return await llmRouteHandler(c);
+  return await llmRouteHandler(c, c.req.param("module"));
 });
 
 app.get("/openai/*", () => {
