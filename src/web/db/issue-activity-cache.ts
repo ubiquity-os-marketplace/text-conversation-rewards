@@ -20,7 +20,7 @@ export class IssueActivityCache extends IssueActivity {
     } else {
       this._context.logger.debug("Fetching data from the cached db.");
       const db = await open({
-        filename: path.resolve(__dirname, "./database.db"),
+        filename: path.resolve(import.meta.dirname, "./database.db"),
         driver: sqlite3.cached.Database,
       });
       await this._initDatabase(db);

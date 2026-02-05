@@ -5,7 +5,7 @@ import YAML from "yaml";
 import { compressString } from "@ubiquity-os/plugin-sdk/compression";
 
 export async function getPayload(owner: string, repo: string, issueId: number, useOpenAi: boolean, useCache: boolean) {
-  const filePath = path.resolve(__dirname, "../.ubiquity-os.config.yml");
+  const filePath = path.resolve(import.meta.dirname, "../.ubiquity-os.config.yml");
   const fileContent = await fs.readFile(filePath, "utf8");
   const cfgFile = YAML.parse(fileContent);
   const env = { ...process.env };
