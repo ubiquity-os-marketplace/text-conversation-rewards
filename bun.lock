@@ -13,7 +13,7 @@
         "@sinclair/typebox": "0.34.30",
         "@supabase/supabase-js": "2.42.0",
         "@ubiquity-os/ethers-decode-error": "^1.1.0",
-        "@ubiquity-os/permit-generation": "^2.1.1",
+        "@ubiquity-os/permit-generation": "^2.1.3",
         "@ubiquity-os/plugin-sdk": "^3.12.0",
         "@ubiquity-os/ubiquity-os-logger": "^1.4.0",
         "csv-writer": "^1.6.0",
@@ -892,7 +892,7 @@
 
     "@ubiquity-os/ethers-decode-error": ["@ubiquity-os/ethers-decode-error@1.1.0", "", { "peerDependencies": { "ethers": "^5.0.0" } }, "sha512-xSy1DTgDWZrLsjt/F8MpTJSst0ABzKrD/QZju6soGuqTnAWpN7X3DuYiEHWZ3KoIYdZCxs1iK73FiJdaVZHyKA=="],
 
-    "@ubiquity-os/permit-generation": ["@ubiquity-os/permit-generation@2.1.1", "", { "dependencies": { "@actions/core": "^1.10.1", "@actions/github": "^6.0.0", "@octokit/rest": "^20.1.0", "@octokit/webhooks": "^13.3.0", "@sinclair/typebox": "^0.32.5", "@supabase/supabase-js": "2.42.0", "@uniswap/permit2-sdk": "^1.2.0", "dotenv": "^16.4.4", "ethers": "^5.7.2", "libsodium-wrappers": "^0.7.13" } }, "sha512-u3h5jN2czrKU2VioyYSG8r2j7LeKYpHxy2vLufhSw+42hhN0zTCpxVww6eaWrsZRkP63/M+xpfcQswv93g82uA=="],
+    "@ubiquity-os/permit-generation": ["@ubiquity-os/permit-generation@2.1.3", "", { "dependencies": { "@actions/core": "^1.10.1", "@actions/github": "^6.0.0", "@octokit/rest": "^20.1.0", "@octokit/webhooks": "^13.3.0", "@sinclair/typebox": "^0.32.5", "@supabase/supabase-js": "2.42.0", "@uniswap/permit2-sdk": "^1.2.0", "dotenv": "^16.4.4", "ethers": "^5.7.2", "libsodium-wrappers": "^0.8.2" } }, "sha512-YnbgBGzDH7RpZIf6rH+iH7XSwiO8gRAVcDuDT0dDsbu6KhwLgqjFvyZ+ZEKWCL4mP6BqrB1mfL7wxocgiTPPgQ=="],
 
     "@ubiquity-os/plugin-sdk": ["@ubiquity-os/plugin-sdk@3.12.0", "", { "dependencies": { "@actions/core": "^1.11.1", "@actions/github": "^6.0.1", "@octokit/core": "^7.0.6", "@octokit/plugin-paginate-graphql": "^6.0.0", "@octokit/plugin-paginate-rest": "^14.0.0", "@octokit/plugin-rest-endpoint-methods": "^17.0.0", "@octokit/plugin-retry": "^8.0.3", "@octokit/plugin-throttling": "^11.0.3", "@octokit/types": "^16.0.0", "@octokit/webhooks": "^14.1.3", "@ubiquity-os/ubiquity-os-logger": "^1.4.0", "hono": "^4.10.6", "js-yaml": "^4.1.1", "ms": "^2.1.3", "openai": "^6.15.0" }, "peerDependencies": { "@sinclair/typebox": "0.34.41" } }, "sha512-/NfB1a0X+U4/fH9R+xTxfS/GasBjZ7h70jPRNoQrRkkHBXibnrEJr5xRT0HLyBz12cmzWTdKHOQxPYMTLmFxHQ=="],
 
@@ -1650,9 +1650,9 @@
 
     "levn": ["levn@0.4.1", "", { "dependencies": { "prelude-ls": "^1.2.1", "type-check": "~0.4.0" } }, "sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ=="],
 
-    "libsodium": ["libsodium@0.7.16", "", {}, "sha512-3HrzSPuzm6Yt9aTYCDxYEG8x8/6C0+ag655Y7rhhWZM9PT4NpdnbqlzXhGZlDnkgR6MeSTnOt/VIyHLs9aSf+Q=="],
+    "libsodium": ["libsodium@0.8.2", "", {}, "sha512-TsnGYMoZtpweT+kR+lOv5TVsnJ/9U0FZOsLFzFOMWmxqOAYXjX3fsrPAW+i1LthgDKXJnI9A8dWEanT1tnJKIw=="],
 
-    "libsodium-wrappers": ["libsodium-wrappers@0.7.16", "", { "dependencies": { "libsodium": "^0.7.16" } }, "sha512-Gtr/WBx4dKjvRL1pvfwZqu7gO6AfrQ0u9vFL+kXihtHf6NfkROR8pjYWn98MFDI3jN19Ii1ZUfPR9afGiPyfHg=="],
+    "libsodium-wrappers": ["libsodium-wrappers@0.8.2", "", { "dependencies": { "libsodium": "^0.8.0" } }, "sha512-VFLmfxkxo+U9q60tjcnSomQBRx2UzlRjKWJqvB4K1pUqsMQg4cu3QXA2nrcsj9A1qRsnJBbi2Ozx1hsiDoCkhw=="],
 
     "lilconfig": ["lilconfig@3.0.0", "", {}, "sha512-K2U4W2Ff5ibV7j7ydLr+zLAkIg5JJ4lPn1Ltsdt+Tz/IjQ8buJ55pZAxoP34lqIiwtF9iAvtLv3JGv7CAyAg+g=="],
 
