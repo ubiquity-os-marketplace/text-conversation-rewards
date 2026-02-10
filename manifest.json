@@ -1,8 +1,7 @@
 {
-  "name": "Conversation rewards",
+  "name": "@ubiquity-os/text-conversation-rewards",
+  "short_name": "ubiquity-os-marketplace/text-conversation-rewards@fix/manifest-build",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
-  "ubiquity:listeners": ["issues.closed", "pull_request.closed"],
-  "skipBotEvents": false,
   "commands": {
     "finish": {
       "ubiquity:example": "/finish",
@@ -13,6 +12,8 @@
       }
     }
   },
+  "ubiquity:listeners": ["issues.closed", "pull_request.closed"],
+  "skipBotEvents": false,
   "configuration": {
     "default": {},
     "type": "object",
@@ -2149,6 +2150,5 @@
         }
       }
     }
-  },
-  "short_name": "ubiquity-os-marketplace/text-conversation-rewards@development"
+  }
 }
