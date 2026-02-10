@@ -1,5 +1,5 @@
 {
-  "name": "@ubiquity-os/conversation-rewards",
+  "name": "@ubiquity-os/text-conversation-rewards",
   "version": "1.0.0",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
   "author": "Ubiquity DAO",
