@@ -11,10 +11,11 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: ubiquity-os/action-deploy-plugin@main
+      - uses: Meniole/action-deploy-plugin@feat/27-generate-manifest-metadata
         with:
           treatAsEsm: true
           sourcemap: true
+          excludeSupportedEvents: "issue_comment.created"
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
