@@ -11,7 +11,7 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: ubiquity-os/action-deploy-plugin@fix/esm
+      - uses: Meniole/action-deploy-plugin@feat/27-generate-manifest-metadata
         with:
           treatAsEsm: true
           sourcemap: true
