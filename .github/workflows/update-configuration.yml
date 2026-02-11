@@ -11,7 +11,7 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: ubiquity-os/action-deploy-plugin@fix/esm
+      - uses: ubiquity-os/action-deploy-plugin@main
         with:
           treatAsEsm: true
           sourcemap: true
