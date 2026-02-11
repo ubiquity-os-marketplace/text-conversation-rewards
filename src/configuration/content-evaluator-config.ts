@@ -1,20 +1,37 @@
 import { Static, Type } from "@sinclair/typebox";
 import { commentType } from "./formatting-evaluator-config";
 
-export function openAiType(overrides?: { tokenCountLimit?: number; maxRetries?: number }) {
+const reasoningEffortType = Type.Union(
+  [
+    Type.Literal("none"),
+    Type.Literal("minimal"),
+    Type.Literal("low"),
+    Type.Literal("medium"),
+    Type.Literal("high"),
+    Type.Literal("xhigh"),
+  ],
+  {
+    description: "Reasoning effort level for reasoning-capable models.",
+    examples: ["medium", "low", "high"],
+    default: "low",
+  }
+);
+
+export function openAiType() {
   return Type.Object(
     {
       tokenCountLimit: Type.Integer({
-        default: overrides?.tokenCountLimit ?? 124000,
+        default: 124000,
         description:
           "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation.",
         examples: [124000],
       }),
       maxRetries: Type.Number({
-        default: overrides?.maxRetries ?? 10,
+        default: 10,
         description: "Maximum number of retries to make",
         examples: [10],
       }),
+      reasoningEffort: reasoningEffortType,
     },
     { default: {} }
   );

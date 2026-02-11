@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { ContextPlugin } from "../types/plugin-input";
 
-const INVALID_ISSUES_PATH = path.resolve(__dirname, "../../invalid-issues.json");
+const INVALID_ISSUES_PATH = path.resolve(import.meta.dirname, "../../invalid-issues.json");
 
 export async function logInvalidIssue(logger: ContextPlugin["logger"], issueUrl: string) {
   let invalidIssues: string[] = [];

@@ -5,7 +5,7 @@ const config: KnipConfig = {
   project: ["**/*.{js,ts}", "!dist/**", "!src/web/dist/**"],
   ignore: ["src/data-collection/examples/*.ts", "src/configuration/common-config-type.ts", "dist/**"],
   ignoreExportsUsedInFile: true,
-  ignoreDependencies: ["@uniswap/permit2-sdk", "@octokit/plugin-paginate-graphql"],
+  ignoreDependencies: ["@uniswap/permit2-sdk", "@octokit/plugin-paginate-graphql", "ts-node"],
   jest: {
     config: ["jest.config.ts"],
     entry: ["src/**/*.test.ts", "tests/**/*.test.ts"],

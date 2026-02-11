@@ -2,10 +2,6 @@ import { ContextPlugin } from "../types/plugin-input";
 import { PullRequestCommitsQuery } from "../types/pull-request-commits";
 import { QUERY_PULL_REQUEST_COMMITS } from "../types/requests";
 
-type PullRequestCommits = NonNullable<NonNullable<PullRequestCommitsQuery["repository"]>["pullRequest"]>["commits"];
-type CommitEdge = PullRequestCommits["edges"][number];
-type CommitParent = NonNullable<CommitEdge["node"]["commit"]["parents"]["nodes"]>[number];
-
 interface LightweightCommit {
   sha: string;
   parentCount: number;
@@ -19,6 +15,11 @@ interface PullRequestFile {
   deletions: number;
   status?: string;
 }
+
+type CommitEdge = NonNullable<
+  NonNullable<PullRequestCommitsQuery["repository"]>["pullRequest"]
+>["commits"]["edges"][number];
+type CommitParent = NonNullable<CommitEdge["node"]["commit"]["parents"]["nodes"]>[number];
 
 export class PullRequestData {
   private readonly _fileMap = new Map<string, PullRequestFile>();
@@ -40,13 +41,15 @@ export class PullRequestData {
         pull_number: this._pullNumber,
       }
     );
-    const commitEdges: CommitEdge[] = commitsData?.repository?.pullRequest?.commits?.edges || [];
+    const commitEdges: CommitEdge[] = commitsData?.repository?.pullRequest?.commits?.edges ?? [];
     this._pullCommits = commitEdges
-      .map((edge: CommitEdge) => ({
-        sha: edge.node.commit.oid,
-        parentCount: edge.node.commit.parents.totalCount,
-        parents: edge.node.commit.parents.nodes?.map((p: CommitParent) => ({ sha: p.oid })),
-      }))
+      .map(
+        (edge: CommitEdge): LightweightCommit => ({
+          sha: edge.node.commit.oid,
+          parentCount: edge.node.commit.parents.totalCount,
+          parents: edge.node.commit.parents.nodes?.map((parent: CommitParent) => ({ sha: parent.oid })),
+        })
+      )
       .filter((commit: LightweightCommit) => commit.parentCount < 2);
 
     for (const commit of this._pullCommits) {

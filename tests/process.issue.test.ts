@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals
 import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import fs from "fs";
-import { http, passthrough } from "msw";
+import { http, HttpResponse, passthrough } from "msw";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
 import { retry } from "../src/helpers/retry";
@@ -170,7 +170,10 @@ let ExternalContentProcessor: typeof import("../src/parser/external-content-modu
 let activity: InstanceType<typeof IssueActivity>;
 
 function getExternalContentProcessor(context: ContextPlugin) {
-  return new ExternalContentProcessor(context);
+  const instance = new ExternalContentProcessor(context);
+  Reflect.set(instance, "_llmWebsite", { chat: { completions: { create: jest.fn() } } });
+  Reflect.set(instance, "_llmImage", { chat: { completions: { create: jest.fn() } } });
+  return instance;
 }
 
 beforeAll(async () => {
@@ -757,7 +760,18 @@ describe("Modules tests", () => {
 
 describe("Retry", () => {
   it("should return correct value", async () => {
-    const res = await retry(async () => "Hello", { maxRetries: 3 });
+    server.use(
+      http.post("https://api.openai.com/v1/chat/completions", () => {
+        return HttpResponse.json({ choices: [{ message: { content: "Hello" } }] });
+      })
+    );
+
+    const res = (await retry(
+      async () => {
+        return "Hello";
+      },
+      { maxRetries: 3 }
+    )) as string;
     expect(res).toBe("Hello");
   });
 
@@ -798,7 +812,7 @@ describe("Retry", () => {
         },
         {
           maxRetries: 3,
-          isErrorRetryable: (err) => {
+          isErrorRetryable: (err: unknown) => {
             const status = getErrorStatus(err);
             return status === 500 ? 0 : false;
           },

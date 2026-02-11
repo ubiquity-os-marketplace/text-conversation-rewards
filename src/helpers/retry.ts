@@ -1,4 +1,4 @@
-import ms, { StringValue } from "ms";
+export { checkLlmRetryableState } from "@ubiquity-os/plugin-sdk/helpers";
 
 interface RetryOptions {
   maxRetries: number;
@@ -35,79 +35,4 @@ export async function retry<T>(fn: () => Promise<T>, options: RetryOptions): Pro
     delay *= 2;
   }
   throw lastError;
-}
-
-export function checkLlmRetryableState(error: unknown) {
-  const maybe = error as { status?: unknown; headers?: unknown; message?: unknown };
-  const status = extractStatus(error) ?? extractStatusFromMessage(error);
-
-  if (!status) return false;
-
-  if ([500, 502, 503, 504].includes(status)) return true;
-
-  if (status === 429) {
-    const headers =
-      typeof maybe.headers === "object" && maybe.headers !== null
-        ? (maybe.headers as Record<string, unknown>)
-        : undefined;
-    const retryAfterTokensHeader = headers?.["x-ratelimit-reset-tokens"];
-    const retryAfterRequestsHeader = headers?.["x-ratelimit-reset-requests"];
-    const retryAfterTokens = typeof retryAfterTokensHeader === "string" ? retryAfterTokensHeader : undefined;
-    const retryAfterRequests = typeof retryAfterRequestsHeader === "string" ? retryAfterRequestsHeader : undefined;
-    if (!retryAfterTokens || !retryAfterRequests) return true;
-
-    const tokenDelay = ms(retryAfterTokens as StringValue);
-    const requestDelay = ms(retryAfterRequests as StringValue);
-    const validDelays = [tokenDelay, requestDelay].filter(Number.isFinite);
-    if (!validDelays.length) return true;
-    return Math.max(...validDelays);
-  }
-
-  return false;
-}
-
-function extractStatus(error: unknown): number | null {
-  if (typeof error !== "object" || error === null) return null;
-  const maybeError = error as {
-    status?: unknown;
-    statusCode?: unknown;
-    response?: { status?: unknown };
-    cause?: unknown;
-  };
-  const candidates: unknown[] = [maybeError.status, maybeError.statusCode, maybeError.response?.status];
-  const maybeCause = maybeError.cause;
-  if (typeof maybeCause === "object" && maybeCause !== null) {
-    const cause = maybeCause as { status?: unknown; statusCode?: unknown; response?: { status?: unknown } };
-    candidates.push(cause.status, cause.statusCode, cause.response?.status);
-  }
-  for (const candidate of candidates) {
-    if (typeof candidate === "number") return candidate;
-  }
-  return null;
-}
-
-function extractStatusFromMessage(error: unknown): number | null {
-  let message: string | undefined;
-
-  if (typeof error === "string") {
-    message = error;
-  } else if (typeof error === "object" && error !== null && "message" in error) {
-    const maybeMessage = (error as { message?: unknown }).message;
-    if (typeof maybeMessage === "string") {
-      message = maybeMessage;
-    }
-  }
-
-  if (!message) return null;
-
-  // Best-effort parsing for message-only errors; keep patterns generic.
-  const patterns = [/\bstatus(?:\s*code)?\s*[:=]?\s*(\d{3})\b/i, /\bHTTP\s+(\d{3})\b/i, /\berror\s*[:=]\s*(\d{3})\b/i];
-  for (const pattern of patterns) {
-    const match = pattern.exec(message);
-    const statusText = match?.[1];
-    if (!statusText) continue;
-    const status = Number.parseInt(statusText, 10);
-    if (Number.isFinite(status)) return status;
-  }
-  return null;
 }
