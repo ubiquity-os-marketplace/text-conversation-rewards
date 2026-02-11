@@ -1,6 +1,6 @@
 {
   "name": "@ubiquity-os/conversation-rewards",
-  "short_name": "Meniole/text-conversation-rewards@codex/fix/manifest-build-text-conversation-rewards-text-conversation-rewards-u2",
+  "short_name": "ubiquity-os-marketplace/text-conversation-rewards@development",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
   "commands": {
     "finish": {
