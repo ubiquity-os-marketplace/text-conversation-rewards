@@ -510,6 +510,34 @@ describe("payment-module.ts", () => {
 
       expect(payoutMode).toEqual("transfer");
     });
+
+    it("Should use the latest post-reopen payout marker when multiple bot markers exist", async () => {
+      ctx.config.incentives.payment = { automaticTransferMode: true };
+      const paymentModule = new PaymentModule(ctx);
+
+      const payoutMode = await paymentModule._getPayoutMode({
+        comments: [
+          {
+            body: `...${PAYOUT_MODE_TRANSFER}...`,
+            user: { type: "Bot" },
+            created_at: "2026-01-04T00:00:00.000Z",
+          },
+          {
+            body: `...${PAYOUT_MODE_PERMIT}...`,
+            user: { type: "Bot" },
+            created_at: "2026-01-05T00:00:00.000Z",
+          },
+          {
+            body: `...${PAYOUT_MODE_TRANSFER}...`,
+            user: { type: "Bot" },
+            created_at: "2026-01-02T00:00:00.000Z",
+          },
+        ],
+        events: [{ event: "reopened", created_at: "2026-01-03T00:00:00.000Z" }],
+      } as unknown as IssueActivity);
+
+      expect(payoutMode).toEqual("permit");
+    });
   });
 
   const fundingWalletPrivateKey = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
