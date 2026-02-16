@@ -362,8 +362,10 @@ export class PaymentModule extends BaseModule {
         continue;
       }
       const commentTs = this._toTimestamp(comment.created_at);
-      if (lastReopenedAt !== undefined && commentTs !== null && commentTs < lastReopenedAt) {
-        continue;
+      if (lastReopenedAt !== undefined) {
+        if (commentTs === null || commentTs < lastReopenedAt) {
+          continue;
+        }
       }
       const marker = this._extractPayoutModeMarker(comment.body);
       if (marker !== undefined) {
