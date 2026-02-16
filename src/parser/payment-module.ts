@@ -352,13 +352,57 @@ export class PaymentModule extends BaseModule {
    - Transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
   */
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
-    for (const comment of data.comments) {
-      if (comment.body && comment.user?.type === "Bot") {
-        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) return null;
-        else if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
+    const lastReopenedAt = this._getLatestReopenedAt(data.events ?? []);
+    const comments = [...(data.comments ?? [])].sort(
+      (a, b) => (this._toTimestamp(b.created_at) ?? 0) - (this._toTimestamp(a.created_at) ?? 0)
+    );
+
+    for (const comment of comments) {
+      if (!comment.body || comment.user?.type !== "Bot") {
+        continue;
+      }
+      const commentTs = this._toTimestamp(comment.created_at);
+      if (lastReopenedAt !== undefined && commentTs !== null && commentTs < lastReopenedAt) {
+        continue;
+      }
+      const marker = this._extractPayoutModeMarker(comment.body);
+      if (marker !== undefined) {
+        return marker;
       }
     }
     return this._autoTransferMode ? "transfer" : "permit";
+  }
+
+  private _toTimestamp(value: string | undefined): number | null {
+    if (!value) {
+      return null;
+    }
+    const timestamp = new Date(value).getTime();
+    return Number.isFinite(timestamp) ? timestamp : null;
+  }
+
+  private _extractPayoutModeMarker(body: string): PayoutMode | null | undefined {
+    if (/"payoutMode":\s*"transfer"/.exec(body)) {
+      return null;
+    }
+    if (/"payoutMode":\s*"permit"/.exec(body)) {
+      return "permit";
+    }
+    return undefined;
+  }
+
+  private _getLatestReopenedAt(events: Readonly<IssueActivity["events"]>): number | undefined {
+    const timestamps = events
+      .filter((event) => event.event === "reopened")
+      .map((event) => {
+        if (!("created_at" in event)) {
+          return null;
+        }
+        return this._toTimestamp(event.created_at);
+      })
+      .filter((value): value is number => value !== null)
+      .sort((a, b) => b - a);
+    return timestamps[0];
   }
 
   _getNetworkExplorer(networkId: number): string {
