@@ -1,6 +1,6 @@
 {
   "name": "@ubiquity-os/conversation-rewards",
-  "short_name": "ubiquity-os-marketplace/text-conversation-rewards@development",
+  "short_name": "ubiquity-os-marketplace/text-conversation-rewards@main",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
   "commands": {
     "finish": {
