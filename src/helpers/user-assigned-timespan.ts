@@ -2,6 +2,8 @@ import { IssueActivity } from "../issue-activity";
 import { IssueParams } from "../start";
 import { ContextPlugin } from "../types/plugin-input";
 
+type IssueEvent = Awaited<ReturnType<ContextPlugin["octokit"]["rest"]["issues"]["listEvents"]>>["data"][number];
+
 export interface AssignmentPeriod {
   assignedAt: string;
   unassignedAt: string | null;
@@ -15,16 +17,16 @@ export interface UserAssignments {
  * Returns the list of assignment periods per user for a given issue.
  */
 export async function getAssignmentPeriods(octokit: ContextPlugin["octokit"], issueParams: IssueParams) {
-  const events = await octokit.paginate(octokit.rest.issues.listEvents, {
+  const events = (await octokit.paginate(octokit.rest.issues.listEvents, {
     ...issueParams,
     per_page: 100,
-  });
+  })) as IssueEvent[];
 
   const userAssignments: UserAssignments = {};
 
   events
-    .filter((event) => ["assigned", "unassigned"].includes(event.event))
-    .forEach((event) => {
+    .filter((event: IssueEvent) => ["assigned", "unassigned"].includes(event.event))
+    .forEach((event: IssueEvent) => {
       const username = "assignee" in event ? event.assignee?.login : null;
       if (!username) return;
 

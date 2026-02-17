@@ -16,6 +16,11 @@ interface PullRequestFile {
   status?: string;
 }
 
+type CommitEdge = NonNullable<
+  NonNullable<PullRequestCommitsQuery["repository"]>["pullRequest"]
+>["commits"]["edges"][number];
+type CommitParent = NonNullable<CommitEdge["node"]["commit"]["parents"]["nodes"]>[number];
+
 export class PullRequestData {
   private readonly _fileMap = new Map<string, PullRequestFile>();
   private _pullCommits: LightweightCommit[] = [];
@@ -36,14 +41,16 @@ export class PullRequestData {
         pull_number: this._pullNumber,
       }
     );
-    const commitEdges = commitsData?.repository?.pullRequest?.commits?.edges || [];
+    const commitEdges: CommitEdge[] = commitsData?.repository?.pullRequest?.commits?.edges ?? [];
     this._pullCommits = commitEdges
-      .map((edge) => ({
-        sha: edge.node.commit.oid,
-        parentCount: edge.node.commit.parents.totalCount,
-        parents: edge.node.commit.parents.nodes?.map((p) => ({ sha: p.oid })),
-      }))
-      .filter((commit) => commit.parentCount < 2);
+      .map(
+        (edge: CommitEdge): LightweightCommit => ({
+          sha: edge.node.commit.oid,
+          parentCount: edge.node.commit.parents.totalCount,
+          parents: edge.node.commit.parents.nodes?.map((parent: CommitParent) => ({ sha: parent.oid })),
+        })
+      )
+      .filter((commit: LightweightCommit) => commit.parentCount < 2);
 
     for (const commit of this._pullCommits) {
       // We need to manually paginate because the API acts differently for getCommits.

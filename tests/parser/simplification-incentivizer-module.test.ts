@@ -54,6 +54,7 @@ describe("SimplificationIncentivizerModule", () => {
       logger: {
         warn: jest.fn(),
         info: jest.fn(),
+        debug: jest.fn(),
         error: jest.fn((message: string) => new Error(message)),
       },
     } as unknown as ContextPlugin;

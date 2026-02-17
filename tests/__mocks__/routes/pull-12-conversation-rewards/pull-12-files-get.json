@@ -1,0 +1,18 @@
+[
+  {
+    "filename": "src/index.ts",
+    "status": "modified",
+    "additions": 5,
+    "deletions": 12,
+    "changes": 17,
+    "patch": "@@ -1 +1 @@"
+  },
+  {
+    "filename": "dist/generated.ts",
+    "status": "modified",
+    "additions": 2,
+    "deletions": 1,
+    "changes": 3,
+    "patch": "@@ -1 +1 @@"
+  }
+]

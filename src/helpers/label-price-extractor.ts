@@ -2,10 +2,14 @@ import { GitHubIssue } from "../github-types";
 import { ContextPlugin } from "../types/plugin-input";
 import { LINKED_ISSUES, PullRequestClosingIssue } from "../types/requests";
 
+type IssueLabel = NonNullable<GitHubIssue["labels"]>[number];
+type ClosingIssueEdge =
+  PullRequestClosingIssue["repository"]["pullRequest"]["closingIssuesReferences"]["edges"][number];
+
 export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
   if (!labels) return [];
   const sortedPriceLabels = labels
-    .reduce((acc, label) => {
+    .reduce((acc: number[], label: IssueLabel) => {
       const labelName = typeof label === "string" ? label : label.name;
       if (labelName?.startsWith("Price: ")) {
         const price = parseFloat(labelName.replace("Price: ", ""));
@@ -15,7 +19,7 @@ export function getSortedPrices(labels: GitHubIssue["labels"] | undefined) {
       }
       return acc;
     }, [] as number[])
-    .sort((a, b) => a - b);
+    .sort((a: number, b: number) => a - b);
   if (!sortedPriceLabels.length) {
     console.warn("There are no price labels in this repository.");
     return [];
@@ -37,9 +41,9 @@ export async function getTaskReward(context: ContextPlugin, issue: GitHubIssue |
       });
 
       const perIssueMinimums = linkedIssues.repository.pullRequest.closingIssuesReferences.edges
-        .map((edge) => getSortedPrices(edge.node.labels?.nodes))
-        .filter((prices) => prices.length)
-        .map((prices) => prices[0]);
+        .map((edge: ClosingIssueEdge) => getSortedPrices(edge.node.labels?.nodes))
+        .filter((prices: number[]) => prices.length)
+        .map((prices: number[]) => prices[0]);
 
       if (perIssueMinimums.length) {
         return Math.max(...perIssueMinimums);

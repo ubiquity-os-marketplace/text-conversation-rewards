@@ -47,16 +47,16 @@ rewards:
 incentives:
   payment:
     automaticTransferMode: false
-  requirePriceLabel: "auto"
+  requirePriceLabel: false
   externalContent:
     llmImageModel:
-      model: meta-llama/llama-3.2-11b-vision-instruct:free
+      maxRetries: 5
     llmWebsiteModel:
-      model: deepseek/deepseek-chat-v3-0324:free
+      maxRetries: 5
   contentEvaluator:
     openAi:
-      endpoint: https://openrouter.ai/api/v1
-      model: deepseek/deepseek-chat-v3-0324:free
+      tokenCountLimit: 124000
+      maxRetries: 5
     multipliers:
       - role:
           - ISSUE_SPECIFICATION

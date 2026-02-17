@@ -232,7 +232,7 @@ export class GithubCommentModule extends BaseModule {
           });
         }
       } else {
-        const errorLog = this.context.logger.error("Issue is non-collaborative. Skipping permit generation.");
+        const errorLog = this.context.logger.warn("Issue is non-collaborative. Skipping permit generation.");
         await this.context.commentHandler.postComment(this.context, errorLog);
       }
     } catch (e) {
@@ -274,7 +274,7 @@ export class GithubCommentModule extends BaseModule {
             <td>${view}</td>
             <td>${contribution}</td>
             <td>${count}</td>
-            <td>${reward || "-"}</td>
+            <td>${reward ?? "-"}</td>
           </tr>`;
     }
 
@@ -283,15 +283,12 @@ export class GithubCommentModule extends BaseModule {
       content.push(buildContributionRow("Issue", taskLabel, result.task.multiplier, result.task.reward));
     }
 
-    if (result.simplificationReward && Object.keys(result.simplificationReward.files).length !== 0) {
-      content.push(
-        buildContributionRow(
-          "Issue",
-          "Task Simplification",
-          1,
-          Object.values(result.simplificationReward.files).reduce((sum, { reward }) => sum + reward, 0)
-        )
+    if (result.simplificationReward && result.simplificationReward.files.length !== 0) {
+      const totalSimplificationReward = result.simplificationReward.files.reduce(
+        (sum, { reward }) => sum.add(reward),
+        new Decimal(0)
       );
+      content.push(buildContributionRow("Issue", "Task Simplification", 1, totalSimplificationReward));
     }
 
     if (result.reviewRewards && this.isPullRequest()) {
@@ -491,12 +488,38 @@ export class GithubCommentModule extends BaseModule {
     return "";
   }
 
+  _createPermitSaveWarning(result: Result[0]) {
+    if (!result.permitSaveErrors?.length) {
+      return "";
+    }
+    const linkUrl = result.permitUrl || result.explorerUrl;
+    const linkLabel = result.permitUrl ? "Claim" : "View";
+    const safeLink = linkUrl ? this._encodeHTML(linkUrl) : "";
+    const rows = result.permitSaveErrors
+      .map((error) => {
+        const amount = error.amount ? this._encodeHTML(error.amount) : "-";
+        const nonce = error.nonce ? this._encodeHTML(error.nonce) : "-";
+        const message = error.message ? this._encodeHTML(error.message) : "Unknown error";
+        const linkCell = safeLink ? `<a href="${safeLink}" target="_blank" rel="noopener">${linkLabel}</a>` : "-";
+        return `<tr><td>${amount}</td><td>${nonce}</td><td>${message}</td><td>${linkCell}</td></tr>`;
+      })
+      .join("");
+    return `<table><thead><tr><th>Amount</th><th>Nonce</th><th>Reason</th><th>Claim</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
   async _createRewardLink(result: Result[0], tokenSymbol: string) {
     if (result.permitUrl || result.explorerUrl) {
       return `<a href="${result.permitUrl || result.explorerUrl}" target="_blank" rel="noopener">[ ${result.total} ${tokenSymbol} ]</a>`;
     }
     const isRewardClaimed = await this.isRewardClaimed(result);
     return `[ ${result.total} ${tokenSymbol} ]${isRewardClaimed ? " ☑️" : ""}`;
+  }
+
+  _createPermitSaveWarningLabel(result: Result[0]) {
+    if (!result.permitSaveErrors?.length) {
+      return "";
+    }
+    return "&nbsp;⚠️ Error saving permit to database";
   }
 
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
@@ -536,11 +559,12 @@ export class GithubCommentModule extends BaseModule {
             &nbsp;
           </h3>
           <h6>
-            @${username}
+            @${username}${this._createPermitSaveWarningLabel(result)}
           </h6>
         </b>
       </summary>
       ${await this._createWalletWarning(username, result.walletAddress)}
+      ${this._createPermitSaveWarning(result)}
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       ${isCapped ? `<h6>⚠️ Your rewards have been limited to the task price of ${taskReward} ${tokenSymbol}.</h6>` : ""}
       <h6>Contributions Overview</h6>

@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import { UserExtractorConfiguration } from "../configuration/user-extractor-config";
-import { GitHubIssue } from "../github-types";
+import { GitHubIssue, GitHubPullRequest } from "../github-types";
 import { getSortedPrices } from "../helpers/label-price-extractor";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
@@ -68,7 +68,9 @@ export class UserExtractorModule extends BaseModule {
     }
 
     // First, try to add all assignees as they didn't necessarily add a comment but should receive a reward
-    data.self?.assignees?.forEach((assignee) => {
+    type IssueAssignee = NonNullable<GitHubIssue["assignees"]>[number];
+    type RequestedReviewer = NonNullable<GitHubPullRequest["requested_reviewers"]>[number];
+    data.self?.assignees?.forEach((assignee: IssueAssignee) => {
       const task = data.self
         ? {
             reward: new Decimal(this._extractTaskPrice(data.self)).mul(this._getTaskMultiplier(data.self)).toNumber(),
@@ -110,7 +112,7 @@ export class UserExtractorModule extends BaseModule {
           };
         }
       });
-      review.self?.requested_reviewers?.forEach((reviewer) => {
+      review.self?.requested_reviewers?.forEach((reviewer: RequestedReviewer) => {
         if (reviewer.type === "User" && reviewer.login) {
           result[reviewer.login] = {
             ...result[reviewer.login],

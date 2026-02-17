@@ -1,10 +1,8 @@
-/* eslint-disable sonarjs/no-nested-functions */
-
-import { server } from "./__mocks__/node";
 import { afterAll, afterEach, beforeAll, expect, it, jest } from "@jest/globals";
-import cfg from "./__mocks__/results/valid-configuration.json";
-import { ContextPlugin } from "../src/types/plugin-input";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { ContextPlugin } from "../src/types/plugin-input";
+import { server } from "./__mocks__/node";
+import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 
 beforeAll(() => server.listen());
@@ -16,35 +14,23 @@ afterAll(() => server.close());
 
 describe("Price tests", () => {
   it("Should skip when no price label is set", async () => {
-    jest.unstable_mockModule("../src/helpers/label-price-extractor", () => {
+    jest.mock("../src/helpers/label-price-extractor", () => {
       return {
         getSortedPrices: jest.fn(() => []),
         getTaskReward: jest.fn(() => 0),
       };
     });
 
-    jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(() => []),
+    }));
+
+    jest.mock("../src/helpers/get-comment-details", () => ({
       getMinimizedCommentStatus: jest.fn(),
     }));
 
-    jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
-      paginateGraphQL() {
-        return {
-          graphql: {
-            paginate() {
-              return {
-                repository: {
-                  issue: {
-                    closedByPullRequestsReferences: {
-                      edges: [],
-                    },
-                  },
-                },
-              };
-            },
-          },
-        };
-      },
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(async () => []),
     }));
 
     const octokit = (await import("@ubiquity-os/plugin-sdk/octokit")).customOctokit;
@@ -88,35 +74,23 @@ describe("Price tests", () => {
   it("Should throw a warning when a Price: 0 label is detected", async () => {
     jest.resetModules();
 
-    jest.unstable_mockModule("../src/helpers/label-price-extractor", () => {
+    jest.mock("../src/helpers/label-price-extractor", () => {
       return {
         getSortedPrices: jest.fn(() => [0]),
         getTaskReward: jest.fn(() => 0),
       };
     });
 
-    jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(() => []),
+    }));
+
+    jest.mock("../src/helpers/get-comment-details", () => ({
       getMinimizedCommentStatus: jest.fn(),
     }));
 
-    jest.unstable_mockModule("@octokit/plugin-paginate-graphql", () => ({
-      paginateGraphQL() {
-        return {
-          graphql: {
-            paginate() {
-              return {
-                repository: {
-                  issue: {
-                    closedByPullRequestsReferences: {
-                      edges: [],
-                    },
-                  },
-                },
-              };
-            },
-          },
-        };
-      },
+    jest.mock("../src/data-collection/collect-linked-pulls", () => ({
+      collectLinkedPulls: jest.fn(async () => []),
     }));
 
     const octokit = (await import("@ubiquity-os/plugin-sdk/octokit")).customOctokit;

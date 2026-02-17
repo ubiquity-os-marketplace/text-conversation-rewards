@@ -44,7 +44,7 @@ export async function getIssue(context: ContextPlugin, params: IssueParams): Pro
 
 export async function getPullRequest(context: ContextPlugin, pullParams: PullParams): Promise<GitHubPullRequest> {
   const { octokit } = context;
-  return (await octokit.rest.pulls.get(pullParams)).data;
+  return (await octokit.rest.pulls.get(pullParams)).data as GitHubPullRequest;
 }
 
 export async function getIssueEvents(context: ContextPlugin, issueParams: IssueParams): Promise<GitHubIssueEvent[]> {

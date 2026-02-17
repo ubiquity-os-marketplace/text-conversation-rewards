@@ -1,4 +1,4 @@
-import { GitHubPullRequestReviewState } from "../github-types";
+import { GitHubPullRequest, GitHubPullRequestReviewState } from "../github-types";
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
 
@@ -25,12 +25,13 @@ export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
     const pullReview = data.linkedMergedPullRequests[0];
     const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
     const assignee = data.self.assignee;
+    type RequestedReviewer = NonNullable<GitHubPullRequest["requested_reviewers"]>[number];
 
     if (pullReview.reviews && pullRequest) {
       for (const review of pullReview.reviews) {
         const isReviewRequestedForUser =
           "requested_reviewers" in pullRequest &&
-          pullRequest.requested_reviewers?.some((o) => o.id === review.user?.id);
+          pullRequest.requested_reviewers?.some((reviewer: RequestedReviewer) => reviewer.id === review.user?.id);
         if (!isReviewRequestedForUser && review.user?.id) {
           reviewsByNonAssignee.push(review);
         }

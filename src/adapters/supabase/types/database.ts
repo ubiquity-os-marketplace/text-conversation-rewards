@@ -367,8 +367,10 @@ export type Database = {
           deadline: string;
           id: number;
           location_id: number | null;
+          network_id: number | null;
           nonce: string;
           partner_id: number | null;
+          permit2_address: string | null;
           signature: string;
           token_id: number | null;
           transaction: string | null;
@@ -381,8 +383,10 @@ export type Database = {
           deadline: string;
           id?: number;
           location_id?: number | null;
+          network_id?: number | null;
           nonce: string;
           partner_id?: number | null;
+          permit2_address?: string | null;
           signature: string;
           token_id?: number | null;
           transaction?: string | null;
@@ -395,8 +399,10 @@ export type Database = {
           deadline?: string;
           id?: number;
           location_id?: number | null;
+          network_id?: number | null;
           nonce?: string;
           partner_id?: number | null;
+          permit2_address?: string | null;
           signature?: string;
           token_id?: number | null;
           transaction?: string | null;
@@ -662,6 +668,21 @@ export type Database = {
           secret_name: string;
         };
         Returns: string;
+      };
+      upsert_permit_max: {
+        Args: {
+          p_amount: string;
+          p_nonce: string;
+          p_deadline: string;
+          p_signature: string;
+          p_beneficiary_id: number;
+          p_location_id: number | null;
+          p_token_id: number | null;
+          p_partner_id: number;
+          p_network_id: number;
+          p_permit2_address: string;
+        };
+        Returns: undefined;
       };
     };
     Enums: {

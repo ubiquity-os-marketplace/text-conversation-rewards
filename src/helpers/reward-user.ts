@@ -19,13 +19,19 @@ class CloseRewardModule extends BaseModule {
     const closingUser = this.context.payload.sender?.login;
 
     if (closingUser) {
+      const issueUrl =
+        data.self?.html_url ?? ("issue" in this.context.payload ? this.context.payload.issue?.html_url : undefined);
+      if (!issueUrl) {
+        this.context.logger.warn("Missing issue URL for closing reward; skipping reward entry.");
+        return Promise.resolve(result);
+      }
       result = {
         [closingUser]: {
           task: {
             reward: this.context.config.incentives.closeTaskReward.rewardAmount,
             multiplier: 1,
             timestamp: new Date().toISOString(),
-            url: data.self?.html_url ?? "",
+            url: issueUrl,
             category: "stale",
           },
           total: 0,
@@ -73,7 +79,7 @@ export async function tryCreatingClosingReward(context: ContextPlugin<"issues.cl
     const result = await processor.run(activity);
     return JSON.stringify(result);
   }
-  return logger.info("Issue does not meet criteria for closing reward. Skipping.", {
+  return logger.debug("Issue does not meet criteria for closing reward. Skipping.", {
     stalenessDuration: config.incentives.closeTaskReward.stalenessDuration,
     dateDiff: `${dateDiff / (1000 * 60 * 60 * 24)} days`,
     taskReward,

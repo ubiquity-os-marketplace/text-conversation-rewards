@@ -64,7 +64,7 @@ export class Location extends Super {
         .select("id")
         .single();
       if (!newLocationData || error) {
-        this.context.logger.error("Failed to create a new location", error);
+        this.context.logger.error("Failed to create a new location", { err: error });
       } else {
         locationId = newLocationData.id;
         this.locationId = locationId;

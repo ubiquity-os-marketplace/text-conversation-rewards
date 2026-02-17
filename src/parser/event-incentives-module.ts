@@ -1,4 +1,4 @@
-import { RestEndpointMethodTypes } from "@octokit/rest";
+import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import { Value } from "@sinclair/typebox/value";
 import {
   EventIncentivesConfiguration,

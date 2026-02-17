@@ -1,6 +1,10 @@
 import { CommentAssociation, CommentKind } from "./configuration/comment-types";
 import { DataCollectionConfiguration } from "./configuration/data-collection-config";
-import { ClosedByPullRequestsReferences, collectLinkedPulls } from "./data-collection/collect-linked-pulls";
+import {
+  ClosedByPullRequestsReferences,
+  collectLinkedPulls,
+  LinkedPullRequest,
+} from "./data-collection/collect-linked-pulls";
 import {
   GitHubIssue,
   GitHubIssueComment,
@@ -55,7 +59,7 @@ export class IssueActivity {
 
   async init() {
     if (this.self) {
-      this._context.logger.info("The Issue Activity is already initialized.");
+      this._context.logger.debug("The Issue Activity is already initialized.");
       return;
     }
     try {
@@ -92,7 +96,7 @@ export class IssueActivity {
   }
 
   private async _getLinkedPullRequests(): Promise<PullRequest[]> {
-    this._context.logger.debug("Trying to fetch linked pull-requests for", this._issueParams);
+    this._context.logger.info("Trying to fetch linked pull-requests for", this._issueParams);
 
     const pulls: string[] = [];
     if (isPullRequestEvent(this._context)) {
@@ -106,32 +110,32 @@ export class IssueActivity {
               .map((assignee) => assignee?.login)
               .filter((login): login is string => Boolean(login))
           : [];
-      pulls.push(
-        ...(await collectLinkedPulls(this._context, this._issueParams))
-          .filter((pullRequest) => {
-            // This can happen when a user deleted its account
-            if (!pullRequest?.author?.login) {
-              return false;
-            }
-            if (pullRequest.state !== "MERGED") {
-              return false;
-            }
+      const linkedPulls: LinkedPullRequest[] = await collectLinkedPulls(this._context, this._issueParams);
+      const linkedPullUrls = linkedPulls
+        .filter((pullRequest) => {
+          // This can happen when a user deleted its account
+          if (!pullRequest?.author?.login) {
+            return false;
+          }
+          if (pullRequest.state !== "MERGED") {
+            return false;
+          }
 
-            const specialUserGroups = this._context.config.incentives.specialUsers ?? [];
-            return issueAssigneeLogins.some((assigneeLogin) =>
-              areLoginsEquivalent(assigneeLogin, pullRequest.author.login, specialUserGroups)
-            );
-          })
-          .map((pullRequest) => pullRequest.url)
-      );
+          const specialUserGroups = this._context.config.incentives.specialUsers ?? [];
+          return issueAssigneeLogins.some((assigneeLogin) =>
+            areLoginsEquivalent(assigneeLogin, pullRequest.author.login, specialUserGroups)
+          );
+        })
+        .map((pullRequest) => pullRequest.url);
+      pulls.push(...linkedPullUrls);
     }
-    this._context.logger.debug(`Collected linked pull-requests: ${pulls.join(", ")}`);
+    this._context.logger.info(`Collected linked pull-requests: ${pulls.join(", ")}`);
 
     const promises = pulls
       .map(async (pull) => {
         const { owner, repo, issue_number } = parseGitHubUrl(pull);
         if (!owner) {
-          this._context.logger.error(`No repository found.`, { pull });
+          this._context.logger.warn(`No repository found.`, { pull });
           return null;
         } else {
           const pullParams = {

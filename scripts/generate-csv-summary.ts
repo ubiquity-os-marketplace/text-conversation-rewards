@@ -36,7 +36,7 @@ async function readResultsDirectory(dirPath: string): Promise<string[]> {
 }
 
 function parseFilename(filename: string): { organization: string; repository: string; issueNumber: string } | null {
-  const filenameWithoutExt = filename.replace(".json", "");
+  const filenameWithoutExt = filename.endsWith(".json") ? filename.slice(0, -".json".length) : filename;
   const parts = filenameWithoutExt.split("_");
 
   if (parts.length < 3) {
@@ -44,8 +44,8 @@ function parseFilename(filename: string): { organization: string; repository: st
     return null;
   }
 
-  const issueNumber = parts.pop() ?? "";
-  const repository = parts.pop() ?? "";
+  const issueNumber = parts.pop();
+  const repository = parts.pop();
   const organization = parts.join("_");
 
   if (!organization || !repository || !issueNumber) {

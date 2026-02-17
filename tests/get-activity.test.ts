@@ -9,7 +9,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 const issueUrl =
   process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/issues/22";
 
-jest.unstable_mockModule("../src/helpers/get-comment-details", () => ({
+jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
 }));
 

@@ -16,6 +16,8 @@ export type ClosedByPullRequestsReferences = {
   };
 };
 
+export type LinkedPullRequest = ClosedByPullRequestsReferences["node"];
+
 type IssueWithClosedByPrs = {
   repository: {
     issue: {
@@ -30,12 +32,14 @@ export async function collectLinkedPulls(context: ContextPlugin, issue: IssuePar
   const { octokit } = context;
   const { owner, repo, issue_number } = issue;
 
-  const result = await octokit.graphql.paginate<IssueWithClosedByPrs>(LINKED_PULL_REQUESTS, {
+  const result = (await octokit.graphql.paginate<IssueWithClosedByPrs>(LINKED_PULL_REQUESTS, {
     owner,
     repo,
     issue_number,
     $include_closed_prs: includeClosed,
-  });
+  })) as IssueWithClosedByPrs;
 
-  return result.repository.issue.closedByPullRequestsReferences.edges.map((edge) => edge.node);
+  return result.repository.issue.closedByPullRequestsReferences.edges.map(
+    (edge: ClosedByPullRequestsReferences) => edge.node
+  );
 }
