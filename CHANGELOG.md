@@ -1,5 +1,67 @@
 # Changelog
 
+## 1.0.0 (2026-02-17)
+
+
+### Features
+
+* ai.ubq.fi integration ([195089c](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/195089ca835a9fb34e90c4d2730ef8c777a46d63))
+* default-enable incentives modules ([5dd0355](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/5dd03557a9125b4b8b5506c55289286c9d6ed957))
+* enhance reward logic with user extraction module ([c36aba9](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c36aba98c1abc1fcbf2a9a5c45b72494ddae8eb0))
+
+
+### Bug Fixes
+
+* accept kernelPublicKey input ([6caa288](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/6caa288be16e264de9295fc9b93c237a6ac164c8))
+* add support for special user login aliases ([4fcbc6e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/4fcbc6e0620a287eb4bc0df88ebe604c992cd0ac))
+* address lint and knip failures ([65d7ed1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/65d7ed1de7bdb3d4de1c7937224ce0e33049fd1c))
+* address review feedback ([4bf819e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/4bf819ea0724305c472d61f084eaace9630cd0fa))
+* address review feedback and stabilize tests ([cf1840e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/cf1840e75aea93648aec662f61a5eae7306977ce))
+* adjust role resolution and add missing treasury item handling ([9698f5a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/9698f5ab3d66029454d8b0e8478dc32500452e82))
+* aggregate permit save failures ([696efe1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/696efe1e6c44b15a820055a5d0eeceb30edaa0f4))
+* clamp flesch readability score ([833fc85](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/833fc852a73f87b66e6f41d7a2d2ef71133e84cd))
+* clamp flesch readability score ([32119d4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/32119d4cb5d759b94d454360651edc5cbff12293))
+* correct logger message and import placement ([cf975fd](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/cf975fd33571c77527f8fba338631e57c9953053))
+* display file additions in GitHub comments table ([cfddba6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/cfddba6094dec77c5715a707594dac629457057a))
+* do not persist 0 amount permits ([6f152c2](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/6f152c2462c421b47dabef9ac4c50bfa925ba519))
+* do not persist 0 amount permits ([56a9cb7](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/56a9cb792d34b206b19133d53f695021fd96faf0))
+* enhance JSON parsing for LLM responses ([ff9bfc8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ff9bfc8f10fa750bf5dd717bf9fc014c19563f42))
+* fail run when permit persistence fails ([7e2061f](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7e2061fe9c4e44c5ea5e5b6ff4d2b59f8cad1ef2))
+* guard price label edits ([d4ad0d4](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d4ad0d416f59c1e64e3577baebcccf59fe8ce1d6))
+* handle token limit overflow in comment evaluation ([2254ed9](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2254ed93eaa68040fe3e7917216a7a3059736a5a))
+* pass context to get all comments in data purge ([636b86e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/636b86ece27b618ef6a5cbe0a1ae9a2feece5e4e))
+* pass userId to comment evaluation methods for user-specific relevance scoring ([d6a5bc6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d6a5bc6c066ea15266d72662a144e71960759ff0))
+* **permits:** add nonce upsert fallback ([163f2ef](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/163f2ef3d78f0cfc1edef49591807fb49a89e484))
+* **permits:** add nonce upsert fallback ([c8dcf27](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c8dcf274c6e17a1a658cca04d31e19168f3d7f48))
+* **permits:** address review feedback ([27198ba](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/27198ba88b9d2e328d55f9ff513c53563d064354))
+* **permits:** align upsert guards ([bff69b1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bff69b13782026300a08631ec2344ffdf92eda61))
+* **permits:** clarify missing metadata ([bef912e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bef912ef536fc964354e8f7aa545f3ddc2344b21))
+* **permits:** enforce lowercased addresses ([d8bb8fd](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d8bb8fdf5ddf52454adfe1d0486ad7140b6f887b))
+* **permits:** fallback on rpc auth ([161740d](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/161740d96604ec1768c2e5101b13cc90e0409891))
+* **permits:** guard fallback races ([2d617f7](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/2d617f7dde1d5f4a25967c5b2d9cfc13ddadad70))
+* **permits:** handle fallback duplicates ([1db3145](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1db314525546f2b09a2fafe485f70425e6f4eb0d))
+* **permits:** harden upsert fallback ([66732e8](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/66732e8f968e9a8b0ca9b4e54b99ea070384ff3f))
+* **permits:** preserve fallback max logic ([bea6ac6](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bea6ac6de5cd0e093bac9c580e3e8bad2da81b11))
+* **permits:** refine fallback handling ([d93de0a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d93de0a3eec9b7b6ecf1b59216dfd822832f6d44))
+* **permits:** restore rollback unique index ([48dcb77](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/48dcb771e8ad6f521370f4b41fc7f6caa4da7716))
+* **permits:** retry fallback update ([70a010e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/70a010e2973e41112ee86462c7b288fad987e4f4))
+* **permits:** simplify upsert handling ([bbf27fa](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/bbf27fab31365291c9653aa964be7f520aeeae2d))
+* **permits:** tighten upsert guards ([47c7612](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/47c7612152b2bc5cfbb8027c0502d1f027eee50a))
+* pin manifest workflow to issue-27 deploy action ([1b7f85e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/1b7f85ece1d844fab9e8b56a617b23a2130b8fd8))
+* refine comment filtering to exclude specification-associated comments and add sorting by ID ([ace76aa](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/ace76aa11900f2cc8a3ccea08f724f5437c9edd8))
+* refine handling of review tasks in comment processing ([d486b2e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/d486b2e246447d52743cd535b72248c514bf2227))
+* resolve build and env type errors ([40ff1cd](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/40ff1cd38086f1d69df83f718d4799e4baf15fb7))
+* resolve implicit any build errors ([a736450](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/a7364500b767edcac1eba18d166b06bab2a68b5e))
+* round task simplification rewards ([668fe26](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/668fe26769ecd043cfa375829eb4527f113b97f4))
+* should be warn ([e720c98](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/e720c9832e41541cf383e1dd57b4df6819be4c8f))
+* surface permit persistence failures ([44c5d59](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/44c5d59616789001ebabe5994cd0a4052e34b016))
+* sync manifest workflow metadata for issue 27 ([8147d0a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/8147d0af1f319e5c1d5f4552574abf5be5ae31d8))
+* sync workflow skipBotEvents and parameter metadata ([cce350e](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/cce350e69d0389a13f39a0244d18ec0a0d97e567))
+* **tests:** satisfy lint rules ([575cb51](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/575cb516dfaf7b055606f400409ea704cc1dee06))
+* type review and price checks ([eca338b](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/eca338b1c431d753da3b76c6368de3500a89410d))
+* update role resolution logic to account for missing roles ([410e71a](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/410e71a74f2c17d012415cdcbf13aa96e6402aaf))
+* validate user permissions for generating rewards in review flow ([74fcbcc](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/74fcbcc2ac4528ea604619dc9852be1262056819))
+
 ## [1.7.9](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.7.8...v1.7.9) (2025-11-27)
 
 
