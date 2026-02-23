@@ -20,7 +20,7 @@
     "dev": "bun --watch src/index.ts",
     "server": "bun --watch --no-clear-screen src/web/api/index.ts",
     "fetch-rpcs": "mkdir -p src/types && bun -e \"await Bun.write('src/types/rpcs.json', await (await fetch('https://chainlist.org/rpcs.json')).text())\"",
-    "prepare:manifest": "node ./scripts/prepare-manifest.mjs",
+    "prepare:manifest": "curl -fsSL https://raw.githubusercontent.com/ubiquity-os/action-deploy-plugin/main/.github/scripts/update-manifest.js | node - .",
     "prebuild": "bun run prepare:manifest",
     "predev": "bun run prepare:manifest"
   },

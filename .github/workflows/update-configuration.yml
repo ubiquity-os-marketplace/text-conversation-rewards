@@ -12,7 +12,7 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: ubiquity-os/action-deploy-plugin@feat/320-dist-artifact-branches
+      - uses: ubiquity-os/action-deploy-plugin
         with:
           action: ${{ github.event_name == 'delete' && 'delete' || 'publish' }}
           sourceRef: ${{ github.event.ref || github.event.workflow_run.head_branch || github.ref_name }}
