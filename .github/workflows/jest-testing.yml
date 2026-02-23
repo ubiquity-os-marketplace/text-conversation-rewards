@@ -33,9 +33,6 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
       - name: Jest With Coverage
         # we install with bun but test with Jest because bun doesn't support network mocking yet
         run: bun install && bun run jest:test
