@@ -18,6 +18,9 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: Install toolchain
         run: bun install
 
