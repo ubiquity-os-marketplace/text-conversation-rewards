@@ -16,3 +16,5 @@ output.html
 results
 src/types/rpcs.json
 invalid-issues.json
+manifest.json
+dist/
