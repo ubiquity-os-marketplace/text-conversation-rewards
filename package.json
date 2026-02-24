@@ -20,7 +20,7 @@
     "dev": "bun --watch src/index.ts",
     "server": "bun --watch --no-clear-screen src/web/api/index.ts",
     "fetch-rpcs": "mkdir -p src/types && bun -e \"await Bun.write('src/types/rpcs.json', await (await fetch('https://chainlist.org/rpcs.json')).text())\"",
-    "prepare:manifest": "bunx @ubiquity-os/plugin-manifest-tool@latest .",
+    "prepare:manifest": "MANIFEST_PATH=${MANIFEST_PATH:-manifest.json} GITHUB_WORKSPACE=${GITHUB_WORKSPACE:-.} GITHUB_REPOSITORY=${GITHUB_REPOSITORY:-local/${npm_package_name:-plugin}} GITHUB_REF_NAME=${GITHUB_REF_NAME:-local} bunx @ubiquity-os/plugin-manifest-tool@latest",
     "prebuild": "bun run prepare:manifest",
     "predev": "bun run prepare:manifest"
   },
