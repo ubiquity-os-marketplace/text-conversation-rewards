@@ -1,18 +1,46 @@
+/**
+ * Fix: Exclude bot accounts from collaboration checks
+ * 
+ * Issue: https://github.com/ubiquity-os-marketplace/text-conversation-rewards/issues/455
+ * 
+ * Problem: Bot accounts (github-actions[bot], dependabot[bot], etc.) were being
+ * counted as human collaborators, allowing reward generation without human oversight.
+ * 
+ * Solution: Add isBot() check and exclude bot participation from collaboration logic.
+ */
+
 import { GitHubPullRequest, GitHubPullRequestReviewState } from "../github-types";
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
+
+/**
+ * Check if a user is a bot account
+ * GitHub bot accounts have type "Bot" or login ending with "[bot]"
+ */
+export function isBot(user: { login: string; type?: string } | null | undefined): boolean {
+  if (!user) return false;
+  return user.type === "Bot" || user.login.endsWith("[bot]");
+}
 
 export function isCollaborative(data: Readonly<IssueActivity>) {
   if (!data.self?.closed_by || !data.self.user) return false;
   const issueCreator = data.self.user;
 
+  // If issue was closed by a bot (not admin), it's not collaborative
+  if (isBot(data.self.closed_by)) {
+    // Unless there's human approval via PR review
+    return !!nonAssigneeApprovedReviews(data);
+  }
+
   if (data.self.closed_by.id === issueCreator.id) {
+    // Find pricing events by non-assignee humans (exclude bots)
     const pricingEventsByNonAssignee = data.events.find(
       (event) =>
         event.event === "labeled" &&
         "label" in event &&
         (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id
+        event.actor.id !== issueCreator.id &&
+        !isBot(event.actor)
     );
     return !!pricingEventsByNonAssignee || !!nonAssigneeApprovedReviews(data);
   }
@@ -29,6 +57,11 @@ export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
 
     if (pullReview.reviews && pullRequest) {
       for (const review of pullReview.reviews) {
+        // Skip bot reviews - they don't count as human collaboration
+        if (isBot(review.user)) {
+          continue;
+        }
+        
         const isReviewRequestedForUser =
           "requested_reviewers" in pullRequest &&
           pullRequest.requested_reviewers?.some((reviewer: RequestedReviewer) => reviewer.id === review.user?.id);
