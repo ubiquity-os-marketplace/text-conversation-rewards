@@ -34,11 +34,13 @@ export interface DifferentialResult {
 
 export class DifferentialDistribution {
   private readonly _supabase;
+  private readonly _context;
 
-  constructor(private readonly context: ContextPlugin) {
+  constructor(context: ContextPlugin) {
+    this._context = context;
     this._supabase = createClient<Database>(
-      this.context.env.SUPABASE_URL,
-      this.context.env.SUPABASE_KEY
+      this._context.env.SUPABASE_URL,
+      this._context.env.SUPABASE_KEY
     );
   }
 
@@ -53,8 +55,14 @@ export class DifferentialDistribution {
     result: Result
   ): Promise<DifferentialResult[]> {
     const issueId = this._extractIssueId(data);
+    const repoId = this._extractRepoId();
+    
     if (!issueId) {
-      this.context.logger.warn("Could not extract issue ID for differential calculation");
+      this._context.logger.warn("Could not extract issue ID for differential calculation");
+      return [];
+    }
+    if (!repoId) {
+      this._context.logger.warn("Could not extract repo ID for differential calculation");
       return [];
     }
 
@@ -66,6 +74,7 @@ export class DifferentialDistribution {
       }
 
       const previousTotal = await this._getPreviousDistributedAmount(
+        repoId,
         issueId,
         rewardData.userId
       );
@@ -81,7 +90,7 @@ export class DifferentialDistribution {
         shouldPay
       });
 
-      this.context.logger.info(`Differential calculation for ${username}:`, {
+      this._context.logger.info(`Differential calculation for ${username}:`, {
         previousTotal,
         newAmount: rewardData.total,
         difference,
@@ -101,6 +110,13 @@ export class DifferentialDistribution {
   ): Promise<Result> {
     const differentials = await this.calculateDifferentials(data, result);
     const filteredResult: Result = {};
+    const issueId = this._extractIssueId(data);
+    const repoId = this._extractRepoId();
+    
+    if (!issueId || !repoId) {
+      this._context.logger.warn("Could not extract IDs for filtering");
+      return {};
+    }
 
     for (const diff of differentials) {
       if (diff.shouldPay && result[diff.username]) {
@@ -113,15 +129,13 @@ export class DifferentialDistribution {
             previousTotal: diff.previousTotal,
             newAmount: diff.newAmount,
             difference: diff.difference,
-            distributionRound: await this._getNextDistributionRound(
-              this._extractIssueId(data)!
-            )
+            distributionRound: await this._getNextDistributionRound(repoId, issueId)
           }
         };
       }
     }
 
-    this.context.logger.info(`Filtered from ${Object.keys(result).length} to ${Object.keys(filteredResult).length} beneficiaries`);
+    this._context.logger.info(`Filtered from ${Object.keys(result).length} to ${Object.keys(filteredResult).length} beneficiaries`);
 
     return filteredResult;
   }
@@ -130,6 +144,7 @@ export class DifferentialDistribution {
    * Record a distribution in the database
    */
   async recordDistribution(
+    repoId: number,
     issueId: number,
     locationId: number,
     beneficiaryId: number,
@@ -142,6 +157,7 @@ export class DifferentialDistribution {
       const { data: result, error } = await this._supabase.rpc(
         'insert_distribution',
         {
+          p_repo_id: repoId,
           p_issue_id: issueId,
           p_location_id: locationId,
           p_beneficiary_id: beneficiaryId,
@@ -153,7 +169,7 @@ export class DifferentialDistribution {
       );
 
       if (error) {
-        this.context.logger.error("Failed to record distribution", { error });
+        this._context.logger.error("Failed to record distribution", { error });
         return { success: false, distributionRound: 0, error: error.message };
       }
 
@@ -162,7 +178,7 @@ export class DifferentialDistribution {
         distributionRound: result?.distribution_round || 0
       };
     } catch (e) {
-      this.context.logger.error("Exception while recording distribution", { e });
+      this._context.logger.error("Exception while recording distribution", { e });
       return { success: false, distributionRound: 0, error: String(e) };
     }
   }
@@ -171,23 +187,25 @@ export class DifferentialDistribution {
    * Get the total amount previously distributed to a beneficiary for an issue
    */
   private async _getPreviousDistributedAmount(
+    repoId: number,
     issueId: number,
     beneficiaryId: number
   ): Promise<number> {
     try {
       const { data, error } = await this._supabase.rpc('get_total_distributed', {
+        p_repo_id: repoId,
         p_issue_id: issueId,
         p_beneficiary_id: beneficiaryId
       });
 
       if (error) {
-        this.context.logger.warn("Could not fetch previous distribution amount", { error });
+        this._context.logger.warn("Could not fetch previous distribution amount", { error });
         return 0;
       }
 
       return Number(data) || 0;
     } catch (e) {
-      this.context.logger.warn("Exception fetching previous distribution", { e });
+      this._context.logger.warn("Exception fetching previous distribution", { e });
       return 0;
     }
   }
@@ -195,20 +213,21 @@ export class DifferentialDistribution {
   /**
    * Get the next distribution round number for an issue
    */
-  private async _getNextDistributionRound(issueId: number): Promise<number> {
+  private async _getNextDistributionRound(repoId: number, issueId: number): Promise<number> {
     try {
       const { data, error } = await this._supabase.rpc('get_latest_distribution_round', {
+        p_repo_id: repoId,
         p_issue_id: issueId
       });
 
       if (error) {
-        this.context.logger.warn("Could not fetch distribution round", { error });
+        this._context.logger.warn("Could not fetch distribution round", { error });
         return 1;
       }
 
       return (Number(data) || 0) + 1;
     } catch (e) {
-      this.context.logger.warn("Exception fetching distribution round", { e });
+      this._context.logger.warn("Exception fetching distribution round", { e });
       return 1;
     }
   }
@@ -224,6 +243,17 @@ export class DifferentialDistribution {
     const url = data.self?.html_url || '';
     const match = url.match(/\/issues\/(\d+)$/);
     return match ? parseInt(match[1], 10) : null;
+  }
+
+  /**
+   * Extract repository ID from context
+   */
+  private _extractRepoId(): number | null {
+    const repo = this._context.payload?.repository;
+    if (repo?.id) {
+      return repo.id;
+    }
+    return null;
   }
 
   /**
