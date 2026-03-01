@@ -5,10 +5,10 @@
  */
 
 import { describe, it, expect, jest, beforeEach } from "@jest/globals";
-import { DifferentialDistribution, DifferentialResult } from "../src/parser/differential-distribution";
-import { Result } from "../src/types/results";
-import { IssueActivity } from "../src/issue-activity";
-import { ContextPlugin } from "../src/types/plugin-input";
+import { DifferentialDistribution, DifferentialResult } from "../../src/parser/differential-distribution";
+import { Result } from "../../src/types/results";
+import { IssueActivity } from "../../src/issue-activity";
+import { ContextPlugin } from "../../src/types/plugin-input";
 
 // Mock Supabase client
 jest.mock("@supabase/supabase-js", () => ({
@@ -128,7 +128,8 @@ describe("DifferentialDistribution", () => {
       // Mock previous distributions
       mockSupabaseRpc
         .mockResolvedValueOnce({ data: 100, error: null }) // user1
-        .mockResolvedValueOnce({ data: 50, error: null });  // user2
+        .mockResolvedValueOnce({ data: 50, error: null })   // user2
+        .mockResolvedValueOnce({ data: 0, error: null });   // user3 (no previous)
 
       const mockData = {
         self: {
