@@ -6,6 +6,7 @@ begin;
 -- Create distribution_history table to track all reward distributions per issue
 create table if not exists public.distribution_history (
   id bigint primary key generated always as identity,
+  repo_id bigint not null,
   issue_id bigint not null,
   location_id bigint not null references public.locations(id),
   beneficiary_id bigint not null references public.users(id),
@@ -15,12 +16,13 @@ create table if not exists public.distribution_history (
   permit_id bigint references public.permits(id),
   distribution_round integer not null default 1,
   created timestamptz not null default now(),
-  updated timestamptz not null default now()
+  updated timestamptz not null default now(),
+  unique (repo_id, issue_id, beneficiary_id, distribution_round)
 );
 
--- Index for fast lookup by issue and beneficiary
-create index if not exists distribution_history_issue_beneficiary_idx 
-  on public.distribution_history (issue_id, beneficiary_id);
+-- Index for fast lookup by repo, issue and beneficiary
+create index if not exists distribution_history_repo_issue_beneficiary_idx 
+  on public.distribution_history (repo_id, issue_id, beneficiary_id);
 
 -- Index for lookup by location
 create index if not exists distribution_history_location_idx 
@@ -32,6 +34,7 @@ comment on column public.distribution_history.distribution_round is 'Round numbe
 
 -- Function to get total distributed amount for a beneficiary on an issue
 create or replace function public.get_total_distributed(
+  p_repo_id bigint,
   p_issue_id bigint,
   p_beneficiary_id bigint
 ) returns numeric
@@ -44,7 +47,8 @@ begin
   select coalesce(sum(amount), 0)
   into v_total
   from public.distribution_history
-  where issue_id = p_issue_id
+  where repo_id = p_repo_id
+    and issue_id = p_issue_id
     and beneficiary_id = p_beneficiary_id;
   
   return v_total;
@@ -53,6 +57,7 @@ $$;
 
 -- Function to get the latest distribution round for an issue
 create or replace function public.get_latest_distribution_round(
+  p_repo_id bigint,
   p_issue_id bigint
 ) returns integer
 language plpgsql
@@ -64,7 +69,8 @@ begin
   select coalesce(max(distribution_round), 0)
   into v_round
   from public.distribution_history
-  where issue_id = p_issue_id;
+  where repo_id = p_repo_id
+    and issue_id = p_issue_id;
   
   return v_round;
 end;
@@ -72,6 +78,7 @@ $$;
 
 -- Function to insert distribution record with differential calculation
 create or replace function public.insert_distribution(
+  p_repo_id bigint,
   p_issue_id bigint,
   p_location_id bigint,
   p_beneficiary_id bigint,
@@ -89,11 +96,11 @@ declare
   v_result jsonb;
 begin
   -- Get previous total distributed amount
-  select public.get_total_distributed(p_issue_id, p_beneficiary_id)
+  select public.get_total_distributed(p_repo_id, p_issue_id, p_beneficiary_id)
   into v_previous_total;
   
   -- Get next distribution round
-  select public.get_latest_distribution_round(p_issue_id) + 1
+  select public.get_latest_distribution_round(p_repo_id, p_issue_id) + 1
   into v_round;
   
   -- Calculate difference (only positive differences should be processed)
@@ -102,6 +109,7 @@ begin
   -- Only insert if there's a positive difference
   if v_difference > 0 then
     insert into public.distribution_history (
+      repo_id,
       issue_id,
       location_id,
       beneficiary_id,
@@ -111,6 +119,7 @@ begin
       permit_id,
       distribution_round
     ) values (
+      p_repo_id,
       p_issue_id,
       p_location_id,
       p_beneficiary_id,
