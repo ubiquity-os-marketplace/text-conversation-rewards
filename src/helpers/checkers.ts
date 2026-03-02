@@ -2,6 +2,14 @@ import { GitHubPullRequest } from "../github-types";
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
 
+/**
+ * Determines whether an issue closure includes collaboration from another human contributor.
+ *
+ * A task is collaborative when either:
+ * - the closer differs from the issue creator, or
+ * - a different human changed pricing labels, or
+ * - a non-assignee human approved a linked merged pull request.
+ */
 export function isCollaborative(data: Readonly<IssueActivity>) {
   if (!data.self?.closed_by || !data.self.user) return false;
   const issueCreator = data.self.user;
@@ -12,14 +20,18 @@ export function isCollaborative(data: Readonly<IssueActivity>) {
         event.event === "labeled" &&
         "label" in event &&
         (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id &&
-        event.actor.type === "User"
+        event.actor?.id !== issueCreator.id &&
+        event.actor?.type === "User"
     );
     return !!pricingEventsByDifferentHuman || nonAssigneeApprovedReviews(data);
   }
   return true;
 }
 
+/**
+ * Returns whether any linked merged pull request has an approval from a non-assignee human.
+ * Requested reviewers are ignored to avoid counting self-requests as collaboration.
+ */
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
   if (!data.linkedMergedPullRequests[0]) {
     return false;

@@ -59,6 +59,20 @@ describe("isCollaborative", () => {
     expect(isCollaborative(activity)).toBe(true);
   });
 
+  it("returns false when pricing label actor is missing", () => {
+    const activity = buildActivity({
+      events: [
+        {
+          event: "labeled",
+          label: { name: "Priority: 2 (Medium)" },
+          actor: null,
+        },
+      ],
+    });
+
+    expect(isCollaborative(activity)).toBe(false);
+  });
+
   it("does not treat empty non-assignee review matches as collaborative", () => {
     const activity = buildActivity({
       linkedMergedPullRequests: [
@@ -95,6 +109,33 @@ describe("isCollaborative", () => {
 
     expect(nonAssigneeApprovedReviews(activity)).toBe(true);
     expect(isCollaborative(activity)).toBe(true);
+  });
+
+  it("returns false when approval exists only on the second linked merged pull", () => {
+    const activity = buildActivity({
+      linkedMergedPullRequests: [
+        {
+          self: { requested_reviewers: [] },
+          reviews: [
+            {
+              state: "COMMENTED",
+              user: { id: 2, type: "User" },
+            },
+          ],
+        },
+        {
+          self: { requested_reviewers: [] },
+          reviews: [
+            {
+              state: "APPROVED",
+              user: { id: 3, type: "User" },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(nonAssigneeApprovedReviews(activity)).toBe(false);
   });
 
   it("returns true when closer is not issue creator", () => {
