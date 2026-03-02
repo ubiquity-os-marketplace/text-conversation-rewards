@@ -57,6 +57,37 @@ export class IssueActivity {
   linkedMergedPullRequests: PullRequest[] = [];
   linkedIssues: ClosedByPullRequestsReferences[] = [];
 
+  /**
+   * Check if the issue has been reopened (was closed, then opened again, then closed again)
+   */
+  public hasBeenReopened(): boolean {
+    const reopenedEvents = this.events.filter((event) => event.event === "reopened");
+
+    // Issue was reopened if: closed -> reopened -> closed (multiple times)
+    // We check if there's at least one reopen event and the most recent event is closed
+    if (reopenedEvents.length === 0) {
+      return false;
+    }
+
+    // Check if most recent state change is closed (meaning it's closed now after being reopened)
+    const lastStateEvent = this.events
+      .filter((event) => event.event === "closed" || event.event === "reopened")
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+
+    return lastStateEvent?.event === "closed";
+  }
+
+  /**
+   * Get the timestamp of the most recent reopen event
+   */
+  public getLastReopenedAt(): Date | null {
+    const reopenedEvents = this.events
+      .filter((event) => event.event === "reopened")
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    return reopenedEvents.length > 0 ? new Date(reopenedEvents[0].created_at) : null;
+  }
+
   async init() {
     if (this.self) {
       this._context.logger.debug("The Issue Activity is already initialized.");
