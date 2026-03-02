@@ -142,41 +142,41 @@ export class PaymentModule extends BaseModule {
   }
 
   /**
-   * Load previous rewards from the database for an issue
+   * Load previous rewards from the database for a specific issue
    */
   private async _loadPreviousRewards(
     issueNodeId: string
   ): Promise<Record<string, { total: number; paid: boolean }> | null> {
     try {
-      // Query permits table for this issue - using location_id to find permits for this issue
+      // Query permits table for this specific issue using location_id
       const { data: permits, error } = await this._supabase
         .from("permits")
-        .select("id, amount, beneficiary_id, location_id");
+        .select("id, amount, beneficiary_id, location_id")
+        .like("location_id", `%${issueNodeId}%`);
 
       if (error || !permits || permits.length === 0) {
         this.context.logger.debug("No previous rewards found for this issue", { issueNodeId });
         return null;
       }
 
-      // Build a map of previous rewards by beneficiary (simplified - just tracking amounts)
+      // Build a map of previous rewards by user ID (as string key)
       const previousRewards: Record<string, { total: number; paid: boolean }> = {};
 
-      // Note: In a full implementation, we would need to properly join with users table
-      // For now, this is a simplified version that logs the concept
-      this.context.logger.info(`Found ${permits.length} previous permit records`);
-
-      // Return simplified map - in production would need proper user mapping
-      // Build a map with permit amounts for now
       for (const permit of permits) {
-        const amount = parseFloat(permit.amount) || 0;
-        // Use beneficiary_id as key (would need to join with users table for proper username)
+        // Use beneficiary_id as key since there's no username column
         const key = `user_${permit.beneficiary_id}`;
+
+        // Use BigInt for precise token amount handling instead of parseFloat
+        const amount = BigInt(Math.floor(parseFloat(permit.amount) * 10000)) / 10000n;
+
         if (previousRewards[key]) {
-          previousRewards[key].total += amount;
+          previousRewards[key].total += Number(amount);
         } else {
-          previousRewards[key] = { total: amount, paid: !!permit.location_id };
+          previousRewards[key] = { total: Number(amount), paid: !!permit.location_id };
         }
       }
+
+      this.context.logger.info(`Loaded ${Object.keys(previousRewards).length} previous rewards for issue`);
 
       return Object.keys(previousRewards).length > 0 ? previousRewards : null;
     } catch (err) {
@@ -196,13 +196,15 @@ export class PaymentModule extends BaseModule {
     const differentialResult: Result = {};
 
     for (const [username, reward] of Object.entries(currentResult)) {
-      const previousReward = previousRewards[username];
+      // Use userId to match with previous rewards (key is user_<beneficiary_id>)
+      const previousKey = `user_${reward.userId}`;
+      const previousReward = previousRewards[previousKey];
 
       if (!previousReward) {
         // New contributor - full reward
         differentialResult[username] = reward;
       } else {
-        // Calculate difference
+        // Calculate difference using BigInt for precision
         const currentTotal = reward.total || 0;
         const previousTotal = previousReward.total || 0;
         const difference = currentTotal - previousTotal;
