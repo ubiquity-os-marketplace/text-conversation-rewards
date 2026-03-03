@@ -174,8 +174,9 @@ export class PaymentModule extends BaseModule {
       const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
       const { data: permits, error } = await this._supabase
         .from("permits")
-        .select("id, amount, beneficiary_id, location_id")
-        .eq("location_id", locationId);
+        .select("id, amount, beneficiary_id, location_id, token_id")
+        .eq("location_id", locationId)
+        .not("token_id", "is", null);
 
       if (error) {
         throw this.context.logger.error("Failed to query previous rewards", { err: error, issue });

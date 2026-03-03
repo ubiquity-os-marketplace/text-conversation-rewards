@@ -362,15 +362,16 @@ describe("payment-module.ts", () => {
 
     it("loads previous rewards scoped to issue location and aggregates precisely", async () => {
       const paymentModule = new PaymentModule(ctx);
-      const getOrCreateIssueLocation = jest.fn<() => Promise<number>>().mockResolvedValue(42);
-      const eq = jest.fn<() => Promise<{ data: unknown[]; error: null }>>().mockResolvedValue({
+      const getOrCreateIssueLocation = jest.fn(async (_issue: { issueId: number; issueUrl: string }) => 42);
+      const not = jest.fn(async (_column: string, _operator: string, _value: null) => ({
         data: [
-          { amount: "0.1", beneficiary_id: 7, location_id: 42 },
-          { amount: "0.2", beneficiary_id: 7, location_id: 42 },
-          { amount: "1.5", beneficiary_id: 9, location_id: 42 },
+          { amount: "0.1", beneficiary_id: 7, location_id: 42, token_id: 11 },
+          { amount: "0.2", beneficiary_id: 7, location_id: 42, token_id: 11 },
+          { amount: "1.5", beneficiary_id: 9, location_id: 42, token_id: 11 },
         ],
         error: null,
-      });
+      }));
+      const eq = jest.fn((_column: string, _value: number) => ({ not }));
 
       const select = jest.fn().mockReturnValue({ eq });
       const from = jest.fn().mockReturnValue({ select });
@@ -404,6 +405,7 @@ describe("payment-module.ts", () => {
         issueUrl: "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/issues/301",
       });
       expect(eq).toHaveBeenCalledWith("location_id", 42);
+      expect(not).toHaveBeenCalledWith("token_id", "is", null);
       expect(rewards).toEqual({
         user_7: { total: 0.3, paid: true },
         user_9: { total: 1.5, paid: true },
