@@ -542,9 +542,18 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     try {
+      // Build response format: use structured output schema if configured, otherwise use json_object
+      const structuredSchema = this._configuration?.openAi?.structuredOutputSchema;
+      const responseFormat = structuredSchema
+        ? {
+            type: "json_schema" as const,
+            json_schema: { name: structuredSchema.name, schema: structuredSchema.schema as { [key: string]: unknown } },
+          }
+        : { type: "json_object" as const };
+
       const res = await callLlm(
         {
-          response_format: { type: "json_object" },
+          response_format: responseFormat,
           messages: [{ role: "system", content: prompt }],
           reasoning_effort: this._configuration?.openAi.reasoningEffort,
         },
