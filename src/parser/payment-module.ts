@@ -96,8 +96,12 @@ export class PaymentModule extends BaseModule {
       return Promise.resolve(result);
     }
 
-    if (data.hasBeenReopened()) {
+    const isReopened = data.hasBeenReopened();
+    if (isReopened) {
       result = await this._applyDifferentialRewardsForReopenedIssue(result);
+      if (Object.keys(result).length === 0) {
+        return result;
+      }
     }
 
     const { xpUsernames, tokenGroups } = await this._splitUsersByRewardConfiguration(result);
@@ -117,7 +121,10 @@ export class PaymentModule extends BaseModule {
       return result;
     }
 
-    const payoutMode = await this._getPayoutMode(data);
+    let payoutMode = await this._getPayoutMode(data);
+    if (payoutMode === null && isReopened) {
+      payoutMode = "permit";
+    }
     if (payoutMode === null) {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
@@ -133,7 +140,7 @@ export class PaymentModule extends BaseModule {
 
   private async _applyDifferentialRewardsForReopenedIssue(result: Result): Promise<Result> {
     const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
-    const issueId = Number(RegExp(/\d+$/).exec(issue.html_url)?.[0]);
+    const issueId = Number(/\d+$/.exec(issue.html_url)?.[0]);
 
     if (!Number.isFinite(issueId)) {
       this.context.logger.warn("Unable to resolve issue id for differential reward calculation", {
@@ -170,13 +177,16 @@ export class PaymentModule extends BaseModule {
         .select("id, amount, beneficiary_id, location_id")
         .eq("location_id", locationId);
 
-      if (error || !permits || permits.length === 0) {
+      if (error) {
+        throw this.context.logger.error("Failed to query previous rewards", { err: error, issue });
+      }
+      if (!permits || permits.length === 0) {
         this.context.logger.debug("No previous rewards found for this issue", { issue });
         return null;
       }
 
       // Build a map of previous rewards by user ID (as string key)
-      const previousRewards: Record<string, { total: number; paid: boolean }> = {};
+      const previousRewards: Record<string, { total: Decimal; paid: boolean }> = {};
 
       for (const permit of permits) {
         // Use beneficiary_id as key since there's no username column
@@ -184,19 +194,25 @@ export class PaymentModule extends BaseModule {
         const amount = new Decimal(permit.amount || "0");
 
         if (previousRewards[key]) {
-          previousRewards[key].total = new Decimal(previousRewards[key].total).plus(amount).toNumber();
+          previousRewards[key].total = previousRewards[key].total.plus(amount);
         } else {
-          previousRewards[key] = { total: amount.toNumber(), paid: !!permit.location_id };
+          previousRewards[key] = { total: amount, paid: !!permit.location_id };
         }
       }
 
       this.context.logger.info(`Loaded ${Object.keys(previousRewards).length} previous rewards for issue`);
 
-      return Object.keys(previousRewards).length > 0 ? previousRewards : null;
+      if (Object.keys(previousRewards).length === 0) {
+        return null;
+      }
+      const normalized: Record<string, { total: number; paid: boolean }> = {};
+      for (const [key, value] of Object.entries(previousRewards)) {
+        normalized[key] = { total: value.total.toNumber(), paid: value.paid };
+      }
+      return normalized;
     } catch (err) {
       const error = err as Error;
-      this.context.logger.error("Failed to load previous rewards", { error, issue });
-      return null;
+      throw this.context.logger.error("Failed to load previous rewards", { error, issue });
     }
   }
 
@@ -227,6 +243,11 @@ export class PaymentModule extends BaseModule {
           differentialResult[username] = {
             ...reward,
             total: difference.toNumber(),
+            task: undefined,
+            comments: undefined,
+            events: undefined,
+            reviewRewards: undefined,
+            simplificationReward: undefined,
           };
           this.context.logger.info(
             `Differential reward for ${username}: ${difference.toFixed()} (was ${previousTotal.toFixed()}, now ${currentTotal.toFixed()})`
@@ -338,7 +359,7 @@ export class PaymentModule extends BaseModule {
       evmNetworkId: config.evmNetworkId,
       erc20RewardToken: config.erc20RewardToken,
     };
-    const issueId = Number(RegExp(/\d+$/).exec(payload.issueUrl)?.[0]);
+    const issueId = Number(/\d+$/.exec(payload.issueUrl)?.[0]);
     payload.issue = {
       node_id: issue.node_id,
     };
