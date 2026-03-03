@@ -96,18 +96,8 @@ export class PaymentModule extends BaseModule {
       return Promise.resolve(result);
     }
 
-    // Check if issue was reopened - if so, calculate differential rewards
-    const isReopened = data.hasBeenReopened();
-    if (isReopened) {
-      this.context.logger.info("Issue was reopened, calculating differential rewards");
-      const previousRewards = await this._loadPreviousRewards(data.self?.node_id || "");
-      if (previousRewards) {
-        result = this._calculateDifferentialRewards(result, previousRewards);
-        this.context.logger.info("Applied differential reward calculation", {
-          previousCount: Object.keys(previousRewards).length,
-          newCount: Object.keys(result).length,
-        });
-      }
+    if (data.hasBeenReopened()) {
+      result = await this._applyDifferentialRewardsForReopenedIssue(result);
     }
 
     const { xpUsernames, tokenGroups } = await this._splitUsersByRewardConfiguration(result);
@@ -141,21 +131,47 @@ export class PaymentModule extends BaseModule {
     return result;
   }
 
+  private async _applyDifferentialRewardsForReopenedIssue(result: Result): Promise<Result> {
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
+    const issueId = Number(RegExp(/\d+$/).exec(issue.html_url)?.[0]);
+
+    if (!Number.isFinite(issueId)) {
+      this.context.logger.warn("Unable to resolve issue id for differential reward calculation", {
+        issueUrl: issue.html_url,
+      });
+      return result;
+    }
+
+    this.context.logger.info("Issue was reopened, calculating differential rewards", { issueId });
+    const previousRewards = await this._loadPreviousRewards({ issueId, issueUrl: issue.html_url });
+    if (!previousRewards) {
+      return result;
+    }
+
+    const differentialResult = this._calculateDifferentialRewards(result, previousRewards);
+    this.context.logger.info("Applied differential reward calculation", {
+      previousCount: Object.keys(previousRewards).length,
+      newCount: Object.keys(differentialResult).length,
+    });
+    return differentialResult;
+  }
+
   /**
    * Load previous rewards from the database for a specific issue
    */
-  private async _loadPreviousRewards(
-    issueNodeId: string
-  ): Promise<Record<string, { total: number; paid: boolean }> | null> {
+  private async _loadPreviousRewards(issue: {
+    issueId: number;
+    issueUrl: string;
+  }): Promise<Record<string, { total: number; paid: boolean }> | null> {
     try {
-      // Query permits table for this specific issue using location_id
+      const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
       const { data: permits, error } = await this._supabase
         .from("permits")
         .select("id, amount, beneficiary_id, location_id")
-        .like("location_id", `%${issueNodeId}%`);
+        .eq("location_id", locationId);
 
       if (error || !permits || permits.length === 0) {
-        this.context.logger.debug("No previous rewards found for this issue", { issueNodeId });
+        this.context.logger.debug("No previous rewards found for this issue", { issue });
         return null;
       }
 
@@ -165,14 +181,12 @@ export class PaymentModule extends BaseModule {
       for (const permit of permits) {
         // Use beneficiary_id as key since there's no username column
         const key = `user_${permit.beneficiary_id}`;
-
-        // Use BigInt for precise token amount handling instead of parseFloat
-        const amount = BigInt(Math.floor(parseFloat(permit.amount) * 10000)) / 10000n;
+        const amount = new Decimal(permit.amount || "0");
 
         if (previousRewards[key]) {
-          previousRewards[key].total += Number(amount);
+          previousRewards[key].total = new Decimal(previousRewards[key].total).plus(amount).toNumber();
         } else {
-          previousRewards[key] = { total: Number(amount), paid: !!permit.location_id };
+          previousRewards[key] = { total: amount.toNumber(), paid: !!permit.location_id };
         }
       }
 
@@ -181,7 +195,7 @@ export class PaymentModule extends BaseModule {
       return Object.keys(previousRewards).length > 0 ? previousRewards : null;
     } catch (err) {
       const error = err as Error;
-      this.context.logger.error("Failed to load previous rewards", { error });
+      this.context.logger.error("Failed to load previous rewards", { error, issue });
       return null;
     }
   }
@@ -204,23 +218,24 @@ export class PaymentModule extends BaseModule {
         // New contributor - full reward
         differentialResult[username] = reward;
       } else {
-        // Calculate difference using BigInt for precision
-        const currentTotal = reward.total || 0;
-        const previousTotal = previousReward.total || 0;
-        const difference = currentTotal - previousTotal;
+        const currentTotal = new Decimal(reward.total || 0);
+        const previousTotal = new Decimal(previousReward.total || 0);
+        const difference = currentTotal.minus(previousTotal);
 
-        if (difference > 0) {
+        if (difference.gt(0)) {
           // Only give positive difference
           differentialResult[username] = {
             ...reward,
-            total: difference,
+            total: difference.toNumber(),
           };
           this.context.logger.info(
-            `Differential reward for ${username}: ${difference} (was ${previousTotal}, now ${currentTotal})`
+            `Differential reward for ${username}: ${difference.toFixed()} (was ${previousTotal.toFixed()}, now ${currentTotal.toFixed()})`
           );
         } else {
           // No increase - no reward
-          this.context.logger.info(`No differential for ${username}: ${currentTotal} <= ${previousTotal}`);
+          this.context.logger.info(
+            `No differential for ${username}: ${currentTotal.toFixed()} <= ${previousTotal.toFixed()}`
+          );
         }
       }
     }
