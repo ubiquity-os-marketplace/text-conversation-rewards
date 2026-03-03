@@ -169,7 +169,7 @@ export class PaymentModule extends BaseModule {
   private async _loadPreviousRewards(issue: {
     issueId: number;
     issueUrl: string;
-  }): Promise<Record<string, { total: number; paid: boolean }> | null> {
+  }): Promise<Record<string, { total: number }> | null> {
     try {
       const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
       const { data: permits, error } = await this._supabase
@@ -187,7 +187,7 @@ export class PaymentModule extends BaseModule {
       }
 
       // Build a map of previous rewards by user ID (as string key)
-      const previousRewards: Record<string, { total: Decimal; paid: boolean }> = {};
+      const previousRewards: Record<string, { total: Decimal }> = {};
 
       for (const permit of permits) {
         // Use beneficiary_id as key since there's no username column
@@ -197,7 +197,7 @@ export class PaymentModule extends BaseModule {
         if (previousRewards[key]) {
           previousRewards[key].total = previousRewards[key].total.plus(amount);
         } else {
-          previousRewards[key] = { total: amount, paid: !!permit.location_id };
+          previousRewards[key] = { total: amount };
         }
       }
 
@@ -206,9 +206,9 @@ export class PaymentModule extends BaseModule {
       if (Object.keys(previousRewards).length === 0) {
         return null;
       }
-      const normalized: Record<string, { total: number; paid: boolean }> = {};
+      const normalized: Record<string, { total: number }> = {};
       for (const [key, value] of Object.entries(previousRewards)) {
-        normalized[key] = { total: value.total.toNumber(), paid: value.paid };
+        normalized[key] = { total: value.total.toNumber() };
       }
       return normalized;
     } catch (err) {
@@ -222,7 +222,7 @@ export class PaymentModule extends BaseModule {
    */
   private _calculateDifferentialRewards(
     currentResult: Result,
-    previousRewards: Record<string, { total: number; paid: boolean }>
+    previousRewards: Record<string, { total: number }>
   ): Result {
     const differentialResult: Result = {};
 

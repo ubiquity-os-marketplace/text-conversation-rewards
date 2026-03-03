@@ -393,7 +393,7 @@ describe("payment-module.ts", () => {
           _loadPreviousRewards: (issue: {
             issueId: number;
             issueUrl: string;
-          }) => Promise<Record<string, { total: number; paid: boolean }> | null>;
+          }) => Promise<Record<string, { total: number }> | null>;
         }
       )._loadPreviousRewards({
         issueId: 301,
@@ -407,8 +407,8 @@ describe("payment-module.ts", () => {
       expect(eq).toHaveBeenCalledWith("location_id", 42);
       expect(not).toHaveBeenCalledWith("token_id", "is", null);
       expect(rewards).toEqual({
-        user_7: { total: 0.3, paid: true },
-        user_9: { total: 1.5, paid: true },
+        user_7: { total: 0.3 },
+        user_9: { total: 1.5 },
       });
     });
 
@@ -427,14 +427,11 @@ describe("payment-module.ts", () => {
 
       const differential = (
         paymentModule as unknown as {
-          _calculateDifferentialRewards: (
-            current: Result,
-            previous: Record<string, { total: number; paid: boolean }>
-          ) => Result;
+          _calculateDifferentialRewards: (current: Result, previous: Record<string, { total: number }>) => Result;
         }
       )._calculateDifferentialRewards(currentResult, {
-        user_7: { total: 2.25, paid: true },
-        user_8: { total: 1, paid: true },
+        user_7: { total: 2.25 },
+        user_8: { total: 1 },
       });
 
       expect(differential).toEqual({
