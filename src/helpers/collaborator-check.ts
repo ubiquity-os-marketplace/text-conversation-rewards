@@ -158,7 +158,9 @@ export async function hasHumanCollaboratorInvolvement(
   // Build list of users to exclude (sender + reward recipients)
   const excludeLogins = new Set<string>([payload.sender.login]);
   if (rewardRecipients) {
-    rewardRecipients.forEach((login) => excludeLogins.add(login));
+    for (const login of rewardRecipients) {
+      excludeLogins.add(login);
+    }
   }
 
   try {
