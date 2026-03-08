@@ -1,5 +1,6 @@
 import { collectLinkedPulls, LinkedPullRequest } from "./data-collection/collect-linked-pulls";
 import { GITHUB_DISPATCH_PAYLOAD_LIMIT } from "./helpers/constants";
+import { hasHumanCollaboratorInvolvement } from "./helpers/collaborator-check";
 import { areLoginsEquivalent } from "./helpers/github";
 import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-close";
 import { getSortedPrices } from "./helpers/label-price-extractor";
@@ -89,6 +90,18 @@ export async function run(context: ContextPlugin) {
       payload.sender.type === "Bot"
         ? logger.warn("Bots can not generate rewards.")
         : logger.warn("You are not allowed to generate rewards.");
+    await commentHandler.postComment(context, result);
+    return result.logMessage.raw;
+  }
+
+  // Check if a human collaborator (non-admin) was involved in the workflow
+  // This prevents reward generation when only admins/bots are involved
+  if (config.incentives.requireHumanCollaboratorApproval && !(await hasHumanCollaboratorInvolvement(context))) {
+    await logInvalidIssue(logger, issueItem.html_url);
+    const result = logger.warn(
+      "Reward generation blocked: No human collaborator involvement detected. " +
+      "At least one non-admin collaborator must participate (via comment, review, assignment, or PR authorship)."
+    );
     await commentHandler.postComment(context, result);
     return result.logMessage.raw;
   }
