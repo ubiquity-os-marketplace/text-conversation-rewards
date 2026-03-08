@@ -95,9 +95,9 @@ export async function run(context: ContextPlugin) {
   }
 
   // Check human collaborator approval
-  const collaboratorCheckResult = checkHumanCollaboratorApproval(context, activity);
+  const collaboratorCheckResult = await checkHumanCollaboratorApproval(context);
   if (collaboratorCheckResult) {
-    return await collaboratorCheckResult;
+    return collaboratorCheckResult;
   }
 
   logger.info("Will use the following configuration:", { config });
@@ -174,8 +174,7 @@ function collectPermitSaveErrors(result: Result) {
  * @returns Error message string if check fails, null otherwise
  */
 async function checkHumanCollaboratorApproval(
-  context: ContextPlugin,
-  activity: IssueActivity
+  context: ContextPlugin
 ): Promise<string | null> {
   const { logger, commentHandler, config, payload } = context;
   const issueItem = "issue" in payload ? payload.issue : payload.pull_request;
@@ -184,7 +183,7 @@ async function checkHumanCollaboratorApproval(
     return null;
   }
 
-  if (!hasHumanCollaboratorInvolvement(context)) {
+  if (!(await hasHumanCollaboratorInvolvement(context))) {
     await logInvalidIssue(logger, issueItem.html_url);
     const result = logger.warn(
       "Reward generation blocked: No human collaborator involvement detected. " +

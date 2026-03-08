@@ -1,5 +1,5 @@
 import { ContextPlugin } from "../types/plugin-input";
-import { getUserRewardRole, RewardUserRole } from "./permissions";
+import { getUserRewardRole } from "./permissions";
 
 /**
  * Checks if a human collaborator (non-admin) was involved in the issue/PR workflow.
@@ -8,9 +8,13 @@ import { getUserRewardRole, RewardUserRole } from "./permissions";
  * ensuring proper peer review and collaboration.
  * 
  * @param context - The plugin context
+ * @param rewardRecipients - Array of logins who will receive rewards (to exclude from check)
  * @returns true if a human collaborator was involved, false otherwise
  */
-export async function hasHumanCollaboratorInvolvement(context: ContextPlugin): Promise<boolean> {
+export async function hasHumanCollaboratorInvolvement(
+  context: ContextPlugin,
+  rewardRecipients?: string[]
+): Promise<boolean> {
   const { octokit, payload, logger } = context;
   const issue = "issue" in payload ? payload.issue : payload.pull_request;
   
@@ -23,19 +27,24 @@ export async function hasHumanCollaboratorInvolvement(context: ContextPlugin): P
   const repo = payload.repository.name;
   const issueNumber = issue.number;
 
+  // Build list of users to exclude (sender + reward recipients)
+  const excludeLogins = new Set<string>([payload.sender.login]);
+  if (rewardRecipients) {
+    rewardRecipients.forEach(login => excludeLogins.add(login));
+  }
+
   try {
     // Check 1: Look for non-admin collaborators in issue comments
-    const { data: comments } = await octokit.rest.issues.listComments({
+    const comments = await octokit.paginate(octokit.rest.issues.listComments, {
       owner,
       repo,
       issue_number: issueNumber,
+      per_page: 100,
     });
 
-    const senderLogin = payload.sender.login;
-    
     for (const comment of comments) {
       const commentAuthor = comment.user?.login;
-      if (!commentAuthor || commentAuthor === senderLogin) {
+      if (!commentAuthor || excludeLogins.has(commentAuthor)) {
         continue;
       }
 
@@ -55,7 +64,7 @@ export async function hasHumanCollaboratorInvolvement(context: ContextPlugin): P
     // Check 2: Look for non-admin assignees
     const assignees = issue.assignees ?? [];
     for (const assignee of assignees) {
-      if (!assignee.login || assignee.login === senderLogin) {
+      if (!assignee.login || excludeLogins.has(assignee.login)) {
         continue;
       }
 
@@ -73,15 +82,16 @@ export async function hasHumanCollaboratorInvolvement(context: ContextPlugin): P
 
     // Check 3: Look for PR reviews from non-admin collaborators
     if ("pull_request" in payload && payload.pull_request) {
-      const { data: reviews } = await octokit.rest.pulls.listReviews({
+      const reviews = await octokit.paginate(octokit.rest.pulls.listReviews, {
         owner,
         repo,
         pull_number: issueNumber,
+        per_page: 100,
       });
 
       for (const review of reviews) {
         const reviewer = review.user?.login;
-        if (!reviewer || reviewer === senderLogin) {
+        if (!reviewer || excludeLogins.has(reviewer)) {
           continue;
         }
 
@@ -99,41 +109,44 @@ export async function hasHumanCollaboratorInvolvement(context: ContextPlugin): P
     }
 
     // Check 4: Look for linked PRs authored by non-admin collaborators
-    const { data: issueEvents } = await octokit.rest.issues.listEvents({
+    const events = await octokit.paginate(octokit.rest.issues.listEvents, {
       owner,
       repo,
       issue_number: issueNumber,
+      per_page: 100,
     });
 
-    const referencedByPull = issueEvents.find(event => 
+    // Find all referenced PR events
+    const referencedPrEvents = events.filter(event => 
       event.event === "referenced" && 
       event.source?.issue?.pull_request
     );
 
-    if (referencedByPull) {
-      // Extract PR number from the event
-      const pullRequestEvent = issueEvents.find(e => e.event === "referenced" && e.source?.issue?.pull_request);
-      if (pullRequestEvent && pullRequestEvent.source?.issue) {
-        const prNumber = pullRequestEvent.source.issue.number;
-        
-        try {
-          const { data: pr } = await octokit.rest.pulls.get({
-            owner,
-            repo,
-            pull_number: prNumber,
-          });
+    // Check each referenced PR
+    for (const prEvent of referencedPrEvents) {
+      if (!prEvent.source?.issue) {
+        continue;
+      }
 
-          const prAuthor = pr.user?.login;
-          if (prAuthor && prAuthor !== senderLogin && pr.user?.type !== "Bot") {
-            const role = await getUserRewardRole(context, prAuthor);
-            if (role === "collaborator" || role === "contributor") {
-              logger.info(`Found human collaborator involvement: ${prAuthor} authored linked PR #${prNumber}`);
-              return true;
-            }
+      const prNumber = prEvent.source.issue.number;
+      
+      try {
+        const pr = await octokit.rest.pulls.get({
+          owner,
+          repo,
+          pull_number: prNumber,
+        });
+
+        const prAuthor = pr.data.user?.login;
+        if (prAuthor && !excludeLogins.has(prAuthor) && pr.data.user?.type !== "Bot") {
+          const role = await getUserRewardRole(context, prAuthor);
+          if (role === "collaborator" || role === "contributor") {
+            logger.info(`Found human collaborator involvement: ${prAuthor} authored linked PR #${prNumber}`);
+            return true;
           }
-        } catch (e) {
-          logger.debug(`Failed to get PR #${prNumber} details`, { e });
         }
+      } catch (e) {
+        logger.debug(`Failed to get PR #${prNumber} details`, { e });
       }
     }
 
@@ -142,7 +155,7 @@ export async function hasHumanCollaboratorInvolvement(context: ContextPlugin): P
 
   } catch (error) {
     logger.warn(`Error checking human collaborator involvement: ${(error as Error).message}`);
-    // Fail open - don't block rewards if check fails
-    return true;
+    // Fail closed - block rewards if check fails
+    return false;
   }
 }
