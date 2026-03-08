@@ -94,16 +94,10 @@ export async function run(context: ContextPlugin) {
     return result.logMessage.raw;
   }
 
-  // Check if a human collaborator (non-admin) was involved in the workflow
-  // This prevents reward generation when only admins/bots are involved
-  if (config.incentives.requireHumanCollaboratorApproval && !(await hasHumanCollaboratorInvolvement(context))) {
-    await logInvalidIssue(logger, issueItem.html_url);
-    const result = logger.warn(
-      "Reward generation blocked: No human collaborator involvement detected. " +
-      "At least one non-admin collaborator must participate (via comment, review, assignment, or PR authorship)."
-    );
-    await commentHandler.postComment(context, result);
-    return result.logMessage.raw;
+  // Check human collaborator approval
+  const collaboratorCheckResult = checkHumanCollaboratorApproval(context, activity);
+  if (collaboratorCheckResult) {
+    return await collaboratorCheckResult;
   }
 
   logger.info("Will use the following configuration:", { config });
@@ -171,6 +165,36 @@ function collectPermitSaveErrors(result: Result) {
     }
   }
   return errors;
+}
+
+/**
+ * Check if human collaborator approval is required and validate involvement.
+ * Extracted from run() to reduce function complexity.
+ * 
+ * @returns Error message string if check fails, null otherwise
+ */
+async function checkHumanCollaboratorApproval(
+  context: ContextPlugin,
+  activity: IssueActivity
+): Promise<string | null> {
+  const { logger, commentHandler, config, payload } = context;
+  const issueItem = "issue" in payload ? payload.issue : payload.pull_request;
+
+  if (!config.incentives.requireHumanCollaboratorApproval) {
+    return null;
+  }
+
+  if (!hasHumanCollaboratorInvolvement(context)) {
+    await logInvalidIssue(logger, issueItem.html_url);
+    const result = logger.warn(
+      "Reward generation blocked: No human collaborator involvement detected. " +
+      "At least one non-admin collaborator must participate (via comment, review, assignment, or PR authorship)."
+    );
+    await commentHandler.postComment(context, result);
+    return result.logMessage.raw;
+  }
+
+  return null;
 }
 
 async function preCheck(context: ContextPlugin) {
