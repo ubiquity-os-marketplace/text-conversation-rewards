@@ -14,10 +14,9 @@
   },
   "ubiquity:listeners": [
     "issues.closed",
-    "issue_comment.created",
     "pull_request.closed"
   ],
-  "skipBotEvents": true,
+  "skipBotEvents": false,
   "configuration": {
     "default": {},
     "type": "object",
