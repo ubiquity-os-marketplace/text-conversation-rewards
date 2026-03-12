@@ -96,7 +96,7 @@ jobs:
           action: ${{ github.event_name == 'delete' && 'delete' || 'publish' }}
           treatAsEsm: true
           sourcemap: true
-          pluginEntry: "${{ github.workspace }}/src/action.ts"
+          pluginEntry: "${{ github.workspace }}/src/index.ts"
           excludeSupportedEvents: ${{ env.EXCLUDE_SUPPORTED_EVENTS }}
           skipBotEvents: ${{ env.SKIP_BOT_EVENTS }}
         env:
