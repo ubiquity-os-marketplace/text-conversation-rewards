@@ -76,10 +76,17 @@ export class GithubCommentModule extends BaseModule {
     if (cached) {
       return cached;
     }
-    const tokenContract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
-    const symbol = await new Erc20Wrapper(tokenContract).getSymbol();
-    this._tokenSymbolCache.set(key, symbol);
-    return symbol;
+    try {
+      const tokenContract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
+      const symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+      this._tokenSymbolCache.set(key, symbol);
+      return symbol;
+    } catch (error) {
+      const err = error as Error & { reason?: string; code?: string };
+      throw new Error(
+        `Token ${config.erc20RewardToken} not found on network ID ${config.evmNetworkId}. ${err?.reason || err?.message || 'Contract call failed'}`
+      );
+    }
   }
 
   private async _getTokenDisplayForUser(username: string) {
