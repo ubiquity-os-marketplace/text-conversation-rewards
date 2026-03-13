@@ -54,16 +54,30 @@ export class Erc20Wrapper {
    * Returns ERC20 token symbol
    * @returns ERC20 token symbol
    */
-  async getSymbol() {
-    return await this._contract.symbol();
+  async getSymbol(): Promise<string> {
+    try {
+      return await this._contract.symbol();
+    } catch (error) {
+      const err = error as Error & { reason?: string; code?: string };
+      throw new Error(
+        `Failed to get token symbol: ${err?.reason || err?.message || 'Contract call failed'}`
+      );
+    }
   }
 
   /**
    * Returns ERC20 token decimals
    * @returns ERC20 token decimals
    */
-  async getDecimals() {
-    return await this._contract.decimals();
+  async getDecimals(): Promise<number> {
+    try {
+      return await this._contract.decimals();
+    } catch (error) {
+      const err = error as Error & { reason?: string; code?: string };
+      throw new Error(
+        `Failed to get token decimals: ${err?.reason || err?.message || 'Contract call failed'}`
+      );
+    }
   }
 
   /**
