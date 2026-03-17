@@ -140,7 +140,7 @@ jobs:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           APP_INSTALLATION_ID: ${{ secrets.APP_INSTALLATION_ID }}
           ACTION_REF: ${{ env.ACTION_REF }}
-          LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+          LOG_LEVEL: ${{ secrets.LOG_LEVEL || 'info' }}
         with:
           token: ${{ secrets.DENO_DEPLOY_TOKEN }}
           action: ${{ github.event_name == 'delete' && 'delete' || 'deploy' }}
