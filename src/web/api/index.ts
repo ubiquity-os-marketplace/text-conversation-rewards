@@ -2,7 +2,6 @@ import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
-import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { mkdirSync } from "fs";
 import { Context, ExecutionContext } from "hono";
 import { serveStatic } from "hono/bun";
@@ -10,6 +9,7 @@ import { cors } from "hono/cors";
 import { existsSync } from "node:fs";
 import manifest from "../../../manifest.json";
 import { createAdapters } from "../../adapters";
+import { getStartupLogLevel } from "../../helpers/log-level";
 import { handlePriceLabelValidation } from "../../helpers/price-label-handler";
 import { Processor } from "../../parser/processor";
 import { parseGitHubUrl } from "../../start";
@@ -145,7 +145,7 @@ const baseApp = createPlugin<PluginSettings, EnvConfig, Command, SupportedEvents
   },
   manifest as Manifest,
   {
-    logLevel: (process.env.LOG_LEVEL as LogLevel) ?? "info",
+    logLevel: getStartupLogLevel(process.env.LOG_LEVEL),
     settingsSchema: pluginSettingsSchema,
     envSchema: envConfigSchema,
     postCommentOnError: false,
