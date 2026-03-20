@@ -2,19 +2,38 @@ import { GitHubPullRequest, GitHubPullRequestReviewState } from "../github-types
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
 
+/**
+ * Checks if an issue event actor is a bot account.
+ * Bot accounts (type: "Bot") should not count as human collaborators.
+ */
+function isBotActor(actor: { type?: string; id?: number } | null | undefined): boolean {
+  return actor?.type === "Bot";
+}
+
+/**
+ * Checks if an issue is collaborative (i.e., involves at least one human collaborator
+ * other than the issue creator/assignee).
+ *
+ * A collaborative issue requires:
+ * - A different user closed it, OR
+ * - A human (non-bot) non-assignee set pricing labels (Time:/Priority:), OR
+ * - A human (non-bot) non-assignee approved a linked PR review
+ */
 export function isCollaborative(data: Readonly<IssueActivity>) {
   if (!data.self?.closed_by || !data.self.user) return false;
   const issueCreator = data.self.user;
 
   if (data.self.closed_by.id === issueCreator.id) {
-    const pricingEventsByNonAssignee = data.events.find(
+    // Issue creator closed their own issue - check for human collaboration
+    const pricingEventsByHumanNonAssignee = data.events.find(
       (event) =>
         event.event === "labeled" &&
         "label" in event &&
         (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id
+        event.actor.id !== issueCreator.id &&
+        !isBotActor(event.actor)
     );
-    return !!pricingEventsByNonAssignee || !!nonAssigneeApprovedReviews(data);
+    return !!pricingEventsByHumanNonAssignee || !!nonAssigneeApprovedReviews(data);
   }
   return true;
 }
@@ -37,7 +56,9 @@ export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
         }
       }
     }
-    return reviewsByNonAssignee.filter((v) => v.user?.id !== assignee.id && v.state === "APPROVED");
+    return reviewsByNonAssignee.filter(
+      (v) => v.user?.id !== assignee.id && v.state === "APPROVED" && !isBotActor(v.user)
+    );
   }
   return false;
 }
