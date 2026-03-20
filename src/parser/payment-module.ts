@@ -118,8 +118,20 @@ export class PaymentModule extends BaseModule {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
+    // Apply differential reward calculation for reopened issues
+    await this._applyDifferentialRewards(data, result);
+
+    const hasPositiveRewards = Object.values(result).some((r) => r.total > 0);
+    if (!hasPositiveRewards) {
+      this.context.logger.info("All rewards have been fully distributed previously. Skipping payout.");
+      return result;
+    }
+
     for (const group of tokenGroups) {
-      const groupResult = this._selectResultSubset(result, group.usernames);
+      // Re-split after differential adjustment
+      const remainingUsernames = group.usernames.filter((u) => result[u]?.total > 0);
+      if (remainingUsernames.length === 0) continue;
+      const groupResult = this._selectResultSubset(result, remainingUsernames);
       await this._processTokenRewardGroup(data, groupResult, group.config, payoutMode);
       this._removeTreasuryItem(result);
     }
@@ -138,6 +150,76 @@ export class PaymentModule extends BaseModule {
       }
     }
     return subset;
+  }
+
+  /**
+   * Queries previously distributed amounts from the permits table and subtracts them
+   * from the current reward calculation. This ensures that for reopened issues, only
+   * the positive difference (additional reward) is paid out.
+   *
+   * Users whose previous payout equals or exceeds the new calculation are removed
+   * from the result to skip unnecessary permit generation.
+   */
+  private async _applyDifferentialRewards(data: Readonly<IssueActivity>, result: Result): Promise<void> {
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
+    const issueUrl = issue.html_url;
+    const issueId = Number(RegExp(/\d+$/).exec(issueUrl)?.[0]);
+
+    // Get all previously saved permits for this issue
+    const { data: existingPermits, error } = await this._supabase
+      .from("permits")
+      .select("beneficiary_id, amount, transaction")
+      .eq("location_id", issueId);
+
+    if (error) {
+      this.context.logger.warn("Failed to query previous permits for differential calculation.", { error });
+      return;
+    }
+
+    if (!existingPermits || existingPermits.length === 0) {
+      this.context.logger.debug("No previous permits found. Full reward distribution will proceed.");
+      return;
+    }
+
+    // Aggregate previously paid amounts per beneficiary_id
+    const previousPayments: Record<number, number> = {};
+    for (const permit of existingPermits) {
+      const amount = parseFloat(permit.amount);
+      if (Number.isFinite(amount) && amount > 0) {
+        previousPayments[permit.beneficiary_id] = (previousPayments[permit.beneficiary_id] ?? 0) + amount;
+      }
+    }
+
+    // Deduct previous payments from current rewards
+    const adjustedEntries: Array<{ username: string; previousTotal: number; newTotal: number; diff: number }> = [];
+    for (const [username, reward] of Object.entries(result)) {
+      const previousTotal = previousPayments[reward.userId] ?? 0;
+      if (previousTotal <= 0) continue;
+
+      const newTotal = reward.total;
+      const diff = newTotal - previousTotal;
+
+      if (diff <= 0) {
+        this.context.logger.info(
+          `Skipping ${username}: previous payout (${previousTotal}) >= new calculation (${newTotal}).`,
+          { username, previousTotal, newTotal }
+        );
+        reward.total = 0;
+        reward.previousTotal = previousTotal;
+      } else {
+        this.context.logger.info(
+          `Differential reward for ${username}: new=${newTotal}, previous=${previousTotal}, diff=${diff}.`,
+          { username, newTotal, previousTotal, diff }
+        );
+        reward.total = diff;
+        reward.previousTotal = previousTotal;
+      }
+      adjustedEntries.push({ username, previousTotal, newTotal, diff: Math.max(0, diff) });
+    }
+
+    if (adjustedEntries.length > 0) {
+      this.context.logger.info("Differential reward calculation applied.", { adjustedEntries });
+    }
   }
 
   private async _splitUsersByRewardConfiguration(result: Result) {

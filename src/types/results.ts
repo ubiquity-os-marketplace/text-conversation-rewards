@@ -26,6 +26,7 @@ export interface Result {
     payoutMode?: PayoutMode;
     permitSaveErrors?: PermitSaveError[];
     userId: number;
+    previousTotal?: number;
     walletAddress?: string | null;
     reviewRewards?: {
       reviews?: ReviewScore[];
