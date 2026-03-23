@@ -18,6 +18,7 @@ import { ContextPlugin, PluginSettings, pluginSettingsSchema, SupportedEvents } 
 import { IssueActivityCache } from "../db/issue-activity-cache";
 import { getPayload } from "./payload";
 import { Result } from "../../types/results";
+import { Command } from "../../types/command";
 
 function githubUrlToFileName(url: string): string {
   const repoMatch = RegExp(/github\.com\/([^/]+)\/([^/?#]+)/).exec(url);
@@ -100,7 +101,7 @@ async function parseIssues(
   return results;
 }
 
-const baseApp = createPlugin<PluginSettings, EnvConfig, null, SupportedEvents>(
+const baseApp = createPlugin<PluginSettings, EnvConfig, Command, SupportedEvents>(
   async (context) => {
     const { payload, octokit, logger } = context;
     const supabaseClient = new SupabaseClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY);
