@@ -1,5 +1,5 @@
 {
-  "name": "@ubiquity-os/conversation-rewards",
+  "name": "@ubiquity-os/text-conversation-rewards",
   "version": "1.0.0",
   "description": "Generate rewards for on topic conversation for closing issues as complete.",
   "author": "Ubiquity DAO",
@@ -16,10 +16,13 @@
     "format:prettier": "prettier --write .",
     "format:cspell": "cspell **/*",
     "knip": "knip",
-    "prepare": "husky && bun run fetch-rpcs",
+    "prepare": "bun run prepare:manifest && husky && bun run fetch-rpcs",
     "dev": "bun --watch src/index.ts",
     "server": "bun --watch --no-clear-screen src/web/api/index.ts",
-    "fetch-rpcs": "mkdir -p src/types && bun -e \"await Bun.write('src/types/rpcs.json', await (await fetch('https://chainlist.org/rpcs.json')).text())\""
+    "fetch-rpcs": "mkdir -p src/types && bun -e \"await Bun.write('src/types/rpcs.json', await (await fetch('https://chainlist.org/rpcs.json')).text())\"",
+    "prepare:manifest": "bunx @ubiquity-os/plugin-manifest-tool@latest",
+    "prebuild": "bun run prepare:manifest",
+    "predev": "bun run prepare:manifest"
   },
   "keywords": [
     "typescript",
