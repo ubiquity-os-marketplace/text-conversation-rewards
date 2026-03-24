@@ -26,7 +26,12 @@ export class UserExtractorModule extends BaseModule {
    * Checks if the comment is made by a human user, not empty, and not a command.
    */
   _checkEntryValidity(comment: Awaited<ReturnType<IssueActivity["getAllComments"]>>[0]) {
-    return comment.body && comment.user?.type === "User" && !comment.body.trim().startsWith("/");
+    if (!comment.body || comment.user?.type !== "User") {
+      return false;
+    }
+    // Check if any line in the comment starts with a slash command
+    const lines = comment.body.split("\n");
+    return !lines.some((line) => line.trim().startsWith("/"));
   }
 
   /**
