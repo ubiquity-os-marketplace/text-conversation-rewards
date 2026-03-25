@@ -32,6 +32,42 @@ export function openAiType() {
         examples: [10],
       }),
       reasoningEffort: reasoningEffortType,
+      structuredOutputSchema: Type.Optional(
+        Type.Object(
+          {
+            name: Type.String({
+              description: "The name of the schema for structured outputs",
+              examples: ["relevance_scores"],
+            }),
+            schema: Type.Unknown({
+              description: "JSON schema for structured output response",
+              examples: [
+                {
+                  type: "object",
+                  properties: {
+                    scores: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          comment_id: { type: "integer" },
+                          relevance: { type: "number", minimum: 0, maximum: 1 },
+                        },
+                        required: ["comment_id", "relevance"],
+                      },
+                    },
+                  },
+                  required: ["scores"],
+                },
+              ],
+            }),
+          },
+          {
+            description:
+              "JSON schema for structured outputs. When provided, enables OpenAI-compatible structured outputs.",
+          }
+        )
+      ),
     },
     { default: {} }
   );
