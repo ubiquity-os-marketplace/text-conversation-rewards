@@ -39,7 +39,7 @@ jobs:
     name: "Deploy (Action / Deno)"
     runs-on: ubuntu-latest
     permissions: write-all
-    environment: ${{ (github.event.ref == 'refs/heads/main' || github.ref == 'refs/heads/main' || github.event.workflow_run.head_branch == 'main') && 'main' || 'development' }}
+    environment: ${{ (github.event.ref == 'refs/heads/main' || github.ref == 'refs/heads/main' || github.event.workflow_run.head_branch == 'main' || github.event.ref == 'refs/heads/demo' || github.ref == 'refs/heads/demo' || github.event.workflow_run.head_branch == 'demo') && 'main' || 'development' }}
     env:
       BUILD_ACTION_ENABLED: ${{ github.event_name == 'workflow_dispatch' && inputs.build_action_enabled || vars.BUILD_ACTION_ENABLED || 'true' }}
       DEPLOY_DENO_ENABLED: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_deno_enabled || vars.DEPLOY_DENO_ENABLED || 'false' }}
