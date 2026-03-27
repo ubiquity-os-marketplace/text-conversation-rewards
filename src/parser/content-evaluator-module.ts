@@ -542,14 +542,32 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     try {
-      const res = await callLlm(
-        {
-          response_format: { type: "json_object" },
-          messages: [{ role: "system", content: prompt }],
-          reasoning_effort: this._configuration?.openAi.reasoningEffort,
+      const payload = {
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "comment_relevance_scores",
+            strict: true,
+            schema: openAiRelevanceResponseSchema,
+          },
         },
-        this.context
-      );
+        messages: [{ role: "system", content: prompt }],
+        reasoning_effort: this._configuration?.openAi.reasoningEffort,
+      } as const;
+
+      let res: Awaited<ReturnType<typeof callLlm>>;
+      try {
+        res = await callLlm(payload, this.context);
+      } catch (error) {
+        // Fallback for providers that only support json_object.
+        res = await callLlm(
+          {
+            ...payload,
+            response_format: { type: "json_object" },
+          },
+          this.context
+        );
+      }
 
       if (isAsyncIterable(res)) {
         throw this.context.logger.error("Unexpected streaming response from the LLM");
