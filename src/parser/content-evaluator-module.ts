@@ -649,6 +649,8 @@ export class ContentEvaluatorModule extends BaseModule {
       }
     }
 
+    const totalWeight = dimensions.reduce((sum, dim) => new Decimal(sum).add(weights[dim]).toNumber(), 0);
+
     for (const id of allIds) {
       const weightedSum = dimensions.reduce((sum, dimension) => {
         const score = dimensionResults[dimension][id];
@@ -658,7 +660,7 @@ export class ContentEvaluatorModule extends BaseModule {
         const weight = weights[dimension];
         return new Decimal(sum).add(new Decimal(score).mul(weight)).toNumber();
       }, 0);
-      mergedRelevances[id] = new Decimal(weightedSum).toDecimalPlaces(4).toNumber();
+      mergedRelevances[id] = new Decimal(weightedSum).div(totalWeight).toDecimalPlaces(4).toNumber();
     }
 
     this.context.logger.info(`Merged specialized scores for ${allIds.size} comments`, { weights, mergedRelevances });
