@@ -12,3 +12,5 @@ export const openAiRelevanceResponseSchema = Type.Record(
 );
 
 export type Relevances = Static<typeof openAiRelevanceResponseSchema>;
+
+export type EvaluationDimension = "relevance" | "helpfulness" | "research";

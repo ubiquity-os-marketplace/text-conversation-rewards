@@ -52,6 +52,34 @@ export const contentEvaluatorConfigurationType = Type.Object({
     examples: [0.5, 0.22, 0.79, 0, 1],
   }),
   /**
+   * Weights for the specialized evaluation dimensions. Each prompt evaluates
+   * a different aspect and the final score is a weighted sum.
+   * Weights should sum to 1.0 for normalized scores.
+   */
+  evaluationDimensions: Type.Object(
+    {
+      relevance: Type.Number({
+        default: 0.33,
+        minimum: 0,
+        maximum: 1,
+        description: "Weight for relevance scoring: how relevant are comments to solving the spec.",
+      }),
+      helpfulness: Type.Number({
+        default: 0.33,
+        minimum: 0,
+        maximum: 1,
+        description: "Weight for helpfulness scoring: how helpful are comments to answer contributor questions.",
+      }),
+      research: Type.Number({
+        default: 0.34,
+        minimum: 0,
+        maximum: 1,
+        description: "Weight for research scoring: how useful are comments for adding research and insights.",
+      }),
+    },
+    { default: {} }
+  ),
+  /**
    * Multipliers applied to different types of comments
    */
   multipliers: Type.Array(

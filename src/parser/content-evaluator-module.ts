@@ -13,6 +13,7 @@ import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
   CommentToEvaluate,
+  EvaluationDimension,
   openAiRelevanceResponseSchema,
   PrCommentToEvaluate,
   Relevances,
@@ -343,6 +344,7 @@ export class ContentEvaluatorModule extends BaseModule {
       }
       const maxPromptTokens = Math.max(...chunkTokenEstimates.map((estimate) => estimate.promptTokens));
       const maxOutputTokens = Math.max(...chunkTokenEstimates.map((estimate) => estimate.outputTokens));
+      // Account for 3x prompt calls per chunk (one per dimension)
       if (maxPromptTokens + maxOutputTokens <= this._tokenLimit) {
         chunks = currentChunk;
         break;
@@ -360,7 +362,7 @@ export class ContentEvaluatorModule extends BaseModule {
         outputTokens: fallbackOutputTokens,
         comments: allComments.length,
       });
-      return this._submitPrompt(fallbackPrompt, fallbackOutputTokens);
+      return this._evaluateWithSpecializedPrompts(specification, username, allComments, fallbackOutputTokens, "issue");
     }
 
     this.context.logger.debug(`Splitting issue comments into ${chunks} chunks`);
@@ -372,9 +374,10 @@ export class ContentEvaluatorModule extends BaseModule {
       }
       const dummyResponse = JSON.stringify(this._generateDummyResponse(targetComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-      const promptForComments = this._generatePromptForComments(specification, username, commentSplit);
 
-      for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
+      for (const [key, value] of Object.entries(
+        await this._evaluateWithSpecializedPrompts(specification, username, commentSplit, maxOutputTokens, "issue")
+      )) {
         const accumulated = commentRelevances[key] ?? 0;
         commentRelevances[key] = new Decimal(accumulated).add(value).toNumber();
         evaluationCounts[key] = (evaluationCounts[key] ?? 0) + 1;
@@ -435,9 +438,10 @@ export class ContentEvaluatorModule extends BaseModule {
     for (const commentSplit of this._splitArrayToChunks(comments, chunks)) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(commentSplit), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-      const promptForComments = this._generatePromptForPrComments(specification, commentSplit);
 
-      for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
+      for (const [key, value] of Object.entries(
+        await this._evaluateWithSpecializedPrompts(specification, undefined, commentSplit, maxOutputTokens, "pr")
+      )) {
         if (commentRelevances[key]) {
           commentRelevances[key] = new Decimal(commentRelevances[key]).add(value).toNumber();
         } else {
@@ -475,7 +479,13 @@ export class ContentEvaluatorModule extends BaseModule {
           allComments
         );
       } else {
-        commentRelevances = await this._submitPrompt(promptForIssueComments, maxOutputTokens);
+        commentRelevances = await this._evaluateWithSpecializedPrompts(
+          specification,
+          username,
+          allComments,
+          maxOutputTokens,
+          "issue"
+        );
       }
     }
 
@@ -490,7 +500,13 @@ export class ContentEvaluatorModule extends BaseModule {
       if (this._calculateMaxTokens(promptForPrComments, Infinity) + maxOutputTokens > this._tokenLimit) {
         prCommentRelevances = await this._splitPromptForPullRequestCommentEvaluation(prSpecifications, userPrComments);
       } else {
-        prCommentRelevances = await this._submitPrompt(promptForPrComments, maxOutputTokens);
+        prCommentRelevances = await this._evaluateWithSpecializedPrompts(
+          prSpecifications,
+          undefined,
+          userPrComments,
+          maxOutputTokens,
+          "pr"
+        );
       }
     }
 
@@ -594,12 +610,76 @@ export class ContentEvaluatorModule extends BaseModule {
     }
   }
 
+  /**
+   * Evaluates comments using 3 specialized prompts (relevance, helpfulness, research)
+   * and merges results with configured weights.
+   */
+  async _evaluateWithSpecializedPrompts(
+    specification: string | string[],
+    username: string | undefined,
+    comments: AllComments | PrCommentToEvaluate[],
+    maxOutputTokens: number,
+    type: "issue" | "pr"
+  ): Promise<Relevances> {
+    const dimensions: EvaluationDimension[] = ["relevance", "helpfulness", "research"];
+    const weights = this._configuration?.evaluationDimensions ?? { relevance: 0.33, helpfulness: 0.33, research: 0.34 };
+
+    const dimensionResults: Record<EvaluationDimension, Relevances> = {
+      relevance: {},
+      helpfulness: {},
+      research: {},
+    };
+
+    for (const dimension of dimensions) {
+      const prompt =
+        type === "issue" && username
+          ? this._generateSpecializedIssuePrompt(specification as string, username, comments as AllComments, dimension)
+          : this._generateSpecializedPrPrompt(specification, comments as PrCommentToEvaluate[], dimension);
+
+      dimensionResults[dimension] = await this._submitPrompt(prompt, maxOutputTokens);
+      this.context.logger.debug(`Dimension ${dimension} scores: ${JSON.stringify(dimensionResults[dimension])}`);
+    }
+
+    // Merge dimension scores with weights
+    const mergedRelevances: Relevances = {};
+    const allIds = new Set<string>();
+    for (const dimension of dimensions) {
+      for (const id of Object.keys(dimensionResults[dimension])) {
+        allIds.add(id);
+      }
+    }
+
+    for (const id of allIds) {
+      const weightedSum = dimensions.reduce((sum, dimension) => {
+        const score = dimensionResults[dimension][id] ?? 0;
+        const weight = weights[dimension];
+        return new Decimal(sum).add(new Decimal(score).mul(weight)).toNumber();
+      }, 0);
+      mergedRelevances[id] = new Decimal(weightedSum).toDecimalPlaces(4).toNumber();
+    }
+
+    this.context.logger.info(`Merged specialized scores for ${allIds.size} comments`, { weights, mergedRelevances });
+    return mergedRelevances;
+  }
+
+  /**
+   * Legacy single-prompt generator for issue comments.
+   * Used internally by chunk estimation logic.
+   */
   _generatePromptForComments(issue: string, username: string, allComments: AllComments) {
+    return this._generateSpecializedIssuePrompt(issue, username, allComments, "relevance");
+  }
+
+  _generateSpecializedIssuePrompt(
+    issue: string,
+    username: string,
+    allComments: AllComments,
+    dimension: EvaluationDimension
+  ) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
     const allCommentsMap = allComments
-      // Sort by id to keep conversation in the original order
       .sort((a, b) => Number(a.id) - Number(b.id))
       .map((value) => `${value.id} - ${value.author}: "${value.comment}"`);
     const targetComments = allComments.filter((value) => value.author === username);
@@ -608,10 +688,12 @@ export class ContentEvaluatorModule extends BaseModule {
     }
     const targetCommentIds = targetComments.map((value) => value.id).join(", ");
 
+    const dimensionInstructions = this._getDimensionInstructions(dimension, "issue");
+
     return `
       CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
-      
-      Evaluate the relevance of GitHub comments to an issue. Focus exclusively on the comments authored by ${username}. Provide a raw JSON object with those comment IDs and their relevance scores.
+
+      ${dimensionInstructions.description}
 
       Issue: ${issue}
 
@@ -621,17 +703,13 @@ export class ContentEvaluatorModule extends BaseModule {
       Instructions:
       1. Read all comments carefully, considering their context and content.
       2. Identify every comment authored by ${username}. Their comment IDs are: ${targetCommentIds}.
-      3. Assign a relevance score from 0 to 1 for each identified comment:
-        - 0: Not related (e.g., spam)
-        - 1: Highly relevant (e.g., solutions, bug reports)
+      3. ${dimensionInstructions.scoring}
       4. Consider:
-        - Relation to the issue description
-        - Connection to other comments
-        - Contribution to issue resolution
+        ${dimensionInstructions.criteria}
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
-        - Only evaluate the relevance of the commenter's original content
+        - Only evaluate the commenter's original content
       6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
       7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
@@ -646,26 +724,37 @@ export class ContentEvaluatorModule extends BaseModule {
     `;
   }
 
+  /**
+   * Legacy single-prompt generator for PR comments.
+   * Used internally by chunk estimation logic.
+   */
   _generatePromptForPrComments(specifications: string | string[], userComments: PrCommentToEvaluate[]) {
+    return this._generateSpecializedPrPrompt(specifications, userComments, "relevance");
+  }
+
+  _generateSpecializedPrPrompt(
+    specifications: string | string[],
+    userComments: PrCommentToEvaluate[],
+    dimension: EvaluationDimension
+  ) {
     const specsArray = Array.isArray(specifications) ? specifications : [specifications];
     if (!specsArray.length || specsArray.every((s) => !s || s.length === 0)) {
       throw new Error("Issue specification comment is missing or empty");
     }
     const payload = { specification: specsArray, comments: userComments };
+    const dimensionInstructions = this._getDimensionInstructions(dimension, "pr");
+
     return `CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
 
-    Evaluate the value of a GitHub contributor's comments in a pull request.
-    Context may include ONE OR MORE issue specifications. Treat the entire list as the set of problems this PR aims to solve.
-    Consider a comment valuable if it helps address ANY of the specifications and/or clearly improves code quality while staying aligned with them.
+    ${dimensionInstructions.description}
 
-    Scoring rules (0.0 - 1.0 per comment):
-    - 1.0: Strongly advances a fix/feature tied to one or more specifications, or significantly improves correctness, safety, performance, or maintainability in direct relation to the specs.
-    - 0.5: Somewhat helpful or partially relevant; raises a valid concern or improvement but limited in scope/impact.
-    - 0.0: Not relevant, incorrect, or off-topic with respect to the specifications; noise.
+    Context may include ONE OR MORE issue specifications. Treat the entire list as the set of problems this PR aims to solve.
+
+    ${dimensionInstructions.scoring}
 
     Additional notes:
     - Some comments are code-review entries and include a "diffHunk" representing the code context under review.
-    - Prefer actionable, specific suggestions over generic praise.
+    - ${dimensionInstructions.prNotes}
     - Do not explain your reasoning; only output JSON.
 
     The following JSON contains the issue specification context and the comments to evaluate.
@@ -679,5 +768,82 @@ export class ContentEvaluatorModule extends BaseModule {
     Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
     YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.`;
+  }
+
+  /**
+   * Returns dimension-specific prompt instructions for each evaluation dimension.
+   */
+  private _getDimensionInstructions(
+    dimension: EvaluationDimension,
+    type: "issue" | "pr"
+  ): {
+    description: string;
+    scoring: string;
+    criteria: string;
+    prNotes: string;
+  } {
+    switch (dimension) {
+      case "relevance":
+        return {
+          description:
+            type === "issue"
+              ? "Evaluate the RELEVANCE of GitHub comments to an issue specification. Focus on how directly each comment relates to solving the described problem."
+              : "Evaluate the RELEVANCE of a GitHub contributor's pull request comments. Focus on how directly each comment relates to solving the issue specification.",
+          scoring:
+            type === "issue"
+              ? `Assign a relevance score from 0 to 1 for each identified comment:
+        - 0: Not related to the issue at all (e.g., spam, off-topic)
+        - 1: Directly addresses the issue specification (e.g., proposes a solution, identifies the root cause)`
+              : `Scoring rules (0.0 - 1.0 per comment):
+    - 1.0: Directly advances a fix/feature tied to the specification; addresses root cause or implements a solution.
+    - 0.5: Partially relevant; touches on the issue but doesn't directly solve it.
+    - 0.0: Not relevant or off-topic with respect to the specifications; noise.`,
+          criteria: `- Direct relation to the issue description and its requirements
+        - Whether the comment proposes or discusses a solution to the spec
+        - Technical accuracy in addressing the problem`,
+          prNotes: "Prefer comments that directly address the specification over general code style remarks.",
+        };
+      case "helpfulness":
+        return {
+          description:
+            type === "issue"
+              ? "Evaluate the HELPFULNESS of GitHub comments in an issue thread. Focus on how well each comment helps other contributors understand and answer questions."
+              : "Evaluate the HELPFULNESS of a GitHub contributor's pull request comments. Focus on how well each comment assists with understanding, reviewing, or implementing the changes.",
+          scoring:
+            type === "issue"
+              ? `Assign a helpfulness score from 0 to 1 for each identified comment:
+        - 0: Not helpful at all (e.g., unhelpful noise, vague statements)
+        - 1: Extremely helpful (e.g., clear explanations, step-by-step guides, answers to specific questions)`
+              : `Scoring rules (0.0 - 1.0 per comment):
+    - 1.0: Highly helpful — provides clear explanations, actionable guidance, or directly unblocks progress.
+    - 0.5: Somewhat helpful — raises valid points but lacks specificity or actionability.
+    - 0.0: Not helpful — generic praise, vague remarks, or noise.`,
+          criteria: `- Whether the comment answers a question from another contributor
+        - Clarity and actionability of the guidance provided
+        - Whether it unblocks progress or resolves confusion`,
+          prNotes:
+            "Prefer actionable, specific suggestions and explanations over generic praise or trivial style comments.",
+        };
+      case "research":
+        return {
+          description:
+            type === "issue"
+              ? "Evaluate the RESEARCH AND INSIGHTS value of GitHub comments in an issue thread. Focus on how much new knowledge, analysis, or information each comment contributes."
+              : "Evaluate the RESEARCH AND INSIGHTS value of a GitHub contributor's pull request comments. Focus on how much new knowledge, investigation, or analytical depth each comment brings.",
+          scoring:
+            type === "issue"
+              ? `Assign a research/insights score from 0 to 1 for each identified comment:
+        - 0: No research value (e.g., opinions without evidence, simple acknowledgments)
+        - 1: High research value (e.g., data-backed analysis, links to relevant sources, benchmarks, root cause investigation)`
+              : `Scoring rules (0.0 - 1.0 per comment):
+    - 1.0: Provides deep analysis, benchmarks, references, or root-cause investigation that creates lasting project knowledge.
+    - 0.5: Contains some useful information or references but lacks depth.
+    - 0.0: No research or informational value; opinions without evidence.`,
+          criteria: `- Whether the comment provides data, evidence, or references
+        - Depth of technical analysis or investigation
+        - Whether it contributes lasting knowledge to the project`,
+          prNotes: "Value comments that provide benchmarks, architectural analysis, or link relevant prior art.",
+        };
+    }
   }
 }
