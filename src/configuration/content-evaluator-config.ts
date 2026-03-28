@@ -77,7 +77,7 @@ export const contentEvaluatorConfigurationType = Type.Object({
         description: "Weight for research scoring: how useful are comments for adding research and insights.",
       }),
     },
-    { default: {} }
+    { default: { relevance: 0.33, helpfulness: 0.33, research: 0.34 } }
   ),
   /**
    * Multipliers applied to different types of comments

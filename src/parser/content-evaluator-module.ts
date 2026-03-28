@@ -651,7 +651,10 @@ export class ContentEvaluatorModule extends BaseModule {
 
     for (const id of allIds) {
       const weightedSum = dimensions.reduce((sum, dimension) => {
-        const score = dimensionResults[dimension][id] ?? 0;
+        const score = dimensionResults[dimension][id];
+        if (score === undefined) {
+          throw new Error(`LLM evaluation missing score for comment ID ${id} in dimension ${dimension}. Triggering retry.`);
+        }
         const weight = weights[dimension];
         return new Decimal(sum).add(new Decimal(score).mul(weight)).toNumber();
       }, 0);
@@ -664,10 +667,14 @@ export class ContentEvaluatorModule extends BaseModule {
 
   /**
    * Legacy single-prompt generator for issue comments.
-   * Used internally by chunk estimation logic.
+   * Used internally by chunk estimation logic to determine the max token size.
    */
   _generatePromptForComments(issue: string, username: string, allComments: AllComments) {
-    return this._generateSpecializedIssuePrompt(issue, username, allComments, "relevance");
+    const relevance = this._generateSpecializedIssuePrompt(issue, username, allComments, "relevance");
+    const helpfulness = this._generateSpecializedIssuePrompt(issue, username, allComments, "helpfulness");
+    const research = this._generateSpecializedIssuePrompt(issue, username, allComments, "research");
+    const prompts = [relevance, helpfulness, research];
+    return prompts.reduce((a, b) => (a.length > b.length ? a : b));
   }
 
   _generateSpecializedIssuePrompt(
@@ -726,10 +733,14 @@ export class ContentEvaluatorModule extends BaseModule {
 
   /**
    * Legacy single-prompt generator for PR comments.
-   * Used internally by chunk estimation logic.
+   * Used internally by chunk estimation logic to determine the max token size.
    */
   _generatePromptForPrComments(specifications: string | string[], userComments: PrCommentToEvaluate[]) {
-    return this._generateSpecializedPrPrompt(specifications, userComments, "relevance");
+    const relevance = this._generateSpecializedPrPrompt(specifications, userComments, "relevance");
+    const helpfulness = this._generateSpecializedPrPrompt(specifications, userComments, "helpfulness");
+    const research = this._generateSpecializedPrPrompt(specifications, userComments, "research");
+    const prompts = [relevance, helpfulness, research];
+    return prompts.reduce((a, b) => (a.length > b.length ? a : b));
   }
 
   _generateSpecializedPrPrompt(
