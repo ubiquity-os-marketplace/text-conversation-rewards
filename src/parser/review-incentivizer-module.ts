@@ -12,6 +12,13 @@ import { ContextPlugin } from "../types/plugin-input";
 import { Result, ReviewScore } from "../types/results";
 import { isUserAllowedToGenerateRewards } from "../helpers/permissions";
 
+/**
+ * Review states that are considered "conclusive" and should receive credit.
+ * COMMENTED reviews (left comments without approval/changes) do NOT receive credit.
+ * Only APPROVED or CHANGES_REQUESTED reviews are conclusive.
+ */
+const CONCLUSIVE_REVIEW_STATES = ["APPROVED", "CHANGES_REQUESTED"];
+
 interface CommitDiff {
   [fileName: string]: {
     addition: number;
@@ -139,43 +146,94 @@ export class ReviewIncentivizerModule extends BaseModule {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
     const excludedFilePatterns = await getExcludedFiles(this.context, baseOwner, baseRepo, baseRef);
+    let shouldSkipSubsequentDiff = false;
+
     for (const [i, currentReview] of reviewsByUser.entries()) {
       if (!currentReview.commit_id) continue;
-
-      const previousReview = reviewsByUser[i - 1];
-      const baseSha = previousReview?.commit_id ? previousReview.commit_id : firstCommitSha;
-      const headSha = `${headOwnerRepo.replace("/", ":")}:${currentReview.commit_id}`;
-
-      if (headSha && baseSha !== currentReview.commit_id) {
-        try {
-          const reviewEffect = await this.getReviewableDiff(
-            baseOwner,
-            baseRepo,
-            baseSha,
-            headSha,
-            prData,
-            excludedFilePatterns
-          );
-          this.context.logger.debug("Fetched diff between commits", {
-            baseOwner,
-            baseRepo,
-            baseSha,
-            headSha,
-            reviewEffect,
-          });
-          reviews.push({
-            reviewId: currentReview.id,
-            effect: reviewEffect,
-            reward: ((reviewEffect.addition + reviewEffect.deletion) * priority) / this._baseRate,
-            priority: priority,
-          });
-        } catch (e) {
-          this.context.logger.error(`Failed to get diff between commits ${baseSha} and ${headSha}:`, { e });
+      if (!this.isReviewConclusive(currentReview)) {
+        this.context.logger.debug("Skipping non-conclusive review (no credit)", {
+          reviewId: currentReview.id,
+          state: currentReview.state,
+          username: reviewsByUser[0]?.user?.login,
+        });
+        continue;
+      }
+      if (shouldSkipSubsequentDiff) {
+        this.context.logger.debug("Skipping diff calculation after APPROVED review", {
+          reviewId: currentReview.id,
+          previousReviewId: reviewsByUser[i - 1]?.id,
+        });
+        shouldSkipSubsequentDiff = false;
+        continue;
+      }
+      const diffResult = await this.computeReviewDiff(
+        currentReview,
+        reviewsByUser[i - 1],
+        firstCommitSha,
+        headOwnerRepo,
+        baseOwner,
+        baseRepo,
+        prData,
+        excludedFilePatterns,
+        priority
+      );
+      if (diffResult) {
+        reviews.push(diffResult);
+        if (currentReview.state === "APPROVED") {
+          shouldSkipSubsequentDiff = true;
         }
       }
     }
 
     return reviews;
+  }
+
+  private isReviewConclusive(review: GitHubPullRequestReviewState): boolean {
+    return CONCLUSIVE_REVIEW_STATES.includes(review.state || "");
+  }
+
+  private async computeReviewDiff(
+    currentReview: GitHubPullRequestReviewState,
+    previousReview: GitHubPullRequestReviewState | undefined,
+    firstCommitSha: string,
+    headOwnerRepo: string,
+    baseOwner: string,
+    baseRepo: string,
+    prData: PullRequestData,
+    excludedFilePatterns: string[] | null,
+    priority: number
+  ): Promise<ReviewScore | null> {
+    const previousCommitId = previousReview?.commit_id;
+    const baseSha = previousCommitId ?? firstCommitSha;
+    const headSha = `${headOwnerRepo.replace("/", ":")}:${currentReview.commit_id}`;
+    if (headSha && baseSha !== currentReview.commit_id) {
+      try {
+        const reviewEffect = await this.getReviewableDiff(
+          baseOwner,
+          baseRepo,
+          baseSha,
+          headSha,
+          prData,
+          excludedFilePatterns
+        );
+        this.context.logger.debug("Fetched diff between commits", {
+          baseOwner,
+          baseRepo,
+          baseSha,
+          headSha,
+          reviewEffect,
+        });
+        return {
+          reviewId: currentReview.id,
+          effect: reviewEffect,
+          reward: ((reviewEffect.addition + reviewEffect.deletion) * priority) / this._baseRate,
+          priority: priority,
+        };
+      } catch (e) {
+        this.context.logger.error(`Failed to get diff between commits ${baseSha} and ${headSha}:`, { e });
+      }
+    }
+    return null;
   }
 
   get enabled(): boolean {
