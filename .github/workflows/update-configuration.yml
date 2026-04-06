@@ -32,16 +32,12 @@ on:
       - "dist/**"
     tags-ignore:
       - "*"
-  repository_dispatch:
-    types:
-      - deno_deploy.build.routed
   delete:
 
 
 jobs:
   publish-action-artifact:
     name: "Publish Action Artifact"
-    if: ${{ github.event_name != 'repository_dispatch' }}
     runs-on: ubuntu-latest
     permissions: write-all
     env:
@@ -71,16 +67,9 @@ jobs:
             is_artifact_ref="true"
           fi
 
-          if [[ "$BUILD_ACTION_ENABLED" == "true" ]]; then
-            action_ref_branch="dist/${source_ref}"
-          else
-            action_ref_branch="${source_ref}"
-          fi
-
           echo "source_ref=$source_ref" >> "$GITHUB_OUTPUT"
           echo "is_tag_ref=$is_tag_ref" >> "$GITHUB_OUTPUT"
           echo "is_artifact_ref=$is_artifact_ref" >> "$GITHUB_OUTPUT"
-          echo "ACTION_REF=${GITHUB_REPOSITORY}@${action_ref_branch}" >> "$GITHUB_ENV"
 
       - name: Print deployment mode
         shell: bash
@@ -92,7 +81,6 @@ jobs:
           echo "SOURCE_REF=${{ steps.refs.outputs.source_ref }}"
           echo "IS_ARTIFACT_REF=${{ steps.refs.outputs.is_artifact_ref }}"
           echo "IS_TAG_REF=${{ steps.refs.outputs.is_tag_ref }}"
-          echo "ACTION_REF=${ACTION_REF}"
 
       - name: Publish action artifact branch
         if: ${{ env.BUILD_ACTION_ENABLED == 'true' }}
@@ -111,7 +99,6 @@ jobs:
 
   deploy-deno:
     name: "Provision Deno App"
-    if: ${{ github.event_name != 'repository_dispatch' }}
     runs-on: ubuntu-latest
     permissions: write-all
     environment: ${{ (github.event.ref == 'refs/heads/main' || github.ref == 'refs/heads/main' || github.event.workflow_run.head_branch == 'main' || github.event.ref == 'refs/heads/demo' || github.ref == 'refs/heads/demo' || github.event.workflow_run.head_branch == 'demo') && 'main' || 'development' }}
@@ -142,16 +129,9 @@ jobs:
             is_artifact_ref="true"
           fi
 
-          if [[ "$BUILD_ACTION_ENABLED" == "true" ]]; then
-            action_ref_branch="dist/${source_ref}"
-          else
-            action_ref_branch="${source_ref}"
-          fi
-
           echo "source_ref=$source_ref" >> "$GITHUB_OUTPUT"
           echo "is_tag_ref=$is_tag_ref" >> "$GITHUB_OUTPUT"
           echo "is_artifact_ref=$is_artifact_ref" >> "$GITHUB_OUTPUT"
-          echo "ACTION_REF=${GITHUB_REPOSITORY}@${action_ref_branch}" >> "$GITHUB_ENV"
 
       - name: Print deployment mode
         shell: bash
@@ -163,7 +143,6 @@ jobs:
           echo "SOURCE_REF=${{ steps.refs.outputs.source_ref }}"
           echo "IS_ARTIFACT_REF=${{ steps.refs.outputs.is_artifact_ref }}"
           echo "IS_TAG_REF=${{ steps.refs.outputs.is_tag_ref }}"
-          echo "ACTION_REF=${ACTION_REF}"
 
       - uses: actions/checkout@v4
         if: ${{ github.event_name != 'delete' && env.DEPLOY_DENO_ENABLED == 'true' && steps.refs.outputs.is_tag_ref != 'true' && steps.refs.outputs.is_artifact_ref != 'true' }}
@@ -176,26 +155,9 @@ jobs:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           APP_INSTALLATION_ID: ${{ secrets.APP_INSTALLATION_ID }}
-          ACTION_REF: ${{ env.ACTION_REF }}
           LOG_LEVEL: ${{ secrets.LOG_LEVEL || 'info' }}
         with:
           token: ${{ secrets.DENO_2_DEPLOY_TOKEN }}
           action: ${{ github.event_name == 'delete' && 'delete' || 'provision' }}
           app: ${{ secrets.DENO_PROJECT_NAME }}
           entrypoint: src/index.ts
-
-  publish-deno-manifest:
-    name: "Publish Deno Manifest"
-    if: ${{ github.event_name == 'repository_dispatch' }}
-    runs-on: ubuntu-latest
-    permissions: write-all
-
-    steps:
-      - uses: ubiquity-os/deno-deploy@issue-17-deno-deploy-app-migration
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APP_ID: ${{ secrets.APP_ID }}
-          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-        with:
-          token: ${{ secrets.DENO_2_DEPLOY_TOKEN }}
-          action: publish-manifest
