@@ -1,13 +1,13 @@
-import { beforeAll, describe, expect, it, jest } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { IssueActivity } from "../src/issue-activity";
 import { parseGitHubUrl } from "../src/start";
-import { ContextPlugin } from "../src/types/plugin-input";
+import type { ContextPlugin } from "../src/types/plugin-input";
+import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 
-const issueUrl =
-  process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os-marketplace/text-conversation-rewards/issues/22";
+const issueUrl = process.env.TEST_ISSUE_URL ?? "https://github.com/ubiquity-os/comment-incentives/issues/22";
 
 jest.mock("../src/helpers/get-comment-details", () => ({
   getMinimizedCommentStatus: jest.fn(),
@@ -34,9 +34,9 @@ describe("GetActivity class", () => {
           ],
         },
         repository: {
-          name: "text-conversation-rewards",
+          name: "comment-incentives",
           owner: {
-            login: "ubiquity-os-marketplace",
+            login: "ubiquity-os",
             id: 76412717,
           },
         },
@@ -44,6 +44,11 @@ describe("GetActivity class", () => {
     } as unknown as ContextPlugin,
     issue
   );
+
+  beforeAll(() => server.listen());
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
+
   beforeAll(async () => {
     await activity.init();
   });

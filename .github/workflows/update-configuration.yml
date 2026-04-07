@@ -34,7 +34,6 @@ on:
       - "*"
   delete:
 
-
 jobs:
   resolve:
     name: "Resolve Source Ref"
@@ -92,7 +91,6 @@ jobs:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
 
-
   deploy-deno:
     name: "Provision Deno App"
     runs-on: ubuntu-latest
@@ -118,7 +116,7 @@ jobs:
           APP_INSTALLATION_ID: ${{ secrets.APP_INSTALLATION_ID }}
           LOG_LEVEL: ${{ secrets.LOG_LEVEL || 'info' }}
         with:
-          token: ${{ secrets.DENO_2_DEPLOY_TOKEN }}
+          token: ${{ secrets.DENO_DEPLOY_TOKEN }}
           action: ${{ github.event_name == 'delete' && 'delete' || 'provision' }}
           app: ${{ secrets.DENO_PROJECT_NAME }}
           entrypoint: src/index.ts
