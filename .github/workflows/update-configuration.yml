@@ -160,7 +160,7 @@ jobs:
       - uses: actions/checkout@v6
         if: ${{ needs.resolve-context.outputs.deno_action != 'delete' }}
 
-      - uses: ubiquity-os/deno-deploy@issue-17-deno-deploy-app-migration
+      - uses: ubiquity-os/deno-deploy@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
