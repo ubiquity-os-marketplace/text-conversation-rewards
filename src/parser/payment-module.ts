@@ -20,6 +20,7 @@ import Decimal from "decimal.js";
 import { BigNumber, ethers, utils } from "ethers";
 import type { Database } from "../adapters/supabase/types/database";
 import { PaymentConfiguration, paymentConfigurationType } from "../configuration/payment-configuration";
+import { DifferentialRewardTracker } from "./differential-rewards";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { getUserRewardRole } from "../helpers/permissions";
 import { isGlobalRewardSettings, resolveRewardSettingsForRole, rewardConfigKey } from "../helpers/reward-settings";
