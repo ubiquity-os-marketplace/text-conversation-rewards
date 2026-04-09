@@ -115,6 +115,8 @@ export class PaymentModule extends BaseModule {
 
     const payoutMode = await this._getPayoutMode(data);
     if (payoutMode === null) {
+      const hasDifferential = await this._handleDifferentialRewards(data, result, tokenGroups);
+      if (hasDifferential) return result;
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
@@ -125,6 +127,29 @@ export class PaymentModule extends BaseModule {
     }
 
     return result;
+  }
+
+  private async _handleDifferentialRewards(
+    data: Readonly<IssueActivity>,
+    result: Result,
+    tokenGroups: { config: RewardSettings; usernames: string[] }[]
+  ): Promise<boolean> {
+    const previousRewards = this._extractPreviousRewards(data);
+    if (!Object.keys(previousRewards).length) return false;
+    this.context.logger.info("Previous rewards detected, computing differential for reopened issue.", {
+      previousRewards,
+    });
+    for (const group of tokenGroups) {
+      const groupResult = this._selectResultSubset(result, group.usernames);
+      const differential = this._computeDifferential(groupResult, previousRewards);
+      if (Object.keys(differential).length > 0) {
+        await this._processTokenRewardGroup(data, differential, group.config, "permit");
+      } else {
+        this.context.logger.info("No differential rewards to process for any user.");
+      }
+      this._removeTreasuryItem(result);
+    }
+    return true;
   }
 
   private _selectResultSubset(result: Result, usernames: string[]): Result {
@@ -346,11 +371,109 @@ export class PaymentModule extends BaseModule {
     }
   }
 
+  /**
+   * Extracts previous reward totals from bot comments' metadata.
+   * Parses the JSON metadata embedded in HTML comments to recover per-user totals.
+   */
+  _extractPreviousRewards(data: Readonly<IssueActivity>): {
+    [username: string]: { total: number; payoutMode: PayoutMode };
+  } {
+    const previousRewards: { [username: string]: { total: number; payoutMode: PayoutMode } } = {};
+    for (const comment of data.comments) {
+      if (!comment.body || comment.user?.type !== "Bot") continue;
+      this._parseBotCommentMetadata(comment.body, previousRewards);
+    }
+    return previousRewards;
+  }
+
+  private _parseBotCommentMetadata(
+    body: string,
+    previousRewards: { [username: string]: { total: number; payoutMode: PayoutMode } }
+  ) {
+    const metadataMatch = body.match(/<!--[\s\S]*?-->/g);
+    if (!metadataMatch) return;
+    for (const block of metadataMatch) {
+      this._extractRewardsFromMetadataBlock(block, previousRewards);
+    }
+  }
+
+  private _extractRewardsFromMetadataBlock(
+    block: string,
+    previousRewards: { [username: string]: { total: number; payoutMode: PayoutMode } }
+  ) {
+    try {
+      const jsonMatches = block.match(/\{[\s\S]*\}/g);
+      if (!jsonMatches) return;
+      for (const jsonStr of jsonMatches) {
+        this._extractRewardsFromJson(jsonStr, previousRewards);
+      }
+    } catch {
+      // Skip unparseable metadata
+    }
+  }
+
+  private _extractRewardsFromJson(
+    jsonStr: string,
+    previousRewards: { [username: string]: { total: number; payoutMode: PayoutMode } }
+  ) {
+    const parsed = JSON.parse(jsonStr);
+    const output = parsed.output ?? parsed;
+    if (typeof output !== "object" || output === null) return;
+    for (const [username, userData] of Object.entries(output)) {
+      if (typeof userData === "object" && userData !== null && "total" in userData) {
+        const payoutMode = (userData as { payoutMode?: PayoutMode }).payoutMode;
+        previousRewards[username] = {
+          total: (userData as { total: number }).total,
+          payoutMode: payoutMode ?? "permit",
+        };
+      }
+    }
+  }
+
+  /**
+   * Computes the differential between new rewards and previously distributed rewards.
+   * Returns a new Result containing only the positive differences.
+   */
+  _computeDifferential(
+    result: Result,
+    previousRewards: { [username: string]: { total: number; payoutMode: PayoutMode } }
+  ): Result {
+    const differential: Result = {};
+    for (const [username, reward] of Object.entries(result)) {
+      const previous = previousRewards[username];
+      if (!previous) {
+        differential[username] = reward;
+        continue;
+      }
+      const difference = new Decimal(reward.total).minus(previous.total).toNumber();
+      if (difference > 0) {
+        differential[username] = {
+          ...reward,
+          total: difference,
+          task: reward.task
+            ? {
+                ...reward.task,
+                reward: Math.min(difference, reward.task.reward),
+              }
+            : undefined,
+        };
+        this.context.logger.info(
+          `Differential reward for ${username}: previous=${previous.total}, new=${reward.total}, difference=${difference}`
+        );
+      } else {
+        this.context.logger.info(
+          `No additional reward for ${username}: previous=${previous.total}, new=${reward.total}`
+        );
+      }
+    }
+    return differential;
+  }
+
   /* This method returns the transfer mode based on the following conditions:
    - null: Indicates that the payout was previously transferred directly, meaning no further payout is required.
    - Permit: Applies if autoTransferMode is set to false or if rewards were previously generated using the permit method.
    - Transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
-  */
+   */
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
     for (const comment of data.comments) {
       if (comment.body && comment.user?.type === "Bot") {
