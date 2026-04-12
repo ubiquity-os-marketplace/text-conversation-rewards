@@ -542,9 +542,21 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     try {
+      const structuredOutputSchema = {
+        type: "object" as const,
+        additionalProperties: { type: "number" as const, minimum: 0, maximum: 1 },
+      };
+
       const res = await callLlm(
         {
-          response_format: { type: "json_object" },
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "relevance_scores",
+              description: "Maps comment IDs (as string keys) to relevance scores between 0 and 1.",
+              schema: structuredOutputSchema,
+            },
+          },
           messages: [{ role: "system", content: prompt }],
           reasoning_effort: this._configuration?.openAi.reasoningEffort,
         },
@@ -560,25 +572,20 @@ export class ContentEvaluatorModule extends BaseModule {
         throw this.context.logger.error("Unexpected response format: Expected JSON string in message content");
       }
 
-      const trimmedAnswer = answer.trim();
-
       let parsedJson: unknown;
-      const parseErrors: unknown[] = [];
-
       try {
-        parsedJson = JSON.parse(trimmedAnswer);
-      } catch (e) {
-        parseErrors.push(e);
+        parsedJson = JSON.parse(answer.trim());
+      } catch {
+        // Fallback: structured outputs should produce valid JSON, but extract as safety net
         try {
-          const extracted = extractFirstJsonObject(trimmedAnswer);
+          const extracted = extractFirstJsonObject(answer.trim());
           this.context.logger.debug(`LLM extracted JSON (using max_tokens: ${maxTokens}): ${extracted}`);
           parsedJson = JSON.parse(extracted);
         } catch (e2) {
-          parseErrors.push(e2);
           throw this.context.logger.error("Failed to parse a JSON object from the LLM response", {
             maxTokens,
-            parseErrors,
-            answerPreview: trimmedAnswer.slice(0, 500),
+            parseErrors: [e2],
+            answerPreview: answer.trim().slice(0, 500),
           });
         }
       }
@@ -609,8 +616,6 @@ export class ContentEvaluatorModule extends BaseModule {
     const targetCommentIds = targetComments.map((value) => value.id).join(", ");
 
     return `
-      CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
-      
       Evaluate the relevance of GitHub comments to an issue. Focus exclusively on the comments authored by ${username}. Provide a raw JSON object with those comment IDs and their relevance scores.
 
       Issue: ${issue}
@@ -632,17 +637,15 @@ export class ContentEvaluatorModule extends BaseModule {
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
-      7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
       Notes:
       - Even minor details may be significant.
       - Comments may reference earlier comments.
       - The number of entries in the JSON response MUST equal ${targetComments.length}.
 
-      Example Output Format (for format only — not content): {${targetComments.map((o) => `"${o.id}": <score>`).join(", ")}}
+      Example: {${targetComments.map((o) => `"${o.id}": <score>`).join(", ")}}
 
-      YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.
+      You must respond with a JSON object mapping each comment ID authored by ${username} to its score.
     `;
   }
 
@@ -652,9 +655,7 @@ export class ContentEvaluatorModule extends BaseModule {
       throw new Error("Issue specification comment is missing or empty");
     }
     const payload = { specification: specsArray, comments: userComments };
-    return `CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
-
-    Evaluate the value of a GitHub contributor's comments in a pull request.
+    return `Evaluate the value of a GitHub contributor's comments in a pull request.
     Context may include ONE OR MORE issue specifications. Treat the entire list as the set of problems this PR aims to solve.
     Consider a comment valuable if it helps address ANY of the specifications and/or clearly improves code quality while staying aligned with them.
 
@@ -666,18 +667,15 @@ export class ContentEvaluatorModule extends BaseModule {
     Additional notes:
     - Some comments are code-review entries and include a "diffHunk" representing the code context under review.
     - Prefer actionable, specific suggestions over generic praise.
-    - Do not explain your reasoning; only output JSON.
 
     The following JSON contains the issue specification context and the comments to evaluate.
     The "specification" field is an array of one or more issue bodies; the "comments" array lists PR comments.
 
     ${JSON.stringify(payload)}
 
-    Reply with ONLY a raw JSON object mapping each comment ID to a float between 0 and 1.
+    You must respond with a JSON object mapping each comment ID to a float between 0 and 1.
     The number of entries in the JSON response MUST equal ${userComments.length}.
-    Example Output Format (for format only — not content): {${userComments.map((o) => `"${o.id}": <score>`).join(", ")}}
-    Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
-
-    YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.`;
+    Example: {${userComments.map((o) => `"${o.id}": <score>`).join(", ")}}
+`;
   }
 }
