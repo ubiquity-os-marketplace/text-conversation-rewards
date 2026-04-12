@@ -632,8 +632,10 @@ export class ContentEvaluatorModule extends BaseModule {
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
-      7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
+      6. Penalize non-substantive comments:
+        - Assign low relevance scores (0.0 to 0.2) to comments that are purely social (e.g., "Thanks!", "Great work!", "I agree"), status updates with no technical detail, or meta-talk that doesn't advance the technical resolution of the issue.
+      7. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
+      8. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
       Notes:
       - Even minor details may be significant.
@@ -661,7 +663,8 @@ export class ContentEvaluatorModule extends BaseModule {
     Scoring rules (0.0 - 1.0 per comment):
     - 1.0: Strongly advances a fix/feature tied to one or more specifications, or significantly improves correctness, safety, performance, or maintainability in direct relation to the specs.
     - 0.5: Somewhat helpful or partially relevant; raises a valid concern or improvement but limited in scope/impact.
-    - 0.0: Not relevant, incorrect, or off-topic with respect to the specifications; noise.
+    - 0.1: Purely social or non-substantive (e.g., "Thanks!", "LGTM", "Acknowledged") or off-topic conversation that does not contribute technical value.
+    - 0.0: Not relevant, incorrect, or clearly noise with respect to the specifications.
 
     Additional notes:
     - Some comments are code-review entries and include a "diffHunk" representing the code context under review.
