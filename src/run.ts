@@ -5,6 +5,7 @@ import { checkIfClosedByCommand, manuallyCloseIssue } from "./helpers/issue-clos
 import { getSortedPrices } from "./helpers/label-price-extractor";
 import { logInvalidIssue } from "./helpers/log-invalid-issue";
 import { isUserAllowedToGenerateRewards } from "./helpers/permissions";
+import { validateMultiRoleParticipation } from "./helpers/multi-role-validation";
 import { handlePriceLabelValidation } from "./helpers/price-label-handler";
 import { tryCreatingClosingReward } from "./helpers/reward-user";
 import { isIssueClosedEvent, isIssueCommentedEvent, isPullRequestEvent } from "./helpers/type-assertions";
@@ -123,7 +124,26 @@ export async function run(context: ContextPlugin) {
     await manuallyCloseIssue(context);
   }
 
+  // Validate multi-role participation
+  const multiRoleResult = await checkMultiRoleParticipation(context, activity);
+  if (multiRoleResult) {
+    return multiRoleResult;
+  }
+
   return generateResults(context, activity);
+}
+
+async function checkMultiRoleParticipation(context: ContextPlugin, activity: IssueActivity) {
+  if (!context.config.incentives.multiRoleReviewEnabled) {
+    return null;
+  }
+  const validation = await validateMultiRoleParticipation(context, activity);
+  if (!validation.valid) {
+    const result = context.logger.warn(validation.reason ?? "Multi-role validation failed.");
+    await context.commentHandler.postComment(context, result);
+    return result.logMessage.raw;
+  }
+  return null;
 }
 
 async function generateResults(context: ContextPlugin, activity: IssueActivity) {
