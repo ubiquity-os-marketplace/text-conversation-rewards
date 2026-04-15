@@ -29,22 +29,36 @@ export class DataPurgeModule extends BaseModule {
       this.context.logger.debug("Skipping hidden comment", { comment });
       return true;
     }
+
+    const userLogin = comment.user?.login;
+
     if (
       this._configuration?.skipCommentsWhileAssigned &&
       this._configuration.skipCommentsWhileAssigned !== "none" &&
-      comment.user?.login &&
-      !(comment.commentType & CommentAssociation.SPECIFICATION) &&
-      isCommentDuringAssignment(
-        comment,
-        this._assignmentPeriods[comment.user?.login],
-        this._configuration.skipCommentsWhileAssigned === "exact"
-      )
+      userLogin &&
+      !(comment.commentType & CommentAssociation.SPECIFICATION)
     ) {
-      this.context.logger.debug("Skipping comment during assignment", {
-        body: comment.body?.replace(/(.{100})..+/, "$1…"),
-        url: comment.html_url,
-      });
-      return true;
+      const isAssigned = isCommentDuringAssignment(
+        comment,
+        this._assignmentPeriods[userLogin],
+        this._configuration.skipCommentsWhileAssigned === "exact"
+      );
+
+      if (isAssigned) {
+        if (this._configuration.includeResearchOnDisqualification) {
+          const currentAssignees = this.context.payload.issue?.assignees?.map((a: { login: string }) => a.login) ?? [];
+          if (!currentAssignees.includes(userLogin)) {
+            this.context.logger.debug("Including research comment for disqualified user", { userLogin });
+            return false;
+          }
+        }
+
+        this.context.logger.debug("Skipping comment during assignment", {
+          body: comment.body?.replace(/(.{100})..+/, "$1…"),
+          url: comment.html_url,
+        });
+        return true;
+      }
     }
     return false;
   }

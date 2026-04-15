@@ -10,6 +10,10 @@ export const dataPurgeConfigurationType = Type.Object({
       "- 'none': Includes all comments, regardless of assignment status or timing.",
     examples: ["all", "exact", "none"],
   }),
+  includeResearchOnDisqualification: Type.Boolean({
+    default: false,
+    description: "Includes comments of assignees who were disqualified (unassigned) without finishing the task.",
+  }),
 });
 
 export type DataPurgeConfiguration = Static<typeof dataPurgeConfigurationType>;
