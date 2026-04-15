@@ -77,7 +77,21 @@ export class GithubCommentModule extends BaseModule {
       return cached;
     }
     const tokenContract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
-    const symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    let symbol: string;
+    try {
+      symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      const isCallException = errMsg.includes("call revert") || errMsg.includes("CALL_EXCEPTION") || errMsg.includes("call exception");
+      if (isCallException) {
+        throw new Error(
+          `Token ${config.erc20RewardToken} was not found on network ID ${config.evmNetworkId}. ` +
+          `The smart contract does not exist on this network. ` +
+          `Please check that your configured network ID matches the token's deployment network.`
+        );
+      }
+      throw err;
+    }
     this._tokenSymbolCache.set(key, symbol);
     return symbol;
   }
