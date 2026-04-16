@@ -81,14 +81,20 @@ export class GithubCommentModule extends BaseModule {
     try {
       symbol = await new Erc20Wrapper(tokenContract).getSymbol();
     } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      const isCallException = errMsg.includes("call revert") || errMsg.includes("CALL_EXCEPTION") || errMsg.includes("call exception");
+      const errObj = err as { code?: string; message?: string };
+      const errMsg = (errObj.message ?? String(err)).toLowerCase();
+      const isCallException =
+        errObj.code === "CALL_EXCEPTION" || errMsg.includes("call revert") || errMsg.includes("call exception");
+
       if (isCallException) {
-        throw new Error(
-          `Token ${config.erc20RewardToken} was not found on network ID ${config.evmNetworkId}. ` +
-          `The smart contract does not exist on this network. ` +
-          `Please check that your configured network ID matches the token's deployment network.`
-        );
+        const bytecode = await tokenContract.provider.getCode(config.erc20RewardToken);
+        if (bytecode === "0x") {
+          throw new Error(
+            `Token ${config.erc20RewardToken} was not found on network ID ${config.evmNetworkId}. ` +
+              `The smart contract does not exist on this network. ` +
+              `Please check that your configured network ID matches the token's deployment network.`
+          );
+        }
       }
       throw err;
     }
