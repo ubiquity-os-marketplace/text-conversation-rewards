@@ -8,7 +8,7 @@ import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../co
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
-import { checkLlmRetryableState, retry } from "../helpers/retry";
+import { checkLlmRetryableState, getOpenRouterModelTokenLimits, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -76,11 +76,30 @@ export class ContentEvaluatorModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!this._configuration?.openAi.tokenCountLimit) {
+    const configuredTokenLimit = this._configuration?.openAi.tokenCountLimit ?? 0;
+    const configuredModel = this._configuration?.openAi.model;
+    // Try to get the model's token limits from OpenRouter for accurate chunk sizing
+    if (configuredModel) {
+      try {
+        const modelLimits = await getOpenRouterModelTokenLimits(configuredModel);
+        if (modelLimits) {
+          this._tokenLimit = modelLimits.contextLength;
+          this.context.logger.info(`Using OpenRouter model token limit for ${configuredModel}: ${this._tokenLimit}`);
+        } else {
+          this._tokenLimit = configuredTokenLimit;
+          this.context.logger.warn(`Model ${configuredModel} not found on OpenRouter, falling back to configured token limit: ${this._tokenLimit}`);
+        }
+      } catch (err) {
+        this._tokenLimit = configuredTokenLimit;
+        this.context.logger.warn(`OpenRouter API failed for model ${configuredModel}, using configured token limit: ${this._tokenLimit}`, { err });
+      }
+    } else {
+      this._tokenLimit = configuredTokenLimit;
+      this.context.logger.info(`No model configured, using configured token limit: ${this._tokenLimit}`);
+    }
+    if (!this._tokenLimit) {
       throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
     }
-    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
-    this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
     this._basePriority = await this.computePriority(data);

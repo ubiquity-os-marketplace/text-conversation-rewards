@@ -23,9 +23,15 @@ export function openAiType() {
       tokenCountLimit: Type.Integer({
         default: 124000,
         description:
-          "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation.",
+          "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation. Used as a fallback when model is not set or OpenRouter API is unavailable.",
         examples: [124000],
       }),
+      model: Type.Optional(
+        Type.String({
+          description: "OpenRouter model ID used for evaluation. When set, the token limit will be fetched from the OpenRouter API.",
+          examples: ["google/gemini-2.0-flash-001", "deepseek/deepseek-chat"],
+        })
+      ),
       maxRetries: Type.Number({
         default: 10,
         description: "Maximum number of retries to make",
