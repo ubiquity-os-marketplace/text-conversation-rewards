@@ -2,21 +2,52 @@ import { GitHubPullRequest, GitHubPullRequestReviewState } from "../github-types
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
 
+/**
+ * Checks if the task had human collaborator involvement beyond the assignee/contributor.
+ * This prevents a contributor from single-handedly generating rewards without oversight.
+ *
+ * A task is considered collaborative if ANY of the following is true:
+ * 1. The issue was closed by someone other than the issue creator
+ * 2. Someone other than the assignee(s) set pricing labels (Time/Priority)
+ * 3. Someone other than the assignee(s) assigned the issue
+ * 4. A non-assignee approved review exists on the linked PR
+ */
 export function isCollaborative(data: Readonly<IssueActivity>) {
   if (!data.self?.closed_by || !data.self.user) return false;
   const issueCreator = data.self.user;
 
-  if (data.self.closed_by.id === issueCreator.id) {
-    const pricingEventsByNonAssignee = data.events.find(
-      (event) =>
-        event.event === "labeled" &&
-        "label" in event &&
-        (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id
-    );
-    return !!pricingEventsByNonAssignee || !!nonAssigneeApprovedReviews(data);
+  // Assignee IDs to exclude from collaborator checks
+  const assigneeIds = (data.self.assignees ?? [])
+    .map((a) => a?.id)
+    .filter((id): id is number => typeof id === "number");
+
+  if (data.self.closed_by.id !== issueCreator.id) {
+    // Closed by someone other than the creator — already collaborative
+    return true;
   }
-  return true;
+
+  // Check pricing labels set by someone who is NOT an assignee
+  const pricingEventsByNonAssignee = data.events.find(
+    (event) =>
+      event.event === "labeled" &&
+      "label" in event &&
+      (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
+      event.actor.id !== issueCreator.id &&
+      !assigneeIds.includes(event.actor.id)
+  );
+  if (pricingEventsByNonAssignee) return true;
+
+  // Check if someone other than the assignee(s) assigned the issue
+  const assignmentByNonAssignee = data.events.find(
+    (event) =>
+      event.event === "assigned" &&
+      event.actor.id !== issueCreator.id &&
+      !assigneeIds.includes(event.actor.id)
+  );
+  if (assignmentByNonAssignee) return true;
+
+  // Check for approved reviews by non-assignee
+  return !!nonAssigneeApprovedReviews(data);
 }
 
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
