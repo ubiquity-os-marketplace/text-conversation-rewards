@@ -46,7 +46,13 @@ export class ReviewIncentivizerModule extends BaseModule {
             this.context.logger.warn("The user is not allowed to receive rewards for a review", { username });
             continue;
           }
-          const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
+          const reviewsByUser = linkedPullReviews.reviews.filter(
+            (v) =>
+              v.user?.login === username &&
+              (v.state === "APPROVED" || v.state === "CHANGES_REQUESTED") &&
+              v.body &&
+              v.body.trim().length > 0
+          );
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
           const baseOwner = linkedPullReviews.self.base.repo.owner.login;
           const baseRepo = linkedPullReviews.self.base.repo.name;
@@ -166,7 +172,7 @@ export class ReviewIncentivizerModule extends BaseModule {
           reviews.push({
             reviewId: currentReview.id,
             effect: reviewEffect,
-            reward: ((reviewEffect.addition + reviewEffect.deletion) * priority) / this._baseRate,
+            reward: (reviewEffect.addition * priority) / this._baseRate,
             priority: priority,
           });
         } catch (e) {
