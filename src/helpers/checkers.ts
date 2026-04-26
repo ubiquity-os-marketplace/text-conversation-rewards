@@ -12,14 +12,16 @@ export function isCollaborative(data: Readonly<IssueActivity>) {
         event.event === "labeled" &&
         "label" in event &&
         (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id
+        event.actor.id !== issueCreator.id &&
+        // Bot-applied labels must not count as human collaboration
+        event.actor.type !== "Bot"
     );
-    return !!pricingEventsByNonAssignee || !!nonAssigneeApprovedReviews(data);
+    return !!pricingEventsByNonAssignee || nonAssigneeApprovedReviews(data);
   }
   return true;
 }
 
-export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
+export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>): boolean {
   if (data.linkedMergedPullRequests[0] && data.self?.assignee) {
     const pullRequest = data.linkedMergedPullRequests[0].self;
     const pullReview = data.linkedMergedPullRequests[0];
@@ -37,7 +39,9 @@ export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
         }
       }
     }
-    return reviewsByNonAssignee.filter((v) => v.user?.id !== assignee.id && v.state === "APPROVED");
+    // Bug fix: previously returned an array, making !![] always true even with zero approvals.
+    // Now returns boolean so an empty result correctly evaluates to false.
+    return reviewsByNonAssignee.filter((v) => v.user?.id !== assignee.id && v.state === "APPROVED").length > 0;
   }
   return false;
 }
