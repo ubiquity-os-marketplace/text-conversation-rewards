@@ -55774,3 +55774,20 @@ Jest did not exit one second after the test run has completed.
       at Job._onFailure (node_modules/bottleneck/light.js:432:35)
       at Job.doExecute (node_modules/bottleneck/light.js:414:20)
 
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Rate limit hit with "POST /graphql", retrying in 3601 seconds.".
+
+      at console.warn (node_modules/@jest/console/build/index.js:173:10)
+      at Object.warn [as cb] (node_modules/@ubiquity-os/plugin-sdk/dist/octokit.js:39:19)
+      at node_modules/bottleneck/light.js:197:68
+          at Array.map (<anonymous>)
+      at Events.trigger (node_modules/bottleneck/light.js:188:38)
+      at node_modules/@octokit/plugin-throttling/dist-src/index.js:125:42
+      at Object.cb (node_modules/@octokit/plugin-throttling/dist-src/index.js:135:5)
+      at node_modules/bottleneck/light.js:197:68
+          at Array.map (<anonymous>)
+      at Events.trigger (node_modules/bottleneck/light.js:188:38)
+      at Job._onFailure (node_modules/bottleneck/light.js:432:35)
+      at Job.doExecute (node_modules/bottleneck/light.js:414:20)
+

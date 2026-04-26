@@ -50,8 +50,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             (v) =>
               v.user?.login === username &&
               (v.state === "APPROVED" || v.state === "CHANGES_REQUESTED") &&
-              v.body &&
-              v.body.trim().length > 0
+              (v.body?.trim().length ?? 0) > 0
           );
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
           const baseOwner = linkedPullReviews.self.base.repo.owner.login;
@@ -129,7 +128,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     reviewsByUser: GitHubPullRequestReviewState[],
     priority: number
   ) {
-    if (reviewsByUser.length == 0) {
+    if (reviewsByUser.length === 0) {
       this.context.logger.debug("No reviews found for this pull request", { baseOwner, baseRepo, baseRef });
       return;
     }
