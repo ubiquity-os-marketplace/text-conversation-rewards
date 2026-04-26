@@ -243,4 +243,83 @@ describe("Review Incentivizer", () => {
     expect(diff["modified.txt"]).toEqual({ addition: 2, deletion: 1 });
     expect(diff["removed.txt"]).toEqual(undefined);
   });
+
+  it("Should not reward empty-body approvals", async () => {
+    const reviews = [
+      {
+        user: { login: "reviewer1" },
+        state: "APPROVED",
+        body: null,
+        commit_id: "abc",
+        id: 1,
+        pull_request_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+      },
+      {
+        user: { login: "reviewer1" },
+        state: "APPROVED",
+        body: "   ",
+        commit_id: "abc",
+        id: 2,
+        pull_request_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+      },
+      {
+        user: { login: "reviewer1" },
+        state: "APPROVED",
+        body: undefined,
+        commit_id: "abc",
+        id: 3,
+        pull_request_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+      },
+    ];
+
+    // All three empty-body reviews should be filtered out
+    const filtered = reviews.filter(
+      (v) =>
+        v.user?.login === "reviewer1" &&
+        (v.state === "APPROVED" || v.state === "CHANGES_REQUESTED") &&
+        (v.body?.trim().length ?? 0) > 0
+    );
+
+    expect(filtered.length).toBe(0);
+  });
+
+  it("Should not reward COMMENTED state reviews", async () => {
+    const reviews = [
+      {
+        user: { login: "reviewer1" },
+        state: "COMMENTED",
+        body: "left a comment",
+        commit_id: "abc",
+        id: 4,
+        pull_request_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+      },
+      {
+        user: { login: "reviewer1" },
+        state: "DISMISSED",
+        body: "dismissed",
+        commit_id: "abc",
+        id: 5,
+        pull_request_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+      },
+      {
+        user: { login: "reviewer1" },
+        state: "APPROVED",
+        body: "LGTM!",
+        commit_id: "abc",
+        id: 6,
+        pull_request_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+      },
+    ];
+
+    // Only APPROVED with body should pass
+    const filtered = reviews.filter(
+      (v) =>
+        v.user?.login === "reviewer1" &&
+        (v.state === "APPROVED" || v.state === "CHANGES_REQUESTED") &&
+        (v.body?.trim().length ?? 0) > 0
+    );
+
+    expect(filtered.length).toBe(1);
+    expect(filtered[0].id).toBe(6);
+  });
 });
