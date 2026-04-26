@@ -41,7 +41,7 @@ export class ReviewIncentivizerModule extends BaseModule {
       reward.reviewRewards = [];
 
       for (const linkedPullReviews of data.linkedMergedPullRequests) {
-        if (linkedPullReviews.reviews && linkedPullReviews.self && username !== linkedPullReviews.self.user.login) {
+        if (linkedPullReviews.reviews && linkedPullReviews.self && username !== linkedPullReviews.self.user?.login) {
           if (!(await isUserAllowedToGenerateRewards(this.context, username))) {
             this.context.logger.warn("The user is not allowed to receive rewards for a review", { username });
             continue;
@@ -171,7 +171,7 @@ export class ReviewIncentivizerModule extends BaseModule {
           reviews.push({
             reviewId: currentReview.id,
             effect: reviewEffect,
-            reward: (reviewEffect.addition * priority) / this._baseRate,
+            reward: (Math.max(0, reviewEffect.addition) * priority) / this._baseRate,
             priority: priority,
           });
         } catch (e) {
