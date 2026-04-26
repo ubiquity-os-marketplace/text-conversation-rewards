@@ -77,7 +77,18 @@ export class GithubCommentModule extends BaseModule {
       return cached;
     }
     const tokenContract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
-    const symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    let symbol: string;
+    try {
+      symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    } catch {
+      // The token contract likely does not exist on this network (e.g., WXDAI on network 1 instead of 100).
+      // Ethers.js throws a cryptic CALL_EXCEPTION; surface a clear message instead.
+      throw this.context.logger.fatal(
+        `Token \`${config.erc20RewardToken}\` was not found on network ID \`${config.evmNetworkId}\`. ` +
+          `Please verify that the token address is correct and that \`evmNetworkId\` matches ` +
+          `the chain on which the token is deployed.`
+      );
+    }
     this._tokenSymbolCache.set(key, symbol);
     return symbol;
   }
