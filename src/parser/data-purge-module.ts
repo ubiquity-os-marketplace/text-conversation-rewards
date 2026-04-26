@@ -40,6 +40,21 @@ export class DataPurgeModule extends BaseModule {
         this._configuration.skipCommentsWhileAssigned === "exact"
       )
     ) {
+      // Credit research: if the issue was closed as unplanned, the current assignee's
+      // comments should not be skipped — they spent time researching a task that
+      // turned out infeasible and deserve comment rewards.
+      const issue = "issue" in this.context.payload ? this.context.payload.issue : null;
+      const isUnplanned = issue?.state_reason === "not_planned";
+      const isCurrentAssignee = issue?.assignees?.some(
+        (assignee) => assignee?.login === comment.user?.login
+      );
+      if (this._configuration.creditResearchOnUnplanned && isUnplanned && isCurrentAssignee) {
+        this.context.logger.debug("Crediting assignee research comment (issue closed as not_planned)", {
+          body: comment.body?.replace(/(.{100})..+/, "$1…"),
+          url: comment.html_url,
+        });
+        return false;
+      }
       this.context.logger.debug("Skipping comment during assignment", {
         body: comment.body?.replace(/(.{100})..+/, "$1…"),
         url: comment.html_url,

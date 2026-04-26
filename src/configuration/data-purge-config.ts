@@ -10,6 +10,15 @@ export const dataPurgeConfigurationType = Type.Object({
       "- 'none': Includes all comments, regardless of assignment status or timing.",
     examples: ["all", "exact", "none"],
   }),
+  creditResearchOnUnplanned: Type.Optional(
+    Type.Boolean({
+      default: false,
+      description:
+        "When true, assignees receive comment credits even if their comments were made during an assignment period, " +
+        "provided the issue is closed as 'not_planned'. This prevents disincentivizing contributors who spend time " +
+        "researching a task that turns out to be infeasible.",
+    })
+  ),
 });
 
 export type DataPurgeConfiguration = Static<typeof dataPurgeConfigurationType>;
