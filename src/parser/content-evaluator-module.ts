@@ -655,7 +655,9 @@ export class ContentEvaluatorModule extends BaseModule {
       const weightedSum = dimensions.reduce((sum, dimension) => {
         const score = dimensionResults[dimension][id];
         if (score === undefined) {
-          throw new Error(`LLM evaluation missing score for comment ID ${id} in dimension ${dimension}. Triggering retry.`);
+          throw new Error(
+            `LLM evaluation missing score for comment ID ${id} in dimension ${dimension}. Triggering retry.`
+          );
         }
         const weight = weights[dimension];
         return new Decimal(sum).add(new Decimal(score).mul(weight)).toNumber();
@@ -676,7 +678,7 @@ export class ContentEvaluatorModule extends BaseModule {
     const helpfulness = this._generateSpecializedIssuePrompt(issue, username, allComments, "helpfulness");
     const research = this._generateSpecializedIssuePrompt(issue, username, allComments, "research");
     const prompts = [relevance, helpfulness, research];
-    return prompts.reduce((a, b) => (a.length > b.length ? a : b));
+    return prompts.reduce((a, b) => (a.length > b.length ? a : b), "");
   }
 
   _generateSpecializedIssuePrompt(
@@ -742,7 +744,7 @@ export class ContentEvaluatorModule extends BaseModule {
     const helpfulness = this._generateSpecializedPrPrompt(specifications, userComments, "helpfulness");
     const research = this._generateSpecializedPrPrompt(specifications, userComments, "research");
     const prompts = [relevance, helpfulness, research];
-    return prompts.reduce((a, b) => (a.length > b.length ? a : b));
+    return prompts.reduce((a, b) => (a.length > b.length ? a : b), "");
   }
 
   _generateSpecializedPrPrompt(
