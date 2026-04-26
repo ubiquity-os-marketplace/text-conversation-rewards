@@ -8,7 +8,7 @@ import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../co
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
-import { checkLlmRetryableState, retry } from "../helpers/retry";
+import { checkLlmRetryableState, getOpenRouterModelTokenLimits, retry } from "@ubiquity-os/plugin-sdk/helpers";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -65,6 +65,39 @@ export class ContentEvaluatorModule extends BaseModule {
     }
   }
 
+  /**
+   * Fetches the model's context length from the OpenRouter API.
+   * Falls back to the configured tokenCountLimit if the model is not set
+   * or the API returns no information for the given model.
+   */
+  private async _fetchModelTokenLimit(): Promise<number> {
+    const fallback = this._configuration?.openAi.tokenCountLimit ?? 124000;
+    const modelId = this._configuration?.openAi.model;
+    if (!modelId) {
+      this.context.logger.debug("No OpenRouter model ID configured, using fallback token limit", { fallback });
+      return fallback;
+    }
+    try {
+      const limits = await getOpenRouterModelTokenLimits(modelId);
+      if (!limits) {
+        this.context.logger.warn(
+          `OpenRouter returned no token limits for model '${modelId}', using fallback`,
+          { fallback }
+        );
+        return fallback;
+      }
+      const contextLength = limits.contextLength;
+      this.context.logger.info(`Fetched OpenRouter token limit for '${modelId}': ${contextLength}`);
+      return contextLength;
+    } catch (err) {
+      this.context.logger.warn(`Failed to fetch token limits for '${modelId}' from OpenRouter, using fallback`, {
+        err,
+        fallback,
+      });
+      return fallback;
+    }
+  }
+
   get enabled(): boolean {
     if (!this._configuration) {
       this.context.logger.warn(
@@ -76,10 +109,7 @@ export class ContentEvaluatorModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!this._configuration?.openAi.tokenCountLimit) {
-      throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
-    }
-    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
+    this._tokenLimit = await this._fetchModelTokenLimit();
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];

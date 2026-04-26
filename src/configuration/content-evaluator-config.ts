@@ -20,10 +20,19 @@ const reasoningEffortType = Type.Union(
 export function openAiType() {
   return Type.Object(
     {
+      model: Type.Optional(
+        Type.String({
+          description:
+            "The OpenRouter model ID used for comment evaluation. Used to dynamically fetch the model's " +
+            "context length from the OpenRouter API to determine optimal chunk sizes.",
+          examples: ["google/gemini-2.5-pro-preview", "deepseek/deepseek-r1"],
+        })
+      ),
       tokenCountLimit: Type.Integer({
         default: 124000,
         description:
-          "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation.",
+          "Fallback token count limit when the OpenRouter API is unavailable. Used for chunk size " +
+          "calculation during comment evaluation when the model-specific context length cannot be retrieved.",
         examples: [124000],
       }),
       maxRetries: Type.Number({

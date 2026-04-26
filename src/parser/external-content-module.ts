@@ -4,7 +4,7 @@ import { JSDOM } from "jsdom";
 import { marked } from "marked";
 import { callLlm } from "@ubiquity-os/plugin-sdk";
 import { ExternalContentConfig } from "../configuration/external-content-config";
-import { checkLlmRetryableState, retry } from "../helpers/retry";
+import { checkLlmRetryableState, retry } from "@ubiquity-os/plugin-sdk/helpers";
 import { IssueActivity } from "../issue-activity";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";

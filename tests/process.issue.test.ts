@@ -7,7 +7,7 @@ import fs from "fs";
 import { http, HttpResponse, passthrough } from "msw";
 import { CommentAssociation } from "../src/configuration/comment-types";
 import { GitHubIssue } from "../src/github-types";
-import { retry } from "../src/helpers/retry";
+import { retry } from "@ubiquity-os/plugin-sdk/helpers";
 import { parseGitHubUrl } from "../src/start";
 import { ContextPlugin } from "../src/types/plugin-input";
 import { Result } from "../src/types/results";
