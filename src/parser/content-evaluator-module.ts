@@ -32,6 +32,31 @@ function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
 }
 
 /**
+ * JSON Schema for the structured-output mode of the relevance prompt.
+ * Maps comment IDs (string keys) to float relevance scores in [0, 1].
+ *
+ * strict: false is intentional — strict mode requires additionalProperties: false,
+ * which is incompatible with a dynamic map of runtime-known comment IDs.
+ */
+const RELEVANCE_JSON_SCHEMA = {
+  name: "relevance_scores",
+  strict: false,
+  schema: {
+    type: "object",
+    description:
+      "A JSON object mapping each comment ID (numeric string key) to a relevance score. " +
+      "Keys are string representations of numeric comment IDs (e.g. \"42\"). " +
+      "Values are floats in the range [0, 1]: 0 = entirely irrelevant, 1 = highly relevant.",
+    additionalProperties: {
+      type: "number",
+      minimum: 0,
+      maximum: 1,
+      description: "Relevance score for the comment with the corresponding ID",
+    },
+  },
+} as const;
+
+/**
  * Evaluates and rates comments.
  */
 export class ContentEvaluatorModule extends BaseModule {
@@ -40,6 +65,9 @@ export class ContentEvaluatorModule extends BaseModule {
   private _tokenLimit: number = 0;
   private readonly _originalAuthorWeight: number = 0.5;
   private _basePriority: number = 1;
+
+  /** Cached result of the structured-outputs capability check for the configured model. */
+  private _structuredOutputsSupportedCache: boolean | null = null;
 
   _getEnumValue(key: CommentType) {
     let res = 0;
@@ -540,11 +568,48 @@ export class ContentEvaluatorModule extends BaseModule {
     }
   }
 
+  /**
+   * Checks whether the configured OpenRouter model advertises structured-outputs support.
+   *
+   * Result is cached after the first call so the API is only hit once per module lifetime.
+   * Falls back to false on network errors or when no model is configured (e.g., free-tier
+   * Deepseek models that do not expose the `structured_outputs` parameter).
+   */
+   private async _supportsStructuredOutputs(): Promise<boolean> {
+    if (this._structuredOutputsSupportedCache !== null) {
+      return this._structuredOutputsSupportedCache;
+    }
+    const modelId = this._configuration?.openAi.model;
+    if (!modelId) {
+      this._structuredOutputsSupportedCache = false;
+      return false;
+    }
+    try {
+      // Query the OpenRouter public models endpoint to check supported_parameters.
+      // The endpoint does not require authentication.
+      type OpenRouterModelEntry = { id: string; supported_parameters?: string[] };
+      const resp = await fetch("https://openrouter.ai/api/v1/models");
+      const data = (await resp.json()) as { data?: OpenRouterModelEntry[] };
+      const entry = data.data?.find((m) => m.id === modelId);
+      const supported = entry?.supported_parameters?.includes("structured_outputs") ?? false;
+      this._structuredOutputsSupportedCache = supported;
+      return supported;
+    } catch {
+      this._structuredOutputsSupportedCache = false;
+      return false;
+    }
+  }
+
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     try {
+      const supportsStructuredOutputs = await this._supportsStructuredOutputs();
+      const responseFormat = supportsStructuredOutputs
+        ? { type: "json_schema" as const, json_schema: RELEVANCE_JSON_SCHEMA }
+        : { type: "json_object" as const };
+
       const res = await callLlm(
         {
-          response_format: { type: "json_object" },
+          response_format: responseFormat,
           messages: [{ role: "system", content: prompt }],
           reasoning_effort: this._configuration?.openAi.reasoningEffort,
         },

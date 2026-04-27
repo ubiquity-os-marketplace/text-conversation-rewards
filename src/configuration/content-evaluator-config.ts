@@ -32,6 +32,15 @@ export function openAiType() {
         examples: [10],
       }),
       reasoningEffort: reasoningEffortType,
+      model: Type.Optional(
+        Type.String({
+          description:
+            "OpenRouter model ID (e.g. \"deepseek/deepseek-chat-v3-0324:free\"). " +
+            "When set, the plugin queries the OpenRouter API to detect whether the model " +
+            "supports structured outputs and upgrades the response_format accordingly.",
+          examples: ["deepseek/deepseek-chat-v3-0324", "openai/gpt-4o-mini"],
+        })
+      ),
     },
     { default: {} }
   );
