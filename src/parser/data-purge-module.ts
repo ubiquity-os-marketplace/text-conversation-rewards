@@ -55,8 +55,10 @@ export class DataPurgeModule extends BaseModule {
       body
         // Remove quoted text
         .replace(/^>.*$/gm, "")
-        // Remove commands such as /start
-        .replace(/^\/.+/g, "")
+        // Remove commands such as /start.
+        // The /m flag makes ^ match the start of each line, so embedded commands
+        // within a regular comment are also stripped (#242).
+        .replace(/^\/.+/gm, "")
         // Remove HTML comments
         .replace(/<!--[\s\S]*?-->/g, "")
         // Remove the footnotes
@@ -90,6 +92,14 @@ export class DataPurgeModule extends BaseModule {
 
   private async _processComment(comment: CommentType, result: Result): Promise<void> {
     if (await this._shouldSkipComment(comment)) {
+      return;
+    }
+
+    // Skip slash-command comments entirely (#242).
+    // A multiline slash command like "/ask\nContent" has all subsequent lines as command
+    // arguments. _cleanCommentBody only removes the first "/command" line, causing the
+    // remaining argument content to be incorrectly scored as a regular comment.
+    if (comment.body?.trim().startsWith("/")) {
       return;
     }
 
