@@ -622,12 +622,20 @@ export class ContentEvaluatorModule extends BaseModule {
       1. Read all comments carefully, considering their context and content.
       2. Identify every comment authored by ${username}. Their comment IDs are: ${targetCommentIds}.
       3. Assign a relevance score from 0 to 1 for each identified comment:
-        - 0: Not related (e.g., spam)
-        - 1: Highly relevant (e.g., solutions, bug reports)
+        - 1.0: Directly addresses the technical problem (e.g., proposes a concrete solution, identifies the root cause, provides a working implementation detail, reports a reproducible bug)
+        - 0.5: Partially relevant (e.g., mentions related concepts, asks a clarifying question about the spec, provides useful context)
+        - 0.0: Not relevant to the technical problem — assign 0 for ALL of the following:
+            * Administrative / organizational messages (e.g., "assigning you to this", "closing this", "please create a PR", "you need to open a draft PR")
+            * Status or progress updates without technical content (e.g., "will look at this soon", "I'll review shortly", "working on it")
+            * Praise, thanks, or encouragement without technical substance (e.g., "great work!", "thanks!", "looks good to me")
+            * Off-topic or tangential discussions unrelated to the stated issue
+            * Questions that could be asked without reading the spec (e.g., "is this still relevant?", "how long will this take?")
+            * Automated or bot-generated messages
       4. Consider:
-        - Relation to the issue description
-        - Connection to other comments
-        - Contribution to issue resolution
+        - Whether the comment proposes or discusses a specific solution, implementation approach, or root cause
+        - Direct relation to the exact technical requirements in the issue description
+        - Technical accuracy in addressing the described problem
+        - A comment from any role (maintainer, collaborator, contributor) that is administrative in nature (asking for PRs, assigning, praising, updating status) MUST receive a score of 0, regardless of their standing or frequency of contribution
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
