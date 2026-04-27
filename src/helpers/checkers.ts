@@ -21,23 +21,22 @@ export function isCollaborative(data: Readonly<IssueActivity>) {
 
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
   if (data.linkedMergedPullRequests[0] && data.self?.assignee) {
-    const pullRequest = data.linkedMergedPullRequests[0].self;
     const pullReview = data.linkedMergedPullRequests[0];
-    const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
     const assignee = data.self.assignee;
-    type RequestedReviewer = NonNullable<GitHubPullRequest["requested_reviewers"]>[number];
 
-    if (pullReview.reviews && pullRequest) {
-      for (const review of pullReview.reviews) {
-        const isReviewRequestedForUser =
-          "requested_reviewers" in pullRequest &&
-          pullRequest.requested_reviewers?.some((reviewer: RequestedReviewer) => reviewer.id === review.user?.id);
-        if (!isReviewRequestedForUser && review.user?.id) {
-          reviewsByNonAssignee.push(review);
-        }
-      }
+    if (pullReview.reviews) {
+      // A PR is collaborative if any non-assignee reviewer submitted an APPROVED or
+      // CHANGES_REQUESTED review.  CHANGES_REQUESTED indicates even stronger engagement
+      // than APPROVED and must not be ignored.
+      // Note: requested_reviewers exclusion was intentionally removed — a formally
+      // requested reviewer who actually reviewed the PR is genuine collaboration.
+      return pullReview.reviews.some(
+        (review) =>
+          review.user?.id !== undefined &&
+          review.user.id !== assignee.id &&
+          (review.state === "APPROVED" || review.state === "CHANGES_REQUESTED")
+      );
     }
-    return reviewsByNonAssignee.filter((v) => v.user?.id !== assignee.id && v.state === "APPROVED");
   }
   return false;
 }
