@@ -27,6 +27,19 @@ export interface Result {
     permitSaveErrors?: PermitSaveError[];
     userId: number;
     walletAddress?: string | null;
+    /**
+     * Sum of all permits previously distributed for this user on this issue.
+     * Set during re-close cycles by _applyDifferentialRewards.
+     * Undefined for first-time distributions (backward-compatible).
+     */
+    previousTotal?: number;
+    /**
+     * The incremental reward amount to distribute on this re-close cycle.
+     * = total - previousTotal. Negative values mean the previous payout
+     * was higher; positive means a new top-up is owed.
+     * Undefined for first-time distributions (backward-compatible).
+     */
+    differentialAmount?: number;
     reviewRewards?: {
       reviews?: ReviewScore[];
       url: string;

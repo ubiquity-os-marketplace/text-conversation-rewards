@@ -242,6 +242,7 @@ export class PaymentModule extends BaseModule {
     await this._applyFees(result, config.erc20RewardToken);
 
     await this._addWalletAddressesToResult(result);
+    await this._applyDifferentialRewards(result, { issueUrl: payload.issueUrl, issueId });
 
     const env = this.context.env;
     const eventName = context.eventName as SupportedEvents;
@@ -490,13 +491,96 @@ export class PaymentModule extends BaseModule {
         if (!reward.walletAddress) {
           return null;
         }
+        // In a differential re-close cycle, differentialAmount is set explicitly.
+        // Skip users whose differential is zero or negative (already fully paid).
+        // For first-time distributions differentialAmount is undefined — preserve original behaviour.
+        if (reward.differentialAmount !== undefined && reward.differentialAmount <= 0) {
+          return null;
+        }
+        const amount = reward.differentialAmount ?? reward.total;
         return {
           username,
           address: reward.walletAddress,
-          amount: reward.total,
+          amount,
         };
       })
       .filter((beneficiary) => beneficiary !== null);
+  }
+
+  /**
+   * Queries the Supabase `permits` table and returns the SUM of all permit
+   * amounts previously distributed to `beneficiaryId` for `locationId`.
+   *
+   * Returns Decimal(0) on error so that the re-close cycle is treated as a
+   * first distribution (safe fallback — never under-pays).
+   */
+  private async _fetchPreviousPermitTotal(
+    beneficiaryId: number,
+    locationId: number
+  ): Promise<Decimal> {
+    try {
+      const { data, error } = await this._supabase
+        .from("permits")
+        .select("amount")
+        .eq("beneficiary_id", beneficiaryId)
+        .eq("location_id", locationId);
+
+      if (error || !data) {
+        this.context.logger.warn("Could not fetch previous permit total", { message: error?.message });
+        return new Decimal(0);
+      }
+
+      return data.reduce((sum: Decimal, row: { amount: string | null }) => {
+        return sum.plus(new Decimal(row.amount ?? "0"));
+      }, new Decimal(0));
+    } catch (err) {
+      this.context.logger.warn("Exception while fetching previous permit total", { err });
+      return new Decimal(0);
+    }
+  }
+
+  /**
+   * Calculates and annotates differential reward amounts for a re-close cycle.
+   *
+   * For each contributor in `result`:
+   *   - If no prior permit exists (previousTotal === 0) → first distribution,
+   *     leave reward untouched (backward-compatible).
+   *   - If prior permits exist → annotate differentialAmount = total - previousTotal.
+   *     Negative or zero differentials mean no additional payout is owed;
+   *     the user will be excluded from the payment run by _getBeneficiaries.
+   *
+   * @param result  The normalised reward result map (mutated in-place).
+   * @param issue   Issue URL + numeric ID used to resolve the permit location.
+   */
+  private async _applyDifferentialRewards(
+    result: Result,
+    issue: { issueUrl: string; issueId: number }
+  ): Promise<void> {
+    const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation({
+      issueId: issue.issueId,
+      issueUrl: issue.issueUrl,
+    });
+
+    for (const username of Object.keys(result)) {
+      const reward = result[username];
+      if (!reward.walletAddress || !reward.userId) {
+        continue;
+      }
+
+      const previousTotal = await this._fetchPreviousPermitTotal(reward.userId, locationId);
+      if (previousTotal.isZero()) {
+        // First-time distribution — no differential annotation needed.
+        continue;
+      }
+
+      const diff = new Decimal(reward.total).minus(previousTotal);
+      reward.previousTotal = previousTotal.toNumber();
+      reward.differentialAmount = diff.toNumber();
+
+      this.context.logger.info(
+        `[DifferentialRewards] @${username}: total=${reward.total} previous=${previousTotal.toFixed()} diff=${diff.toFixed()}`
+      );
+    }
   }
 
   async _transferReward({
