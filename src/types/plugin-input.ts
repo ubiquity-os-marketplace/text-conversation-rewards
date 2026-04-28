@@ -89,6 +89,16 @@ export const pluginSettingsSchema = T.Object(
           default: true,
           description: "If false, will allow contributors to generate permits.",
         }),
+        /**
+         * If true, requires at least two distinct humans to participate across key roles
+         * (spec author, assignee, PR author, reviewer) before rewards can be generated.
+         * Admins are exempt from this check.
+         */
+        multiRoleReviewEnabled: T.Boolean({
+          default: true,
+          description:
+            "If true, reward generation requires multi-role participation (at least two distinct humans across spec author, assignee, PR author, and reviewer roles). Admin users are exempt.",
+        }),
         contentEvaluator: T.Union([contentEvaluatorConfigurationType, T.Null()], { default: null }),
         userExtractor: T.Union([userExtractorConfigurationType, T.Null()], { default: null }),
         dataPurge: T.Union([dataPurgeConfigurationType, T.Null()], { default: null }),
