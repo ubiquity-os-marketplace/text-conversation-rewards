@@ -2,6 +2,11 @@ import { GitHubPullRequest, GitHubPullRequestReviewState } from "../github-types
 import { IssueActivity } from "../issue-activity";
 import { ContextPlugin } from "../types/plugin-input";
 
+type RequestedReviewer = NonNullable<GitHubPullRequest["requested_reviewers"]>[number];
+type ReviewAuthorAssociation = NonNullable<GitHubPullRequestReviewState["author_association"]>;
+
+const COLLABORATOR_REVIEW_ASSOCIATIONS: ReviewAuthorAssociation[] = ["COLLABORATOR", "MEMBER", "OWNER"];
+
 export function isCollaborative(data: Readonly<IssueActivity>) {
   if (!data.self?.closed_by || !data.self.user) return false;
   const issueCreator = data.self.user;
@@ -20,26 +25,74 @@ export function isCollaborative(data: Readonly<IssueActivity>) {
 }
 
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
-  if (data.linkedMergedPullRequests[0] && data.self?.assignee) {
-    const pullRequest = data.linkedMergedPullRequests[0].self;
-    const pullReview = data.linkedMergedPullRequests[0];
-    const reviewsByNonAssignee: GitHubPullRequestReviewState[] = [];
-    const assignee = data.self.assignee;
-    type RequestedReviewer = NonNullable<GitHubPullRequest["requested_reviewers"]>[number];
-
-    if (pullReview.reviews && pullRequest) {
-      for (const review of pullReview.reviews) {
-        const isReviewRequestedForUser =
-          "requested_reviewers" in pullRequest &&
-          pullRequest.requested_reviewers?.some((reviewer: RequestedReviewer) => reviewer.id === review.user?.id);
-        if (!isReviewRequestedForUser && review.user?.id) {
-          reviewsByNonAssignee.push(review);
-        }
-      }
-    }
-    return reviewsByNonAssignee.filter((v) => v.user?.id !== assignee.id && v.state === "APPROVED");
+  const linkedPullRequest = data.linkedMergedPullRequests[0];
+  if (!linkedPullRequest) {
+    return false;
   }
-  return false;
+
+  if (data.self?.pull_request) {
+    const pullRequestAuthorId = linkedPullRequest.self?.user?.id ?? data.self.user?.id;
+    const excludedAuthorIds = new Set(
+      [pullRequestAuthorId, ...data.linkedIssues.map((issue) => issue.node.author?.id)].filter(Boolean).map(String)
+    );
+    return hasApprovedReviewByCollaborator(linkedPullRequest.reviews, excludedAuthorIds);
+  }
+
+  const assigneeId = data.self?.assignee?.id;
+  if (!assigneeId || !linkedPullRequest.self) {
+    return false;
+  }
+
+  return hasIssueContextApprovedReview(linkedPullRequest.self, linkedPullRequest.reviews, assigneeId);
+}
+
+function hasApprovedReviewByCollaborator(
+  reviews: GitHubPullRequestReviewState[] | null | undefined,
+  excludedUserIds: Set<string>
+) {
+  if (!reviews) {
+    return false;
+  }
+
+  return reviews.some(
+    (review) =>
+      Boolean(review.user?.id) &&
+      !excludedUserIds.has(String(review.user?.id)) &&
+      review.state === "APPROVED" &&
+      isReviewByCollaborator(review)
+  );
+}
+
+function hasIssueContextApprovedReview(
+  pullRequest: GitHubPullRequest,
+  reviews: GitHubPullRequestReviewState[] | null | undefined,
+  assigneeId: number
+) {
+  if (!reviews) {
+    return false;
+  }
+
+  return reviews.some(
+    (review) =>
+      Boolean(review.user?.id) &&
+      review.user?.id !== assigneeId &&
+      review.state === "APPROVED" &&
+      !isReviewRequestedForUser(pullRequest, review)
+  );
+}
+
+function isReviewRequestedForUser(pullRequest: GitHubPullRequest, review: GitHubPullRequestReviewState) {
+  if (!("requested_reviewers" in pullRequest)) {
+    return false;
+  }
+
+  return (
+    pullRequest.requested_reviewers?.some((reviewer: RequestedReviewer) => reviewer.id === review.user?.id) ?? false
+  );
+}
+
+function isReviewByCollaborator(review: GitHubPullRequestReviewState) {
+  return COLLABORATOR_REVIEW_ASSOCIATIONS.includes(review.author_association as ReviewAuthorAssociation);
 }
 
 /*
