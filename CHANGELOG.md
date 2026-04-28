@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/compare/v1.8.0...v1.8.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* bump plugin-sdk for runtime manifest refs ([c5d50f9](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/c5d50f94ac929f1ddd9b11022812abf04474789a))
+* **ci:** treat demo as production secrets environment ([258b4ef](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/258b4efe5339d33ddf1424610365dc715004db3a))
+* stabilize rewards ci ([7f5a917](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/7f5a917edc275547c09e654d7f5fdf80ca1bcaba))
+* support PR collaboration review checks ([6ccab43](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/6ccab43388729dec67722c756993ce20ed720005))
+* support PR collaboration review checks ([b0581e1](https://github.com/ubiquity-os-marketplace/text-conversation-rewards/commit/b0581e17ca4a029571584ed30a33da4d8589ab74))
+
 ## 1.8.0 (2026-03-23)
 
 
