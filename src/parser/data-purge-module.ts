@@ -9,13 +9,16 @@ import { Result, GithubCommentScore as ResultComment } from "../types/results";
 
 type CommentType = Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
 
+/**
+ * Removes slash-command blocks and other non-rewardable markup from a GitHub comment body.
+ */
 export function cleanCommentBody(body: string): string {
   const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
   return body
     .split(/\r?\n/)
     .reduce<{ lines: string[]; skippingCommand: boolean }>(
       (acc, line) => {
-        const isCommandLine = /^\s*\/\S+/.test(line);
+        const isCommandLine = /^\s*\/[a-z][\w-]*(?:\s|$)/i.test(line);
         if (isCommandLine) {
           return { ...acc, skippingCommand: true };
         }

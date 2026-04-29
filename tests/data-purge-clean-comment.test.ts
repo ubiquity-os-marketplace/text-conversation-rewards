@@ -26,6 +26,10 @@ describe("cleanCommentBody", () => {
     expect(cleanCommentBody(body)).toBe("This follow-up is a normal comment with [https://example.com](https://example.com)");
   });
 
+  it("keeps non-command leading slash text", () => {
+    expect(cleanCommentBody("/2026/04/release-notes should be preserved")).toBe("/2026/04/release-notes should be preserved");
+  });
+
   it("removes an entire slash command comment when no normal text follows", () => {
     expect(cleanCommentBody("/ask\nscore this hidden command context")).toBe("");
   });
