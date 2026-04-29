@@ -9,6 +9,41 @@ import { Result, GithubCommentScore as ResultComment } from "../types/results";
 
 type CommentType = Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
 
+export function cleanCommentBody(body: string): string {
+  const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
+  return body
+    .split(/\r?\n/)
+    .reduce<{ lines: string[]; skippingCommand: boolean }>(
+      (acc, line) => {
+        const isCommandLine = /^\s*\/\S+/.test(line);
+        if (isCommandLine) {
+          return { ...acc, skippingCommand: true };
+        }
+        if (acc.skippingCommand) {
+          if (line.trim() === "") {
+            return { ...acc, skippingCommand: false };
+          }
+          return acc;
+        }
+        acc.lines.push(line);
+        return acc;
+      },
+      { lines: [], skippingCommand: false }
+    )
+    .lines.join("\n")
+    // Remove quoted text
+    .replace(/^>.*$/gm, "")
+    // Remove HTML comments
+    .replace(/<!--[\s\S]*?-->/g, "")
+    // Remove the footnotes
+    .replace(/^###### .*?\[\^\d+\^][\s\S]*$/gm, "")
+    .replace(/^\[\^[\w-]+\^?]:.*$/gm, "")
+    .replace(/\[\^[\w-]+\^?]/g, "")
+    // Make sure links are all in the MD link format, except the ones contained in HTML elements
+    .replaceAll(urlRegex, "[$1]($1)")
+    .trim();
+}
+
 /**
  * Removes the data in the comments that we do not want to be processed.
  */
@@ -50,23 +85,7 @@ export class DataPurgeModule extends BaseModule {
   }
 
   private _cleanCommentBody(body: string): string {
-    const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
-    return (
-      body
-        // Remove quoted text
-        .replace(/^>.*$/gm, "")
-        // Remove commands such as /start
-        .replace(/^\/.+/g, "")
-        // Remove HTML comments
-        .replace(/<!--[\s\S]*?-->/g, "")
-        // Remove the footnotes
-        .replace(/^###### .*?\[\^\d+\^][\s\S]*$/gm, "")
-        .replace(/^\[\^[\w-]+\^?]:.*$/gm, "")
-        .replace(/\[\^[\w-]+\^?]/g, "")
-        // Make sure links are all in the MD link format, except the ones contained in HTML elements
-        .replaceAll(urlRegex, "[$1]($1)")
-        .trim()
-    );
+    return cleanCommentBody(body);
   }
 
   private _createResultComment(comment: CommentType, newContent: string): ResultComment | null {
