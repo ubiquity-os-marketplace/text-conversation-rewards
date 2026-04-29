@@ -2,6 +2,18 @@ import { describe, expect, it } from "@jest/globals";
 import { cleanCommentBody } from "../src/parser/data-purge-module";
 
 describe("cleanCommentBody", () => {
+  it("preserves normal text before a slash command block", () => {
+    const body = [
+      "Keep this rewardable line.",
+      "/ask hidden command",
+      "hidden continuation",
+      "",
+      "And keep this too.",
+    ].join("\n");
+
+    expect(cleanCommentBody(body)).toBe("Keep this rewardable line.\nAnd keep this too.");
+  });
+
   it("removes multiline slash command blocks from rewardable comment text", () => {
     const body = [
       "/ask can you check this?",
