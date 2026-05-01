@@ -9,6 +9,10 @@ import { ContentEvaluatorConfiguration } from "../configuration/content-evaluato
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
 import { checkLlmRetryableState, retry } from "../helpers/retry";
+import {
+  buildSpecializedIssuePrompts,
+  combineSpecializedScores,
+} from "../helpers/specialized-content-prompts";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -452,6 +456,28 @@ export class ContentEvaluatorModule extends BaseModule {
     return commentRelevances;
   }
 
+  private async _evaluateIssueCommentsWithSpecializedPrompts(
+    specification: string,
+    username: string,
+    allComments: AllComments,
+    userIssueComments: CommentToEvaluate[]
+  ): Promise<Relevances> {
+    const prompts = buildSpecializedIssuePrompts({ specification, username, allComments });
+    const targetCommentIds = userIssueComments.map((comment) => comment.id);
+    const evaluations = [];
+
+    for (const prompt of prompts) {
+      const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
+      evaluations.push({
+        key: prompt.key,
+        weight: prompt.weight,
+        scores: await this._submitPrompt(prompt.prompt, this._calculateMaxTokens(dummyResponse)),
+      });
+    }
+
+    return combineSpecializedScores(evaluations, targetCommentIds);
+  }
+
   async _evaluateComments(
     specification: string,
     username: string,
@@ -475,7 +501,12 @@ export class ContentEvaluatorModule extends BaseModule {
           allComments
         );
       } else {
-        commentRelevances = await this._submitPrompt(promptForIssueComments, maxOutputTokens);
+        commentRelevances = await this._evaluateIssueCommentsWithSpecializedPrompts(
+          specification,
+          username,
+          allComments,
+          userIssueComments
+        );
       }
     }
 
