@@ -12,7 +12,8 @@ export function isCollaborative(data: Readonly<IssueActivity>) {
         event.event === "labeled" &&
         "label" in event &&
         (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id
+        event.actor.id !== issueCreator.id &&
+        event.actor.type !== "Bot"
     );
     return !!pricingEventsByNonAssignee || !!nonAssigneeApprovedReviews(data);
   }
