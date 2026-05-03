@@ -514,10 +514,7 @@ export class PaymentModule extends BaseModule {
    * Returns Decimal(0) on error so that the re-close cycle is treated as a
    * first distribution (safe fallback — never under-pays).
    */
-  private async _fetchPreviousPermitTotal(
-    beneficiaryId: number,
-    locationId: number
-  ): Promise<Decimal> {
+  private async _fetchPreviousPermitTotal(beneficiaryId: number, locationId: number): Promise<Decimal> {
     try {
       const { data, error } = await this._supabase
         .from("permits")
@@ -552,10 +549,7 @@ export class PaymentModule extends BaseModule {
    * @param result  The normalised reward result map (mutated in-place).
    * @param issue   Issue URL + numeric ID used to resolve the permit location.
    */
-  private async _applyDifferentialRewards(
-    result: Result,
-    issue: { issueUrl: string; issueId: number }
-  ): Promise<void> {
+  private async _applyDifferentialRewards(result: Result, issue: { issueUrl: string; issueId: number }): Promise<void> {
     const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation({
       issueId: issue.issueId,
       issueUrl: issue.issueUrl,
