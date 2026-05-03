@@ -80,10 +80,9 @@ export class ContentEvaluatorModule extends BaseModule {
     try {
       const limits = await getOpenRouterModelTokenLimits(modelId);
       if (!limits) {
-        this.context.logger.warn(
-          `OpenRouter returned no token limits for model '${modelId}', using fallback`,
-          { fallback }
-        );
+        this.context.logger.warn(`OpenRouter returned no token limits for model '${modelId}', using fallback`, {
+          fallback,
+        });
         return fallback;
       }
       const contextLength = limits.contextLength;
