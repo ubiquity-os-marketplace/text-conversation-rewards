@@ -252,8 +252,8 @@ function addSlide(title, bodyFn) {
   addBackground(slide);
   slide.addShape(pptx.ShapeType.ellipse, { x: 2.43, y: 2.27, w: 0.95, h: 0.95, fill: { color: C.black, transparency: 100 }, line: { color: "DDE7EE", transparency: 52, width: 0.8 } });
   addBody(slide, "⬡", 2.61, 2.39, 0.58, 0.48, 33, C.white, { paraSpaceAfterPt: 0, align: "center", fit: "shrink" });
-  addBody(slide, "UbiquityOS", 3.48, 2.38, 4.85, 0.56, 33, C.white, { paraSpaceAfterPt: 0 });
-  addBody(slide, "Empowering software teams with explainable contribution rewards", 2.65, 3.45, 7.7, 0.28, 13.3, C.white, { paraSpaceAfterPt: 0, align: "center" });
+  addBody(slide, "UbiquityOS\nContribution Rewards", 3.48, 2.18, 5.9, 0.96, 28, C.white, { paraSpaceAfterPt: 0, breakLine: true });
+  addBody(slide, "Reward the work behind the code.", 2.65, 3.45, 7.7, 0.28, 13.3, C.white, { paraSpaceAfterPt: 0, align: "center" });
   addFooter(slide, null);
 }
 
@@ -289,11 +289,11 @@ addSlide("Why Now", (slide) => {
 addSlide("Solution", (slide) => {
   addBody(slide, "Engineering artifacts become explainable XP.", 0.7, 1.15, 5.45, 0.62, 17, C.white, { paraSpaceAfterPt: 0 });
   addBullets(slide, [
-    "Capture GitHub events",
-    "Score contribution",
-    "Link every point to evidence",
-    "Record XP or rewards",
-    "Expand into Slack and work tools",
+    "GitHub work events",
+    "Configurable scoring",
+    "Source-linked XP",
+    "Reward records",
+    "Slack-ready expansion",
   ], 0.7, 2.08, 5.6, 2.3, 13.4, 0.16);
   addMockTable(slide, 7.18, 1.1, 4.35, 2.7);
 });
@@ -305,38 +305,38 @@ addSlide("Product Promise", (slide) => {
 
 addSlide("How It Works", (slide) => {
   addBullets(slide, [
-    "Kernel relays GitHub events",
+    "GitHub event enters the kernel",
     "Plugin collects work evidence",
-    "Modules score contribution",
-    "Ledger records XP or payouts",
+    "Modules assign explainable XP",
+    "Ledger stores rewards and audit trail",
   ], 0.7, 1.18, 6.1, 2.8, 13.2, 0.13);
   addDiagram(slide, 8.2, 1.18);
 });
 
 addSlide("Live Capabilities", (slide) => {
   addBullets(slide, [
-    "Specs and issue comments",
-    "PR reviews and review comments",
-    "Linked merged pull requests",
-    "Code review impact incentives",
-    "Simplification incentives",
-    "XP, permits, and transfers",
+    "Specs and comments",
+    "PR reviews",
+    "Linked merged work",
+    "Review incentives",
+    "Simplification rewards",
+    "XP and payouts",
   ], 0.7, 1.18, 9.6, 3.6, 14.2, 0.1);
 });
 
-addSlide("Modular Architecture", (slide) => {
+addSlide("Plugin Pipeline", (slide) => {
   addSubBullets(slide, "Collection and cleanup", [
-    "User extraction",
-    "Data cleanup",
-    "External content summaries",
-    "Formatting and readability",
+    "Identify contributors",
+    "Clean noisy comments",
+    "Enrich linked content",
+    "Score readability",
   ], 0.7, 1.16, 5.6, 2.7);
   addSubBullets(slide, "Scoring and output", [
-    "LLM relevance scoring",
-    "Review incentives",
-    "Simplification rewards",
-    "XP and payout records",
-    "GitHub audit comments",
+    "Score relevance",
+    "Reward reviews",
+    "Reward simplification",
+    "Save XP and payouts",
+    "Post audit comments",
   ], 7.15, 1.16, 5.55, 2.9);
 });
 
@@ -367,16 +367,16 @@ addSlide("Slack Expansion", (slide) => {
 addSlide("Enterprise Dashboard", (slide) => {
   addBody(slide, "A system of record for contribution evidence.", 0.7, 1.16, 7.8, 0.36, 16, C.white, { paraSpaceAfterPt: 0 });
   addBullets(slide, [
-    "Individual ledger",
-    "Team distribution",
-    "Review value",
-    "XP by work type",
+    "Who contributed?",
+    "What work counted?",
+    "Why was it scored?",
+    "Where is evidence?",
   ], 0.7, 2.0, 5.2, 2.4, 13.6, 0.1);
   addBullets(slide, [
-    "Evidence drilldown",
+    "Team rollups",
+    "Review value",
     "Manager packets",
     "Audit exports",
-    "Org rollups",
   ], 7.1, 2.0, 5.3, 2.4, 13.6, 0.1);
 });
 
@@ -407,13 +407,13 @@ addSlide("Business Model", (slide) => {
   addSubBullets(slide, "Packaging", [
     "Team: GitHub XP ledger",
     "Business: Slack and reports",
-    "Enterprise: SSO, RBAC, audit exports, private deployment",
+    "Enterprise: SSO, RBAC, audit exports",
   ], 0.7, 1.16, 5.7, 2.7);
   addSubBullets(slide, "Pricing", [
     "Active contributor seats",
     "Usage-based AI evaluation",
-    "Optional payout or permit fee",
-    "Enterprise contracts",
+    "Payout fees",
+    "Annual contracts",
   ], 7.1, 1.16, 5.5, 2.4);
 });
 
@@ -426,7 +426,7 @@ addSlide("Roadmap", (slide) => {
   addSubBullets(slide, "Next", [
     "Enterprise dashboard",
     "Slack association",
-    "Search and exports",
+    "Searchable ledger",
   ], 4.78, 1.16, 3.75, 2.1);
   addSubBullets(slide, "Later", [
     "Jira and Linear",

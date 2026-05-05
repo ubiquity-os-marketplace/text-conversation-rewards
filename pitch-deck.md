@@ -175,7 +175,7 @@ a {
   border-top: 1px solid rgba(244, 248, 251, 0.16);
   font-size: 10px;
   line-height: 1.28;
-  color: rgba(183, 192, 200, 0.72);
+  color: rgba(183, 192, 200, 0.86);
   letter-spacing: 0.04em;
   text-transform: none;
 }
@@ -254,6 +254,13 @@ a {
   align-items: start;
 }
 
+.three-col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
 .panel {
   background: linear-gradient(180deg, rgba(3, 14, 22, 0.84), rgba(1, 9, 15, 0.62));
   border: 1px solid rgba(36, 203, 229, 0.14);
@@ -284,14 +291,17 @@ a {
 
 .callout {
   margin-top: 24px;
-  padding: 16px 20px;
+  display: inline-block;
+  max-width: 660px;
+  padding: 10px 14px;
   border-left: 2px solid var(--cyan);
   color: var(--white);
-  background: rgba(36, 203, 229, 0.055);
+  background: rgba(36, 203, 229, 0.04);
 }
 
 .callout p {
-  font-size: 20px;
+  font-size: 15px;
+  line-height: 1.24;
 }
 
 .diagram {
@@ -373,6 +383,28 @@ a {
   line-height: 1.18;
 }
 
+.hero-title {
+  position: absolute;
+  left: 70px;
+  top: 230px;
+  max-width: 720px;
+}
+
+.hero-title h1 {
+  color: var(--white);
+  font-size: 46px;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+.hero-title p {
+  margin-top: 22px;
+  color: var(--white);
+  font-size: 18px;
+  line-height: 1.28;
+}
+
 .deck-note {
   position: absolute;
   right: 70px;
@@ -387,9 +419,10 @@ a {
 
 <img class="slide-art art-bg" src="assets/pitch/slide-01-title.png" alt="" />
 
-# UbiquityOS
-
-Empowering software teams with explainable contribution rewards
+<div class="hero-title">
+  <h1>UbiquityOS<br />Contribution Rewards</h1>
+  <p>Reward the work behind the code.</p>
+</div>
 
 ---
 
@@ -427,11 +460,11 @@ Empowering software teams with explainable contribution rewards
 
 Engineering artifacts become explainable XP.
 
-- Capture GitHub events
-- Score contribution
-- Link every point to evidence
-- Record XP or rewards
-- Expand into Slack and work tools
+- GitHub work events
+- Configurable scoring
+- Source-linked XP
+- Reward records
+- Slack-ready expansion
 
 </div>
 
@@ -471,10 +504,10 @@ Engineering artifacts become explainable XP.
 
 <div>
 
-- Kernel relays GitHub events
+- GitHub event enters the kernel
 - Plugin collects work evidence
-- Modules score contribution
-- Ledger records XP or payouts
+- Modules assign explainable XP
+- Ledger stores rewards and audit trail
 
 </div>
 
@@ -494,16 +527,16 @@ Engineering artifacts become explainable XP.
 
 <img class="slide-art art-bg" src="assets/pitch/slide-07-capabilities.png" alt="" />
 
-- Specs and issue comments
-- PR reviews and review comments
-- Linked merged pull requests
-- Review impact incentives
-- Simplification incentives
-- XP, permits, and transfers
+- Specs and comments
+- PR reviews
+- Linked merged work
+- Review incentives
+- Simplification rewards
+- XP and payouts
 
 ---
 
-# Modular Architecture
+# Plugin Pipeline
 
 <img class="slide-art art-bg" src="assets/pitch/slide-08-architecture.png" alt="" />
 
@@ -511,20 +544,20 @@ Engineering artifacts become explainable XP.
 
 <div>
 
-- User extraction
-- Data cleanup
-- External content summaries
-- Formatting and readability
+- Identify contributors
+- Clean noisy comments
+- Enrich linked content
+- Score readability
 
 </div>
 
 <div>
 
-- LLM relevance scoring
-- Review incentives
-- Simplification rewards
-- XP and payout records
-- GitHub audit comments
+- Score relevance
+- Reward reviews
+- Reward simplification
+- Save XP and payouts
+- Post audit comments
 
 </div>
 
@@ -575,19 +608,19 @@ A system of record for contribution evidence.
 
 <div>
 
-- Individual ledger
-- Team distribution
-- Review value
-- XP by work type
+- Who contributed?
+- What work counted?
+- Why was it scored?
+- Where is evidence?
 
 </div>
 
 <div>
 
-- Evidence drilldown
+- Team rollups
+- Review value
 - Manager packets
 - Audit exports
-- Org rollups
 
 </div>
 
@@ -636,7 +669,7 @@ UbiquityOS creates incentives.
 
 - Team: GitHub XP ledger
 - Business: Slack and reports
-- Enterprise: SSO, RBAC, audit exports, private deployment
+- Enterprise: SSO, RBAC, audit exports
 
 </div>
 
@@ -646,8 +679,8 @@ UbiquityOS creates incentives.
 
 - Active contributor seats
 - Usage-based AI evaluation
-- Optional payout or permit fee
-- Enterprise contracts
+- Payout fees
+- Annual contracts
 
 </div>
 
@@ -659,7 +692,7 @@ UbiquityOS creates incentives.
 
 <img class="slide-art art-bg" src="assets/pitch/slide-15-roadmap.png" alt="" />
 
-<div class="two-col small">
+<div class="three-col small">
 
 <div>
 
@@ -669,11 +702,15 @@ UbiquityOS creates incentives.
 - Contribution scoring
 - XP and rewards
 
+</div>
+
+<div>
+
 ## Next
 
 - Enterprise dashboard
 - Slack association
-- Search and exports
+- Searchable ledger
 
 </div>
 
