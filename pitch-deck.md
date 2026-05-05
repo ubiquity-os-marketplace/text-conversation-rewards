@@ -382,16 +382,15 @@ Empowering software teams with explainable contribution rewards
 
 ---
 
-# Problem
+# Invisible Work
 
 <img class="slide-art art-bg" src="assets/pitch/slide-02-problem.png" alt="" />
 
-- Engineering work is no longer captured by commits alone
-- Specifications, reviews, clarifications, and coordination drive delivery
-- Slack and GitHub hold critical context, but it disappears into timelines
-- Managers still rely on memory, anecdotes, and incomplete dashboards
+- Commits miss the work that moves teams
+- Specs, reviews, and coordination drive delivery
+- GitHub and Slack hold the evidence, then bury it
 
-<div class="callout"><p>Enterprises need contribution accounting, not developer surveillance.</p></div>
+<div class="callout"><p>Contribution accounting. Not developer surveillance.</p></div>
 
 ---
 
@@ -399,10 +398,11 @@ Empowering software teams with explainable contribution rewards
 
 <img class="slide-art art-bg" src="assets/pitch/slide-03-why-now.png" alt="" />
 
-- AI increases code volume, but code volume is not engineering value
-- Distributed teams create more async work across more tools
-- Review quality and coordination now determine whether AI output is usable
-- Finance and operations need defensible payout records for contributors and contractors
+- AI is raising code volume
+- Review and coordination decide what ships
+- Enterprises need evidence for rewardable work
+
+<p class="micro">Sources: GitHub Octoverse 2025; Stack Overflow Developer Survey 2025; DORA 2024 and Google Cloud DORA 2025.</p>
 
 ---
 
@@ -414,13 +414,13 @@ Empowering software teams with explainable contribution rewards
 
 <div>
 
-UbiquityOS turns engineering artifacts into an auditable XP ledger.
+Engineering artifacts become explainable XP.
 
-- Capture work from GitHub events
-- Score useful contribution with configurable policy
-- Attach every point to source evidence
-- Persist XP or generate claimable rewards
-- Expand into Slack, Jira, Linear, and other work surfaces
+- Capture GitHub events
+- Score contribution
+- Link every point to evidence
+- Record XP or rewards
+- Expand into Slack and work tools
 
 </div>
 
@@ -447,7 +447,7 @@ UbiquityOS turns engineering artifacts into an auditable XP ledger.
 
 <div>
   <p class="quote">One useful unit of work in, one point out.</p>
-  <p style="margin-top: 24px; color: var(--muted);">Every point should explain who contributed, what was recognized, where the evidence lives, and why the work counted.</p>
+  <p style="margin-top: 24px; color: var(--muted);">Every point has a person, artifact, reason, and source link.</p>
 </div>
 
 </div>
@@ -462,10 +462,10 @@ UbiquityOS turns engineering artifacts into an auditable XP ledger.
 
 <div>
 
-- UbiquityOS kernel relays GitHub events
-- Contribution Rewards plugin collects issue, PR, review, and comment evidence
-- Modules evaluate formatting, relevance, priority, authorship, review impact, and simplification
-- Results are posted back to GitHub and stored as XP or payment records
+- Kernel relays GitHub events
+- Plugin collects work evidence
+- Modules score contribution
+- Ledger records XP or payouts
 
 </div>
 
@@ -481,22 +481,20 @@ UbiquityOS turns engineering artifacts into an auditable XP ledger.
 
 ---
 
-# What Works Today
+# Live Capabilities
 
 <img class="slide-art art-bg" src="assets/pitch/slide-07-capabilities.png" alt="" />
 
-- Issue specifications and issue comments
-- Pull request review comments
+- Specs and issue comments
+- PR reviews and review comments
 - Linked merged pull requests
-- Code review impact incentives
-- Code simplification incentives
-- Priority and task reward labels
-- Assignment-aware filtering to reduce gaming
-- XP mode, ERC20 permits, and direct transfer mode
+- Review impact incentives
+- Simplification incentives
+- XP, permits, and transfers
 
 ---
 
-# Current Architecture
+# Modular Architecture
 
 <img class="slide-art art-bg" src="assets/pitch/slide-08-architecture.png" alt="" />
 
@@ -504,20 +502,20 @@ UbiquityOS turns engineering artifacts into an auditable XP ledger.
 
 <div>
 
-- `UserExtractorModule` identifies contributors
-- `DataPurgeModule` removes commands, hidden comments, quotes, and gaming-prone content
-- `ExternalContentProcessor` summarizes linked text and images
-- `FormattingEvaluatorModule` scores structure, words, and readability
+- User extraction
+- Data cleanup
+- External content summaries
+- Formatting and readability
 
 </div>
 
 <div>
 
-- `ContentEvaluatorModule` scores relevance with an LLM
-- `ReviewIncentivizerModule` rewards useful code review
-- `SimplificationIncentivizerModule` rewards net code reduction
-- `PaymentModule` records XP or generates payouts
-- `GithubCommentModule` posts the audit trail
+- LLM relevance scoring
+- Review incentives
+- Simplification rewards
+- XP and payout records
+- GitHub audit comments
 
 </div>
 
@@ -529,11 +527,10 @@ UbiquityOS turns engineering artifacts into an auditable XP ledger.
 
 <img class="slide-art art-bg" src="assets/pitch/slide-09-philosophy.png" alt="" />
 
-- Score evidence, not raw activity
-- Count contribution type, role, relevance, priority, and authorship
-- Avoid rewarding message volume
-- Cap or weight rewards by task policy
-- Keep every result linked to the original artifact
+- Evidence over activity
+- Configurable org policy
+- No message-volume rewards
+- Source-linked results
 
 <div class="card-row">
   <div class="panel"><div class="metric">Evidence</div><div class="metric-label">Every score links back to source work.</div></div>
@@ -547,13 +544,13 @@ UbiquityOS turns engineering artifacts into an auditable XP ledger.
 
 <img class="slide-art art-bg" src="assets/pitch/slide-10-slack.png" alt="" />
 
-Slack should count only when it is tied to work.
+Slack counts only when tied to work.
 
-- Thread linked to a GitHub issue or PR
+- Linked issue or PR thread
 - Decision summary
-- Unblocker that resolves a task
+- Unblocker
 - Incident coordination
-- Customer or product context that changes implementation
+- Product context
 
 <div class="callout"><p>No points for raw message count.</p></div>
 
@@ -563,27 +560,25 @@ Slack should count only when it is tied to work.
 
 <img class="slide-art art-bg" src="assets/pitch/slide-11-dashboard.png" alt="" />
 
-A system of record for engineering contribution evidence.
+A system of record for contribution evidence.
 
 <div class="two-col">
 
 <div>
 
-- Individual contribution ledger
-- Team contribution distribution
-- Review load and review value
+- Individual ledger
+- Team distribution
+- Review value
 - XP by work type
-- Pending and claimed rewards
 
 </div>
 
 <div>
 
-- Evidence drilldown to GitHub and Slack
-- Manager-ready review packets
-- Exportable audit reports
-- Custom scoring policy
-- Organization-level rollups
+- Evidence drilldown
+- Manager packets
+- Audit exports
+- Org rollups
 
 </div>
 
@@ -595,15 +590,15 @@ A system of record for engineering contribution evidence.
 
 <img class="slide-art art-bg" src="assets/pitch/slide-12-advantage.png" alt="" />
 
-Most engineering intelligence tools sell dashboards.
+Dashboards show activity.
 
-UbiquityOS sells an incentive ledger.
+UbiquityOS creates incentives.
 
-- Artifact-level attribution, not just aggregate trends
-- Explainable XP, not opaque productivity scoring
+- Artifact-level attribution
+- Explainable XP
 - Rewards and payouts, not just reporting
-- Plugin architecture, not a closed workflow
-- GitHub-native audit trail, not a detached analytics layer
+- Plugin architecture
+- GitHub-native audit trail
 
 ---
 
@@ -611,13 +606,12 @@ UbiquityOS sells an incentive ledger.
 
 <img class="slide-art art-bg" src="assets/pitch/slide-13-customers.png" alt="" />
 
-- GitHub-first engineering organizations
+- GitHub-first enterprises
 - Open-source programs
-- Teams with contractors or external contributors
+- Contractor-heavy teams
 - Developer experience teams
 - Engineering operations teams
-- AI-forward teams that need better review visibility
-- Distributed teams where async contribution matters
+- AI-forward teams
 
 ---
 
@@ -631,9 +625,9 @@ UbiquityOS sells an incentive ledger.
 
 ## Packaging
 
-- Team: GitHub contribution ledger and XP dashboard
-- Business: GitHub plus Slack, reports, and manager packets
-- Enterprise: SSO, RBAC, audit exports, private deployment, retention controls, and custom scoring policy
+- Team: GitHub XP ledger
+- Business: Slack and reports
+- Enterprise: SSO, RBAC, audit exports, private deployment
 
 </div>
 
@@ -641,10 +635,10 @@ UbiquityOS sells an incentive ledger.
 
 ## Pricing
 
-- Per active contributor per month
-- Platform fee plus usage-based AI evaluation
+- Active contributor seats
+- Usage-based AI evaluation
 - Optional payout or permit fee
-- Enterprise annual contracts
+- Enterprise contracts
 
 </div>
 
@@ -662,17 +656,15 @@ UbiquityOS sells an incentive ledger.
 
 ## Now
 
-- GitHub event ingestion
+- GitHub ingestion
 - Contribution scoring
-- XP and reward generation
-- GitHub-native audit comments
+- XP and rewards
 
 ## Next
 
 - Enterprise dashboard
-- Organization-level rollups
-- Slack thread association
-- Contribution ledger search and exports
+- Slack association
+- Search and exports
 
 </div>
 
@@ -680,10 +672,10 @@ UbiquityOS sells an incentive ledger.
 
 ## Later
 
-- Jira and Linear association
-- Manager review packets
-- Custom enterprise scoring policies
-- Benchmarking and governance reports
+- Jira and Linear
+- Manager packets
+- Custom scoring
+- Governance reports
 
 </div>
 
@@ -699,7 +691,7 @@ UbiquityOS sells an incentive ledger.
 
 <div>
   <p class="quote">The contribution ledger for software teams.</p>
-  <p style="margin-top: 24px; color: var(--muted);">UbiquityOS turns GitHub and collaboration activity into explainable XP, so enterprises can reward the work that actually moves software forward.</p>
+  <p style="margin-top: 24px; color: var(--muted);">Explainable XP for the work that moves software forward.</p>
 </div>
 
 </div>
