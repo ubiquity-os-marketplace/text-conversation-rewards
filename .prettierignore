@@ -1,5 +1,0 @@
-output.html
-tests/__mocks__/*
-dist
-src/adapters/supabase/types/database.ts
-CHANGELOG.md
