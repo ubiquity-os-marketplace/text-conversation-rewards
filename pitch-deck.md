@@ -39,13 +39,13 @@ section {
 }
 
 section::before {
-  content: "© 2026 Ubiquity Research Ltd - INTERNAL DRAFT";
+  content: "© 2026 Ubiquity Research Ltd - 0000000";
   position: absolute;
   left: 44px;
   bottom: 31px;
   color: rgba(244, 248, 251, 0.68);
   font-size: 11px;
-  letter-spacing: 0.34em;
+  letter-spacing: 2px;
   z-index: 3;
 }
 
@@ -74,13 +74,16 @@ section > :not(.slide-art) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.25;
+  opacity: 0.34;
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(45deg, transparent 0%, rgba(0, 0, 0, 0.08) 28%, rgba(0, 0, 0, 0.78) 72%, black 100%);
+  -webkit-mask-image: linear-gradient(45deg, transparent 0%, rgba(0, 0, 0, 0.08) 28%, rgba(0, 0, 0, 0.78) 72%, black 100%);
   /* filter: saturate(0.9) contrast(1.02); */
   /* transform: scale(1.035); */
 }
 
 .title .art-bg {
-  opacity: 0.33;
+  opacity: 0.44;
 }
 
 h1, h2, h3, p, ul, ol {
@@ -93,6 +96,7 @@ h1 {
   line-height: 1.08;
   font-weight: 400;
   margin-bottom: 38px;
+  text-transform:uppercase;letter-spacing:2px;
 }
 
 h2 {
@@ -163,10 +167,17 @@ a {
 }
 
 .micro {
-  font-size: 12px;
-  color: var(--dim);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  position: absolute;
+  left: 70px;
+  bottom: 82px;
+  max-width: 720px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(244, 248, 251, 0.16);
+  font-size: 10px;
+  line-height: 1.28;
+  color: rgba(183, 192, 200, 0.72);
+  letter-spacing: 0.04em;
+  text-transform: none;
 }
 
 .title {
@@ -439,8 +450,6 @@ Engineering artifacts become explainable XP.
 
 ---
 
-# Product Promise
-
 <img class="slide-art art-bg" src="assets/pitch/slide-05-promise.png" alt="" />
 
 <div class="center">
@@ -682,8 +691,6 @@ UbiquityOS creates incentives.
 </div>
 
 ---
-
-# Positioning
 
 <img class="slide-art art-bg" src="assets/pitch/slide-16-positioning.png" alt="" />
 

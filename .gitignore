@@ -18,6 +18,9 @@ src/types/rpcs.json
 invalid-issues.json
 manifest.json
 dist/
+exports/*
+!exports/.build-number
 .deck-pages/
+.deck-render/
 .deck-test/
 pitch-deck-raster.pdf

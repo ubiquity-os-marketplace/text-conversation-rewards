@@ -1,5 +1,6 @@
 const pptxgen = require("pptxgenjs");
 const path = require("path");
+const { getBuildInfo } = require("./deck-build-info.cjs");
 
 const pptx = new pptxgen();
 pptx.layout = "LAYOUT_WIDE";
@@ -29,7 +30,7 @@ pptx._theme.bodyFontFace = "Proxima Nova";
 pptx._theme.lang = "en-US";
 pptx.layout = "CUSTOM_WIDE";
 
-const ROOT = path.resolve(__dirname, "..");
+const { root: ROOT, revision: REVISION, stem: EXPORT_STEM } = getBuildInfo();
 const bgPath = path.join(ROOT, "assets/pitch/ubiquity-bg.png");
 const wordmarkPath = path.join(ROOT, "assets/pitch/ubiquity-dao-wordmark.png");
 
@@ -62,6 +63,18 @@ function addBackground(slide) {
 
 function addFooter(slide, n) {
   slide.addImage({ path: wordmarkPath, x: 0.43, y: 6.81, w: 1.14, h: 0.172 });
+  slide.addText(REVISION, {
+    x: 1.72,
+    y: 6.81,
+    w: 0.54,
+    h: 0.14,
+    fontFace: FONT,
+    fontSize: 5.8,
+    color: "A8B1B8",
+    margin: 0,
+    breakLine: false,
+    fit: "shrink",
+  });
   if (n) {
     slide.addText(String(n), {
       x: 12.9,
@@ -259,8 +272,16 @@ addSlide("Why Now", (slide) => {
     "Review and coordination decide what ships",
     "Enterprises need evidence for rewardable work",
   ], 0.7, 1.18, 11.25, 2.75, 14.6, 0.08);
-  addBody(slide, "Sources: GitHub Octoverse 2025; Stack Overflow Developer Survey 2025; DORA 2024 and Google Cloud DORA 2025.", 0.7, 5.55, 10.85, 0.22, 7.7, C.dim, {
-    charSpace: 0.7,
+  slide.addShape(pptx.ShapeType.line, {
+    x: 0.7,
+    y: 5.42,
+    w: 4.8,
+    h: 0,
+    line: { color: "F4F8FB", transparency: 84, width: 0.6 },
+  });
+  addBody(slide, "Sources: GitHub Octoverse 2025; Stack Overflow Developer Survey 2025; DORA 2024 and Google Cloud DORA 2025.", 0.7, 5.52, 7.65, 0.24, 6.4, "B7C0C8", {
+    transparency: 28,
+    charSpace: 0.35,
     paraSpaceAfterPt: 0,
   });
 });
@@ -420,7 +441,7 @@ addSlide("Positioning", (slide) => {
   addBody(slide, "Explainable XP for the work that moves software forward.", 2.42, 3.3, 8.48, 0.72, 15.2, C.muted, { paraSpaceAfterPt: 0, align: "center" });
 });
 
-pptx.writeFile({ fileName: path.join(ROOT, "pitch-deck.pptx") }).catch((error) => {
+pptx.writeFile({ fileName: path.join(ROOT, "exports", `${EXPORT_STEM}.pptx`) }).catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
