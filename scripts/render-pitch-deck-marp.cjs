@@ -18,7 +18,14 @@ fs.writeFileSync(tempPath, source);
 const args = process.argv
   .slice(2)
   .map((arg) => arg.replaceAll("{revision}", revision).replaceAll("{build}", build).replaceAll("{stem}", stem));
-const command = ["bunx", "@marp-team/marp-cli", tempPath, ...args];
+const command = [
+  "bunx",
+  "@marp-team/marp-cli",
+  tempPath,
+  "--theme-set",
+  ".deck-render/assets/pitch/pitch-theme.css",
+  ...args,
+];
 
 childProcess.execFileSync(command[0], command.slice(1), {
   cwd: root,

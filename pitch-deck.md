@@ -1,423 +1,16 @@
 ---
 marp: true
-theme: default
+theme: pitch-theme
 paginate: true
 size: 16:9
 title: UbiquityOS Contribution Rewards Pitch Deck
 description: Plaintext pitch deck source for UbiquityOS Contribution Rewards.
 ---
 
-<style>
-:root {
-  --bg: #03080e;
-  --cyan: #24cbe5;
-  --cyan-deep: #0d7f8a;
-  --white: #f4f8fb;
-  --muted: #b7c0c8;
-  --dim: #7d8992;
-  --panel: rgba(4, 16, 24, 0.72);
-  --line: rgba(36, 203, 229, 0.22);
-}
-
-div {
-  backdrop-filter: blur(2px)
-}
-
-section {
-  position: relative;
-  overflow: hidden;
-  padding: 54px 68px 66px 70px;
-  background-color: var(--bg);
-  background-image:
-    linear-gradient(90deg, rgba(3, 8, 14, 0.08), rgba(3, 8, 14, 0.64)),
-    url("assets/pitch/ubiquity-bg.png");
-  background-size: cover;
-  background-position: center;
-  color: var(--white);
-  font-family: "Proxima Nova", Arial, Helvetica, sans-serif;
-  letter-spacing: -0.01em;
-}
-
-section::before {
-  content: "© 2026 Ubiquity Research Ltd - 0000000";
-  position: absolute;
-  left: 44px;
-  bottom: 31px;
-  color: rgba(244, 248, 251, 0.68);
-  font-size: 11px;
-  letter-spacing: 2px;
-  z-index: 3;
-}
-
-section::after {
-  color: rgba(244, 248, 251, 0.58);
-  font-size: 11px;
-  right: 36px;
-  bottom: 29px;
-  z-index: 3;
-}
-
-section > :not(.slide-art) {
-  position: relative;
-  z-index: 2;
-}
-
-.slide-art {
-  position: absolute;
-  pointer-events: none;
-  user-select: none;
-  z-index: 0;
-}
-
-.art-bg {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.34;
-  mix-blend-mode: screen;
-  mask-image: linear-gradient(45deg, transparent 0%, rgba(0, 0, 0, 0.08) 28%, rgba(0, 0, 0, 0.78) 72%, black 100%);
-  -webkit-mask-image: linear-gradient(45deg, transparent 0%, rgba(0, 0, 0, 0.08) 28%, rgba(0, 0, 0, 0.78) 72%, black 100%);
-  /* filter: saturate(0.9) contrast(1.02); */
-  /* transform: scale(1.035); */
-}
-
-.title .art-bg {
-  opacity: 0.44;
-}
-
-h1, h2, h3, p, ul, ol {
-  margin: 0;
-}
-
-h1 {
-  color: var(--cyan);
-  font-size: 34px;
-  line-height: 1.08;
-  font-weight: 400;
-  margin-bottom: 38px;
-  text-transform:uppercase;letter-spacing:2px;
-}
-
-h2 {
-  color: var(--white);
-  font-size: 31px;
-  line-height: 1.16;
-  font-weight: 400;
-  margin-bottom: 22px;
-}
-
-h3 {
-  color: var(--white);
-  font-size: 21px;
-  line-height: 1.18;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-p, li {
-  color: var(--white);
-  font-size: 22px;
-  line-height: 1.32;
-  font-weight: 400;
-}
-
-p + p {
-  margin-top: 18px;
-}
-
-strong {
-  font-weight: 700;
-  color: var(--white);
-}
-
-em {
-  color: var(--cyan);
-  font-style: normal;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 2px;
-}
-
-li {
-  position: relative;
-  margin: 6px 0 0 28px;
-}
-
-li::before {
-  content: "-";
-  position: absolute;
-  left: -28px;
-  color: var(--white);
-}
-
-a {
-  color: var(--cyan);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.small, .small li, .small p {
-  font-size: 17px;
-  line-height: 1.28;
-  color: var(--muted);
-}
-
-.micro {
-  position: absolute;
-  left: 70px;
-  bottom: 82px;
-  max-width: 720px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(244, 248, 251, 0.16);
-  font-size: 10px;
-  line-height: 1.28;
-  color: rgba(183, 192, 200, 0.86);
-  letter-spacing: 0.04em;
-  text-transform: none;
-}
-
-.title {
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 0 90px;
-}
-
-.title h1 {
-  color: var(--white);
-  font-size: 65px;
-  font-weight: 400;
-  letter-spacing: -0.045em;
-  margin: 0;
-}
-
-.title h1::before {
-  content: "⬡";
-  display: inline-grid;
-  place-items: center;
-  width: 86px;
-  height: 86px;
-  margin-right: 18px;
-  border: 1px solid rgba(244, 248, 251, 0.32);
-  border-radius: 50%;
-  color: var(--white);
-  font-size: 46px;
-  vertical-align: middle;
-  box-shadow: 0 0 34px rgba(36, 203, 229, 0.16);
-}
-
-.title p {
-  margin-top: 30px;
-  font-size: 21px;
-  color: var(--white);
-  letter-spacing: 0;
-}
-
-.center {
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding-left: 150px;
-  padding-right: 150px;
-}
-
-.center h1 {
-  color: var(--cyan);
-  margin-bottom: 0;
-}
-
-.center h2 {
-  margin-top: 18px;
-  font-size: 36px;
-}
-
-.split {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 50px;
-  align-items: start;
-}
-
-.split h1 {
-  grid-column: 1 / -1;
-  margin-bottom: 2px;
-}
-
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 68px;
-  align-items: start;
-}
-
-.three-col {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 48px;
-  align-items: start;
-}
-
-.panel {
-  background: linear-gradient(180deg, rgba(3, 14, 22, 0.84), rgba(1, 9, 15, 0.62));
-  border: 1px solid rgba(36, 203, 229, 0.14);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
-  padding: 22px 24px;
-}
-
-.card-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-top: 26px;
-}
-
-.metric {
-  color: var(--white);
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 1.04;
-  margin-bottom: 6px;
-}
-
-.metric-label {
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.22;
-}
-
-.callout {
-  margin-top: 24px;
-  display: inline-block;
-  max-width: 660px;
-  padding: 10px 14px;
-  border-left: 2px solid var(--cyan);
-  color: var(--white);
-  background: rgba(36, 203, 229, 0.04);
-}
-
-.callout p {
-  font-size: 15px;
-  line-height: 1.24;
-}
-
-.diagram {
-  display: grid;
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.node {
-  position: relative;
-  padding: 14px 18px;
-  background: rgba(5, 17, 25, 0.78);
-  border: 1px solid var(--line);
-  color: var(--white);
-  font-size: 18px;
-}
-
-.node::after {
-  content: "";
-  position: absolute;
-  left: 28px;
-  bottom: -13px;
-  width: 1px;
-  height: 12px;
-  background: rgba(36, 203, 229, 0.42);
-}
-
-.node:last-child::after {
-  display: none;
-}
-
-.mock {
-  margin-top: 4px;
-  background: rgba(1, 8, 13, 0.78);
-  border: 1px solid rgba(36, 203, 229, 0.16);
-  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.34);
-  padding: 18px;
-}
-
-.mock-title {
-  color: var(--cyan);
-  font-size: 15px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-
-.table {
-  display: grid;
-  grid-template-columns: 1.1fr 0.75fr 0.75fr 0.75fr;
-  gap: 1px;
-  background: rgba(255, 255, 255, 0.06);
-  font-size: 13px;
-}
-
-.cell {
-  padding: 9px 10px;
-  background: rgba(4, 15, 23, 0.94);
-  color: var(--muted);
-}
-
-.cell.head {
-  color: var(--white);
-  background: rgba(36, 203, 229, 0.12);
-}
-
-.tag {
-  display: inline-block;
-  margin: 0 8px 10px 0;
-  color: var(--cyan);
-  border-bottom: 1px solid rgba(36, 203, 229, 0.55);
-  font-size: 18px;
-}
-
-.quote {
-  max-width: 840px;
-  color: var(--white);
-  font-size: 37px;
-  line-height: 1.18;
-}
-
-.hero-title {
-  position: absolute;
-  left: 70px;
-  top: 230px;
-  max-width: 720px;
-}
-
-.hero-title h1 {
-  color: var(--white);
-  font-size: 46px;
-  line-height: 1.02;
-  letter-spacing: -0.04em;
-  margin: 0;
-}
-
-.hero-title p {
-  margin-top: 22px;
-  color: var(--white);
-  font-size: 18px;
-  line-height: 1.28;
-}
-
-.deck-note {
-  position: absolute;
-  right: 70px;
-  bottom: 64px;
-  color: rgba(244, 248, 251, 0.34);
-  font-size: 13px;
-  letter-spacing: 0.08em;
-}
-</style>
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
 <!-- _class: title -->
-
-<img class="slide-art art-bg" src="assets/pitch/slide-01-title.png" alt="" />
 
 <div class="hero-title">
   <h1>UbiquityOS<br />Contribution Rewards</h1>
@@ -425,6 +18,9 @@ a {
 </div>
 
 ---
+
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
 # Invisible Work
 
@@ -438,6 +34,9 @@ a {
 
 ---
 
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+
 # Why Now
 
 <img class="slide-art art-bg" src="assets/pitch/slide-03-why-now.png" alt="" />
@@ -449,6 +48,9 @@ a {
 <p class="micro">Sources: GitHub Octoverse 2025; Stack Overflow Developer Survey 2025; DORA 2024 and Google Cloud DORA 2025.</p>
 
 ---
+
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
 # Solution
 
@@ -483,9 +85,12 @@ Engineering artifacts become explainable XP.
 
 ---
 
-<img class="slide-art art-bg" src="assets/pitch/slide-05-promise.png" alt="" />
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
-<div class="center">
+<img class="slide-art art-bg art-high" src="assets/pitch/slide-05-promise.png" alt="" />
+
+<div class="center-left">
 
 <div>
   <p class="quote">One useful unit of work in, one point out.</p>
@@ -495,6 +100,9 @@ Engineering artifacts become explainable XP.
 </div>
 
 ---
+
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
 # How It Works
 
@@ -523,6 +131,9 @@ Engineering artifacts become explainable XP.
 
 ---
 
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+
 # Live Capabilities
 
 <img class="slide-art art-bg" src="assets/pitch/slide-07-capabilities.png" alt="" />
@@ -535,6 +146,9 @@ Engineering artifacts become explainable XP.
 - XP and payouts
 
 ---
+
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
 # Plugin Pipeline
 
@@ -565,6 +179,9 @@ Engineering artifacts become explainable XP.
 
 ---
 
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+
 # Scoring Philosophy
 
 <img class="slide-art art-bg" src="assets/pitch/slide-09-philosophy.png" alt="" />
@@ -582,6 +199,9 @@ Engineering artifacts become explainable XP.
 
 ---
 
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+
 # Slack Expansion
 
 <img class="slide-art art-bg" src="assets/pitch/slide-10-slack.png" alt="" />
@@ -597,6 +217,9 @@ Slack counts only when tied to work.
 <div class="callout"><p>No points for raw message count.</p></div>
 
 ---
+
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
 # Enterprise Dashboard
 
@@ -628,6 +251,9 @@ A system of record for contribution evidence.
 
 ---
 
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+
 # Competitive Advantage
 
 <img class="slide-art art-bg" src="assets/pitch/slide-12-advantage.png" alt="" />
@@ -644,6 +270,9 @@ UbiquityOS creates incentives.
 
 ---
 
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+
 # Ideal Customers
 
 <img class="slide-art art-bg" src="assets/pitch/slide-13-customers.png" alt="" />
@@ -656,6 +285,9 @@ UbiquityOS creates incentives.
 - AI-forward teams
 
 ---
+
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
 # Business Model
 
@@ -687,6 +319,9 @@ UbiquityOS creates incentives.
 </div>
 
 ---
+
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
 # Roadmap
 
@@ -729,9 +364,12 @@ UbiquityOS creates incentives.
 
 ---
 
-<img class="slide-art art-bg" src="assets/pitch/slide-16-positioning.png" alt="" />
+<img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
 
-<div class="center">
+<img class="slide-art art-bg art-high" src="assets/pitch/slide-16-positioning.png" alt="" />
+
+<div class="center-left">
 
 <div>
   <p class="quote">The contribution ledger for software teams.</p>
