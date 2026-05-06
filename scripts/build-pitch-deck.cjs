@@ -5,8 +5,8 @@ const { getBuildInfo } = require("./deck-build-info.cjs");
 const pptx = new pptxgen();
 pptx.layout = "LAYOUT_WIDE";
 pptx.author = "UbiquityOS";
-pptx.subject = "UbiquityOS Contribution Rewards";
-pptx.title = "UbiquityOS Contribution Rewards Pitch Deck";
+pptx.subject = "UbiquityOS Accolades";
+pptx.title = "UbiquityOS Accolades Pitch Deck";
 pptx.company = "UbiquityOS";
 pptx.lang = "en-US";
 pptx.theme = {
@@ -213,7 +213,7 @@ function addMockTable(slide, x, y, w, h) {
 }
 
 function addDiagram(slide, x, y) {
-  const nodes = ["GitHub event", "UbiquityOS kernel", "Contribution Rewards plugin", "Evidence scoring", "XP or reward ledger"];
+  const nodes = ["GitHub event", "UbiquityOS kernel", "Accolades plugin", "Evidence scoring", "XP or reward ledger"];
   nodes.forEach((node, i) => {
     const yy = y + i * 0.68;
     slide.addShape(pptx.ShapeType.rect, {
@@ -252,7 +252,7 @@ function addSlide(title, bodyFn) {
   addBackground(slide);
   slide.addShape(pptx.ShapeType.ellipse, { x: 2.43, y: 2.27, w: 0.95, h: 0.95, fill: { color: C.black, transparency: 100 }, line: { color: "DDE7EE", transparency: 52, width: 0.8 } });
   addBody(slide, "⬡", 2.61, 2.39, 0.58, 0.48, 33, C.white, { paraSpaceAfterPt: 0, align: "center", fit: "shrink" });
-  addBody(slide, "UbiquityOS\nContribution Rewards", 3.48, 2.18, 5.9, 0.96, 28, C.white, { paraSpaceAfterPt: 0, breakLine: true });
+  addBody(slide, "UbiquityOS\nAccolades", 3.48, 2.18, 5.9, 0.96, 28, C.white, { paraSpaceAfterPt: 0, breakLine: true });
   addBody(slide, "Reward the work behind the code.", 2.65, 3.45, 7.7, 0.28, 13.3, C.white, { paraSpaceAfterPt: 0, align: "center" });
   addFooter(slide, null);
 }

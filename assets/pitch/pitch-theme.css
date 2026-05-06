@@ -1,10 +1,11 @@
 /* @theme pitch-theme */
 @import "default";
+@import "pitch-adjustments.css";
 
 :root {
   /* --bg: #000; */
   --bg: #01060b;
-  --cyan: #31e8ff;
+  --cyan: #80f0ff;
   --cyan-deep: #0d7f8a;
   --white: #f4f8fb;
   --muted: #b7c0c8;
@@ -220,32 +221,33 @@ a {
 
 .title {
   display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 0 90px;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  align-items: center;
+  gap: 92px;
+  text-align: left;
+  padding: 0 118px 0 88px;
+}
+
+.hero-title {
+  justify-self: start;
+  max-width: 780px;
 }
 
 .title h1 {
   color: var(--white);
-  font-size: 65px;
+  font-size: 76px;
+  line-height: 0.96;
   font-weight: 400;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.055em;
   margin: 0;
 }
 
 .title h1::before {
-  content: "⬡";
-  display: inline-grid;
-  place-items: center;
-  width: 86px;
-  height: 86px;
-  margin-right: 18px;
-  border: 1px solid rgba(244, 248, 251, 0.32);
-  border-radius: 50%;
-  color: var(--white);
-  font-size: 46px;
-  vertical-align: middle;
-  box-shadow: 0 0 34px rgba(36, 203, 229, 0.16);
+  content: none;
+}
+
+.title h1 span {
+  color: var(--cyan);
 }
 
 .title p {
@@ -253,6 +255,13 @@ a {
   font-size: 21px;
   color: var(--white);
   letter-spacing: 0;
+}
+
+.title-mark img {
+  display: block;
+  width: 250px;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 42px rgba(128, 240, 255, 0.24));
 }
 
 .center {
@@ -333,10 +342,17 @@ a {
   margin-top: 26px;
 }
 
+.philosophy-tiles .panel {
+  text-align: center;
+}
+
+.philosophy-tiles .metric {
+  font-weight: 700;
+}
+
 .metric {
   color: var(--white);
   font-size: 34px;
-  /* font-weight: 700; */
   line-height: 1.04;
   margin-bottom: 6px;
 }
@@ -449,7 +465,8 @@ a {
 }
 
 .hero-title h1 {
-  color: var(--white);
+  text-transform: unset;
+  color: var(--cyan);
   font-size: 46px;
   line-height: 1.02;
   letter-spacing: -0.04em;

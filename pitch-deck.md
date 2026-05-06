@@ -3,24 +3,28 @@ marp: true
 theme: pitch-theme
 paginate: true
 size: 16:9
-title: UbiquityOS Contribution Rewards Pitch Deck
-description: Plaintext pitch deck source for UbiquityOS Contribution Rewards.
+title: UbiquityOS Accolades Pitch Deck
+description: Plaintext pitch deck source for UbiquityOS Accolades.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 <!-- _class: title -->
 
 <div class="hero-title">
-  <h1>UbiquityOS<br />Contribution Rewards</h1>
+  <h1>UbiquityOS<br /><span>Accolades</span></h1>
   <p>Reward the work behind the code.</p>
+</div>
+
+<div class="title-mark">
+  <img src="assets/pitch/ubiquity-logo-cyan.svg" alt="" />
 </div>
 
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Invisible Work
 
@@ -35,7 +39,7 @@ description: Plaintext pitch deck source for UbiquityOS Contribution Rewards.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Why Now
 
@@ -50,7 +54,7 @@ description: Plaintext pitch deck source for UbiquityOS Contribution Rewards.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Solution
 
@@ -86,7 +90,7 @@ Engineering artifacts become explainable XP.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 <img class="slide-art art-bg art-high" src="assets/pitch/slide-05-promise.png" alt="" />
 
@@ -102,7 +106,7 @@ Engineering artifacts become explainable XP.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # How It Works
 
@@ -122,7 +126,7 @@ Engineering artifacts become explainable XP.
 <div class="diagram">
   <div class="node">GitHub event</div>
   <div class="node">UbiquityOS kernel</div>
-  <div class="node">Contribution Rewards plugin</div>
+  <div class="node">Accolades plugin</div>
   <div class="node">Evidence scoring</div>
   <div class="node">XP or reward ledger</div>
 </div>
@@ -132,7 +136,7 @@ Engineering artifacts become explainable XP.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Live Capabilities
 
@@ -148,7 +152,7 @@ Engineering artifacts become explainable XP.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Plugin Pipeline
 
@@ -180,7 +184,7 @@ Engineering artifacts become explainable XP.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Scoring Philosophy
 
@@ -191,7 +195,7 @@ Engineering artifacts become explainable XP.
 - No message-volume rewards
 - Source-linked results
 
-<div class="card-row">
+<div class="card-row philosophy-tiles">
   <div class="panel"><div class="metric">Evidence</div><div class="metric-label">Every score links back to source work.</div></div>
   <div class="panel"><div class="metric">Policy</div><div class="metric-label">Each org controls how work is weighted.</div></div>
   <div class="panel"><div class="metric">Ledger</div><div class="metric-label">XP and payouts become auditable records.</div></div>
@@ -200,7 +204,7 @@ Engineering artifacts become explainable XP.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Slack Expansion
 
@@ -219,7 +223,7 @@ Slack counts only when tied to work.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Enterprise Dashboard
 
@@ -252,7 +256,7 @@ A system of record for contribution evidence.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Competitive Advantage
 
@@ -271,7 +275,7 @@ UbiquityOS creates incentives.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Ideal Customers
 
@@ -287,7 +291,7 @@ UbiquityOS creates incentives.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Business Model
 
@@ -321,7 +325,7 @@ UbiquityOS creates incentives.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 # Roadmap
 
@@ -365,7 +369,7 @@ UbiquityOS creates incentives.
 ---
 
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
-<div class="deck-footer">© 2026 Ubiquity Research Ltd - 0000000</div>
+<div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
 <img class="slide-art art-bg art-high" src="assets/pitch/slide-16-positioning.png" alt="" />
 

@@ -22,7 +22,7 @@
     "deck:pdf:vector": "mkdir -p exports && node scripts/render-pitch-deck-marp.cjs --pdf --html --allow-local-files -o 'exports/{stem}.pdf'",
     "deck:pptx": "node scripts/build-pitch-deck.cjs",
     "deck:pptx:marp": "mkdir -p exports && node scripts/render-pitch-deck-marp.cjs --pptx --html --allow-local-files -o 'exports/{stem}-marp.pptx'",
-    "deck:render": "eval $(node scripts/deck-build-info.cjs --shell) && export DECK_REVISION DECK_BUILD_NUMBER DECK_EXPORT_STEM && bun run deck:html && bun run deck:pdf && bun run deck:pptx",
+    "deck:render": "eval $(node scripts/deck-build-info.cjs --shell) && export DECK_REVISION DECK_BUILD_NUMBER DECK_EXPORT_STEM && bun run deck:html && bun run deck:pdf",
     "deck:preview": "node scripts/render-pitch-deck-marp.cjs --preview --html --allow-local-files",
     "prepare": "bun run prepare:manifest && husky && bun run fetch-rpcs",
     "dev": "bun --watch src/index.ts",
