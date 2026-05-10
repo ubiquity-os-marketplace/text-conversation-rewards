@@ -47,3 +47,18 @@ export async function callLlm(): Promise<{ choices: LlmMessage[] }> {
     ],
   };
 }
+
+export async function getOpenRouterModelTokenLimits(): Promise<{ contextLength: number; maxCompletionTokens: number }> {
+  return {
+    contextLength: 124000,
+    maxCompletionTokens: 16384,
+  };
+}
+
+export function checkLlmRetryableState(): boolean {
+  return false;
+}
+
+export async function retry<T>(fn: () => Promise<T>): Promise<T> {
+  return fn();
+}

@@ -31,6 +31,13 @@ export function openAiType() {
         description: "Maximum number of retries to make",
         examples: [10],
       }),
+      model: Type.Optional(
+        Type.String({
+          default: "openai/gpt-4o",
+          description: "OpenRouter model id used for relevance evaluation and token-limit discovery.",
+          examples: ["openai/gpt-4o", "anthropic/claude-3.5-sonnet"],
+        })
+      ),
       reasoningEffort: reasoningEffortType,
     },
     { default: {} }

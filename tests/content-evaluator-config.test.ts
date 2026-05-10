@@ -52,5 +52,6 @@ describe("ContentEvaluatorConfiguration Validation", () => {
     const decodedConfig = Value.Decode(contentEvaluatorConfigurationType, defaultedConfig);
     expect(decodedConfig.openAi.tokenCountLimit).toBe(124000);
     expect(decodedConfig.openAi.maxRetries).toBe(10);
+    expect(decodedConfig.openAi.model).toBe("openai/gpt-4o");
   });
 });

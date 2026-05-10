@@ -8,7 +8,7 @@ import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../co
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
-import { checkLlmRetryableState, retry } from "../helpers/retry";
+import { checkLlmRetryableState, getOpenRouterModelTokenLimits, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -38,6 +38,7 @@ export class ContentEvaluatorModule extends BaseModule {
   readonly _configuration: ContentEvaluatorConfiguration | null = this.context.config.incentives.contentEvaluator;
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
+  private _maxCompletionTokens: number = 16384;
   private readonly _originalAuthorWeight: number = 0.5;
   private _basePriority: number = 1;
 
@@ -76,11 +77,7 @@ export class ContentEvaluatorModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!this._configuration?.openAi.tokenCountLimit) {
-      throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
-    }
-    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
-    this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
+    await this._initializeTokenLimits();
 
     const promises: Promise<GithubCommentScore[]>[] = [];
     this._basePriority = await this.computePriority(data);
@@ -118,6 +115,50 @@ export class ContentEvaluatorModule extends BaseModule {
       await this._handleRewardsForOriginalAuthor(data.self.body, result);
     }
     return result;
+  }
+
+  private async _initializeTokenLimits() {
+    const configuredLimit = this._configuration?.openAi.tokenCountLimit;
+    if (!configuredLimit) {
+      throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
+    }
+
+    this._tokenLimit = configuredLimit;
+
+    try {
+      const model = this._configuration?.openAi.model ?? "openai/gpt-4o";
+      const modelLimits = model ? await getOpenRouterModelTokenLimits(model) : null;
+      if (modelLimits) {
+        this._tokenLimit = Math.min(configuredLimit, modelLimits.contextLength);
+        this._maxCompletionTokens = Math.min(
+          this._maxCompletionTokens,
+          modelLimits.maxCompletionTokens,
+          this._tokenLimit
+        );
+        this.context.logger.info(`Using OpenRouter token limits for ${model}`, {
+          contextLength: modelLimits.contextLength,
+          maxCompletionTokens: modelLimits.maxCompletionTokens,
+          configuredLimit,
+          tokenLimit: this._tokenLimit,
+        });
+        return;
+      }
+
+      this.context.logger.warn("OpenRouter model token limits unavailable; falling back to configured token limit.", {
+        model,
+        configuredLimit,
+      });
+    } catch (err) {
+      this.context.logger.warn(
+        "Failed to fetch OpenRouter model token limits; falling back to configured token limit.",
+        {
+          err,
+          configuredLimit,
+        }
+      );
+    }
+
+    this.context.logger.info(`Using configured token limit: ${this._tokenLimit}`);
   }
 
   /*
@@ -278,10 +319,10 @@ export class ContentEvaluatorModule extends BaseModule {
   /**
    * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
    */
-  _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
+  _calculateMaxTokens(prompt: string, totalTokenLimit?: number) {
     const tokenizer = encodingForModel("gpt-4o");
     const inputTokens = tokenizer.encode(prompt).length * 2; // Safety margin
-    return Math.min(inputTokens, totalTokenLimit);
+    return Math.min(inputTokens, totalTokenLimit ?? this._maxCompletionTokens);
   }
 
   _generateDummyResponse(comments: { id: number; comment: string }[]) {
@@ -544,8 +585,10 @@ export class ContentEvaluatorModule extends BaseModule {
     try {
       const res = await callLlm(
         {
+          model: this._configuration?.openAi.model ?? "openai/gpt-4o",
           response_format: { type: "json_object" },
           messages: [{ role: "system", content: prompt }],
+          max_tokens: maxTokens,
           reasoning_effort: this._configuration?.openAi.reasoningEffort,
         },
         this.context
