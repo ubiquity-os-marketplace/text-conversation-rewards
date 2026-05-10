@@ -7,21 +7,30 @@ type ReviewAuthorAssociation = NonNullable<GitHubPullRequestReviewState["author_
 
 const COLLABORATOR_REVIEW_ASSOCIATIONS: ReviewAuthorAssociation[] = ["COLLABORATOR", "MEMBER", "OWNER"];
 
+function isHumanUser(user: { type?: string | null } | null | undefined) {
+  return user?.type !== "Bot";
+}
+
 export function isCollaborative(data: Readonly<IssueActivity>) {
   if (!data.self?.closed_by || !data.self.user) return false;
   const issueCreator = data.self.user;
 
-  if (data.self.closed_by.id === issueCreator.id) {
+  if (isHumanUser(data.self.closed_by) && data.self.closed_by.id !== issueCreator.id) {
+    return true;
+  }
+
+  if (data.self.closed_by.id === issueCreator.id || !isHumanUser(data.self.closed_by)) {
     const pricingEventsByNonAssignee = data.events.find(
       (event) =>
         event.event === "labeled" &&
         "label" in event &&
         (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id
+        event.actor.id !== issueCreator.id &&
+        isHumanUser(event.actor)
     );
     return !!pricingEventsByNonAssignee || !!nonAssigneeApprovedReviews(data);
   }
-  return true;
+  return false;
 }
 
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
@@ -57,6 +66,7 @@ function hasApprovedReviewByCollaborator(
   return reviews.some(
     (review) =>
       Boolean(review.user?.id) &&
+      isHumanUser(review.user) &&
       !excludedUserIds.has(String(review.user?.id)) &&
       review.state === "APPROVED" &&
       isReviewByCollaborator(review)
@@ -75,6 +85,7 @@ function hasIssueContextApprovedReview(
   return reviews.some(
     (review) =>
       Boolean(review.user?.id) &&
+      isHumanUser(review.user) &&
       review.user?.id !== assigneeId &&
       review.state === "APPROVED" &&
       !isReviewRequestedForUser(pullRequest, review)

@@ -5,6 +5,7 @@ import type { IssueActivity } from "../../src/issue-activity";
 type User = {
   id: number;
   login: string;
+  type?: string;
 };
 
 const author = { id: 1, login: "author" };
@@ -12,6 +13,7 @@ const assignee = { id: 2, login: "assignee" };
 const reviewer = { id: 3, login: "reviewer" };
 const issueAuthor = { id: 4, login: "issue-author" };
 const outsideReviewer = { id: 5, login: "outside-reviewer" };
+const bot = { id: 6, login: "github-actions[bot]", type: "Bot" };
 
 function createReview(
   user: User,
@@ -27,25 +29,29 @@ function createReview(
 
 function createActivity({
   pullRequestContext = false,
+  closedBy = author,
   issueAssignee,
   linkedIssueAuthor,
+  events = [],
   reviews = [],
   requestedReviewers = [],
 }: {
   pullRequestContext?: boolean;
+  closedBy?: User;
   issueAssignee?: User;
   linkedIssueAuthor?: User;
+  events?: unknown[];
   reviews?: GitHubPullRequestReviewState[];
   requestedReviewers?: User[];
 }) {
   return {
     self: {
       user: author,
-      closed_by: author,
+      closed_by: closedBy,
       assignee: issueAssignee,
       pull_request: pullRequestContext ? { html_url: "https://github.com/owner/repo/pull/1" } : undefined,
     },
-    events: [],
+    events,
     linkedMergedPullRequests: [
       {
         self: {
@@ -68,6 +74,73 @@ function createActivity({
 }
 
 describe("collaboration checks", () => {
+  describe("isCollaborative", () => {
+    it("treats a different human closer as collaborative", () => {
+      const activity = createActivity({
+        closedBy: reviewer,
+      });
+
+      expect(isCollaborative(activity)).toBe(true);
+    });
+
+    it("does not treat bot closure as human collaboration", () => {
+      const activity = createActivity({
+        closedBy: bot,
+      });
+
+      expect(isCollaborative(activity)).toBe(false);
+    });
+
+    it("allows bot closure when there is separate human collaboration", () => {
+      const activity = createActivity({
+        closedBy: bot,
+        events: [
+          {
+            actor: reviewer,
+            event: "labeled",
+            label: {
+              name: "Time: <2 Hours",
+            },
+          },
+        ],
+      });
+
+      expect(isCollaborative(activity)).toBe(true);
+    });
+
+    it("does not count bot-added pricing labels as human collaboration", () => {
+      const activity = createActivity({
+        events: [
+          {
+            actor: bot,
+            event: "labeled",
+            label: {
+              name: "Time: <2 Hours",
+            },
+          },
+        ],
+      });
+
+      expect(isCollaborative(activity)).toBe(false);
+    });
+
+    it("counts human-added pricing labels as collaboration", () => {
+      const activity = createActivity({
+        events: [
+          {
+            actor: reviewer,
+            event: "labeled",
+            label: {
+              name: "Priority: 2 (Medium)",
+            },
+          },
+        ],
+      });
+
+      expect(isCollaborative(activity)).toBe(true);
+    });
+  });
+
   describe("nonAssigneeApprovedReviews", () => {
     it("uses PR reviews when the reward context is a pull request without assignees", () => {
       const activity = createActivity({
@@ -93,6 +166,16 @@ describe("collaboration checks", () => {
       const activity = createActivity({
         pullRequestContext: true,
         reviews: [createReview(reviewer, "APPROVED", "CONTRIBUTOR"), createReview(outsideReviewer, "APPROVED", "NONE")],
+      });
+
+      expect(nonAssigneeApprovedReviews(activity)).toBe(false);
+      expect(isCollaborative(activity)).toBe(false);
+    });
+
+    it("does not count bot approvals in pull request context", () => {
+      const activity = createActivity({
+        pullRequestContext: true,
+        reviews: [createReview(bot)],
       });
 
       expect(nonAssigneeApprovedReviews(activity)).toBe(false);
