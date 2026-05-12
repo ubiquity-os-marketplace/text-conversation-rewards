@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import "./helpers/permit-mock";
 import { drop } from "@mswjs/data";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
@@ -121,5 +121,20 @@ describe("Purging tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
+  });
+
+  it("Should remove multiline slash commands and their content", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx) as unknown as {
+      _cleanCommentBody(body: string): string;
+    };
+
+    expect(dataPurgeModule._cleanCommentBody("/ask\n\nWill this be counted?\nIt should not be.")).toHaveLength(0);
+    expect(dataPurgeModule._cleanCommentBody("/start\n\nI am starting this task")).toHaveLength(0);
+    expect(dataPurgeModule._cleanCommentBody("Useful context before command.\n/ask\nIgnore this content.")).toBe(
+      "Useful context before command."
+    );
+    expect(dataPurgeModule._cleanCommentBody("Regular comment mentioning /ask inline.")).toBe(
+      "Regular comment mentioning /ask inline."
+    );
   });
 });
