@@ -22,6 +22,9 @@ import { ContextPlugin } from "../types/plugin-input";
 import { LINKED_ISSUES, PullRequestClosingIssue } from "../types/requests";
 import { GithubCommentScore, Result } from "../types/results";
 
+export const OFF_TOPIC_SCORING_META_DISCUSSION_GUIDANCE =
+  "Treat reward, payment, bot, or relevance-scoring meta-discussion as off-topic unless it directly proposes a concrete implementation or specification change for the current issue.";
+
 function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
   return (
     typeof value === "object" &&
@@ -628,6 +631,7 @@ export class ContentEvaluatorModule extends BaseModule {
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
+        - ${OFF_TOPIC_SCORING_META_DISCUSSION_GUIDANCE}
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
@@ -662,6 +666,7 @@ export class ContentEvaluatorModule extends BaseModule {
     - 1.0: Strongly advances a fix/feature tied to one or more specifications, or significantly improves correctness, safety, performance, or maintainability in direct relation to the specs.
     - 0.5: Somewhat helpful or partially relevant; raises a valid concern or improvement but limited in scope/impact.
     - 0.0: Not relevant, incorrect, or off-topic with respect to the specifications; noise.
+    - ${OFF_TOPIC_SCORING_META_DISCUSSION_GUIDANCE}
 
     Additional notes:
     - Some comments are code-review entries and include a "diffHunk" representing the code context under review.
