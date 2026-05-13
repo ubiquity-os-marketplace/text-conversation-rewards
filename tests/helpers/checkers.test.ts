@@ -120,6 +120,32 @@ describe("collaboration checks", () => {
       expect(isCollaborative(activity)).toBe(false);
     });
 
+
+    it("uses approvals from later linked merged pull requests", () => {
+      const activity = createActivity({
+        pullRequestContext: true,
+      });
+      (activity as IssueActivity).linkedMergedPullRequests = [
+        {
+          self: {
+            user: author,
+            requested_reviewers: [],
+          },
+          reviews: [],
+        },
+        {
+          self: {
+            user: author,
+            requested_reviewers: [],
+          },
+          reviews: [createReview(reviewer)],
+        },
+      ];
+
+      expect(nonAssigneeApprovedReviews(activity)).toBe(true);
+      expect(isCollaborative(activity)).toBe(true);
+    });
+
     it("does not treat an empty PR review list as collaborative", () => {
       const activity = createActivity({
         pullRequestContext: true,

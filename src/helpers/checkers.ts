@@ -25,25 +25,30 @@ export function isCollaborative(data: Readonly<IssueActivity>) {
 }
 
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
-  const linkedPullRequest = data.linkedMergedPullRequests[0];
-  if (!linkedPullRequest) {
+  if (!data.linkedMergedPullRequests.length) {
     return false;
   }
 
   if (data.self?.pull_request) {
-    const pullRequestAuthorId = linkedPullRequest.self?.user?.id ?? data.self.user?.id;
-    const excludedAuthorIds = new Set(
-      [pullRequestAuthorId, ...data.linkedIssues.map((issue) => issue.node.author?.id)].filter(Boolean).map(String)
-    );
-    return hasApprovedReviewByCollaborator(linkedPullRequest.reviews, excludedAuthorIds);
+    const selfUserId = data.self.user?.id;
+    return data.linkedMergedPullRequests.some((linkedPullRequest) => {
+      const pullRequestAuthorId = linkedPullRequest.self?.user?.id ?? selfUserId;
+      const excludedAuthorIds = new Set(
+        [pullRequestAuthorId, ...data.linkedIssues.map((issue) => issue.node.author?.id)].filter(Boolean).map(String)
+      );
+      return hasApprovedReviewByCollaborator(linkedPullRequest.reviews, excludedAuthorIds);
+    });
   }
 
   const assigneeId = data.self?.assignee?.id;
-  if (!assigneeId || !linkedPullRequest.self) {
+  if (!assigneeId) {
     return false;
   }
 
-  return hasIssueContextApprovedReview(linkedPullRequest.self, linkedPullRequest.reviews, assigneeId);
+  return data.linkedMergedPullRequests.some(
+    (linkedPullRequest) =>
+      linkedPullRequest.self && hasIssueContextApprovedReview(linkedPullRequest.self, linkedPullRequest.reviews, assigneeId)
+  );
 }
 
 function hasApprovedReviewByCollaborator(
