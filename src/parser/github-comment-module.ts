@@ -77,9 +77,35 @@ export class GithubCommentModule extends BaseModule {
       return cached;
     }
     const tokenContract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
-    const symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    const symbol = await this._fetchTokenSymbol(new Erc20Wrapper(tokenContract), config);
     this._tokenSymbolCache.set(key, symbol);
     return symbol;
+  }
+
+  private async _fetchTokenSymbol(tokenContract: Erc20Wrapper, config: RewardSettings) {
+    try {
+      return await tokenContract.getSymbol();
+    } catch (e) {
+      if (!this._isTokenLookupError(e)) {
+        throw e;
+      }
+      throw new Error(`This token ${config.erc20RewardToken} was not found on network ID ${config.evmNetworkId}`);
+    }
+  }
+
+  private _isTokenLookupError(e: unknown): boolean {
+    if (typeof e !== "object" || e === null) {
+      return false;
+    }
+    const error = e as { code?: unknown; error?: unknown; message?: unknown; reason?: unknown };
+    const message = typeof error.message === "string" ? error.message.toLowerCase() : "";
+    const reason = typeof error.reason === "string" ? error.reason.toLowerCase() : "";
+    return (
+      error.code === "CALL_EXCEPTION" ||
+      message.includes("call revert exception") ||
+      reason.includes("call revert exception") ||
+      (error.error !== e && this._isTokenLookupError(error.error))
+    );
   }
 
   private async _getTokenDisplayForUser(username: string) {
