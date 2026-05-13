@@ -122,4 +122,10 @@ describe("Purging tests", () => {
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
   });
+
+  it("Should purge multiline slash commands", () => {
+    const module = new DataPurgeModule(ctx);
+    expect(module["_cleanCommentBody"]("/ask\nplease summarize this issue")).toBe("");
+    expect(module["_cleanCommentBody"]("   /finish\nclosing note")).toBe("");
+  });
 });
