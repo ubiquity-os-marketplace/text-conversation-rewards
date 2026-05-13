@@ -628,12 +628,17 @@ export class ContentEvaluatorModule extends BaseModule {
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
-      5. Handle GitHub-flavored markdown:
+      5. Treat low-signal collaboration comments as minimally relevant:
+        - Score 0.0-0.2 for comments that only express agreement, thanks, encouragement, availability, intent to look later, or generic coordination.
+        - Score 0.0-0.2 for comments that summarize or acknowledge the conversation without adding task-specific evidence, reproduction details, analysis, decisions, code-level guidance, or a concrete next step that advances resolution.
+        - Do not reward a comment highly just because it is polite, conversational, timely, or written by an active participant.
+        - Raise the score only when the comment contains issue-specific substance, such as a verified cause, implementation detail, test result, actionable requirement, blocker, or decision that helps resolve the issue.
+      6. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
-      7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
+      7. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
+      8. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
       Notes:
       - Even minor details may be significant.
@@ -662,10 +667,12 @@ export class ContentEvaluatorModule extends BaseModule {
     - 1.0: Strongly advances a fix/feature tied to one or more specifications, or significantly improves correctness, safety, performance, or maintainability in direct relation to the specs.
     - 0.5: Somewhat helpful or partially relevant; raises a valid concern or improvement but limited in scope/impact.
     - 0.0: Not relevant, incorrect, or off-topic with respect to the specifications; noise.
+    - 0.0-0.2: Low-signal collaboration only: agreement, thanks, encouragement, availability, intent to look later, generic coordination, or summarizing/acknowledging the thread without task-specific analysis, evidence, or actionable guidance.
 
     Additional notes:
     - Some comments are code-review entries and include a "diffHunk" representing the code context under review.
     - Prefer actionable, specific suggestions over generic praise.
+    - Do not reward a comment highly just because it is polite, timely, conversational, or written by an active participant.
     - Do not explain your reasoning; only output JSON.
 
     The following JSON contains the issue specification context and the comments to evaluate.
