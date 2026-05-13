@@ -628,12 +628,15 @@ export class ContentEvaluatorModule extends BaseModule {
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
+        - Whether the commenter's own words contain actionable analysis, evidence, implementation details, or a decision that materially advances the task
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
-      7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
+      6. Score comments low (0 to 0.2) when the commenter's own words are mostly meta discussion, reward/result commentary, generic agreement, uncertainty, status chatter, or social remarks, even if the comment quotes relevant text, mentions an active contributor, or appears near relevant comments in the thread.
+      7. Do not award high relevance just because a comment is long, is from a frequent contributor, or participates in a relevant thread; the comment itself must help resolve the issue.
+      8. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
+      9. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
       Notes:
       - Even minor details may be significant.
