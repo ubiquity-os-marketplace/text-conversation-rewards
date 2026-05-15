@@ -11,17 +11,36 @@ export function isCollaborative(data: Readonly<IssueActivity>) {
   if (!data.self?.closed_by || !data.self.user) return false;
   const issueCreator = data.self.user;
 
-  if (data.self.closed_by.id === issueCreator.id) {
-    const pricingEventsByNonAssignee = data.events.find(
-      (event) =>
-        event.event === "labeled" &&
-        "label" in event &&
-        (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id
-    );
-    return !!pricingEventsByNonAssignee || !!nonAssigneeApprovedReviews(data);
-  }
-  return true;
+  // Check if closed_by is a different human user (not a bot)
+  const closedByDifferentHuman =
+    data.self.closed_by.id !== issueCreator.id && data.self.closed_by.type === "User";
+
+  // Check if pricing labels were set by someone other than the issue creator
+  const pricingEventsByNonAssignee = data.events.find(
+    (event) =>
+      event.event === "labeled" &&
+      "label" in event &&
+      (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
+      event.actor.id !== issueCreator.id
+  );
+
+  // Check if the issue was assigned by someone other than the assignee
+  const assigneeId = data.self.assignee?.id;
+  const assignedByDifferentHuman = assigneeId
+    ? data.events.some(
+        (event) =>
+          event.event === "assigned" &&
+          event.actor.id !== assigneeId &&
+          event.actor.type === "User"
+      )
+    : false;
+
+  return (
+    closedByDifferentHuman ||
+    !!pricingEventsByNonAssignee ||
+    !!assignedByDifferentHuman ||
+    !!nonAssigneeApprovedReviews(data)
+  );
 }
 
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
