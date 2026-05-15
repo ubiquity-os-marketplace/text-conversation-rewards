@@ -98,6 +98,8 @@ afterAll(() => server.close());
 describe("Purging tests", () => {
   const issue = parseGitHubUrl(issueUrl);
   let activity: IssueActivity;
+  const cleanCommentBody = (body: string) =>
+    (new DataPurgeModule(ctx) as unknown as { _cleanCommentBody(body: string): string })._cleanCommentBody(body);
 
   beforeEach(async () => {
     drop(db);
@@ -121,5 +123,25 @@ describe("Purging tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
+  });
+
+  it("Should purge multiline slash command content", () => {
+    const result = cleanCommentBody("/ask\nPlease check my scoring.\nThis should not be evaluated.");
+
+    expect(result).toBe("");
+  });
+
+  it("Should keep non-command content before multiline slash commands", () => {
+    const result = cleanCommentBody(
+      "Useful context before the command.\n\n/ask\nPlease check my scoring.\n\nThis command body should not be evaluated."
+    );
+
+    expect(result).toBe("Useful context before the command.");
+  });
+
+  it("Should not purge slash-prefixed paths as commands", () => {
+    const result = cleanCommentBody("The route /api/rewards should keep working.");
+
+    expect(result).toBe("The route /api/rewards should keep working.");
   });
 });
