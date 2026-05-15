@@ -49,14 +49,27 @@ export class DataPurgeModule extends BaseModule {
     return false;
   }
 
+  private _removeCommandBlocks(body: string): string {
+    const commandLineRegex = /^[^\S\r\n]*\/[a-z][\w-]*(?:[^\S\r\n]+.*)?$/i;
+    const filteredLines: string[] = [];
+
+    for (const line of body.split(/\r?\n/)) {
+      if (commandLineRegex.test(line)) {
+        break;
+      }
+
+      filteredLines.push(line);
+    }
+
+    return filteredLines.join("\n");
+  }
+
   private _cleanCommentBody(body: string): string {
     const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
     return (
-      body
+      this._removeCommandBlocks(body)
         // Remove quoted text
         .replace(/^>.*$/gm, "")
-        // Remove commands such as /start
-        .replace(/^\/.+/g, "")
         // Remove HTML comments
         .replace(/<!--[\s\S]*?-->/g, "")
         // Remove the footnotes
