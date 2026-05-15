@@ -46,6 +46,9 @@ export interface Result {
         reward: number;
       };
     };
+    eventIncentives?: {
+      reward: number;
+    };
     evaluationCommentHtml?: string;
   };
 }

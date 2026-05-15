@@ -1,14 +1,26 @@
 import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import { Value } from "@sinclair/typebox/value";
 import {
+  ContributorRoleType,
   EventIncentivesConfiguration,
   eventIncentivesConfigurationType,
 } from "../configuration/event-incentives-config";
+import { getUserRewardRole, RewardUserRole } from "../helpers/permissions";
 import { IssueActivity } from "../issue-activity";
 import { parseGitHubUrl } from "../start";
 import { BaseModule } from "../types/module";
 import { ContextPlugin } from "../types/plugin-input";
 import { Result } from "../types/results";
+
+/**
+ * Maps internal reward roles to the config contributor role names.
+ */
+const REWARD_ROLE_TO_CONTRIBUTOR_ROLE: Record<RewardUserRole, ContributorRoleType> = {
+  admin: "COLLABORATOR",
+  collaborator: "COLLABORATOR",
+  contributor: "CONTRIBUTOR",
+  billing_manager: "COLLABORATOR",
+};
 
 export class EventIncentivesModule extends BaseModule {
   readonly _configuration: EventIncentivesConfiguration | null = this.context.config.incentives.eventIncentives;
@@ -25,6 +37,171 @@ export class EventIncentivesModule extends BaseModule {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Resolves the contributor role for a user based on the issue context.
+   * Returns ISSUER, ASSIGNEE, COLLABORATOR, or CONTRIBUTOR.
+   */
+  _resolveContributorRole(
+    username: string,
+    data: Readonly<IssueActivity>,
+    roleCache: Map<string, ContributorRoleType>
+  ): ContributorRoleType {
+    const cached = roleCache.get(username);
+    if (cached) {
+      return cached;
+    }
+
+    // Check if user is the issue author (ISSUER)
+    if (data.self?.user?.login === username) {
+      const role: ContributorRoleType = "ISSUER";
+      roleCache.set(username, role);
+      return role;
+    }
+
+    // Check if user is an assignee (ASSIGNEE)
+    const assignees = data.self?.assignees ?? [];
+    const isAssignee = assignees.some((assignee) => assignee?.login === username);
+    if (isAssignee) {
+      const role: ContributorRoleType = "ASSIGNEE";
+      roleCache.set(username, role);
+      return role;
+    }
+
+    // Check linked PR authors
+    const isPrAuthor = data.linkedMergedPullRequests.some(
+      (pull) => pull.self?.user?.login === username
+    );
+    if (isPrAuthor && isAssignee === undefined) {
+      // PR author who is also an assignee would have been caught above
+      // But if they are a PR author and assignee, they're ASSIGNEE
+    }
+
+    // For non-issuer, non-assignee: we'll resolve async later
+    // Default to CONTRIBUTOR, will be refined in _resolveContributorRolesAsync
+    const role: ContributorRoleType = "CONTRIBUTOR";
+    roleCache.set(username, role);
+    return role;
+  }
+
+  /**
+   * Async version that checks org/repo membership for accurate role resolution.
+   */
+  async _resolveContributorRolesAsync(
+    usernames: string[],
+    data: Readonly<IssueActivity>,
+    roleCache: Map<string, ContributorRoleType>
+  ): Promise<void> {
+    for (const username of usernames) {
+      if (roleCache.get(username) !== "CONTRIBUTOR") {
+        continue; // Already resolved as ISSUER, ASSIGNEE, or explicitly set
+      }
+
+      // Check if user is a linked PR author (ASSIGNEE-equivalent if linked)
+      const isPrAuthor = data.linkedMergedPullRequests.some(
+        (pull) => pull.self?.user?.login === username
+      );
+
+      try {
+        const rewardRole = await getUserRewardRole(this.context, username);
+        const contributorRole = REWARD_ROLE_TO_CONTRIBUTOR_ROLE[rewardRole];
+
+        // If the user is a PR author, they count as ASSIGNEE in pull context
+        // but their org role in issue context
+        if (isPrAuthor && contributorRole === "CONTRIBUTOR") {
+          // PR author who is not a collaborator - they're still a contributor
+          // but might be an assignee-equivalent
+          roleCache.set(username, "CONTRIBUTOR");
+        } else {
+          roleCache.set(username, contributorRole);
+        }
+      } catch {
+        roleCache.set(username, "CONTRIBUTOR");
+      }
+    }
+  }
+
+  /**
+   * Looks up the reward value for a given event key and contributor role from the config.
+   * Supports both the `events` shorthand and the full webhook-style config.
+   */
+  _getRewardForEvent(eventName: string, role: ContributorRoleType): number {
+    if (!this._configuration) {
+      return 0;
+    }
+
+    // Check the events shorthand first
+    if (this._configuration.events && this._configuration.events[eventName]) {
+      const eventConfig = this._configuration.events[eventName];
+      if (eventConfig.targets.includes(role)) {
+        return eventConfig.value;
+      }
+      return 0;
+    }
+
+    // Parse the event name to match against webhook-style config
+    // e.g., "issue.labeled" -> prefix="issue", action="labeled"
+    // e.g., "pull_request.commented" -> prefix="pull_request", action="commented"
+    const parts = eventName.split(".");
+    if (parts.length < 2) {
+      return 0;
+    }
+
+    const prefix = parts[0]; // "issue" or "pull_request"
+    const action = parts[parts.length - 1]; // the action part
+
+    // Map prefix to config section and context key
+    const contextKey = prefix === "pull_request" ? "pull" : "issue";
+
+    // Try to find the matching config section
+    // Handle nested events like "pull_request.reviewed.approved"
+    if (parts.length >= 3) {
+      // e.g., pull_request.reviewed.approved or issue.received.review_requested
+      const middleParts = parts.slice(1, -1);
+      const fullAction = middleParts.concat([action]).join("_");
+      return this._lookupWebhookConfig(fullAction, contextKey, role);
+    }
+
+    return this._lookupWebhookConfig(action, contextKey, role);
+  }
+
+  private _lookupWebhookConfig(action: string, contextKey: string, role: ContributorRoleType): number {
+    if (!this._configuration) {
+      return 0;
+    }
+
+    // Check common webhook event sections
+    const sections = [
+      "pull_request",
+      "pull_request_review",
+      "pull_request_review_comment",
+      "pull_request_review_thread",
+      "issue_comment",
+      "commit_comment",
+      "workflow_run",
+      "check_run",
+      "check_suite",
+    ] as const;
+
+    for (const section of sections) {
+      const sectionConfig = this._configuration[section];
+      if (sectionConfig && typeof sectionConfig === "object" && action in sectionConfig) {
+        const actionConfig = (sectionConfig as Record<string, unknown>)[action];
+        if (actionConfig && typeof actionConfig === "object") {
+          const contextConfig = (actionConfig as Record<string, unknown>)[contextKey];
+          if (contextConfig && typeof contextConfig === "object") {
+            const targets = (contextConfig as { targets?: string[] }).targets;
+            const value = (contextConfig as { value?: number }).value;
+            if (targets && Array.isArray(targets) && targets.includes(role)) {
+              return value ?? 0;
+            }
+          }
+        }
+      }
+    }
+
+    return 0;
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
@@ -112,7 +289,56 @@ export class EventIncentivesModule extends BaseModule {
       }
     }
 
+    // Apply reward calculation based on config and user roles
+    await this._applyEventRewards(data, result);
+
     return result;
+  }
+
+  /**
+   * After all events are counted, calculate rewards based on the config
+   * and each user's contributor role.
+   */
+  async _applyEventRewards(data: Readonly<IssueActivity>, result: Result): Promise<void> {
+    if (!this._configuration) {
+      return;
+    }
+
+    const roleCache = new Map<string, ContributorRoleType>();
+    const usernames = Object.keys(result);
+
+    // First pass: resolve roles synchronously for known roles
+    for (const username of usernames) {
+      this._resolveContributorRole(username, data, roleCache);
+    }
+
+    // Second pass: resolve remaining roles asynchronously
+    await this._resolveContributorRolesAsync(usernames, data, roleCache);
+
+    // Calculate rewards for each user's events
+    for (const username of usernames) {
+      const userResult = result[username];
+      if (!userResult.events) {
+        continue;
+      }
+
+      const role = roleCache.get(username) ?? "CONTRIBUTOR";
+      let totalEventReward = 0;
+
+      for (const [eventName, eventData] of Object.entries(userResult.events)) {
+        const rewardPerEvent = this._getRewardForEvent(eventName, role);
+        const reward = eventData.count * rewardPerEvent;
+        eventData.reward = reward;
+        totalEventReward += reward;
+      }
+
+      // Add event rewards to user's result
+      if (totalEventReward > 0) {
+        result[username].eventIncentives = {
+          reward: totalEventReward,
+        };
+      }
+    }
   }
 
   processEvents(
@@ -160,7 +386,8 @@ export class EventIncentivesModule extends BaseModule {
     }
     if (!result[username].events) {
       result[username].events = {};
-    } else if (!result[username].events?.[eventName]) {
+    }
+    if (!result[username].events[eventName]) {
       result[username].events[eventName] = {
         count: 1,
         reward: 0,
