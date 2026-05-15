@@ -623,15 +623,18 @@ export class ContentEvaluatorModule extends BaseModule {
       2. Identify every comment authored by ${username}. Their comment IDs are: ${targetCommentIds}.
       3. Assign a relevance score from 0 to 1 for each identified comment:
         - 0: Not related (e.g., spam)
+        - 0 to 0.1: Meta-discussion about rewards, relevance scoring, claiming, payment, task triage, or other contributors when it does not analyze, implement, test, or clarify the issue itself
         - 1: Highly relevant (e.g., solutions, bug reports)
       4. Consider:
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
+        - Whether the author's original words add task-specific technical substance, not merely social commentary about the conversation
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
+        - A comment like "relevance scoring could have done so much better here for you @user" must score near 0 unless the author also provides concrete task-specific analysis or implementation guidance
       6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
       7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
