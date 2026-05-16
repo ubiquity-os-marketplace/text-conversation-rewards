@@ -33,6 +33,32 @@ interface BodyComment {
   raw: string;
 }
 
+interface ContractCallError {
+  code?: string;
+  method?: string;
+  message?: string;
+}
+
+function isTokenSymbolCallException(error: unknown) {
+  const callError = error as ContractCallError;
+  const message = callError.message;
+  return (
+    callError.code === "CALL_EXCEPTION" ||
+    callError.method === "symbol()" ||
+    (typeof message === "string" && message.includes("call revert exception") && message.includes("symbol()"))
+  );
+}
+
+export function createTokenSymbolLookupError(error: unknown, config: RewardSettings) {
+  if (!isTokenSymbolCallException(error)) {
+    return error;
+  }
+  return new Error(
+    `Token ${config.erc20RewardToken} was not found on network ID ${config.evmNetworkId}. ` +
+      "The smart contract does not exist on this network."
+  );
+}
+
 /**
  * Posts a GitHub comment according to the given results.
  */
@@ -77,7 +103,12 @@ export class GithubCommentModule extends BaseModule {
       return cached;
     }
     const tokenContract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
-    const symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    let symbol: string;
+    try {
+      symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    } catch (error) {
+      throw createTokenSymbolLookupError(error, config);
+    }
     this._tokenSymbolCache.set(key, symbol);
     return symbol;
   }
