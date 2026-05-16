@@ -77,9 +77,43 @@ export class GithubCommentModule extends BaseModule {
       return cached;
     }
     const tokenContract = await getContract(config.evmNetworkId, config.erc20RewardToken, ERC20_ABI);
-    const symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    let symbol: string;
+    try {
+      symbol = await new Erc20Wrapper(tokenContract).getSymbol();
+    } catch (err) {
+      if (this._isMissingTokenSymbolError(err)) {
+        throw this.context.logger.error(
+          `This token ${config.erc20RewardToken} was not found on network ID ${config.evmNetworkId}.`,
+          {
+            err,
+            tokenAddress: config.erc20RewardToken,
+            networkId: config.evmNetworkId,
+          }
+        );
+      }
+      throw err;
+    }
     this._tokenSymbolCache.set(key, symbol);
     return symbol;
+  }
+
+  private _isMissingTokenSymbolError(err: unknown) {
+    const error = err as { code?: unknown; method?: unknown; data?: unknown; message?: unknown };
+    let message = "";
+    if (err instanceof Error) {
+      message = err.message;
+    } else if (typeof error.message === "string") {
+      message = error.message;
+    }
+    const code = typeof error.code === "string" ? error.code : "";
+    const method = typeof error.method === "string" ? error.method : "";
+    const data = typeof error.data === "string" ? error.data : "";
+
+    return (
+      (code === "CALL_EXCEPTION" || message.includes("CALL_EXCEPTION") || message.includes("call revert exception")) &&
+      (method === "symbol()" || message.includes('method="symbol()"')) &&
+      (data === "0x" || message.includes('data="0x"'))
+    );
   }
 
   private async _getTokenDisplayForUser(username: string) {

@@ -7,7 +7,7 @@ import { mockWeb3Module } from "./helpers/web3-mocks";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-mockWeb3Module();
+const web3Mocks = mockWeb3Module();
 
 jest.mock("@actions/github", () => ({
   default: {},
@@ -24,8 +24,17 @@ jest.mock("@actions/github", () => ({
 
 describe("GithubCommentModule Simplification Rounding", () => {
   let githubCommentModule: InstanceType<typeof import("../src/parser/github-comment-module").GithubCommentModule>;
+  let logger: Record<string, unknown>;
 
   beforeEach(async () => {
+    web3Mocks.Erc20Wrapper.getSymbol.mockReset();
+    web3Mocks.Erc20Wrapper.getSymbol.mockReturnValue("WXDAI");
+    logger = {
+      error: jest.fn((raw: string, metadata?: unknown) => ({ logMessage: { raw }, metadata })),
+      warn: jest.fn(),
+      info: jest.fn(),
+      debug: jest.fn(),
+    };
     const { GithubCommentModule } = await import("../src/parser/github-comment-module");
     githubCommentModule = new GithubCommentModule({
       eventName: "issues.closed",
@@ -50,6 +59,7 @@ describe("GithubCommentModule Simplification Rounding", () => {
         },
       },
       config: cfg,
+      logger,
     } as unknown as ContextPlugin);
   });
 
@@ -83,5 +93,35 @@ describe("GithubCommentModule Simplification Rounding", () => {
 
     expect(bodyContent.raw).toContain("<td>Task Simplification</td><td>1</td><td>1.44</td>");
     expect(bodyContent.raw).not.toContain("1.4400000000000002");
+  });
+
+  it("should describe missing token contracts when symbol lookup fails", async () => {
+    web3Mocks.Erc20Wrapper.getSymbol.mockRejectedValueOnce(
+      Object.assign(new Error('call revert exception (method="symbol()", data="0x", code=CALL_EXCEPTION)'), {
+        code: "CALL_EXCEPTION",
+        method: "symbol()",
+        data: "0x",
+      }) as never
+    );
+
+    const result: Result = {
+      gentlementlegen: {
+        total: 1,
+        userId: 123,
+        permitUrl: "https://pay.ubq.fi",
+        payoutMode: "permit",
+        walletAddress: "0x1",
+      },
+    };
+
+    await expect(githubCommentModule.getBodyContent({} as unknown as IssueActivity, result)).rejects.toMatchObject({
+      logMessage: {
+        raw: "This token 0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d was not found on network ID 100.",
+      },
+      metadata: {
+        tokenAddress: "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
+        networkId: 100,
+      },
+    });
   });
 });
