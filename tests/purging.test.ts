@@ -122,4 +122,19 @@ describe("Purging tests", () => {
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
   });
+
+  it("Should purge multiline slash command comments", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx) as unknown as { _cleanCommentBody(body: string): string };
+
+    expect(dataPurgeModule._cleanCommentBody("/ask\nPlease score this follow-up text.")).toBe("");
+    expect(dataPurgeModule._cleanCommentBody("\n  /ask\nPlease score this follow-up text.")).toBe("");
+  });
+
+  it("Should keep normal multiline comments while removing embedded command lines", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx) as unknown as { _cleanCommentBody(body: string): string };
+
+    expect(dataPurgeModule._cleanCommentBody("Useful context\n/start\nMore context")).toBe(
+      "Useful context\n\nMore context"
+    );
+  });
 });
