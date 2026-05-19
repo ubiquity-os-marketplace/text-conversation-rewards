@@ -122,4 +122,31 @@ describe("Purging tests", () => {
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
   });
+
+  it("Should drop multiline slash-command comments", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx) as unknown as {
+      _cleanCommentBody(body: string): string;
+    };
+
+    const cleanedBody = dataPurgeModule._cleanCommentBody(`/ask
+Please check my scoring.
+
+This content belongs to the command and should not be evaluated.`);
+
+    expect(cleanedBody).toBe("");
+  });
+
+  it("Should keep regular text when removing an embedded slash command line", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx) as unknown as {
+      _cleanCommentBody(body: string): string;
+    };
+
+    const cleanedBody = dataPurgeModule._cleanCommentBody(`This is a regular comment.
+/start
+This part should stay because the whole comment is not a command payload.`);
+
+    expect(cleanedBody).toBe(
+      "This is a regular comment.\nThis part should stay because the whole comment is not a command payload."
+    );
+  });
 });

@@ -51,12 +51,16 @@ export class DataPurgeModule extends BaseModule {
 
   private _cleanCommentBody(body: string): string {
     const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
+    const bodyWithoutQuotedText = body.replace(/^>.*$/gm, "");
+
+    if (/^[ \t\r\n]*\/\S+[\s\S]*$/.test(bodyWithoutQuotedText)) {
+      return "";
+    }
+
     return (
-      body
-        // Remove quoted text
-        .replace(/^>.*$/gm, "")
-        // Remove commands such as /start
-        .replace(/^\/.+/g, "")
+      bodyWithoutQuotedText
+        // Remove commands such as /start from comments that also contain regular text
+        .replace(/^\/\S+.*(?:\r?\n)?/gm, "")
         // Remove HTML comments
         .replace(/<!--[\s\S]*?-->/g, "")
         // Remove the footnotes
