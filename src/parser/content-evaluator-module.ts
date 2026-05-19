@@ -628,19 +628,24 @@ export class ContentEvaluatorModule extends BaseModule {
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
-      5. Handle GitHub-flavored markdown:
+        - Whether the comment directly advances the issue rather than only discussing the reward bot, scoring bot, automation behavior, or unrelated process metadata
+      5. Score process/meta comments conservatively:
+        - Comments about bots being broken, reward scoring, who received rewards, assignment mechanics, or the evaluator itself should receive a low score unless they give concrete information needed to solve the current issue.
+        - Generic coordination, praise, complaints, or observations that do not add a test case, reproduction detail, implementation detail, or decision for the current issue should be near 0.
+        - A comment can be well written and still receive a low relevance score if it does not help resolve the issue description.
+      6. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
-      7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
+      7. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
+      8. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
       Notes:
       - Even minor details may be significant.
       - Comments may reference earlier comments.
       - The number of entries in the JSON response MUST equal ${targetComments.length}.
 
-      Example Output Format (for format only — not content): {${targetComments.map((o) => `"${o.id}": <score>`).join(", ")}}
+      Example Output Format (for format only - not content): {${targetComments.map((o) => `"${o.id}": <score>`).join(", ")}}
 
       YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.
     `;
@@ -675,7 +680,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
     Reply with ONLY a raw JSON object mapping each comment ID to a float between 0 and 1.
     The number of entries in the JSON response MUST equal ${userComments.length}.
-    Example Output Format (for format only — not content): {${userComments.map((o) => `"${o.id}": <score>`).join(", ")}}
+    Example Output Format (for format only - not content): {${userComments.map((o) => `"${o.id}": <score>`).join(", ")}}
     Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
     YOUR RESPONSE MUST CONTAIN ONLY THE RAW JSON OBJECT WITH NO FORMATTING, NO EXPLANATION, NO BACKTICKS, NO CODE BLOCKS.`;
