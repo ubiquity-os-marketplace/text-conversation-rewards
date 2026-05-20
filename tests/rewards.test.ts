@@ -19,6 +19,10 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import { mockWeb3Module } from "./helpers/web3-mocks";
 
+function normalizeLineEndings(value: string) {
+  return value.replace(/\r\n/g, "\n");
+}
+
 const TEST_X25519_PRIVATE_KEY = "wrQ9wTI1bwdAHbxk2dfsvoK1yRwDc0CEenmMXFvGYgY";
 process.env.X25519_PRIVATE_KEY = TEST_X25519_PRIVATE_KEY;
 
@@ -39,27 +43,29 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
+function createSupabaseSelectChain() {
+  const chain = {
+    eq: jest.fn(() => chain),
+    single: jest.fn(() => ({
+      data: {
+        id: 1,
+      },
+    })),
+    maybeSingle: jest.fn(() => ({
+      data: null,
+      error: null,
+    })),
+    then: (resolve: (value: { data: unknown[]; error: null }) => void) => resolve({ data: [], error: null }),
+  };
+  return chain;
+}
+
 jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
         insert: jest.fn(() => ({})),
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
-              data: {
-                id: 1,
-              },
-            })),
-            eq: jest.fn(() => ({
-              single: jest.fn(() => ({
-                data: {
-                  id: 1,
-                },
-              })),
-            })),
-          })),
-        })),
+        select: jest.fn(() => createSupabaseSelectChain()),
       })),
       rpc: jest.fn(() => ({ error: null })),
     })),
@@ -213,8 +219,8 @@ describe("Rewards tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(rewardSplitResult);
-    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
-      fs.readFileSync("./tests/__mocks__/results/output-reward-split.html", "utf-8")
+    expect(normalizeLineEndings(fs.readFileSync("./output.html", "utf-8"))).toEqual(
+      normalizeLineEndings(fs.readFileSync("./tests/__mocks__/results/output-reward-split.html", "utf-8"))
     );
   }, 120000);
 
@@ -264,8 +270,8 @@ describe("Rewards tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(authorshipRewardResult);
-    expect(fs.readFileSync("./output.html", "utf-8")).toEqual(
-      fs.readFileSync("./tests/__mocks__/results/output-authorship-reward.html", "utf-8")
+    expect(normalizeLineEndings(fs.readFileSync("./output.html", "utf-8"))).toEqual(
+      normalizeLineEndings(fs.readFileSync("./tests/__mocks__/results/output-authorship-reward.html", "utf-8"))
     );
   }, 120000);
 

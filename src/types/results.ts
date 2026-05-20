@@ -1,6 +1,11 @@
 import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 
 export type PayoutMode = "transfer" | "permit";
+export interface DifferentialPayout {
+  previousTotal: number;
+  currentTotal: number;
+  difference: number;
+}
 export interface PermitSaveError {
   message: string;
   nonce?: string;
@@ -24,6 +29,7 @@ export interface Result {
     permitUrl?: string;
     explorerUrl?: string;
     payoutMode?: PayoutMode;
+    differentialPayout?: DifferentialPayout;
     permitSaveErrors?: PermitSaveError[];
     userId: number;
     walletAddress?: string | null;

@@ -103,28 +103,30 @@ const PLACEHOLDER_TIMESTAMP = "2024-01-01T00:00:00.000Z";
 const PLACEHOLDER_URL = "https://example.test/resource";
 const PLACEHOLDER_CONTENT = "placeholder content";
 
+function createSupabaseSelectChain() {
+  const chain = {
+    eq: jest.fn(() => chain),
+    single: jest.fn(() => ({
+      data: {
+        id: 1,
+      },
+    })),
+    maybeSingle: jest.fn(() => ({
+      data: null,
+      error: null,
+    })),
+    then: (resolve: (value: { data: unknown[]; error: null }) => void) => resolve({ data: [], error: null }),
+  };
+  return chain;
+}
+
 jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       rpc: jest.fn(async () => ({ error: null })),
       from: jest.fn(() => ({
         insert: jest.fn(() => ({})),
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
-              data: {
-                id: 1,
-              },
-            })),
-            eq: jest.fn(() => ({
-              single: jest.fn(() => ({
-                data: {
-                  id: 1,
-                },
-              })),
-            })),
-          })),
-        })),
+        select: jest.fn(() => createSupabaseSelectChain()),
       })),
     })),
   };

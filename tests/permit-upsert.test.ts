@@ -16,9 +16,11 @@ const mockMaybeSingle = jest.fn<() => Promise<MaybeSingleResponse>>();
 const mockSelect = jest.fn();
 const selectBuilder = {
   eq: jest.fn(),
+  is: jest.fn(),
   maybeSingle: mockMaybeSingle,
 };
 selectBuilder.eq.mockImplementation(() => selectBuilder);
+selectBuilder.is.mockImplementation(() => selectBuilder);
 const updateResult: UpdateResponse = { data: [{ id: 123 }], error: null };
 const updateBuilder = {
   eq: jest.fn(),
@@ -107,6 +109,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     updateResult.error = null;
     updateResult.data = [{ id: 123 }];
     selectBuilder.eq.mockClear();
+    selectBuilder.is.mockClear();
     updateBuilder.eq.mockClear();
     updateBuilder.is.mockClear();
     updateBuilder.select.mockClear();
@@ -133,6 +136,8 @@ describe("PaymentModule _upsertPermitRecord", () => {
       p_partner_id: baseInsertData.partner_id,
       p_network_id: baseInsertData.network_id,
       p_permit2_address: baseInsertData.permit2_address,
+      p_payout_mode: null,
+      p_distribution_run_id: null,
     });
     expect(mockInsert).not.toHaveBeenCalled();
   });

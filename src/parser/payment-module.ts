@@ -79,6 +79,11 @@ type ExistingPermitRecord = {
   transaction: string | null;
 };
 
+type PreviousPayoutRecord = Pick<
+  Database["public"]["Tables"]["permits"]["Row"],
+  "amount" | "beneficiary_id" | "payout_mode" | "transaction"
+>;
+
 type RpcFallbackReason = "permission denied" | "unavailable";
 
 export class PaymentModule extends BaseModule {
@@ -243,6 +248,20 @@ export class PaymentModule extends BaseModule {
 
     await this._addWalletAddressesToResult(result);
 
+    const canProcessDifferentialPayouts = await this._applyDifferentialPayouts(result, {
+      config,
+      issue: { issueUrl: payload.issueUrl, issueId },
+    });
+    if (!canProcessDifferentialPayouts) {
+      this.context.logger.warn("Reward distribution history could not be validated, skipping payouts.");
+      return;
+    }
+
+    if (!this._hasPayableRewards(result)) {
+      this.context.logger.info("No positive reward differences found, skipping payout processing.");
+      return;
+    }
+
     const env = this.context.env;
     const eventName = context.eventName as SupportedEvents;
     const octokit = this.context.octokit as unknown as Context["octokit"];
@@ -262,7 +281,11 @@ export class PaymentModule extends BaseModule {
 
     if (payoutMode === "permit" || directTransferError) {
       this.context.logger.info("Transitioning to permit generation.");
+      const distributionRunId = randomUUID();
       for (const [username, reward] of Object.entries(result)) {
+        if (reward.total <= 0) {
+          continue;
+        }
         this.context.logger.debug(`Updating result for user ${username}`);
         const configPayload: Context["config"] = {
           evmNetworkId: payload.evmNetworkId,
@@ -306,7 +329,9 @@ export class PaymentModule extends BaseModule {
 
         result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
         result[username].payoutMode = "permit";
-        await this._savePermitsToDatabase(result[username], { issueUrl: payload.issueUrl, issueId }, permits);
+        await this._savePermitsToDatabase(result[username], { issueUrl: payload.issueUrl, issueId }, permits, {
+          distributionRunId,
+        });
       }
     }
 
@@ -331,11 +356,14 @@ export class PaymentModule extends BaseModule {
     this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
     const [tx, permits] = await this._transferReward(directTransferInfo);
     this.context.logger.info("Rewards have been transferred.");
+    const distributionRunId = randomUUID();
     await Promise.all(
       beneficiaries.map(async (beneficiary, idx) => {
         result[beneficiary.username].explorerUrl = `${networkExplorer}/tx/${tx.hash}`;
         result[beneficiary.username].payoutMode = "transfer";
-        await this._savePermitsToDatabase(result[beneficiary.username], { issueUrl, issueId }, [permits[idx]]);
+        await this._savePermitsToDatabase(result[beneficiary.username], { issueUrl, issueId }, [permits[idx]], {
+          distributionRunId,
+        });
       })
     );
   }
@@ -347,15 +375,13 @@ export class PaymentModule extends BaseModule {
   }
 
   /* This method returns the transfer mode based on the following conditions:
-   - null: Indicates that the payout was previously transferred directly, meaning no further payout is required.
    - Permit: Applies if autoTransferMode is set to false or if rewards were previously generated using the permit method.
-   - Transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
+   - Transfer: Applies if autoTransferMode is set to true and no previous permit payout method has been used for the rewards.
   */
-  async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
+  async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode> {
     for (const comment of data.comments) {
       if (comment.body && comment.user?.type === "Bot") {
-        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) return null;
-        else if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
+        if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
       }
     }
     return this._autoTransferMode ? "transfer" : "permit";
@@ -487,7 +513,7 @@ export class PaymentModule extends BaseModule {
   async _getBeneficiaries(result: Result): Promise<Beneficiary[]> {
     return Object.entries(result)
       .map(([username, reward]) => {
-        if (!reward.walletAddress) {
+        if (!reward.walletAddress || reward.total <= 0) {
           return null;
         }
         return {
@@ -597,6 +623,129 @@ export class PaymentModule extends BaseModule {
         .getWalletByUserId(reward.userId)
         .catch(() => undefined);
     }
+  }
+
+  async _applyDifferentialPayouts(
+    result: Result,
+    {
+      config,
+      issue,
+    }: {
+      config: RewardSettings;
+      issue: { issueId: number; issueUrl: string };
+    }
+  ): Promise<boolean> {
+    const previousPayouts = await this._loadPreviousPayoutTotals(issue, config);
+    if (previousPayouts === null) {
+      return false;
+    }
+
+    const hasPreviousPayouts = previousPayouts.size > 0;
+    for (const [username, rewardResult] of Object.entries(result)) {
+      const currentTotal = new Decimal(rewardResult.total);
+      const previousTotal = previousPayouts.get(rewardResult.userId) ?? new Decimal(0);
+      const difference = Decimal.max(currentTotal.minus(previousTotal), 0);
+      if (hasPreviousPayouts) {
+        rewardResult.differentialPayout = {
+          previousTotal: previousTotal.toNumber(),
+          currentTotal: currentTotal.toNumber(),
+          difference: difference.toNumber(),
+        };
+      }
+
+      this.context.logger.info("Calculated differential reward distribution", {
+        username,
+        beneficiaryId: rewardResult.userId,
+        previousTotal: previousTotal.toString(),
+        currentTotal: currentTotal.toString(),
+        difference: difference.toString(),
+      });
+
+      if (difference.eq(currentTotal)) {
+        continue;
+      }
+
+      if (currentTotal.lte(0) || difference.eq(0)) {
+        rewardResult.total = 0;
+        this._scaleRewardBreakdown(rewardResult, new Decimal(0));
+        continue;
+      }
+
+      const payoutRatio = difference.div(currentTotal);
+      rewardResult.total = difference.toNumber();
+      this._scaleRewardBreakdown(rewardResult, payoutRatio);
+    }
+
+    return true;
+  }
+
+  private async _loadPreviousPayoutTotals(
+    issue: { issueId: number; issueUrl: string },
+    config: RewardSettings
+  ): Promise<Map<number, Decimal> | null> {
+    const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation(issue);
+    const tokenId = await this._getOrCreateToken(config.erc20RewardToken, config.evmNetworkId);
+    const { data, error } = await this._supabase
+      .from("permits")
+      .select("amount, beneficiary_id, payout_mode, transaction")
+      .eq("location_id", locationId)
+      .eq("token_id", tokenId)
+      .eq("network_id", config.evmNetworkId);
+
+    if (error) {
+      this.context.logger.warn("Failed to load previous reward distribution history.", { err: error });
+      return null;
+    }
+
+    const totals = new Map<number, Decimal>();
+    for (const record of (data ?? []) as PreviousPayoutRecord[]) {
+      if (!record.beneficiary_id || record.payout_mode === "xp") {
+        continue;
+      }
+      const amount = this._parsePermitAmount(record.amount);
+      if (!amount) {
+        this.context.logger.warn("Skipping malformed reward distribution history record.", {
+          beneficiaryId: record.beneficiary_id,
+          amount: record.amount,
+          payoutMode: record.payout_mode,
+          transaction: record.transaction,
+        });
+        continue;
+      }
+      totals.set(record.beneficiary_id, (totals.get(record.beneficiary_id) ?? new Decimal(0)).add(amount));
+    }
+
+    return totals;
+  }
+
+  private _scaleRewardBreakdown(rewardResult: ResultEntry, ratio: Decimal) {
+    if (rewardResult.task) {
+      rewardResult.task.reward = this._scaleRewardAmount(rewardResult.task.reward, ratio);
+    }
+    for (const comment of rewardResult.comments ?? []) {
+      if (comment.score) {
+        comment.score.reward = this._scaleRewardAmount(comment.score.reward, ratio);
+      }
+    }
+    for (const reviewReward of rewardResult.reviewRewards ?? []) {
+      for (const review of reviewReward.reviews ?? []) {
+        review.reward = this._scaleRewardAmount(review.reward, ratio);
+      }
+    }
+    for (const file of rewardResult.simplificationReward?.files ?? []) {
+      file.reward = this._scaleRewardAmount(file.reward, ratio);
+    }
+    for (const eventReward of Object.values(rewardResult.events ?? {})) {
+      eventReward.reward = this._scaleRewardAmount(eventReward.reward, ratio);
+    }
+  }
+
+  private _scaleRewardAmount(amount: number, ratio: Decimal) {
+    return new Decimal(amount).mul(ratio).toDecimalPlaces(6).toNumber();
+  }
+
+  private _hasPayableRewards(result: Result) {
+    return Object.values(result).some((reward) => reward.total > 0);
   }
 
   _deductFeeFromReward(
@@ -732,12 +881,14 @@ export class PaymentModule extends BaseModule {
   async _savePermitsToDatabase(
     rewardResult: ResultEntry,
     issue: { issueId: number; issueUrl: string },
-    permits: PermitReward[]
+    permits: PermitReward[],
+    options: { distributionRunId?: string } = {}
   ) {
     // Normalize here so fallback inserts (when RPC is unavailable) stay lowercased.
     const permit2Address = PERMIT2_ADDRESS.toLowerCase();
     const errors: PermitSaveError[] = [];
     const userId = rewardResult.userId;
+    const distributionRunId = options.distributionRunId ?? randomUUID();
 
     for (const permit of permits) {
       const error = await this._tryPersistPermit({
@@ -745,6 +896,8 @@ export class PaymentModule extends BaseModule {
         issue,
         userId,
         permit2Address,
+        payoutMode: rewardResult.payoutMode ?? null,
+        distributionRunId,
       });
       if (error) {
         errors.push(error);
@@ -761,11 +914,15 @@ export class PaymentModule extends BaseModule {
     issue,
     userId,
     permit2Address,
+    payoutMode,
+    distributionRunId,
   }: {
     permit: PermitReward;
     issue: { issueId: number; issueUrl: string };
     userId: number;
     permit2Address: string;
+    payoutMode: PayoutMode | null;
+    distributionRunId: string;
   }): Promise<PermitSaveError | null> {
     const amount = new Decimal(permit.amount.toString());
     if (!amount.gt(0)) {
@@ -802,6 +959,8 @@ export class PaymentModule extends BaseModule {
         partner_id: partnerId,
         network_id: permit.networkId,
         permit2_address: permit2Address,
+        payout_mode: payoutMode,
+        distribution_run_id: distributionRunId,
       };
 
       const missingMetadata = this._getMissingPermitMetadata(insertData);
@@ -860,6 +1019,8 @@ export class PaymentModule extends BaseModule {
       p_partner_id: metadata.partnerId,
       p_network_id: metadata.networkId,
       p_permit2_address: metadata.permit2Address,
+      p_payout_mode: insertData.payout_mode ?? null,
+      p_distribution_run_id: insertData.distribution_run_id ?? null,
     });
 
     if (!error) {
@@ -986,14 +1147,18 @@ export class PaymentModule extends BaseModule {
     metadata: PermitMetadata,
     insertData: Database["public"]["Tables"]["permits"]["Insert"]
   ): Promise<ExistingPermitRecord | null> {
-    const { data: existingPermit, error: existingError } = await this._supabase
+    let existingPermitQuery = this._supabase
       .from("permits")
       .select("id, amount, transaction")
       .eq("partner_id", metadata.partnerId)
       .eq("network_id", metadata.networkId)
       .eq("permit2_address", metadata.permit2Address)
-      .eq("nonce", insertData.nonce)
-      .maybeSingle();
+      .eq("beneficiary_id", insertData.beneficiary_id)
+      .eq("nonce", insertData.nonce);
+    existingPermitQuery = insertData.distribution_run_id
+      ? existingPermitQuery.eq("distribution_run_id", insertData.distribution_run_id)
+      : existingPermitQuery.is("distribution_run_id", null);
+    const { data: existingPermit, error: existingError } = await existingPermitQuery.maybeSingle();
     return existingError || !existingPermit ? null : existingPermit;
   }
 
@@ -1104,6 +1269,8 @@ export class PaymentModule extends BaseModule {
         beneficiary_id: insertData.beneficiary_id,
         location_id: insertData.location_id ?? null,
         token_id: insertData.token_id ?? null,
+        payout_mode: insertData.payout_mode ?? null,
+        distribution_run_id: insertData.distribution_run_id ?? null,
         updated: new Date().toISOString(),
       })
       .eq("id", existingPermit.id)
@@ -1174,7 +1341,7 @@ export class PaymentModule extends BaseModule {
       );
       const { error: updateError } = await this._supabase
         .from("permits")
-        .update({ amount: amountString })
+        .update({ amount: amountString, payout_mode: "xp" })
         .eq("id", existingXp.id);
 
       if (updateError) {
@@ -1191,6 +1358,8 @@ export class PaymentModule extends BaseModule {
         deadline: "0",
         signature: randomUUID(),
         partner_id: null,
+        payout_mode: "xp",
+        distribution_run_id: randomUUID(),
       };
       const { error: insertError } = await this._supabase.from("permits").insert(insertData);
 

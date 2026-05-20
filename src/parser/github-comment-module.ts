@@ -522,6 +522,14 @@ export class GithubCommentModule extends BaseModule {
     return "&nbsp;⚠️ Error saving permit to database";
   }
 
+  _createDifferentialPayoutSummary(result: Result[0], tokenSymbol: string) {
+    if (!result.differentialPayout) {
+      return "";
+    }
+    const { previousTotal, currentTotal, difference } = result.differentialPayout;
+    return `<h6>Reopened issue differential: current total ${new Decimal(currentTotal).toDecimalPlaces(6)} ${tokenSymbol}, previously distributed ${new Decimal(previousTotal).toDecimalPlaces(6)} ${tokenSymbol}, paying additional ${new Decimal(difference).toDecimalPlaces(6)} ${tokenSymbol}.</h6>`;
+  }
+
   async _generateHtml(username: string, result: Result[0], taskReward: number, stripComments = false) {
     const sortedTasks = result.comments?.reduce<SortedTasks>(
       (acc, curr) => {
@@ -567,6 +575,7 @@ export class GithubCommentModule extends BaseModule {
       ${this._createPermitSaveWarning(result)}
       ${result.feeRate !== undefined ? `<h6>⚠️ ${new Decimal(result.feeRate).mul(100)}% fee rate has been applied. Consider using the&nbsp;<a href="https://dao.ubq.fi/dollar" target="_blank" rel="noopener">Ubiquity Dollar</a>&nbsp;for no fees.</h6>` : ""}
       ${isCapped ? `<h6>⚠️ Your rewards have been limited to the task price of ${taskReward} ${tokenSymbol}.</h6>` : ""}
+      ${this._createDifferentialPayoutSummary(result, tokenSymbol)}
       <h6>Contributions Overview</h6>
       <table>
         <thead>

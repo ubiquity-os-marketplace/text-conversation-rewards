@@ -33,27 +33,29 @@ jest.mock("@actions/github", () => ({
   },
 }));
 
+function createSupabaseSelectChain() {
+  const chain = {
+    eq: jest.fn(() => chain),
+    single: jest.fn(() => ({
+      data: {
+        id: 1,
+      },
+    })),
+    maybeSingle: jest.fn(() => ({
+      data: null,
+      error: null,
+    })),
+    then: (resolve: (value: { data: unknown[]; error: null }) => void) => resolve({ data: [], error: null }),
+  };
+  return chain;
+}
+
 jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
       from: jest.fn(() => ({
         insert: jest.fn(() => ({})),
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(() => ({
-              data: {
-                id: 1,
-              },
-            })),
-            eq: jest.fn(() => ({
-              single: jest.fn(() => ({
-                data: {
-                  id: 1,
-                },
-              })),
-            })),
-          })),
-        })),
+        select: jest.fn(() => createSupabaseSelectChain()),
       })),
     })),
   };

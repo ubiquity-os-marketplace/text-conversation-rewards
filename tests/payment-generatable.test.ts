@@ -223,11 +223,16 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
     isAdminMocked = isAdmin as jest.Mock;
     isCollaborativeMocked = isCollaborative as jest.Mock;
     ctx.config.incentives.payment = { automaticTransferMode: automaticTransferMode };
-    paymentResults = { ...originalpaymentResults };
+    paymentResults = JSON.parse(JSON.stringify(originalpaymentResults));
     const payoutMode: PayoutMode = automaticTransferMode ? "transfer" : "permit";
 
     for (const username of Object.keys(paymentResults)) {
       if (!paymentResults[username]["permitUrl"] && !automaticTransferMode) continue; // getWalletByUserId mock returns null here
+      if (Number(paymentResults[username].total) <= 0) {
+        delete paymentResults[username]["permitUrl"];
+        delete paymentResults[username].payoutMode;
+        continue;
+      }
 
       if (automaticTransferMode) {
         delete paymentResults[username]["permitUrl"];

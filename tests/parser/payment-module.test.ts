@@ -278,6 +278,118 @@ describe("payment-module.ts", () => {
       const totalPayable = beneficiaries?.reduce((accumulator, current) => accumulator + current.amount, 0);
       expect(totalPayable).toEqual(111.11);
     });
+
+    it("Should skip zero amount beneficiaries", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const result = getResultOriginal();
+      result["0x4007"].total = 0;
+      const beneficiaries = await paymentModule._getBeneficiaries(result);
+      expect(beneficiaries).toHaveLength(1);
+      expect(beneficiaries[0].username).toEqual("molecula451");
+    });
+  });
+
+  describe("_applyDifferentialPayouts()", () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("Should reduce reopened issue payouts to positive reward differences", async () => {
+      let historyQuery: { eq: jest.Mock; then: (resolve: (value: unknown) => void) => void };
+      historyQuery = {
+        eq: jest.fn(() => historyQuery),
+        then: (resolve) =>
+          resolve({
+            data: [
+              { amount: "50", beneficiary_id: 1, payout_mode: "permit", transaction: null },
+              { amount: "100", beneficiary_id: 2, payout_mode: "transfer", transaction: "0xhash" },
+            ],
+            error: null,
+          }),
+      };
+      const supabaseMock = {
+        from: jest.fn(() => ({
+          select: jest.fn(() => historyQuery),
+        })),
+      };
+      const paymentModule = new PaymentModule({
+        ...ctx,
+        adapters: {
+          supabase: {
+            location: { getOrCreateIssueLocation: jest.fn<() => Promise<number>>().mockResolvedValue(5) },
+          },
+        },
+      } as unknown as ContextPlugin);
+      (paymentModule as unknown as { _supabase: typeof supabaseMock })._supabase = supabaseMock;
+      jest.spyOn(paymentModule, "_getOrCreateToken").mockResolvedValue(10);
+
+      const result: Result = {
+        alice: {
+          total: 100,
+          userId: 1,
+          walletAddress: "0x1",
+          task: {
+            reward: 70,
+            multiplier: 1,
+            timestamp: DEFAULT_TIMESTAMP,
+            url: DEFAULT_URL,
+          },
+          comments: [
+            {
+              id: 1,
+              content: "comment",
+              url: DEFAULT_URL,
+              timestamp: DEFAULT_TIMESTAMP,
+              commentType: CommentKind.ISSUE,
+              score: {
+                reward: 20,
+                multiplier: 1,
+                authorship: 1,
+              },
+            },
+          ],
+          reviewRewards: [
+            {
+              url: DEFAULT_URL,
+              reviews: [{ priority: 1, reviewId: 1, effect: { addition: 1, deletion: 0 }, reward: 4 }],
+            },
+          ],
+          simplificationReward: {
+            url: DEFAULT_URL,
+            files: [{ fileName: "a.ts", reward: 4, additions: 1, deletions: 0 }],
+          },
+          events: { labeled: { count: 1, reward: 2 } },
+        },
+        bob: {
+          total: 100,
+          userId: 2,
+          walletAddress: "0x2",
+          task: {
+            reward: 100,
+            multiplier: 1,
+            timestamp: DEFAULT_TIMESTAMP,
+            url: DEFAULT_URL,
+          },
+        },
+      };
+
+      const didApply = await paymentModule._applyDifferentialPayouts(result, {
+        config: ctx.config.rewards as RewardSettings,
+        issue: { issueId: 99, issueUrl: DEFAULT_URL },
+      });
+
+      expect(didApply).toEqual(true);
+      expect(result.alice.total).toEqual(50);
+      expect(result.alice.task?.reward).toEqual(35);
+      expect(result.alice.comments?.[0].score?.reward).toEqual(10);
+      expect(result.alice.reviewRewards?.[0].reviews?.[0].reward).toEqual(2);
+      expect(result.alice.simplificationReward?.files[0].reward).toEqual(2);
+      expect(result.alice.events?.labeled.reward).toEqual(1);
+      expect(result.alice.differentialPayout).toEqual({ previousTotal: 50, currentTotal: 100, difference: 50 });
+      expect(result.bob.total).toEqual(0);
+      expect(result.bob.task?.reward).toEqual(0);
+      expect(result.bob.differentialPayout).toEqual({ previousTotal: 100, currentTotal: 100, difference: 0 });
+    });
   });
 
   describe("_savePermitsToDatabase()", () => {
@@ -405,21 +517,21 @@ describe("payment-module.ts", () => {
       jest.restoreAllMocks();
     });
 
-    it("Should return null if the `payoutMode` was already set to `direct`", async () => {
+    it("Should ignore previous `transfer` payout markers and use the configured payout mode", async () => {
       ctx.config.incentives.payment = { automaticTransferMode: false };
       let paymentModule = new PaymentModule(ctx);
 
       let payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
-      expect(payoutMode).toEqual(null);
+      expect(payoutMode).toEqual("permit");
 
       ctx.config.incentives.payment = { automaticTransferMode: true };
       paymentModule = new PaymentModule(ctx);
       payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
-      expect(payoutMode).toEqual(null);
+      expect(payoutMode).toEqual("transfer");
     });
 
     it("Should return `permit` if the `payoutMode` was already set to `permit` or `autoTransferMode` is set to `false`", async () => {
