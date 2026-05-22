@@ -19,7 +19,11 @@ import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
 import { BigNumber, ethers, utils } from "ethers";
 import type { Database } from "../adapters/supabase/types/database";
-import { PaymentConfiguration, paymentConfigurationType } from "../configuration/payment-configuration";
+import {
+  DEFAULT_FAUCET_URL,
+  PaymentConfiguration,
+  paymentConfigurationType,
+} from "../configuration/payment-configuration";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
 import { getUserRewardRole } from "../helpers/permissions";
 import { isGlobalRewardSettings, resolveRewardSettingsForRole, rewardConfigKey } from "../helpers/reward-settings";
@@ -306,6 +310,7 @@ export class PaymentModule extends BaseModule {
 
         result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
         result[username].payoutMode = "permit";
+        await this._prefundWalletWithFaucet(username, reward.walletAddress);
         await this._savePermitsToDatabase(result[username], { issueUrl: payload.issueUrl, issueId }, permits);
       }
     }
@@ -636,6 +641,34 @@ export class PaymentModule extends BaseModule {
     };
 
     return result;
+  }
+
+  async _prefundWalletWithFaucet(username: string, walletAddress?: string) {
+    if (!walletAddress) {
+      return;
+    }
+
+    const faucetUrl = this._configuration?.faucetUrl ?? DEFAULT_FAUCET_URL;
+    const url = new URL(faucetUrl);
+    url.searchParams.set("address", walletAddress);
+
+    try {
+      const response = await fetch(url, { method: "POST" });
+      if (!response.ok) {
+        this.context.logger.warn("Faucet prefund request was not accepted.", {
+          username,
+          walletAddress,
+          status: response.status,
+          response: await response.text(),
+        });
+      }
+    } catch (e) {
+      this.context.logger.warn("Faucet prefund request failed.", {
+        username,
+        walletAddress,
+        err: e,
+      });
+    }
   }
 
   async _getOrCreateToken(address: string, network: number) {

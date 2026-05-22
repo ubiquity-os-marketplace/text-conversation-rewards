@@ -355,6 +355,39 @@ describe("payment-module.ts", () => {
     });
   });
 
+  describe("_prefundWalletWithFaucet()", () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+      ctx.config.incentives.payment = null;
+    });
+
+    it("Should call the configured faucet with the wallet address", async () => {
+      ctx.config.incentives.payment = {
+        faucetUrl: "https://faucet.example/",
+      };
+      const fetchMock = jest.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+      jest.spyOn(global, "fetch").mockImplementation(fetchMock);
+
+      const paymentModule = new PaymentModule(ctx);
+      await paymentModule._prefundWalletWithFaucet("gentlementlegen", "0x123");
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      const [url, options] = fetchMock.mock.calls[0];
+      expect(url.toString()).toBe("https://faucet.example/?address=0x123");
+      expect(options).toEqual({ method: "POST" });
+    });
+
+    it("Should not call the faucet without a wallet address", async () => {
+      const fetchMock = jest.fn<typeof fetch>(async () => new Response(null, { status: 200 }));
+      jest.spyOn(global, "fetch").mockImplementation(fetchMock);
+
+      const paymentModule = new PaymentModule(ctx);
+      await paymentModule._prefundWalletWithFaucet("gentlementlegen");
+
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
   describe("_automaticTransferMode", () => {
     beforeEach(() => {
       ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
