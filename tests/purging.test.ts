@@ -112,6 +112,15 @@ describe("Purging tests", () => {
     await activity.init();
   });
 
+  it("Should purge multiline slash commands", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx);
+    const cleanCommentBody = dataPurgeModule["_cleanCommentBody"].bind(dataPurgeModule);
+
+    expect(cleanCommentBody("/ask\n\nwhy did the score look off?")).toEqual("");
+    expect(cleanCommentBody("Please check this\n\n/ask\n\nwhy did the score look off?")).toEqual("Please check this");
+    expect(cleanCommentBody("/start\n\nI am starting this task")).toEqual("");
+  });
+
   it("Should purge collapsed comments", async () => {
     const { Processor } = await import("../src/parser/processor");
 

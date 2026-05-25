@@ -55,8 +55,8 @@ export class DataPurgeModule extends BaseModule {
       body
         // Remove quoted text
         .replace(/^>.*$/gm, "")
-        // Remove commands such as /start
-        .replace(/^\/.+/g, "")
+        // Remove slash command blocks so follow-up text is not scored as a normal comment
+        .replace(/^\/[\s\S]*/gm, "")
         // Remove HTML comments
         .replace(/<!--[\s\S]*?-->/g, "")
         // Remove the footnotes
