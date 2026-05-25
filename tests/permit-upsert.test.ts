@@ -1,6 +1,8 @@
 import { beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import type { Database } from "../src/adapters/supabase/types/database";
+import { CommentAssociation, CommentKind } from "../src/configuration/comment-types";
 import type { ContextPlugin } from "../src/types/plugin-input";
+import type { Result } from "../src/types/results";
 
 type RpcResponse = { error: { message?: string; code?: string } | null };
 type InsertResponse = { error: unknown };
@@ -12,6 +14,7 @@ type UpdateResponse = { data: Array<{ id: number }> | null; error: unknown };
 
 const mockRpc = jest.fn<() => Promise<RpcResponse>>();
 const mockInsert = jest.fn<() => Promise<InsertResponse>>();
+const mockUpsert = jest.fn<() => Promise<InsertResponse>>();
 const mockMaybeSingle = jest.fn<() => Promise<MaybeSingleResponse>>();
 const mockSelect = jest.fn();
 const selectBuilder = {
@@ -35,6 +38,7 @@ const mockFrom = jest.fn(() => ({
   insert: mockInsert,
   select: mockSelect,
   update: mockUpdate,
+  upsert: mockUpsert,
 }));
 
 jest.mock("@supabase/supabase-js", () => ({
@@ -94,12 +98,15 @@ const baseInsertData: Database["public"]["Tables"]["permits"]["Insert"] = {
 
 type UpsertModule = {
   _upsertPermitRecord: (data: Database["public"]["Tables"]["permits"]["Insert"]) => Promise<boolean>;
+  _applyPositiveRewardDifferences: (previousRewards: unknown, result: Result) => void;
+  _getPreviousRewardSummary: (data: { comments: unknown[] }) => unknown;
 };
 
 describe("PaymentModule _upsertPermitRecord", () => {
   beforeEach(() => {
     mockRpc.mockReset();
     mockInsert.mockReset();
+    mockUpsert.mockReset();
     mockFrom.mockClear();
     mockSelect.mockClear();
     mockMaybeSingle.mockReset();
@@ -112,6 +119,7 @@ describe("PaymentModule _upsertPermitRecord", () => {
     updateBuilder.select.mockClear();
     mockRpc.mockResolvedValue({ error: null });
     mockInsert.mockResolvedValue({ error: null });
+    mockUpsert.mockResolvedValue({ error: null });
     mockMaybeSingle.mockResolvedValue({ data: null, error: null });
   });
 
@@ -426,6 +434,78 @@ describe("PaymentModule _upsertPermitRecord", () => {
       permit2_address: null,
     });
     expect(didUpsert).toBe(false);
+  });
+
+  it("keeps only positive reward differences from previous bot reward comments", async () => {
+    const context = makeContext();
+    const paymentModule = new PaymentModule(context);
+    const result: Result = {
+      alice: {
+        total: 15,
+        userId: 1,
+        task: {
+          reward: 10,
+          multiplier: 1,
+          timestamp: "2026-05-25T00:00:00.000Z",
+          url: "https://github.com/org/repo/issues/1",
+        },
+        comments: [
+          {
+            id: 1,
+            content: "extra review",
+            url: "https://github.com/org/repo/issues/1#issuecomment-1",
+            timestamp: "2026-05-25T00:00:00.000Z",
+            commentType: CommentKind.ISSUE | CommentAssociation.COLLABORATOR,
+            score: {
+              multiplier: 1,
+              reward: 5,
+              authorship: 1,
+            },
+          },
+        ],
+      },
+      bob: {
+        total: 8,
+        userId: 2,
+      },
+      carol: {
+        total: 4,
+        userId: 3,
+      },
+    };
+
+    const previousRewards = (paymentModule as unknown as UpsertModule)._getPreviousRewardSummary({
+      comments: [
+        {
+          user: { type: "Bot" },
+          body: `<!-- Ubiquity - GithubCommentModule - GithubCommentModule.getBodyContent - sha
+{
+  "workflowUrl": "https://github.com/org/repo/actions/runs/1",
+  "output": {
+    "alice": {
+      "total": 10,
+      "userId": 1,
+      "payoutMode": "transfer"
+    },
+    "bob": {
+      "total": 8,
+      "userId": 2,
+      "payoutMode": "transfer"
+    }
+  }
+}
+-->`,
+        },
+      ],
+    });
+
+    (paymentModule as unknown as UpsertModule)._applyPositiveRewardDifferences(previousRewards, result);
+
+    expect(result.alice.total).toBe(5);
+    expect(result.alice.task?.reward).toBe(3.33);
+    expect(result.alice.comments?.[0].score?.reward).toBe(1.67);
+    expect(result.bob).toBeUndefined();
+    expect(result.carol.total).toBe(4);
   });
 
   it("returns false when partner metadata is missing", async () => {

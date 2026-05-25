@@ -181,6 +181,51 @@ export type Database = {
           },
         ];
       };
+      distribution_history: {
+        Row: {
+          amount: string;
+          beneficiary_id: number;
+          created: string;
+          id: number;
+          location_id: number | null;
+          network_id: number | null;
+          nonce: string;
+          partner_id: number | null;
+          payout_mode: string;
+          permit2_address: string | null;
+          token_id: number | null;
+          transaction: string | null;
+        };
+        Insert: {
+          amount: string;
+          beneficiary_id: number;
+          created?: string;
+          id?: number;
+          location_id?: number | null;
+          network_id?: number | null;
+          nonce: string;
+          partner_id?: number | null;
+          payout_mode: string;
+          permit2_address?: string | null;
+          token_id?: number | null;
+          transaction?: string | null;
+        };
+        Update: {
+          amount?: string;
+          beneficiary_id?: number;
+          created?: string;
+          id?: number;
+          location_id?: number | null;
+          network_id?: number | null;
+          nonce?: string;
+          partner_id?: number | null;
+          payout_mode?: string;
+          permit2_address?: string | null;
+          token_id?: number | null;
+          transaction?: string | null;
+        };
+        Relationships: [];
+      };
       labels: {
         Row: {
           authorized: boolean | null;
