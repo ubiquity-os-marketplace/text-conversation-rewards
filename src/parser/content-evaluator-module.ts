@@ -1,6 +1,7 @@
 import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { callLlm } from "@ubiquity-os/plugin-sdk";
+import { checkLlmRetryableState, getOpenRouterModelTokenLimits, retry } from "@ubiquity-os/plugin-sdk/helpers";
 import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
@@ -8,7 +9,6 @@ import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../co
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
-import { checkLlmRetryableState, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -38,6 +38,7 @@ export class ContentEvaluatorModule extends BaseModule {
   readonly _configuration: ContentEvaluatorConfiguration | null = this.context.config.incentives.contentEvaluator;
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
+  private _maxCompletionTokens: number = 16384;
   private readonly _originalAuthorWeight: number = 0.5;
   private _basePriority: number = 1;
 
@@ -79,7 +80,11 @@ export class ContentEvaluatorModule extends BaseModule {
     if (!this._configuration?.openAi.tokenCountLimit) {
       throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
     }
-    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
+    const { contextLength, maxCompletionTokens } = await this._resolveModelTokenLimits(
+      this._configuration.openAi.tokenCountLimit
+    );
+    this._tokenLimit = contextLength;
+    this._maxCompletionTokens = maxCompletionTokens;
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
@@ -284,6 +289,48 @@ export class ContentEvaluatorModule extends BaseModule {
     return Math.min(inputTokens, totalTokenLimit);
   }
 
+  async _resolveModelTokenLimits(configuredTokenLimit: number) {
+    const configuredLimits = {
+      contextLength: configuredTokenLimit,
+      maxCompletionTokens: this._maxCompletionTokens,
+    };
+    const model = this._configuration?.openAi.model;
+    if (!model) {
+      return configuredLimits;
+    }
+
+    try {
+      const openRouterLimits = await this._getOpenRouterModelTokenLimits(model);
+      if (!openRouterLimits) {
+        this.context.logger.warn("OpenRouter model token limits were not found; using configured token limits.", {
+          model,
+          configuredTokenLimit,
+        });
+        return configuredLimits;
+      }
+
+      return {
+        contextLength: Math.min(openRouterLimits.contextLength, configuredTokenLimit),
+        maxCompletionTokens: Math.min(openRouterLimits.maxCompletionTokens, this._maxCompletionTokens),
+      };
+    } catch (err) {
+      this.context.logger.warn("Failed to fetch OpenRouter model token limits; using configured token limits.", {
+        model,
+        configuredTokenLimit,
+        err,
+      });
+      return configuredLimits;
+    }
+  }
+
+  _getOpenRouterModelTokenLimits(model: string) {
+    return getOpenRouterModelTokenLimits(model);
+  }
+
+  _calculateMaxCompletionTokens(prompt: string) {
+    return this._calculateMaxTokens(prompt, this._maxCompletionTokens);
+  }
+
   _generateDummyResponse(comments: { id: number; comment: string }[]) {
     return comments.reduce<Record<string, number>>((acc, curr) => {
       return { ...acc, [curr.id]: 0.5 };
@@ -353,7 +400,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const fallbackPrompt = this._generatePromptForComments(specification, username, allComments);
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
       const fallbackPromptTokens = this._calculateMaxTokens(fallbackPrompt, Infinity);
-      const fallbackOutputTokens = this._calculateMaxTokens(dummyResponse);
+      const fallbackOutputTokens = this._calculateMaxCompletionTokens(dummyResponse);
       this.context.logger.warn("Unable to reduce issue comment evaluation below token limit", {
         tokenLimit: this._tokenLimit,
         promptTokens: fallbackPromptTokens,
@@ -371,7 +418,7 @@ export class ContentEvaluatorModule extends BaseModule {
         continue;
       }
       const dummyResponse = JSON.stringify(this._generateDummyResponse(targetComments), null, 2);
-      const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
+      const maxOutputTokens = this._calculateMaxCompletionTokens(dummyResponse);
       const promptForComments = this._generatePromptForComments(specification, username, commentSplit);
 
       for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
@@ -409,7 +456,7 @@ export class ContentEvaluatorModule extends BaseModule {
           null,
           2
         );
-        const outputTokens = this._calculateMaxTokens(dummyResponse);
+        const outputTokens = this._calculateMaxCompletionTokens(dummyResponse);
         return { promptTokens, outputTokens };
       })
       .filter((value): value is { promptTokens: number; outputTokens: number } => value !== null);
@@ -423,7 +470,7 @@ export class ContentEvaluatorModule extends BaseModule {
       Math.max(
         ...this._splitArrayToChunks(comments, chunks).map(
           (chunk) =>
-            this._calculateMaxTokens(JSON.stringify(this._generateDummyResponse(chunk), null, 2)) +
+            this._calculateMaxCompletionTokens(JSON.stringify(this._generateDummyResponse(chunk), null, 2)) +
             this._calculateMaxTokens(this._generatePromptForPrComments(specification, chunk), Infinity)
         )
       ) > this._tokenLimit
@@ -434,7 +481,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
     for (const commentSplit of this._splitArrayToChunks(comments, chunks)) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(commentSplit), null, 2);
-      const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
+      const maxOutputTokens = this._calculateMaxCompletionTokens(dummyResponse);
       const promptForComments = this._generatePromptForPrComments(specification, commentSplit);
 
       for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
@@ -464,7 +511,7 @@ export class ContentEvaluatorModule extends BaseModule {
 
     if (userIssueComments.length && !this.isPullRequest()) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
-      const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
+      const maxOutputTokens = this._calculateMaxCompletionTokens(dummyResponse);
 
       const promptForIssueComments = this._generatePromptForComments(specification, username, allComments);
       if (this._calculateMaxTokens(promptForIssueComments, Infinity) + maxOutputTokens > this._tokenLimit) {
@@ -484,7 +531,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const closingIssueBodies = await this._getClosingIssueBodies();
       const prSpecifications: string | string[] = closingIssueBodies.length ? closingIssueBodies : specification;
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userPrComments), null, 2);
-      const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
+      const maxOutputTokens = this._calculateMaxCompletionTokens(dummyResponse);
 
       const promptForPrComments = this._generatePromptForPrComments(prSpecifications, userPrComments);
       if (this._calculateMaxTokens(promptForPrComments, Infinity) + maxOutputTokens > this._tokenLimit) {
@@ -628,12 +675,16 @@ export class ContentEvaluatorModule extends BaseModule {
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
+        - Whether the comment adds actionable requirements, implementation details, evidence, review feedback, or a decision that moves the issue forward
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
-      7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
+      6. Score low-value meta discussion near 0, even when it mentions rewards, relevance, scoring, tests, or the evaluator itself, if it does not add concrete task-solving information.
+        - Low relevance example: "Relevance scoring could have done so much better here. Perhaps this conversation should be saved as a unit test." This is feedback about the evaluator, not a contribution to the issue being scored.
+        - Low relevance example: generic praise, agreement, status chatter, or discussion about how much the comment should be rewarded.
+      7. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
+      8. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
       Notes:
       - Even minor details may be significant.
