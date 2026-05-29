@@ -628,6 +628,8 @@ export class ContentEvaluatorModule extends BaseModule {
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
+        - Down-rank process-only comments: comments about assignment, recommendations, scoring, deadlines, or bot workflow should score low unless they add concrete information that helps solve the issue.
+        - Do not raise relevance because of the author's identity, reputation, or how often they are mentioned. Score only the original technical or task-solving content in the comment.
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
