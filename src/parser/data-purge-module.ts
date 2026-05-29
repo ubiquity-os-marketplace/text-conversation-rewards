@@ -1,4 +1,4 @@
-import { CommentAssociation } from "../configuration/comment-types";
+import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
 import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespan";
@@ -15,6 +15,7 @@ type CommentType = Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
 export class DataPurgeModule extends BaseModule {
   readonly _configuration: DataPurgeConfiguration | null = this.context.config.incentives.dataPurge;
   _assignmentPeriods: UserAssignments = {};
+  private _currentAssigneeLogins = new Set<string>();
 
   get enabled(): boolean {
     if (!this._configuration) {
@@ -40,6 +41,13 @@ export class DataPurgeModule extends BaseModule {
         this._configuration.skipCommentsWhileAssigned === "exact"
       )
     ) {
+      if (this._shouldKeepPreviousAssigneeResearchComment(comment, comment.user.login)) {
+        this.context.logger.debug("Keeping previous assignee issue comment for research credit", {
+          body: comment.body?.replace(/(.{100})..+/, "$1..."),
+          url: comment.html_url,
+        });
+        return false;
+      }
       this.context.logger.debug("Skipping comment during assignment", {
         body: comment.body?.replace(/(.{100})..+/, "$1…"),
         url: comment.html_url,
@@ -47,6 +55,14 @@ export class DataPurgeModule extends BaseModule {
       return true;
     }
     return false;
+  }
+
+  private _shouldKeepPreviousAssigneeResearchComment(
+    comment: Awaited<ReturnType<IssueActivity["getAllComments"]>>[0],
+    login: string
+  ) {
+    const isIssueComment = !!(comment.commentType & CommentKind.ISSUE);
+    return isIssueComment && !this._currentAssigneeLogins.has(login);
   }
 
   private _cleanCommentBody(body: string): string {
@@ -110,6 +126,7 @@ export class DataPurgeModule extends BaseModule {
         ? this.context.payload.pull_request.html_url
         : this.context.payload.issue.html_url;
     this._assignmentPeriods = await getAssignmentPeriods(this.context.octokit, parseGitHubUrl(htmlUrl));
+    this._currentAssigneeLogins = new Set((data.self?.assignees ?? []).map((assignee) => assignee.login));
     const allComments = await data.getAllComments(this.isPullRequest());
     for (const comment of allComments) {
       await this._processComment(comment, result);
