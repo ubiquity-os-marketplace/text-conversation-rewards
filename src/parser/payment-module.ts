@@ -93,7 +93,7 @@ export class PaymentModule extends BaseModule {
     const canMakePayment = await this._canMakePayment(data);
     if (!canMakePayment) {
       this.context.logger.warn("Non collaborative issue detected, skipping.");
-      return Promise.resolve(result);
+      return Promise.resolve(this._clearPayableRewards(result));
     }
 
     const { xpUsernames, tokenGroups } = await this._splitUsersByRewardConfiguration(result);
@@ -125,6 +125,31 @@ export class PaymentModule extends BaseModule {
     }
 
     return result;
+  }
+
+  private _clearPayableRewards(result: Result): Result {
+    for (const reward of Object.values(result)) {
+      this._clearNestedRewards(reward);
+      reward.total = 0;
+      delete reward.permitUrl;
+      delete reward.explorerUrl;
+      delete reward.payoutMode;
+    }
+    return result;
+  }
+
+  private _clearNestedRewards(value: unknown): void {
+    if (!value || typeof value !== "object") {
+      return;
+    }
+
+    for (const [key, nestedValue] of Object.entries(value as Record<string, unknown>)) {
+      if (key === "reward" && typeof nestedValue === "number") {
+        (value as Record<string, unknown>)[key] = 0;
+      } else {
+        this._clearNestedRewards(nestedValue);
+      }
+    }
   }
 
   private _selectResultSubset(result: Result, usernames: string[]): Result {

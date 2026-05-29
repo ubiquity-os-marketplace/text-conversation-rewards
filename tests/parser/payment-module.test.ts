@@ -280,6 +280,55 @@ describe("payment-module.ts", () => {
     });
   });
 
+  describe("non-collaborative issues", () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("clears payable rewards when payment is not allowed", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      jest.spyOn(paymentModule, "_canMakePayment").mockResolvedValue(false);
+      const result: Result = {
+        contributor: {
+          total: 25,
+          userId: 1,
+          permitUrl: "https://pay.ubq.fi?claim=example",
+          explorerUrl: "https://gnosisscan.io/tx/0x1",
+          payoutMode: "permit",
+          task: {
+            reward: 15,
+            multiplier: 1,
+            timestamp: DEFAULT_TIMESTAMP,
+            url: DEFAULT_URL,
+          },
+          comments: [
+            {
+              id: 1,
+              content: "Helpful but not collaboratively approved.",
+              url: DEFAULT_URL,
+              timestamp: DEFAULT_TIMESTAMP,
+              commentType: CommentKind.ISSUE,
+              score: {
+                reward: 10,
+                multiplier: 1,
+                authorship: 1,
+              },
+            },
+          ],
+        },
+      };
+
+      const transformed = await paymentModule.transform({} as IssueActivity, result);
+
+      expect(transformed.contributor.total).toBe(0);
+      expect(transformed.contributor.task?.reward).toBe(0);
+      expect(transformed.contributor.comments?.[0].score?.reward).toBe(0);
+      expect(transformed.contributor.permitUrl).toBeUndefined();
+      expect(transformed.contributor.explorerUrl).toBeUndefined();
+      expect(transformed.contributor.payoutMode).toBeUndefined();
+    });
+  });
+
   describe("_savePermitsToDatabase()", () => {
     afterEach(() => {
       jest.restoreAllMocks();
