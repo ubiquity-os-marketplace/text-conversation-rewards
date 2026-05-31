@@ -212,6 +212,15 @@ interface UserData {
 interface JsonData {
   [key: string]: UserData;
 }
+
+function expectNoPayoutArtifacts(result: JsonData) {
+  for (const reward of Object.values(result)) {
+    expect(reward).not.toHaveProperty("permitUrl");
+    expect(reward).not.toHaveProperty("explorerUrl");
+    expect(reward).not.toHaveProperty("payoutMode");
+  }
+}
+
 let paymentResults: JsonData = {};
 describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTransferMode) => {
   let isAdminMocked: jest.Mock;
@@ -363,6 +372,7 @@ describe.each(automaticTransferModeVector)("Payment Module Tests", (automaticTra
 
       const result = JSON.parse(processor.dump());
       expect(result).not.toEqual(paymentResults);
+      expectNoPayoutArtifacts(result);
     });
   });
 });
