@@ -3,7 +3,7 @@ import {
   ReviewIncentivizerConfiguration,
   reviewIncentivizerConfigurationType,
 } from "../configuration/review-incentivizer-config";
-import { GitHubPullRequestReviewState } from "../github-types";
+import { GitHubPullRequestReviewComment, GitHubPullRequestReviewState } from "../github-types";
 import { getExcludedFiles, shouldExcludeFile } from "../helpers/excluded-files";
 import { PullRequestData } from "../helpers/pull-request-data";
 import { IssueActivity } from "../issue-activity";
@@ -17,6 +17,32 @@ interface CommitDiff {
     addition: number;
     deletion: number;
   };
+}
+
+export function getRewardableReviewsByUser(
+  reviews: GitHubPullRequestReviewState[],
+  reviewComments: GitHubPullRequestReviewComment[] | null | undefined,
+  username: string
+) {
+  return reviews
+    .filter((review) => review.user?.login === username && hasReviewEvidence(review, reviewComments))
+    .sort((a, b) => getReviewTimestamp(a) - getReviewTimestamp(b));
+}
+
+function hasReviewEvidence(
+  review: GitHubPullRequestReviewState,
+  reviewComments: GitHubPullRequestReviewComment[] | null | undefined
+) {
+  if (review.body?.trim()) {
+    return true;
+  }
+  return Boolean(
+    reviewComments?.some((comment) => comment.pull_request_review_id === review.id && Boolean(comment.body?.trim()))
+  );
+}
+
+function getReviewTimestamp(review: GitHubPullRequestReviewState) {
+  return new Date(review.submitted_at ?? 0).getTime();
 }
 
 export class ReviewIncentivizerModule extends BaseModule {
@@ -46,7 +72,11 @@ export class ReviewIncentivizerModule extends BaseModule {
             this.context.logger.warn("The user is not allowed to receive rewards for a review", { username });
             continue;
           }
-          const reviewsByUser = linkedPullReviews.reviews.filter((v) => v.user?.login === username);
+          const reviewsByUser = getRewardableReviewsByUser(
+            linkedPullReviews.reviews,
+            linkedPullReviews.reviewComments,
+            username
+          );
           const headOwnerRepo = linkedPullReviews.self.head.repo?.full_name;
           const baseOwner = linkedPullReviews.self.base.repo.owner.login;
           const baseRepo = linkedPullReviews.self.base.repo.name;

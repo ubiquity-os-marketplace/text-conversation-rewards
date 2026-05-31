@@ -243,4 +243,50 @@ describe("Review Incentivizer", () => {
     expect(diff["modified.txt"]).toEqual({ addition: 2, deletion: 1 });
     expect(diff["removed.txt"]).toEqual(undefined);
   });
+
+  it("Should ignore empty approval reviews without comments", async () => {
+    const { getRewardableReviewsByUser } = await import("../src/parser/review-incentivizer-module");
+    const reviews = [
+      {
+        id: 3,
+        user: { login: "reviewer" },
+        body: " ",
+        state: "APPROVED",
+        submitted_at: "2024-01-03T00:00:00Z",
+      },
+      {
+        id: 1,
+        user: { login: "reviewer" },
+        body: "Left a summary review.",
+        state: "COMMENTED",
+        submitted_at: "2024-01-01T00:00:00Z",
+      },
+      {
+        id: 2,
+        user: { login: "reviewer" },
+        body: " ",
+        state: "COMMENTED",
+        submitted_at: "2024-01-02T00:00:00Z",
+      },
+      {
+        id: 4,
+        user: { login: "other" },
+        body: "Review from another user.",
+        state: "COMMENTED",
+        submitted_at: "2024-01-04T00:00:00Z",
+      },
+    ] as RestEndpointMethodTypes["pulls"]["listReviews"]["response"]["data"];
+    const reviewComments = [
+      {
+        id: 10,
+        pull_request_review_id: 2,
+        user: { login: "reviewer" },
+        body: "Please address this line.",
+      },
+    ] as RestEndpointMethodTypes["pulls"]["listReviewComments"]["response"]["data"];
+
+    const rewardableReviews = getRewardableReviewsByUser(reviews, reviewComments, "reviewer");
+
+    expect(rewardableReviews.map((review) => review.id)).toEqual([1, 2]);
+  });
 });
