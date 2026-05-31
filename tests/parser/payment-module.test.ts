@@ -410,16 +410,29 @@ describe("payment-module.ts", () => {
       let paymentModule = new PaymentModule(ctx);
 
       let payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
+        comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" }, created_at: "2026-01-01T00:00:00Z" }],
+        events: [],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual(null);
 
       ctx.config.incentives.payment = { automaticTransferMode: true };
       paymentModule = new PaymentModule(ctx);
       payoutMode = await paymentModule._getPayoutMode({
-        comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" } }],
+        comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" }, created_at: "2026-01-01T00:00:00Z" }],
+        events: [],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual(null);
+    });
+
+    it("Should return `permit` if issue was reopened after a previous `transfer` payout marker", async () => {
+      ctx.config.incentives.payment = { automaticTransferMode: true };
+      const paymentModule = new PaymentModule(ctx);
+
+      const payoutMode = await paymentModule._getPayoutMode({
+        comments: [{ body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" }, created_at: "2026-01-01T00:00:00Z" }],
+        events: [{ event: "reopened", created_at: "2026-01-02T00:00:00Z" }],
+      } as unknown as IssueActivity);
+      expect(payoutMode).toEqual("permit");
     });
 
     it("Should return `permit` if the `payoutMode` was already set to `permit` or `autoTransferMode` is set to `false`", async () => {
@@ -428,11 +441,13 @@ describe("payment-module.ts", () => {
 
       let payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: `...${PAYOUT_MODE_PERMIT}...`, user: { type: "Bot" } }],
+        events: [],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
 
       payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
+        events: [],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
     });
@@ -444,6 +459,7 @@ describe("payment-module.ts", () => {
 
       const payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: `...${PAYOUT_MODE_PERMIT}...`, user: { type: "Bot" } }],
+        events: [],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("permit");
     });
@@ -454,6 +470,7 @@ describe("payment-module.ts", () => {
 
       const payoutMode = await paymentModule._getPayoutMode({
         comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
+        events: [],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("transfer");
     });

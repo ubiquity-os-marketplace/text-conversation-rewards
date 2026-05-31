@@ -352,10 +352,22 @@ export class PaymentModule extends BaseModule {
    - Transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
   */
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
+    const lastReopenedAt = data.events
+      .filter((event) => event.event === "reopened" && "created_at" in event && event.created_at)
+      .map((event) => new Date(event.created_at as string).getTime())
+      .filter((ts) => Number.isFinite(ts))
+      .sort((a, b) => b - a)[0];
+
     for (const comment of data.comments) {
       if (comment.body && comment.user?.type === "Bot") {
-        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) return null;
-        else if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
+        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) {
+          const commentTimestamp = comment.created_at ? new Date(comment.created_at).getTime() : Number.NaN;
+          if (Number.isFinite(lastReopenedAt) && Number.isFinite(commentTimestamp) && lastReopenedAt > commentTimestamp) {
+            // Reopened after a previous transfer: allow permit mode so differential updates can be persisted safely.
+            return "permit";
+          }
+          return null;
+        } else if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
       }
     }
     return this._autoTransferMode ? "transfer" : "permit";
