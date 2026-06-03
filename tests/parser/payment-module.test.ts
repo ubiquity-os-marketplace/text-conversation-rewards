@@ -129,6 +129,14 @@ function getResultOriginal() {
   };
 }
 
+function makePreviousPayoutComment(output: Record<string, { total: number; payoutMode: "permit" | "transfer" }>) {
+  return [
+    "<!-- Ubiquity - GithubCommentModule - GithubCommentModule.getBodyContent - 1234",
+    JSON.stringify({ workflowUrl: "https://github.com/run", output }, null, 2),
+    "-->",
+  ].join("\n");
+}
+
 jest.mock("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(() => ({
@@ -422,6 +430,24 @@ describe("payment-module.ts", () => {
       expect(payoutMode).toEqual(null);
     });
 
+    it("Should return `transfer` if a previous transfer has output metadata for differential payouts", async () => {
+      ctx.config.incentives.payment = { automaticTransferMode: true };
+      const paymentModule = new PaymentModule(ctx);
+
+      const payoutMode = await paymentModule._getPayoutMode({
+        comments: [
+          {
+            body: makePreviousPayoutComment({
+              molecula451: { total: 90, payoutMode: "transfer" },
+            }),
+            user: { type: "Bot" },
+          },
+        ],
+      } as unknown as IssueActivity);
+
+      expect(payoutMode).toEqual("transfer");
+    });
+
     it("Should return `permit` if the `payoutMode` was already set to `permit` or `autoTransferMode` is set to `false`", async () => {
       ctx.config.incentives.payment = { automaticTransferMode: false };
       const paymentModule = new PaymentModule(ctx);
@@ -456,6 +482,70 @@ describe("payment-module.ts", () => {
         comments: [{ body: NO_MARKER_BODY, user: { type: "Bot" } }],
       } as unknown as IssueActivity);
       expect(payoutMode).toEqual("transfer");
+    });
+  });
+
+  describe("_applyDifferentialRewards()", () => {
+    beforeEach(() => {
+      ctx.env.PERMIT_FEE_RATE = EMPTY_STRING;
+      drop(db);
+      for (const table of Object.keys(dbSeed)) {
+        const tableName = table as keyof typeof dbSeed;
+        for (const row of dbSeed[tableName]) {
+          db[tableName].create(row);
+        }
+      }
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("Should keep only positive reward differences from previous payout metadata", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const result = getResultOriginal();
+
+      paymentModule._applyDifferentialRewards(
+        {
+          comments: [
+            {
+              body: makePreviousPayoutComment({
+                molecula451: { total: 90, payoutMode: "transfer" },
+                "0x4007": { total: 11.11, payoutMode: "transfer" },
+              }),
+              user: { type: "Bot" },
+            },
+          ],
+        } as unknown as IssueActivity,
+        result
+      );
+
+      expect(result.molecula451.total).toEqual(10);
+      expect(result.molecula451.task?.reward).toEqual(9);
+      expect(result.molecula451.comments?.[0].score?.reward).toEqual(1);
+      expect(result["0x4007"]).toBeUndefined();
+    });
+
+    it("Should keep new beneficiaries when previous payout metadata does not include them", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const result = getResultOriginal();
+
+      paymentModule._applyDifferentialRewards(
+        {
+          comments: [
+            {
+              body: makePreviousPayoutComment({
+                molecula451: { total: 90, payoutMode: "permit" },
+              }),
+              user: { type: "Bot" },
+            },
+          ],
+        } as unknown as IssueActivity,
+        result
+      );
+
+      expect(result.molecula451.total).toEqual(10);
+      expect(result["0x4007"].total).toEqual(11.11);
     });
   });
 

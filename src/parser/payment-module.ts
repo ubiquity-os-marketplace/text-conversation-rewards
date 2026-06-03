@@ -81,6 +81,14 @@ type ExistingPermitRecord = {
 
 type RpcFallbackReason = "permission denied" | "unavailable";
 
+type PreviousPayoutSummary = {
+  totals: Map<string, Decimal>;
+  payoutCount: number;
+  hasPermit: boolean;
+  hasTransfer: boolean;
+  hasTransferWithoutOutput: boolean;
+};
+
 export class PaymentModule extends BaseModule {
   readonly _configuration: PaymentConfiguration | null = this.context.config.incentives.payment;
   readonly _autoTransferMode =
@@ -240,6 +248,11 @@ export class PaymentModule extends BaseModule {
 
     this.context.logger.info("Will attempt to apply fees...");
     await this._applyFees(result, config.erc20RewardToken);
+    this._applyDifferentialRewards(data, result);
+    if (Object.keys(result).length === 0) {
+      this.context.logger.info("No positive reward differences detected, skipping payout generation.");
+      return;
+    }
 
     await this._addWalletAddressesToResult(result);
 
@@ -253,7 +266,7 @@ export class PaymentModule extends BaseModule {
     let directTransferError;
     if (payoutMode === "transfer") {
       try {
-        await this._tryDirectTransfer(result, config, networkExplorer, issueId, payload.issueUrl, privateKey);
+        await this._tryDirectTransfer(result, config, networkExplorer, issueId, payload.issueUrl, privateKey, data);
       } catch (e) {
         this.context.logger.warn(`Failed to auto transfer rewards via batch permit transfer`, { e });
         directTransferError = e;
@@ -319,14 +332,15 @@ export class PaymentModule extends BaseModule {
     networkExplorer: string,
     issueId: number,
     issueUrl: string,
-    privateKey: string
+    privateKey: string,
+    data?: Readonly<IssueActivity>
   ): Promise<void> {
     const beneficiaries = await this._getBeneficiaries(result);
     if (beneficiaries.length === 0) {
       throw this.context.logger.warn("Beneficiary list is empty, skipping the direct transfer of rewards...");
     }
 
-    const nonce = utils.keccak256(utils.toUtf8Bytes(issueId.toString()));
+    const nonce = this._getDirectTransferNonce(issueId, data);
     const directTransferInfo = await this._getDirectTransferInfo(beneficiaries, config, privateKey, nonce);
     this.context.logger.info("Funding wallet has sufficient funds to directly transfer the rewards.");
     const [tx, permits] = await this._transferReward(directTransferInfo);
@@ -347,18 +361,29 @@ export class PaymentModule extends BaseModule {
   }
 
   /* This method returns the transfer mode based on the following conditions:
-   - null: Indicates that the payout was previously transferred directly, meaning no further payout is required.
+   - null: Indicates that the payout was previously transferred directly without enough metadata for a differential payout.
    - Permit: Applies if autoTransferMode is set to false or if rewards were previously generated using the permit method.
-   - Transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
+   - Transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards,
+     or if a previous transfer has enough metadata to calculate positive reward differences.
   */
   async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
-    for (const comment of data.comments) {
-      if (comment.body && comment.user?.type === "Bot") {
-        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) return null;
-        else if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
+    const previousPayouts = this._getPreviousPayoutSummary(data);
+    if (previousPayouts.hasPermit) {
+      return "permit";
+    }
+    if (previousPayouts.hasTransfer) {
+      if (previousPayouts.totals.size > 0) {
+        return this._autoTransferMode ? "transfer" : "permit";
       }
+      return null;
     }
     return this._autoTransferMode ? "transfer" : "permit";
+  }
+
+  _getDirectTransferNonce(issueId: number, data?: Readonly<IssueActivity>): string {
+    const previousPayoutCount = data ? this._getPreviousPayoutSummary(data).payoutCount : 0;
+    const nonceSeed = previousPayoutCount > 0 ? `${issueId}:${previousPayoutCount}` : issueId.toString();
+    return utils.keccak256(utils.toUtf8Bytes(nonceSeed));
   }
 
   _getNetworkExplorer(networkId: number): string {
@@ -497,6 +522,183 @@ export class PaymentModule extends BaseModule {
         };
       })
       .filter((beneficiary) => beneficiary !== null);
+  }
+
+  _applyDifferentialRewards(data: Readonly<IssueActivity>, result: Result): Result {
+    const previousPayouts = this._getPreviousPayoutSummary(data);
+    if (previousPayouts.totals.size === 0) {
+      return result;
+    }
+
+    for (const [username, reward] of Object.entries(result)) {
+      const previousTotal = previousPayouts.totals.get(username) ?? new Decimal(0);
+      if (!previousTotal.gt(0)) {
+        continue;
+      }
+
+      const currentTotal = new Decimal(reward.total);
+      const difference = currentTotal.minus(previousTotal);
+      if (!difference.gt(0)) {
+        delete result[username];
+        continue;
+      }
+
+      this._scaleRewardEntryToDifference(reward, difference, currentTotal);
+      this.context.logger.info("Applying differential reward payout", {
+        username,
+        previousTotal: previousTotal.toString(),
+        currentTotal: currentTotal.toString(),
+        difference: difference.toString(),
+      });
+    }
+
+    return result;
+  }
+
+  private _scaleRewardEntryToDifference(reward: ResultEntry, difference: Decimal, currentTotal: Decimal) {
+    if (!currentTotal.gt(0)) {
+      reward.total = 0;
+      return;
+    }
+    const ratio = difference.div(currentTotal);
+    reward.total = this._scaleRewardAmount(reward.total, ratio);
+    if (reward.task) {
+      reward.task.reward = this._scaleRewardAmount(reward.task.reward, ratio);
+    }
+    for (const comment of reward.comments ?? []) {
+      if (comment.score) {
+        comment.score.reward = this._scaleRewardAmount(comment.score.reward, ratio);
+      }
+    }
+    for (const reviewReward of reward.reviewRewards ?? []) {
+      for (const review of reviewReward.reviews ?? []) {
+        review.reward = this._scaleRewardAmount(review.reward, ratio);
+      }
+    }
+    for (const file of reward.simplificationReward?.files ?? []) {
+      file.reward = this._scaleRewardAmount(file.reward, ratio);
+    }
+    for (const event of Object.values(reward.events ?? {})) {
+      event.reward = this._scaleRewardAmount(event.reward, ratio);
+    }
+  }
+
+  private _scaleRewardAmount(amount: number, ratio: Decimal): number {
+    return new Decimal(amount).mul(ratio).toDecimalPlaces(6).toNumber();
+  }
+
+  private _getPreviousPayoutSummary(data: Readonly<IssueActivity>): PreviousPayoutSummary {
+    const summary: PreviousPayoutSummary = {
+      totals: new Map<string, Decimal>(),
+      payoutCount: 0,
+      hasPermit: false,
+      hasTransfer: false,
+      hasTransferWithoutOutput: false,
+    };
+
+    for (const comment of data.comments ?? []) {
+      if (!comment.body || comment.user?.type !== "Bot") {
+        continue;
+      }
+
+      const metadataBlocks = this._extractGithubCommentMetadata(comment.body);
+      if (metadataBlocks.length === 0) {
+        this._recordLegacyPayoutMode(comment.body, summary);
+        continue;
+      }
+
+      for (const metadata of metadataBlocks) {
+        this._recordPreviousPayoutMetadata(metadata, summary);
+      }
+    }
+
+    return summary;
+  }
+
+  private _recordLegacyPayoutMode(body: string, summary: PreviousPayoutSummary) {
+    if (/"payoutMode":\s*"transfer"/.exec(body)) {
+      summary.hasTransfer = true;
+      summary.hasTransferWithoutOutput = true;
+    } else if (/"payoutMode":\s*"permit"/.exec(body)) {
+      summary.hasPermit = true;
+    }
+  }
+
+  private _extractGithubCommentMetadata(body: string): unknown[] {
+    const metadataBlocks: unknown[] = [];
+    const metadataRegex = /<!--\s+Ubiquity - GithubCommentModule -[^\n]*\n([\s\S]*?)\n-->/g;
+    for (const match of body.matchAll(metadataRegex)) {
+      try {
+        metadataBlocks.push(JSON.parse(match[1]));
+      } catch (e) {
+        this.context.logger.warn("Failed to parse prior payout metadata", { e });
+      }
+    }
+    return metadataBlocks;
+  }
+
+  private _recordPreviousPayoutMetadata(metadata: unknown, summary: PreviousPayoutSummary) {
+    if (!this._isRecord(metadata)) {
+      return;
+    }
+
+    const payoutMode = metadata.payoutMode;
+    if (payoutMode === "permit") {
+      summary.hasPermit = true;
+    } else if (payoutMode === "transfer") {
+      summary.hasTransfer = true;
+      summary.hasTransferWithoutOutput = true;
+    }
+
+    if (!this._isRecord(metadata.output)) {
+      return;
+    }
+
+    let hasOutputPayout = false;
+    for (const [username, reward] of Object.entries(metadata.output)) {
+      if (!this._isRecord(reward)) {
+        continue;
+      }
+      const rewardPayoutMode = reward.payoutMode ?? payoutMode;
+      if (rewardPayoutMode === "permit") {
+        summary.hasPermit = true;
+      } else if (rewardPayoutMode === "transfer") {
+        summary.hasTransfer = true;
+      }
+      if (rewardPayoutMode !== "permit" && rewardPayoutMode !== "transfer") {
+        continue;
+      }
+      const total = this._parsePreviousPayoutTotal(reward.total);
+      if (!total) {
+        continue;
+      }
+      const currentTotal = summary.totals.get(username);
+      if (!currentTotal || total.gt(currentTotal)) {
+        summary.totals.set(username, total);
+      }
+      hasOutputPayout = true;
+    }
+
+    if (hasOutputPayout) {
+      summary.payoutCount += 1;
+      summary.hasTransferWithoutOutput = false;
+    }
+  }
+
+  private _isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+  }
+
+  private _parsePreviousPayoutTotal(total: unknown): Decimal | null {
+    if (typeof total !== "number" && typeof total !== "string") {
+      return null;
+    }
+    try {
+      const parsed = new Decimal(total);
+      return parsed.isFinite() ? parsed : null;
+    } catch {
+      return null;
+    }
   }
 
   async _transferReward({
