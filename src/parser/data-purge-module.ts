@@ -8,6 +8,7 @@ import { BaseModule } from "../types/module";
 import { Result, GithubCommentScore as ResultComment } from "../types/results";
 
 type CommentType = Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
+const KNOWN_SLASH_COMMAND_REGEX = /^[^\S\n]*\/(ask|start|review|finish)\b/;
 
 /**
  * Removes the data in the comments that we do not want to be processed.
@@ -51,12 +52,14 @@ export class DataPurgeModule extends BaseModule {
 
   private _cleanCommentBody(body: string): string {
     const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
+    const bodyWithoutQuotes = body.replace(/^>.*(?:\r?\n|$)/gm, "");
+    if (KNOWN_SLASH_COMMAND_REGEX.test(bodyWithoutQuotes)) {
+      return "";
+    }
     return (
-      body
-        // Remove quoted text
-        .replace(/^>.*$/gm, "")
+      bodyWithoutQuotes
         // Remove commands such as /start
-        .replace(/^\/.+/g, "")
+        .replace(KNOWN_SLASH_COMMAND_REGEX, "")
         // Remove HTML comments
         .replace(/<!--[\s\S]*?-->/g, "")
         // Remove the footnotes
