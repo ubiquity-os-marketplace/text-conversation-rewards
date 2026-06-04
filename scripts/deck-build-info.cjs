@@ -52,13 +52,12 @@ if (require.main === module) {
   const info = getBuildInfo();
   const shell = process.argv.includes("--shell");
   if (shell) {
-    process.stdout.write(`DECK_REVISION=${info.revision}\n`);
-    process.stdout.write(`DECK_BUILD_NUMBER=${info.build}\n`);
-    process.stdout.write(`DECK_EXPORT_STEM=${info.stem}\n`);
+    process.stdout.write(`export DECK_REVISION=${info.revision}\n`);
+    process.stdout.write(`export DECK_BUILD_NUMBER=${info.build}\n`);
+    process.stdout.write(`export DECK_EXPORT_STEM=${info.stem}\n`);
   } else {
     process.stdout.write(`${info.stem}\n`);
   }
 }
 
 module.exports = { getBuildInfo };
-

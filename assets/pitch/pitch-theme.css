@@ -389,6 +389,8 @@ section.title .deck-footer {
   border: 1px solid rgba(36, 203, 229, 0.14);
   box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
   padding: 22px 24px;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
 }
 
 .card-row {
@@ -420,6 +422,8 @@ section.title .deck-footer {
   background: linear-gradient(180deg, rgba(3, 14, 22, 0.86), rgba(1, 9, 15, 0.66));
   border: 1px solid rgba(36, 203, 229, 0.16);
   box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
 }
 
 .proof-card p {
@@ -451,13 +455,16 @@ section.title .deck-footer {
 .tier,
 .roadmap > div {
   background: linear-gradient(180deg, rgba(3, 14, 22, 0.82), rgba(1, 9, 15, 0.58));
-  border: 1px solid rgba(36, 203, 229, 0.14);
+  border: 1px solid rgba(36, 203, 229, 0.08);
+  border-radius: 8px;
   box-shadow: 0 16px 42px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(8px);
 }
 
 .capability-grid > div {
   min-height: 104px;
   padding: 21px 21px 19px;
+  backdrop-filter: blur(8px);
 }
 
 .capability-grid strong,
@@ -492,8 +499,12 @@ section.title .deck-footer {
   position: relative;
   min-height: 182px;
   padding: 22px 18px 20px;
-  background: rgba(3, 14, 22, 0.76);
+  /* background: rgba(3, 14, 22, 0.76); */
   border-top: 2px solid rgba(36, 203, 229, 0.42);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(36, 203, 229, 0.16);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(3, 14, 22, 0.76), rgba(1, 9, 15, 0.56));
 }
 
 .pipeline-flow > div::after {
@@ -551,8 +562,14 @@ section.title .deck-footer {
   align-items: stretch;
   margin-top: 34px;
 }
-
+.dashboard-frame > div {
+}
 .dashboard-hero {
+  background: rgba(3, 14, 22, 0.72);
+  border: 1px solid rgba(36, 203, 229, 0.16);
+  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.34);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
   padding: 28px 28px 30px;
   border-left: 3px solid var(--reward);
   background: rgba(3, 14, 22, 0.68);
@@ -594,6 +611,7 @@ section.title .deck-footer {
   padding: 26px 26px 24px;
   background: rgba(3, 14, 22, 0.72);
   border: 1px solid rgba(36, 203, 229, 0.14);
+  backdrop-filter: blur(8px);
 }
 
 .contrast-grid .advantage-side {
@@ -628,6 +646,7 @@ section.title .deck-footer {
 }
 
 .customer-grid > div {
+  backdrop-filter: blur(8px);
   min-height: 118px;
   padding: 19px 20px;
   background: rgba(3, 14, 22, 0.72);
@@ -723,7 +742,7 @@ section.title .deck-footer {
 
 .callout {
   margin-top: 24px;
-  display: inline-block;
+  /* display: inline-block; */
   max-width: 660px;
   padding: 10px 14px;
   border-left: 2px solid var(--cyan);
@@ -749,6 +768,8 @@ section.title .deck-footer {
   border: 1px solid var(--line);
   color: var(--white);
   font-size: 18px;
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
 }
 
 .node::after {
@@ -822,4 +843,18 @@ section.title .deck-footer {
   color: rgba(244, 248, 251, 0.34);
   font-size: 13px;
   letter-spacing: 0.08em;
+}
+
+.blur-panel {
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(36, 203, 229, 0.16);
+  display: inline-block;
+  padding: 22px 24px 20px;
+  /* background: rgba(3, 14, 22, 0.72); */
+  border-radius: 8px;
+}
+
+img.left-fade {
+  mask-image: linear-gradient(90deg, transparent 0%, black 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 100%);
 }

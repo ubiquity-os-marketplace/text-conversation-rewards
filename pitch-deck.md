@@ -43,7 +43,7 @@ description: Plaintext pitch deck source for UbiquityOS Accolades.
 
 # Why Now
 
-<img class="slide-art art-bg" src="assets/pitch/slide-03-why-now.png" alt="" />
+<img class="slide-art art-bg left-fade" src="assets/pitch/slide-03-why-now.png" alt="" />
 
 - AI is raising code volume
 - Review and coordination decide what ships
@@ -121,7 +121,7 @@ Engineering artifacts become explainable XP.
 
 <div class="center-left">
 
-<div>
+<div style="margin-bottom: 192px;">
   <p class="quote">One useful unit of work in, one point out.</p>
   <p style="margin-top: 24px; color: var(--muted);">Every point has a person, artifact, reason, and source link.</p>
 </div>
@@ -224,6 +224,7 @@ Engineering artifacts become explainable XP.
 
 <img class="slide-art art-bg" src="assets/pitch/slide-10-slack.png" alt="" />
 
+<div class="blur-panel">
 Slack counts only when tied to work.
 
 - Linked issue or PR thread
@@ -233,6 +234,7 @@ Slack counts only when tied to work.
 - Product context
 
 <div class="callout"><p>No points for raw message count.</p></div>
+</div>
 
 ---
 
@@ -359,7 +361,7 @@ Slack counts only when tied to work.
 <img class="deck-bg" src="assets/pitch/ubiquity-bg.png" alt="" />
 <div class="deck-footer">© 2026 Ubiquity Research Ltd - _______</div>
 
-<img class="slide-art art-bg art-high" src="assets/pitch/slide-16-positioning.png" alt="" />
+<img class="slide-art art-bg left-fade" src="assets/pitch/slide-16-positioning.png" alt="" />
 
 <div class="center-left">
 
