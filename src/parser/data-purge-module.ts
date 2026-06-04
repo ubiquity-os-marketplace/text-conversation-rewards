@@ -25,6 +25,10 @@ export class DataPurgeModule extends BaseModule {
   }
 
   async _shouldSkipComment(comment: Awaited<ReturnType<IssueActivity["getAllComments"]>>[0]) {
+    if (comment.body?.trimStart().startsWith("/")) {
+      this.context.logger.debug("Skipping slash command comment", { comment });
+      return true;
+    }
     if ("isMinimized" in comment && comment.isMinimized) {
       this.context.logger.debug("Skipping hidden comment", { comment });
       return true;
