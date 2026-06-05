@@ -31,6 +31,40 @@ function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
   );
 }
 
+type EvaluationCriterion = {
+  name: string;
+  weight: number;
+  issueInstruction: string;
+  prInstruction: string;
+};
+
+const EVALUATION_CRITERIA: EvaluationCriterion[] = [
+  {
+    name: "spec_relevance",
+    weight: 0.5,
+    issueInstruction:
+      "Rank how relevant each comment is to solving the issue specification. Reward direct analysis, implementation detail, bug reproduction, and concrete solution work.",
+    prInstruction:
+      "Rank how relevant each PR comment is to solving the linked issue specifications or improving the implementation that solves them.",
+  },
+  {
+    name: "contributor_helpfulness",
+    weight: 0.25,
+    issueInstruction:
+      "Rank how helpful each comment is for answering contributor questions, unblocking implementation, clarifying scope, or coordinating the task.",
+    prInstruction:
+      "Rank how helpful each PR comment is for guiding contributors, resolving review questions, or making the review outcome actionable.",
+  },
+  {
+    name: "research_value",
+    weight: 0.25,
+    issueInstruction:
+      "Rank how useful each comment is for adding research, evidence, tradeoff analysis, external references, or insight that improves project decisions.",
+    prInstruction:
+      "Rank how useful each PR comment is for adding research, evidence, code-context insight, or tradeoff analysis that improves project decisions.",
+  },
+];
+
 /**
  * Evaluates and rates comments.
  */
@@ -350,9 +384,10 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     if (!chunks) {
-      const fallbackPrompt = this._generatePromptForComments(specification, username, allComments);
+      const fallbackPromptTokens = this._calculateMaxCriterionPromptTokens((criterion) =>
+        this._generatePromptForComments(specification, username, allComments, criterion)
+      );
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
-      const fallbackPromptTokens = this._calculateMaxTokens(fallbackPrompt, Infinity);
       const fallbackOutputTokens = this._calculateMaxTokens(dummyResponse);
       this.context.logger.warn("Unable to reduce issue comment evaluation below token limit", {
         tokenLimit: this._tokenLimit,
@@ -360,7 +395,11 @@ export class ContentEvaluatorModule extends BaseModule {
         outputTokens: fallbackOutputTokens,
         comments: allComments.length,
       });
-      return this._submitPrompt(fallbackPrompt, fallbackOutputTokens);
+      return this._submitCriterionPrompts(
+        (criterion) => this._generatePromptForComments(specification, username, allComments, criterion),
+        comments.map((comment) => comment.id),
+        fallbackOutputTokens
+      );
     }
 
     this.context.logger.debug(`Splitting issue comments into ${chunks} chunks`);
@@ -372,9 +411,13 @@ export class ContentEvaluatorModule extends BaseModule {
       }
       const dummyResponse = JSON.stringify(this._generateDummyResponse(targetComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-      const promptForComments = this._generatePromptForComments(specification, username, commentSplit);
 
-      for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
+      const scores = await this._submitCriterionPrompts(
+        (criterion) => this._generatePromptForComments(specification, username, commentSplit, criterion),
+        targetComments.map((comment) => comment.id),
+        maxOutputTokens
+      );
+      for (const [key, value] of Object.entries(scores)) {
         const accumulated = commentRelevances[key] ?? 0;
         commentRelevances[key] = new Decimal(accumulated).add(value).toNumber();
         evaluationCounts[key] = (evaluationCounts[key] ?? 0) + 1;
@@ -400,9 +443,8 @@ export class ContentEvaluatorModule extends BaseModule {
         if (!chunk.some((comment) => comment.author === username)) {
           return null;
         }
-        const promptTokens = this._calculateMaxTokens(
-          this._generatePromptForComments(specification, username, chunk),
-          Infinity
+        const promptTokens = this._calculateMaxCriterionPromptTokens((criterion) =>
+          this._generatePromptForComments(specification, username, chunk, criterion)
         );
         const dummyResponse = JSON.stringify(
           this._generateDummyResponse(chunk.filter((comment) => comment.author === username)),
@@ -424,7 +466,9 @@ export class ContentEvaluatorModule extends BaseModule {
         ...this._splitArrayToChunks(comments, chunks).map(
           (chunk) =>
             this._calculateMaxTokens(JSON.stringify(this._generateDummyResponse(chunk), null, 2)) +
-            this._calculateMaxTokens(this._generatePromptForPrComments(specification, chunk), Infinity)
+            this._calculateMaxCriterionPromptTokens((criterion) =>
+              this._generatePromptForPrComments(specification, chunk, criterion)
+            )
         )
       ) > this._tokenLimit
     ) {
@@ -435,9 +479,13 @@ export class ContentEvaluatorModule extends BaseModule {
     for (const commentSplit of this._splitArrayToChunks(comments, chunks)) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(commentSplit), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-      const promptForComments = this._generatePromptForPrComments(specification, commentSplit);
 
-      for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
+      const scores = await this._submitCriterionPrompts(
+        (criterion) => this._generatePromptForPrComments(specification, commentSplit, criterion),
+        commentSplit.map((comment) => comment.id),
+        maxOutputTokens
+      );
+      for (const [key, value] of Object.entries(scores)) {
         if (commentRelevances[key]) {
           commentRelevances[key] = new Decimal(commentRelevances[key]).add(value).toNumber();
         } else {
@@ -466,8 +514,10 @@ export class ContentEvaluatorModule extends BaseModule {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForIssueComments = this._generatePromptForComments(specification, username, allComments);
-      if (this._calculateMaxTokens(promptForIssueComments, Infinity) + maxOutputTokens > this._tokenLimit) {
+      const promptTokens = this._calculateMaxCriterionPromptTokens((criterion) =>
+        this._generatePromptForComments(specification, username, allComments, criterion)
+      );
+      if (promptTokens + maxOutputTokens > this._tokenLimit) {
         commentRelevances = await this._splitPromptForIssueCommentEvaluation(
           specification,
           username,
@@ -475,7 +525,11 @@ export class ContentEvaluatorModule extends BaseModule {
           allComments
         );
       } else {
-        commentRelevances = await this._submitPrompt(promptForIssueComments, maxOutputTokens);
+        commentRelevances = await this._submitCriterionPrompts(
+          (criterion) => this._generatePromptForComments(specification, username, allComments, criterion),
+          userIssueComments.map((comment) => comment.id),
+          maxOutputTokens
+        );
       }
     }
 
@@ -486,11 +540,17 @@ export class ContentEvaluatorModule extends BaseModule {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(userPrComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
-      const promptForPrComments = this._generatePromptForPrComments(prSpecifications, userPrComments);
-      if (this._calculateMaxTokens(promptForPrComments, Infinity) + maxOutputTokens > this._tokenLimit) {
+      const promptTokens = this._calculateMaxCriterionPromptTokens((criterion) =>
+        this._generatePromptForPrComments(prSpecifications, userPrComments, criterion)
+      );
+      if (promptTokens + maxOutputTokens > this._tokenLimit) {
         prCommentRelevances = await this._splitPromptForPullRequestCommentEvaluation(prSpecifications, userPrComments);
       } else {
-        prCommentRelevances = await this._submitPrompt(promptForPrComments, maxOutputTokens);
+        prCommentRelevances = await this._submitCriterionPrompts(
+          (criterion) => this._generatePromptForPrComments(prSpecifications, userPrComments, criterion),
+          userPrComments.map((comment) => comment.id),
+          maxOutputTokens
+        );
       }
     }
 
@@ -594,7 +654,44 @@ export class ContentEvaluatorModule extends BaseModule {
     }
   }
 
-  _generatePromptForComments(issue: string, username: string, allComments: AllComments) {
+  private _calculateMaxCriterionPromptTokens(createPrompt: (criterion: EvaluationCriterion) => string) {
+    return Math.max(
+      ...EVALUATION_CRITERIA.map((criterion) => this._calculateMaxTokens(createPrompt(criterion), Infinity))
+    );
+  }
+
+  private async _submitCriterionPrompts(
+    createPrompt: (criterion: EvaluationCriterion) => string,
+    commentIds: number[],
+    maxTokens: number
+  ) {
+    const weightedScores: Relevances = {};
+    const totalWeight = EVALUATION_CRITERIA.reduce((sum, criterion) => sum + criterion.weight, 0);
+
+    for (const criterion of EVALUATION_CRITERIA) {
+      const scores = await this._submitPrompt(createPrompt(criterion), maxTokens);
+      for (const id of commentIds) {
+        const key = String(id);
+        const score = scores[key] ?? 0;
+        const accumulated = weightedScores[key] ?? 0;
+        weightedScores[key] = new Decimal(accumulated).add(new Decimal(score).mul(criterion.weight)).toNumber();
+      }
+    }
+
+    for (const key of Object.keys(weightedScores)) {
+      const normalized = new Decimal(weightedScores[key]).div(totalWeight).toDecimalPlaces(3).toNumber();
+      weightedScores[key] = Math.min(1, Math.max(0, normalized));
+    }
+
+    return weightedScores;
+  }
+
+  _generatePromptForComments(
+    issue: string,
+    username: string,
+    allComments: AllComments,
+    criterion = EVALUATION_CRITERIA[0]
+  ) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
@@ -611,7 +708,7 @@ export class ContentEvaluatorModule extends BaseModule {
     return `
       CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
       
-      Evaluate the relevance of GitHub comments to an issue. Focus exclusively on the comments authored by ${username}. Provide a raw JSON object with those comment IDs and their relevance scores.
+      Evaluate GitHub comments for the "${criterion.name}" criterion. Focus exclusively on the comments authored by ${username}. Provide a raw JSON object with those comment IDs and their scores for this criterion.
 
       Issue: ${issue}
 
@@ -621,17 +718,15 @@ export class ContentEvaluatorModule extends BaseModule {
       Instructions:
       1. Read all comments carefully, considering their context and content.
       2. Identify every comment authored by ${username}. Their comment IDs are: ${targetCommentIds}.
-      3. Assign a relevance score from 0 to 1 for each identified comment:
+      3. ${criterion.issueInstruction}
+      4. Assign a score from 0 to 1 for each identified comment:
         - 0: Not related (e.g., spam)
-        - 1: Highly relevant (e.g., solutions, bug reports)
-      4. Consider:
-        - Relation to the issue description
-        - Connection to other comments
-        - Contribution to issue resolution
+        - 0.5: Somewhat useful for this criterion, but limited in scope or impact
+        - 1: Strongly useful for this criterion
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
-        - Only evaluate the relevance of the commenter's original content
+        - Only evaluate the commenter's original content
       6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
       7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
@@ -646,7 +741,11 @@ export class ContentEvaluatorModule extends BaseModule {
     `;
   }
 
-  _generatePromptForPrComments(specifications: string | string[], userComments: PrCommentToEvaluate[]) {
+  _generatePromptForPrComments(
+    specifications: string | string[],
+    userComments: PrCommentToEvaluate[],
+    criterion = EVALUATION_CRITERIA[0]
+  ) {
     const specsArray = Array.isArray(specifications) ? specifications : [specifications];
     if (!specsArray.length || specsArray.every((s) => !s || s.length === 0)) {
       throw new Error("Issue specification comment is missing or empty");
@@ -654,14 +753,14 @@ export class ContentEvaluatorModule extends BaseModule {
     const payload = { specification: specsArray, comments: userComments };
     return `CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
 
-    Evaluate the value of a GitHub contributor's comments in a pull request.
+    Evaluate a GitHub contributor's comments in a pull request for the "${criterion.name}" criterion.
     Context may include ONE OR MORE issue specifications. Treat the entire list as the set of problems this PR aims to solve.
-    Consider a comment valuable if it helps address ANY of the specifications and/or clearly improves code quality while staying aligned with them.
+    ${criterion.prInstruction}
 
     Scoring rules (0.0 - 1.0 per comment):
-    - 1.0: Strongly advances a fix/feature tied to one or more specifications, or significantly improves correctness, safety, performance, or maintainability in direct relation to the specs.
-    - 0.5: Somewhat helpful or partially relevant; raises a valid concern or improvement but limited in scope/impact.
-    - 0.0: Not relevant, incorrect, or off-topic with respect to the specifications; noise.
+    - 1.0: Strongly useful for this criterion.
+    - 0.5: Somewhat useful for this criterion but limited in scope or impact.
+    - 0.0: Not useful for this criterion; noise, incorrect, or off-topic.
 
     Additional notes:
     - Some comments are code-review entries and include a "diffHunk" representing the code context under review.
