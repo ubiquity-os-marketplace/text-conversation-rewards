@@ -15,6 +15,7 @@ import {
 } from "./github-types";
 import { areLoginsEquivalent } from "./helpers/github";
 import { isPullRequestEvent } from "./helpers/type-assertions";
+import { loadGoogleSheetsTaskActivity } from "./integrations/google-sheets-task-source";
 import {
   getIssue,
   getIssueComments,
@@ -61,6 +62,19 @@ export class IssueActivity {
     if (this.self) {
       this._context.logger.debug("The Issue Activity is already initialized.");
       return;
+    }
+    if (this._configuration.googleSheets) {
+      try {
+        const activity = await loadGoogleSheetsTaskActivity(this._context, this._configuration.googleSheets);
+        this.self = activity.self;
+        this.events = activity.events;
+        this.comments = activity.comments;
+        this.linkedMergedPullRequests = [];
+        this.linkedIssues = [];
+        return;
+      } catch (error) {
+        throw this._context.logger.error(`Could not fetch Google Sheets task data: ${error}`);
+      }
     }
     try {
       [this.self, this.events, this.comments, this.linkedMergedPullRequests, this.linkedIssues] = await Promise.all([
