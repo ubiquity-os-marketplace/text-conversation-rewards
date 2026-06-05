@@ -3,7 +3,7 @@ import {
   ReviewIncentivizerConfiguration,
   reviewIncentivizerConfigurationType,
 } from "../configuration/review-incentivizer-config";
-import { GitHubPullRequestReviewState } from "../github-types";
+import { GitHubPullRequestReviewComment, GitHubPullRequestReviewState } from "../github-types";
 import { getExcludedFiles, shouldExcludeFile } from "../helpers/excluded-files";
 import { PullRequestData } from "../helpers/pull-request-data";
 import { IssueActivity } from "../issue-activity";
@@ -17,6 +17,19 @@ interface CommitDiff {
     addition: number;
     deletion: number;
   };
+}
+
+export function hasRewardableReviewContent(
+  review: GitHubPullRequestReviewState,
+  reviewComments: GitHubPullRequestReviewComment[] = []
+) {
+  if (review.body?.trim()) {
+    return true;
+  }
+
+  return reviewComments.some(
+    (comment) => comment.pull_request_review_id === review.id && comment.user?.login === review.user?.login
+  );
 }
 
 export class ReviewIncentivizerModule extends BaseModule {
@@ -57,7 +70,8 @@ export class ReviewIncentivizerModule extends BaseModule {
             baseRef,
             headOwnerRepo ?? "",
             reviewsByUser,
-            priority
+            priority,
+            linkedPullReviews.reviewComments ?? []
           );
           reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url });
         }
@@ -121,14 +135,20 @@ export class ReviewIncentivizerModule extends BaseModule {
     baseRef: string,
     headOwnerRepo: string,
     reviewsByUser: GitHubPullRequestReviewState[],
-    priority: number
+    priority: number,
+    reviewComments: GitHubPullRequestReviewComment[] = []
   ) {
     if (reviewsByUser.length == 0) {
       this.context.logger.debug("No reviews found for this pull request", { baseOwner, baseRepo, baseRef });
       return;
     }
     const reviews: ReviewScore[] = [];
-    const pullNumber = Number(reviewsByUser[0].pull_request_url.split("/").slice(-1)[0]);
+    const rewardableReviews = reviewsByUser.filter((review) => hasRewardableReviewContent(review, reviewComments));
+    if (rewardableReviews.length == 0) {
+      this.context.logger.debug("No rewardable reviews found for this pull request", { baseOwner, baseRepo, baseRef });
+      return reviews;
+    }
+    const pullNumber = Number(rewardableReviews[0].pull_request_url.split("/").slice(-1)[0]);
 
     const prData = new PullRequestData(this.context, baseOwner, baseRepo, pullNumber);
     await prData.fetchData();
@@ -139,10 +159,10 @@ export class ReviewIncentivizerModule extends BaseModule {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
     const excludedFilePatterns = await getExcludedFiles(this.context, baseOwner, baseRepo, baseRef);
-    for (const [i, currentReview] of reviewsByUser.entries()) {
+    for (const [i, currentReview] of rewardableReviews.entries()) {
       if (!currentReview.commit_id) continue;
 
-      const previousReview = reviewsByUser[i - 1];
+      const previousReview = rewardableReviews[i - 1];
       const baseSha = previousReview?.commit_id ? previousReview.commit_id : firstCommitSha;
       const headSha = `${headOwnerRepo.replace("/", ":")}:${currentReview.commit_id}`;
 

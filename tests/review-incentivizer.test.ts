@@ -13,6 +13,7 @@ import cfg from "./__mocks__/results/valid-configuration.json";
 import "./helpers/permit-mock";
 import Mock = jest.Mock;
 import { http, HttpResponse } from "msw";
+import { GitHubPullRequestReviewComment, GitHubPullRequestReviewState } from "../src/github-types";
 
 const ctx = {
   eventName: "issues.closed",
@@ -242,5 +243,78 @@ describe("Review Incentivizer", () => {
     expect(diff["added.txt"]).toEqual({ addition: 10, deletion: 5 });
     expect(diff["modified.txt"]).toEqual({ addition: 2, deletion: 1 });
     expect(diff["removed.txt"]).toEqual(undefined);
+  });
+
+  it("Should only reward reviews that include a body or inline comments", async () => {
+    const { hasRewardableReviewContent } = await import("../src/parser/review-incentivizer-module");
+    const baseReview = {
+      id: 1,
+      body: "",
+      user: { login: "reviewer" },
+    } as GitHubPullRequestReviewState;
+
+    expect(hasRewardableReviewContent(baseReview)).toBe(false);
+    expect(hasRewardableReviewContent({ ...baseReview, body: "Looks good after the requested changes." })).toBe(true);
+    expect(
+      hasRewardableReviewContent(baseReview, [
+        {
+          pull_request_review_id: 1,
+          user: { login: "reviewer" },
+        } as GitHubPullRequestReviewComment,
+      ])
+    ).toBe(true);
+  });
+
+  it("Should skip approval-only reviews when calculating review rewards", async () => {
+    const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
+    jest.spyOn(PullRequestData.prototype, "fetchData").mockResolvedValue(undefined);
+    jest.spyOn(PullRequestData.prototype, "pullCommits", "get").mockReturnValue([
+      {
+        sha: "first",
+        parents: [{ sha: "base" }],
+        parentCount: 1,
+      },
+    ]);
+    jest.spyOn(ReviewIncentivizerModule.prototype, "getReviewableDiff").mockResolvedValue({
+      addition: 10,
+      deletion: 5,
+    });
+    jest
+      .spyOn(ctx.octokit.rest.repos, "getContent")
+      .mockRejectedValue(Object.assign(new Error("Not Found"), { status: 404 }));
+
+    const reviewIncentivizerModule = new ReviewIncentivizerModule(ctx);
+    const reviews = await reviewIncentivizerModule.fetchReviewDiffRewards(
+      "ubiquity-os",
+      "conversation-rewards",
+      "main",
+      "reviewer:branch",
+      [
+        {
+          id: 1,
+          body: "I left comments on the implementation.",
+          commit_id: "reviewed-commit",
+          pull_request_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+          user: { login: "reviewer" },
+        } as GitHubPullRequestReviewState,
+        {
+          id: 2,
+          body: "",
+          commit_id: "approval-commit",
+          pull_request_url: "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+          user: { login: "reviewer" },
+        } as GitHubPullRequestReviewState,
+      ],
+      2
+    );
+
+    expect(reviews).toEqual([
+      {
+        reviewId: 1,
+        effect: { addition: 10, deletion: 5 },
+        reward: 0.3,
+        priority: 2,
+      },
+    ]);
   });
 });
