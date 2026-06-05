@@ -1,6 +1,7 @@
 import { TypeBoxError } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { callLlm } from "@ubiquity-os/plugin-sdk";
+import { getOpenRouterModelTokenLimits } from "@ubiquity-os/plugin-sdk/helpers";
 import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
@@ -38,6 +39,7 @@ export class ContentEvaluatorModule extends BaseModule {
   readonly _configuration: ContentEvaluatorConfiguration | null = this.context.config.incentives.contentEvaluator;
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
+  private _maxCompletionTokens: number = 0;
   private readonly _originalAuthorWeight: number = 0.5;
   private _basePriority: number = 1;
 
@@ -79,7 +81,7 @@ export class ContentEvaluatorModule extends BaseModule {
     if (!this._configuration?.openAi.tokenCountLimit) {
       throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
     }
-    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
+    await this._applyTokenLimits();
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
@@ -188,6 +190,41 @@ export class ContentEvaluatorModule extends BaseModule {
     } catch (err) {
       this.context.logger.warn("Failed to fetch the user ID.", { username, err });
       return 0;
+    }
+  }
+
+  async _applyTokenLimits() {
+    const configuredLimit = this._configuration?.openAi.tokenCountLimit ?? 0;
+    const model = this._configuration?.openAi.model;
+    this._tokenLimit = configuredLimit;
+    this._maxCompletionTokens = configuredLimit;
+
+    if (!model) {
+      return;
+    }
+
+    try {
+      const openRouterLimits = await getOpenRouterModelTokenLimits(model);
+      if (!openRouterLimits) {
+        this.context.logger.warn("OpenRouter did not return token limits for the configured model.", { model });
+        return;
+      }
+
+      this._tokenLimit = Math.min(configuredLimit, openRouterLimits.contextLength);
+      this._maxCompletionTokens = Math.min(configuredLimit, openRouterLimits.maxCompletionTokens);
+      this.context.logger.info("Using OpenRouter token limits for content evaluation.", {
+        model,
+        configuredLimit,
+        contextLength: openRouterLimits.contextLength,
+        maxCompletionTokens: openRouterLimits.maxCompletionTokens,
+        tokenLimit: this._tokenLimit,
+      });
+    } catch (err) {
+      this.context.logger.warn("Failed to fetch OpenRouter token limits; falling back to configured token limit.", {
+        model,
+        configuredLimit,
+        err,
+      });
     }
   }
 
@@ -343,7 +380,7 @@ export class ContentEvaluatorModule extends BaseModule {
       }
       const maxPromptTokens = Math.max(...chunkTokenEstimates.map((estimate) => estimate.promptTokens));
       const maxOutputTokens = Math.max(...chunkTokenEstimates.map((estimate) => estimate.outputTokens));
-      if (maxPromptTokens + maxOutputTokens <= this._tokenLimit) {
+      if (this._isWithinTokenLimits(maxPromptTokens, maxOutputTokens)) {
         chunks = currentChunk;
         break;
       }
@@ -420,13 +457,14 @@ export class ContentEvaluatorModule extends BaseModule {
 
     let chunks = 2;
     while (
-      Math.max(
-        ...this._splitArrayToChunks(comments, chunks).map(
-          (chunk) =>
-            this._calculateMaxTokens(JSON.stringify(this._generateDummyResponse(chunk), null, 2)) +
-            this._calculateMaxTokens(this._generatePromptForPrComments(specification, chunk), Infinity)
-        )
-      ) > this._tokenLimit
+      !this._splitArrayToChunks(comments, chunks).every((chunk) => {
+        const outputTokens = this._calculateMaxTokens(JSON.stringify(this._generateDummyResponse(chunk), null, 2));
+        const promptTokens = this._calculateMaxTokens(
+          this._generatePromptForPrComments(specification, chunk),
+          Infinity
+        );
+        return this._isWithinTokenLimits(promptTokens, outputTokens);
+      })
     ) {
       chunks++;
     }
@@ -467,7 +505,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
       const promptForIssueComments = this._generatePromptForComments(specification, username, allComments);
-      if (this._calculateMaxTokens(promptForIssueComments, Infinity) + maxOutputTokens > this._tokenLimit) {
+      if (!this._isWithinTokenLimits(this._calculateMaxTokens(promptForIssueComments, Infinity), maxOutputTokens)) {
         commentRelevances = await this._splitPromptForIssueCommentEvaluation(
           specification,
           username,
@@ -487,7 +525,7 @@ export class ContentEvaluatorModule extends BaseModule {
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
 
       const promptForPrComments = this._generatePromptForPrComments(prSpecifications, userPrComments);
-      if (this._calculateMaxTokens(promptForPrComments, Infinity) + maxOutputTokens > this._tokenLimit) {
+      if (!this._isWithinTokenLimits(this._calculateMaxTokens(promptForPrComments, Infinity), maxOutputTokens)) {
         prCommentRelevances = await this._splitPromptForPullRequestCommentEvaluation(prSpecifications, userPrComments);
       } else {
         prCommentRelevances = await this._submitPrompt(promptForPrComments, maxOutputTokens);
@@ -541,11 +579,14 @@ export class ContentEvaluatorModule extends BaseModule {
   }
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
+    const maxCompletionTokens = this._resolveMaxCompletionTokens(maxTokens);
     try {
       const res = await callLlm(
         {
           response_format: { type: "json_object" },
           messages: [{ role: "system", content: prompt }],
+          ...(this._configuration?.openAi.model ? { model: this._configuration.openAi.model } : {}),
+          max_tokens: maxCompletionTokens,
           reasoning_effort: this._configuration?.openAi.reasoningEffort,
         },
         this.context
@@ -592,6 +633,14 @@ export class ContentEvaluatorModule extends BaseModule {
       });
       throw e;
     }
+  }
+
+  private _isWithinTokenLimits(promptTokens: number, outputTokens: number) {
+    return promptTokens + outputTokens <= this._tokenLimit && outputTokens <= this._maxCompletionTokens;
+  }
+
+  private _resolveMaxCompletionTokens(maxTokens: number) {
+    return Math.min(maxTokens, this._maxCompletionTokens || maxTokens);
   }
 
   _generatePromptForComments(issue: string, username: string, allComments: AllComments) {

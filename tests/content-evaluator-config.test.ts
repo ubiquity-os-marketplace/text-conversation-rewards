@@ -31,6 +31,7 @@ describe("ContentEvaluatorConfiguration Validation", () => {
     const validConfig: PartialContentEvaluatorConfiguration = {
       openAi: {
         maxRetries: 3,
+        model: "openai/gpt-4o",
         tokenCountLimit: 100,
       },
       originalAuthorWeight: 0.5,
@@ -40,6 +41,7 @@ describe("ContentEvaluatorConfiguration Validation", () => {
     const decodedConfig = Value.Decode(contentEvaluatorConfigurationType, defaultedConfig);
     const isValid = Value.Check(contentEvaluatorConfigurationType, decodedConfig);
     expect(isValid).toBe(true);
+    expect(decodedConfig.openAi.model).toBe("openai/gpt-4o");
   });
 
   it("should apply defaults when openAi is empty", () => {

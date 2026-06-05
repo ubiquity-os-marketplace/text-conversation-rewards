@@ -26,6 +26,13 @@ export function openAiType() {
           "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation.",
         examples: [124000],
       }),
+      model: Type.Optional(
+        Type.String({
+          description:
+            "OpenRouter model ID used for content evaluation. When set, the evaluator fetches OpenRouter token limits for this model before splitting prompts.",
+          examples: ["openai/gpt-4o", "google/gemini-2.0-flash-001"],
+        })
+      ),
       maxRetries: Type.Number({
         default: 10,
         description: "Maximum number of retries to make",
