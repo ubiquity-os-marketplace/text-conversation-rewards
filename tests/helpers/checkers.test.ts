@@ -5,13 +5,15 @@ import type { IssueActivity } from "../../src/issue-activity";
 type User = {
   id: number;
   login: string;
+  type?: string;
 };
 
-const author = { id: 1, login: "author" };
-const assignee = { id: 2, login: "assignee" };
-const reviewer = { id: 3, login: "reviewer" };
-const issueAuthor = { id: 4, login: "issue-author" };
-const outsideReviewer = { id: 5, login: "outside-reviewer" };
+const author = { id: 1, login: "author", type: "User" };
+const assignee = { id: 2, login: "assignee", type: "User" };
+const reviewer = { id: 3, login: "reviewer", type: "User" };
+const issueAuthor = { id: 4, login: "issue-author", type: "User" };
+const outsideReviewer = { id: 5, login: "outside-reviewer", type: "User" };
+const bot = { id: 6, login: "ubiquity-os[bot]", type: "Bot" };
 
 function createReview(
   user: User,
@@ -25,27 +27,55 @@ function createReview(
   } as GitHubPullRequestReviewState;
 }
 
+function createLabeledEvent(actor: User, labelName = "Time: <1 Hour") {
+  return {
+    actor,
+    event: "labeled",
+    label: {
+      name: labelName,
+    },
+  };
+}
+
+function createAssignedEvent(assigner: User, assignedUser: User) {
+  return {
+    actor: assigner,
+    assignee: assignedUser,
+    assigner,
+    event: "assigned",
+  };
+}
+
 function createActivity({
   pullRequestContext = false,
   issueAssignee,
+  issueAssignees,
+  issueCloser,
+  issueCreator = author,
   linkedIssueAuthor,
   reviews = [],
   requestedReviewers = [],
+  events = [],
 }: {
   pullRequestContext?: boolean;
   issueAssignee?: User;
+  issueAssignees?: User[];
+  issueCloser?: User;
+  issueCreator?: User;
   linkedIssueAuthor?: User;
   reviews?: GitHubPullRequestReviewState[];
   requestedReviewers?: User[];
+  events?: unknown[];
 }) {
   return {
     self: {
-      user: author,
-      closed_by: author,
+      user: issueCreator,
+      closed_by: issueCloser ?? issueCreator,
       assignee: issueAssignee,
+      assignees: issueAssignees ?? (issueAssignee ? [issueAssignee] : []),
       pull_request: pullRequestContext ? { html_url: "https://github.com/owner/repo/pull/1" } : undefined,
     },
-    events: [],
+    events,
     linkedMergedPullRequests: [
       {
         self: {
@@ -129,9 +159,10 @@ describe("collaboration checks", () => {
       expect(isCollaborative(activity)).toBe(false);
     });
 
-    it("keeps the issue-context assignee behavior", () => {
+    it("keeps the issue-context assignee review behavior", () => {
       const activity = createActivity({
         issueAssignee: assignee,
+        issueCreator: assignee,
         reviews: [createReview(reviewer)],
       });
 
@@ -142,9 +173,72 @@ describe("collaboration checks", () => {
     it("does not treat an empty issue-context review list as collaborative", () => {
       const activity = createActivity({
         issueAssignee: assignee,
+        issueCreator: assignee,
       });
 
       expect(nonAssigneeApprovedReviews(activity)).toBe(false);
+      expect(isCollaborative(activity)).toBe(false);
+    });
+
+    it("does not count an approval from another rewarded assignee", () => {
+      const activity = createActivity({
+        issueAssignee: assignee,
+        issueAssignees: [assignee, reviewer],
+        issueCreator: assignee,
+        reviews: [createReview(reviewer)],
+      });
+
+      expect(nonAssigneeApprovedReviews(activity)).toBe(false);
+      expect(isCollaborative(activity)).toBe(false);
+    });
+  });
+
+  describe("isCollaborative", () => {
+    it("treats a different issue author as a specification signal", () => {
+      const activity = createActivity({
+        issueAssignee: assignee,
+      });
+
+      expect(isCollaborative(activity)).toBe(true);
+    });
+
+    it("does not treat pricing labels alone as collaboration for a self-authored reward", () => {
+      const activity = createActivity({
+        events: [createLabeledEvent(reviewer), createLabeledEvent(bot, "Priority: 2 (Medium)")],
+        issueAssignee: assignee,
+        issueCreator: assignee,
+      });
+
+      expect(isCollaborative(activity)).toBe(false);
+    });
+
+    it("treats assignment by another human as collaboration", () => {
+      const activity = createActivity({
+        events: [createAssignedEvent(reviewer, assignee)],
+        issueAssignee: assignee,
+        issueCreator: assignee,
+      });
+
+      expect(isCollaborative(activity)).toBe(true);
+    });
+
+    it("does not treat self-assignment as collaboration", () => {
+      const activity = createActivity({
+        events: [createAssignedEvent(assignee, assignee)],
+        issueAssignee: assignee,
+        issueCreator: assignee,
+      });
+
+      expect(isCollaborative(activity)).toBe(false);
+    });
+
+    it("does not treat bot assignment as collaboration", () => {
+      const activity = createActivity({
+        events: [createAssignedEvent(bot, assignee)],
+        issueAssignee: assignee,
+        issueCreator: assignee,
+      });
+
       expect(isCollaborative(activity)).toBe(false);
     });
   });

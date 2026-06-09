@@ -9,19 +9,14 @@ const COLLABORATOR_REVIEW_ASSOCIATIONS: ReviewAuthorAssociation[] = ["COLLABORAT
 
 export function isCollaborative(data: Readonly<IssueActivity>) {
   if (!data.self?.closed_by || !data.self.user) return false;
-  const issueCreator = data.self.user;
+  const rewardedUserIds = getRewardedUserIds(data);
+  if (!rewardedUserIds.size) return false;
 
-  if (data.self.closed_by.id === issueCreator.id) {
-    const pricingEventsByNonAssignee = data.events.find(
-      (event) =>
-        event.event === "labeled" &&
-        "label" in event &&
-        (event.label.name.startsWith("Time: ") || event.label.name.startsWith("Priority: ")) &&
-        event.actor.id !== issueCreator.id
-    );
-    return !!pricingEventsByNonAssignee || !!nonAssigneeApprovedReviews(data);
-  }
-  return true;
+  return (
+    hasSpecificationByDifferentHuman(data, rewardedUserIds) ||
+    hasAssignmentByDifferentHuman(data, rewardedUserIds) ||
+    nonAssigneeApprovedReviews(data)
+  );
 }
 
 export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
@@ -38,12 +33,71 @@ export function nonAssigneeApprovedReviews(data: Readonly<IssueActivity>) {
     return hasApprovedReviewByCollaborator(linkedPullRequest.reviews, excludedAuthorIds);
   }
 
-  const assigneeId = data.self?.assignee?.id;
-  if (!assigneeId || !linkedPullRequest.self) {
+  const assigneeIds = getIssueAssigneeIds(data);
+  if (!assigneeIds.size || !linkedPullRequest.self) {
     return false;
   }
 
-  return hasIssueContextApprovedReview(linkedPullRequest.self, linkedPullRequest.reviews, assigneeId);
+  return hasIssueContextApprovedReview(linkedPullRequest.self, linkedPullRequest.reviews, assigneeIds);
+}
+
+function getRewardedUserIds(data: Readonly<IssueActivity>) {
+  const userIds = getIssueAssigneeIds(data);
+
+  if (data.self?.pull_request) {
+    addUserId(userIds, data.self.user);
+    for (const linkedPullRequest of data.linkedMergedPullRequests) {
+      addUserId(userIds, linkedPullRequest.self?.user);
+    }
+  }
+
+  return userIds;
+}
+
+function getIssueAssigneeIds(data: Readonly<IssueActivity>) {
+  const userIds = new Set<string>();
+
+  for (const assignee of data.self?.assignees ?? []) {
+    addUserId(userIds, assignee);
+  }
+  addUserId(userIds, data.self?.assignee);
+
+  return userIds;
+}
+
+function hasSpecificationByDifferentHuman(data: Readonly<IssueActivity>, excludedUserIds: Set<string>) {
+  if (data.self?.pull_request) {
+    return false;
+  }
+  return isDifferentHuman(data.self?.user, excludedUserIds);
+}
+
+function hasAssignmentByDifferentHuman(data: Readonly<IssueActivity>, excludedUserIds: Set<string>) {
+  return data.events.some((event) => {
+    if (event.event !== "assigned") {
+      return false;
+    }
+
+    if ("assignee" in event && event.assignee?.id && !excludedUserIds.has(String(event.assignee.id))) {
+      return false;
+    }
+
+    const assigner = "assigner" in event && event.assigner ? event.assigner : event.actor;
+    return isDifferentHuman(assigner, excludedUserIds);
+  });
+}
+
+function addUserId(userIds: Set<string>, user: { id?: number | null } | null | undefined) {
+  if (user?.id) {
+    userIds.add(String(user.id));
+  }
+}
+
+function isDifferentHuman(
+  user: { id?: number | null; type?: string | null } | null | undefined,
+  excludedUserIds: Set<string>
+) {
+  return Boolean(user?.id && user.type !== "Bot" && !excludedUserIds.has(String(user.id)));
 }
 
 function hasApprovedReviewByCollaborator(
@@ -57,6 +111,7 @@ function hasApprovedReviewByCollaborator(
   return reviews.some(
     (review) =>
       Boolean(review.user?.id) &&
+      review.user?.type !== "Bot" &&
       !excludedUserIds.has(String(review.user?.id)) &&
       review.state === "APPROVED" &&
       isReviewByCollaborator(review)
@@ -66,7 +121,7 @@ function hasApprovedReviewByCollaborator(
 function hasIssueContextApprovedReview(
   pullRequest: GitHubPullRequest,
   reviews: GitHubPullRequestReviewState[] | null | undefined,
-  assigneeId: number
+  excludedUserIds: Set<string>
 ) {
   if (!reviews) {
     return false;
@@ -75,7 +130,8 @@ function hasIssueContextApprovedReview(
   return reviews.some(
     (review) =>
       Boolean(review.user?.id) &&
-      review.user?.id !== assigneeId &&
+      review.user?.type !== "Bot" &&
+      !excludedUserIds.has(String(review.user?.id)) &&
       review.state === "APPROVED" &&
       !isReviewRequestedForUser(pullRequest, review)
   );
