@@ -31,6 +31,31 @@ function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
   );
 }
 
+export function stripSlashCommandBlocks(content: string) {
+  const lines = content.split(/\r?\n/);
+  const result: string[] = [];
+  let isCommandBlock = false;
+
+  for (const line of lines) {
+    if (/^\s*\/[A-Za-z][\w-]*(?:\s|$)/.test(line)) {
+      isCommandBlock = true;
+      continue;
+    }
+
+    if (isCommandBlock) {
+      if (!line.trim()) {
+        isCommandBlock = false;
+        result.push(line);
+      }
+      continue;
+    }
+
+    result.push(line);
+  }
+
+  return result.join("\n").trim();
+}
+
 /**
  * Evaluates and rates comments.
  */
@@ -94,7 +119,12 @@ export class ContentEvaluatorModule extends BaseModule {
               (comment) =>
                 comment.commentType & CommentKind.ISSUE && !(comment.commentType & CommentAssociation.SPECIFICATION)
             )
-            .map((comment) => ({ id: comment.id, comment: comment.content, author: user }))
+            .map((comment) => ({
+              id: comment.id,
+              comment: stripSlashCommandBlocks(comment.content),
+              author: user,
+            }))
+            .filter((comment) => comment.comment.length)
         );
       }
     }
@@ -253,6 +283,8 @@ export class ContentEvaluatorModule extends BaseModule {
       let currentRelevance = 1; // For comments not in fixed relevance types and missed by OpenAI evaluation
       if (this._fixedRelevances[currentComment.commentType]) {
         currentRelevance = this._fixedRelevances[currentComment.commentType];
+      } else if (!stripSlashCommandBlocks(currentComment.content).length) {
+        currentRelevance = 0;
       } else if (!isNaN(relevancesByAi[currentComment.id])) {
         currentRelevance = relevancesByAi[currentComment.id];
       }
@@ -297,17 +329,23 @@ export class ContentEvaluatorModule extends BaseModule {
     const commentsToEvaluate: CommentToEvaluate[] = [];
     const prCommentsToEvaluate: PrCommentToEvaluate[] = [];
     for (const currentComment of commentsWithScore) {
+      const comment = stripSlashCommandBlocks(currentComment.content);
+
+      if (!comment.length) {
+        continue;
+      }
+
       if (!this._fixedRelevances[currentComment.commentType]) {
         if (currentComment.commentType & CommentKind.PULL) {
           prCommentsToEvaluate.push({
             id: currentComment.id,
-            comment: currentComment.content,
+            comment,
             diffHunk: currentComment?.diffHunk,
           });
         } else {
           commentsToEvaluate.push({
             id: currentComment.id,
-            comment: currentComment.content,
+            comment,
           });
         }
       }
