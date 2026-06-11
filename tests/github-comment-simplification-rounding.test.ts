@@ -7,7 +7,7 @@ import { mockWeb3Module } from "./helpers/web3-mocks";
 
 const issueUrl = "https://github.com/ubiquity/work.ubq.fi/issues/69";
 
-mockWeb3Module();
+const web3Mocks = mockWeb3Module();
 
 jest.mock("@actions/github", () => ({
   default: {},
@@ -26,6 +26,8 @@ describe("GithubCommentModule Simplification Rounding", () => {
   let githubCommentModule: InstanceType<typeof import("../src/parser/github-comment-module").GithubCommentModule>;
 
   beforeEach(async () => {
+    web3Mocks.Erc20Wrapper.getSymbol.mockReset();
+    web3Mocks.Erc20Wrapper.getSymbol.mockReturnValue("WXDAI");
     const { GithubCommentModule } = await import("../src/parser/github-comment-module");
     githubCommentModule = new GithubCommentModule({
       eventName: "issues.closed",
@@ -83,5 +85,52 @@ describe("GithubCommentModule Simplification Rounding", () => {
 
     expect(bodyContent.raw).toContain("<td>Task Simplification</td><td>1</td><td>1.44</td>");
     expect(bodyContent.raw).not.toContain("1.4400000000000002");
+  });
+
+  it("should explain when the reward token is missing on the configured network", async () => {
+    const { GithubCommentModule } = await import("../src/parser/github-comment-module");
+    const invalidNetworkConfig = structuredClone(cfg);
+    invalidNetworkConfig.rewards.evmNetworkId = 1;
+    web3Mocks.Erc20Wrapper.getSymbol.mockImplementationOnce(async () => {
+      throw Object.assign(new Error('call revert exception; method="symbol()"'), { code: "CALL_EXCEPTION" });
+    });
+    const module = new GithubCommentModule({
+      eventName: "issues.closed",
+      payload: {
+        issue: {
+          html_url: issueUrl,
+          number: 69,
+          state_reason: "completed",
+          assignees: [
+            {
+              id: 1,
+              login: "gentlementlegen",
+            },
+          ],
+        },
+        repository: {
+          name: "conversation-rewards",
+          owner: {
+            login: "ubiquity-os",
+            id: 76412717,
+          },
+        },
+      },
+      config: invalidNetworkConfig,
+    } as unknown as ContextPlugin);
+    const result: Result = {
+      gentlementlegen: {
+        total: 1,
+        userId: 123,
+        permitUrl: "https://pay.ubq.fi",
+        payoutMode: "permit",
+        walletAddress: "0x1",
+        evaluationCommentHtml: "<p>None</p>",
+      },
+    };
+
+    await expect(module.getBodyContent({} as unknown as IssueActivity, result)).rejects.toThrow(
+      "This token 0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d was not found on network ID 1"
+    );
   });
 });
