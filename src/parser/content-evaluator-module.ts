@@ -622,18 +622,21 @@ export class ContentEvaluatorModule extends BaseModule {
       1. Read all comments carefully, considering their context and content.
       2. Identify every comment authored by ${username}. Their comment IDs are: ${targetCommentIds}.
       3. Assign a relevance score from 0 to 1 for each identified comment:
-        - 0: Not related (e.g., spam)
-        - 1: Highly relevant (e.g., solutions, bug reports)
+        - 0: Not related (e.g., spam, generic discussion, task administration, or meta-comments about rewards/scoring)
+        - 0.25: Tangentially related but not useful for solving or clarifying the issue
+        - 1: Highly relevant (e.g., solutions, bug reports, reproducible findings, or concrete implementation guidance)
       4. Consider:
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
+        - Whether the comment directly advances the task rather than only discussing how rewards or relevance scoring behaved
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
         - Only evaluate the relevance of the commenter's original content
-      6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
-      7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
+      6. Score comments low when their original content is only about payout mechanics, relevance scoring accuracy, assignment status, deadlines, or general process unless it contains concrete technical information that helps resolve the issue.
+      7. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
+      8. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
       Notes:
       - Even minor details may be significant.
