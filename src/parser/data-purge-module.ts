@@ -50,6 +50,10 @@ export class DataPurgeModule extends BaseModule {
   }
 
   private _cleanCommentBody(body: string): string {
+    if (/^\s*\/\S+/.test(body)) {
+      return "";
+    }
+
     const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
     return (
       body

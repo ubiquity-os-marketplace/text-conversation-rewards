@@ -122,4 +122,14 @@ describe("Purging tests", () => {
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
   });
+
+  it("Should purge multiline slash command comments completely", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx) as unknown as {
+      _cleanCommentBody(body: string): string;
+    };
+
+    expect(
+      dataPurgeModule._cleanCommentBody("/ask\nCheck my scoring.\nhttps://github.com/example/repo/issues/1")
+    ).toHaveLength(0);
+  });
 });
