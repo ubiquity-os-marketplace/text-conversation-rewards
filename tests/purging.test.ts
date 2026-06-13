@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import "./helpers/permit-mock";
 import { drop } from "@mswjs/data";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
@@ -15,6 +15,7 @@ import { Octokit } from "@octokit/rest";
 import { UserExtractorModule } from "../src/parser/user-extractor-module";
 import { DataPurgeModule } from "../src/parser/data-purge-module";
 import { IssueActivity } from "../src/issue-activity";
+import { CommentAssociation, CommentKind } from "../src/configuration/comment-types";
 
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
@@ -121,5 +122,34 @@ describe("Purging tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
+  });
+
+  it("Should purge multiline slash command comments", async () => {
+    const result = {
+      gentlementlegen: {
+        total: 0,
+        userId: 1,
+      },
+    };
+    const commandComment = {
+      id: 123,
+      body: "/finish\nThis task is complete and should not be rewarded as a normal comment.",
+      created_at: "2026-06-13T00:00:00Z",
+      html_url: `${issueUrl}#issuecomment-123`,
+      user: {
+        id: 1,
+        login: "gentlementlegen",
+        type: "User",
+      },
+      commentType: CommentKind.ISSUE | CommentAssociation.ASSIGNEE,
+    };
+    const dataPurgeModule = new DataPurgeModule(ctx);
+    const fakeActivity = {
+      getAllComments: jest.fn(async () => [commandComment]),
+    } as unknown as IssueActivity;
+
+    await dataPurgeModule.transform(fakeActivity, result);
+
+    expect(result.gentlementlegen).not.toHaveProperty("comments");
   });
 });
