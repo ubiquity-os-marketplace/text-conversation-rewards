@@ -8,7 +8,7 @@ import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../co
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
-import { checkLlmRetryableState, retry } from "../helpers/retry";
+import { checkLlmRetryableState, getOpenRouterModelTokenLimits, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -79,7 +79,7 @@ export class ContentEvaluatorModule extends BaseModule {
     if (!this._configuration?.openAi.tokenCountLimit) {
       throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
     }
-    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
+    this._tokenLimit = await this._resolveTokenLimit();
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
@@ -282,6 +282,27 @@ export class ContentEvaluatorModule extends BaseModule {
     const tokenizer = encodingForModel("gpt-4o");
     const inputTokens = tokenizer.encode(prompt).length * 2; // Safety margin
     return Math.min(inputTokens, totalTokenLimit);
+  }
+
+  async _resolveTokenLimit() {
+    const configuredLimit = this._configuration?.openAi.tokenCountLimit ?? 0;
+    const model = this._configuration?.openAi.model;
+    if (!model?.includes("/")) {
+      return configuredLimit;
+    }
+    try {
+      const modelLimits = await getOpenRouterModelTokenLimits(model);
+      if (!modelLimits?.contextLength) {
+        return configuredLimit;
+      }
+      return Math.min(configuredLimit, modelLimits.contextLength);
+    } catch (err) {
+      this.context.logger.warn("Failed to fetch OpenRouter model token limits; using configured token limit.", {
+        model,
+        err,
+      });
+      return configuredLimit;
+    }
   }
 
   _generateDummyResponse(comments: { id: number; comment: string }[]) {
