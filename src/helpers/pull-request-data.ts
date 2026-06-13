@@ -24,6 +24,7 @@ type CommitParent = NonNullable<CommitEdge["node"]["commit"]["parents"]["nodes"]
 export class PullRequestData {
   private readonly _fileMap = new Map<string, PullRequestFile>();
   private _pullCommits: LightweightCommit[] = [];
+  private _pullFileList: PullRequestFile[] | null = null;
 
   constructor(
     private _context: ContextPlugin,
@@ -65,6 +66,40 @@ export class PullRequestData {
 
   public get pullCommits(): ReadonlyArray<LightweightCommit> {
     return this._pullCommits;
+  }
+
+  public async fetchPullFiles(): Promise<ReadonlyArray<PullRequestFile>> {
+    if (this._pullFileList) {
+      return Object.freeze([...this._pullFileList]);
+    }
+
+    const files: PullRequestFile[] = [];
+    let page = 1;
+    let shouldLoop: boolean;
+    do {
+      const response = await this._context.octokit.rest.pulls.listFiles({
+        owner: this._owner,
+        repo: this._repo,
+        pull_number: this._pullNumber,
+        per_page: 100,
+        page,
+      });
+      files.push(
+        ...(response.data ?? []).map((file) => ({
+          filename: file.filename,
+          additions: file.additions ?? 0,
+          deletions: file.deletions ?? 0,
+          status: file.status,
+        }))
+      );
+      shouldLoop = this.shouldContinue(response.headers.link, response.data.length);
+      if (shouldLoop) {
+        page += 1;
+      }
+    } while (shouldLoop);
+
+    this._pullFileList = files;
+    return Object.freeze([...files]);
   }
 
   private async fetchCommitFiles(sha: string) {

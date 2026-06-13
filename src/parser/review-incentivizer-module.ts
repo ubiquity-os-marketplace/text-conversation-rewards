@@ -19,6 +19,11 @@ interface CommitDiff {
   };
 }
 
+interface ReviewEffect {
+  addition: number;
+  deletion: number;
+}
+
 export class ReviewIncentivizerModule extends BaseModule {
   private readonly _configuration: ReviewIncentivizerConfiguration | null =
     this.context.config.incentives.reviewIncentivizer;
@@ -115,6 +120,62 @@ export class ReviewIncentivizerModule extends BaseModule {
     return reviewEffect;
   }
 
+  async getReviewablePullRequestDiff(prData: PullRequestData, excludedFilePatterns?: string[] | null) {
+    const reviewEffect = { addition: 0, deletion: 0 };
+    const pullFiles = await prData.fetchPullFiles();
+
+    for (const file of pullFiles) {
+      if (!shouldExcludeFile(file.filename, excludedFilePatterns)) {
+        reviewEffect.addition += file.additions;
+        reviewEffect.deletion += file.deletions;
+      }
+    }
+
+    return reviewEffect;
+  }
+
+  capReviewDiffRewards(reviews: ReviewScore[], maxEffect: ReviewEffect, priority: number): ReviewScore[] {
+    const maxTotal = maxEffect.addition + maxEffect.deletion;
+    const total = reviews.reduce((sum, review) => sum + review.effect.addition + review.effect.deletion, 0);
+    if (total <= maxTotal) {
+      return reviews;
+    }
+
+    let remaining = maxTotal;
+    return reviews.map((review) => {
+      const reviewTotal = review.effect.addition + review.effect.deletion;
+      const limitedEffect = this.limitReviewEffect(review.effect, remaining);
+      remaining = Math.max(0, remaining - reviewTotal);
+      return {
+        ...review,
+        effect: limitedEffect,
+        reward: ((limitedEffect.addition + limitedEffect.deletion) * priority) / this._baseRate,
+      };
+    });
+  }
+
+  private limitReviewEffect(effect: ReviewEffect, maxTotal: number): ReviewEffect {
+    const total = effect.addition + effect.deletion;
+    if (total <= maxTotal) {
+      return effect;
+    }
+
+    if (maxTotal <= 0 || total <= 0) {
+      return { addition: 0, deletion: 0 };
+    }
+
+    let addition = Math.min(effect.addition, Math.floor((effect.addition / total) * maxTotal));
+    let deletion = Math.min(effect.deletion, Math.floor((effect.deletion / total) * maxTotal));
+    let remaining = maxTotal - addition - deletion;
+
+    const extraAddition = Math.min(remaining, effect.addition - addition);
+    addition += extraAddition;
+    remaining -= extraAddition;
+    deletion += Math.min(remaining, effect.deletion - deletion);
+
+    return { addition, deletion };
+  }
+
   async fetchReviewDiffRewards(
     baseOwner: string,
     baseRepo: string,
@@ -175,7 +236,13 @@ export class ReviewIncentivizerModule extends BaseModule {
       }
     }
 
-    return reviews;
+    try {
+      const pullRequestEffect = await this.getReviewablePullRequestDiff(prData, excludedFilePatterns);
+      return this.capReviewDiffRewards(reviews, pullRequestEffect, priority);
+    } catch (e) {
+      this.context.logger.warn("Failed to fetch pull request diff for review reward cap", { e });
+      return reviews;
+    }
   }
 
   get enabled(): boolean {

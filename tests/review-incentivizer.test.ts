@@ -146,6 +146,42 @@ describe("Review Incentivizer", () => {
     spy.mockClear();
   });
 
+  it("Should cap review rewards to the pull-request diff", async () => {
+    const { ReviewIncentivizerModule } = await import("../src/parser/review-incentivizer-module");
+    const reviewIncentivizerModule = new ReviewIncentivizerModule(ctx);
+
+    const cappedRewards = reviewIncentivizerModule.capReviewDiffRewards(
+      [
+        {
+          reviewId: 1,
+          effect: { addition: 30, deletion: 20 },
+          reward: 0.5,
+          priority: 1,
+        },
+        {
+          reviewId: 2,
+          effect: { addition: 80, deletion: 20 },
+          reward: 1,
+          priority: 1,
+        },
+      ],
+      { addition: 70, deletion: 30 },
+      1
+    );
+
+    expect(cappedRewards[0]).toMatchObject({
+      reviewId: 1,
+      effect: { addition: 30, deletion: 20 },
+      reward: 0.5,
+    });
+    expect(cappedRewards[1]).toMatchObject({
+      reviewId: 2,
+      effect: { addition: 40, deletion: 10 },
+      reward: 0.5,
+    });
+    expect(cappedRewards.reduce((sum, review) => sum + review.effect.addition + review.effect.deletion, 0)).toBe(100);
+  });
+
   it("Should skip removed files in review incentives diff calculation", async () => {
     jest.spyOn(ctx.octokit.rest.repos, "compareCommits").mockImplementationOnce(async () => {
       return {
