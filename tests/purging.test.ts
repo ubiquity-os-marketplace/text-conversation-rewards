@@ -98,6 +98,7 @@ afterAll(() => server.close());
 describe("Purging tests", () => {
   const issue = parseGitHubUrl(issueUrl);
   let activity: IssueActivity;
+  let dataPurgeModule: DataPurgeModule;
 
   beforeEach(async () => {
     drop(db);
@@ -110,6 +111,7 @@ describe("Purging tests", () => {
     const { IssueActivity } = await import("../src/issue-activity");
     activity = new IssueActivity(ctx, issue);
     await activity.init();
+    dataPurgeModule = new DataPurgeModule(ctx);
   });
 
   it("Should purge collapsed comments", async () => {
@@ -121,5 +123,21 @@ describe("Purging tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
+  });
+
+  it("Should purge multiline slash command comments", () => {
+    const cleanedBody = (dataPurgeModule as unknown as { _cleanCommentBody(body: string): string })._cleanCommentBody(
+      "/ask\nPlease score this response.\nIt should not be evaluated."
+    );
+
+    expect(cleanedBody).toBe("");
+  });
+
+  it("Should keep normal text while removing a later multiline slash command block", () => {
+    const cleanedBody = (dataPurgeModule as unknown as { _cleanCommentBody(body: string): string })._cleanCommentBody(
+      "This is useful context.\n\n/ask\nIgnore this command payload.\nThis should be removed."
+    );
+
+    expect(cleanedBody).toBe("This is useful context.");
   });
 });

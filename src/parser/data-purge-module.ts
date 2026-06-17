@@ -49,14 +49,45 @@ export class DataPurgeModule extends BaseModule {
     return false;
   }
 
+  private _removeSlashCommandBlocks(body: string): string {
+    const lines = body.split(/\r?\n/);
+    const isSlashCommand = (line: string) => /^\s*\/\S/.test(line);
+    const firstContentLine = lines.find((line) => line.trim().length > 0);
+
+    if (firstContentLine && isSlashCommand(firstContentLine)) {
+      return "";
+    }
+
+    const cleanedLines: string[] = [];
+    let skippingCommandBlock = false;
+
+    for (const line of lines) {
+      if (isSlashCommand(line)) {
+        skippingCommandBlock = true;
+        continue;
+      }
+
+      if (skippingCommandBlock) {
+        if (!line.trim()) {
+          skippingCommandBlock = false;
+          cleanedLines.push(line);
+        }
+        continue;
+      }
+
+      cleanedLines.push(line);
+    }
+
+    return cleanedLines.join("\n");
+  }
+
   private _cleanCommentBody(body: string): string {
     const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
+    const withoutQuotedText = body
+      // Remove quoted text
+      .replace(/^>.*$/gm, "");
     return (
-      body
-        // Remove quoted text
-        .replace(/^>.*$/gm, "")
-        // Remove commands such as /start
-        .replace(/^\/.+/g, "")
+      this._removeSlashCommandBlocks(withoutQuotedText)
         // Remove HTML comments
         .replace(/<!--[\s\S]*?-->/g, "")
         // Remove the footnotes
