@@ -98,6 +98,7 @@ afterAll(() => server.close());
 describe("Purging tests", () => {
   const issue = parseGitHubUrl(issueUrl);
   let activity: IssueActivity;
+  let dataPurgeModule: DataPurgeModule;
 
   beforeEach(async () => {
     drop(db);
@@ -110,6 +111,7 @@ describe("Purging tests", () => {
     const { IssueActivity } = await import("../src/issue-activity");
     activity = new IssueActivity(ctx, issue);
     await activity.init();
+    dataPurgeModule = new DataPurgeModule(ctx);
   });
 
   it("Should purge collapsed comments", async () => {
@@ -121,5 +123,15 @@ describe("Purging tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
+  });
+
+  it("Should purge multiline slash command comments", () => {
+    expect(dataPurgeModule["_cleanCommentBody"]("/ask\nPlease score this as a normal comment.")).toBe("");
+  });
+
+  it("Should keep inline slash command references in normal comments", () => {
+    expect(dataPurgeModule["_cleanCommentBody"]("Use `/help` if you need a command list.")).toBe(
+      "Use `/help` if you need a command list."
+    );
   });
 });
