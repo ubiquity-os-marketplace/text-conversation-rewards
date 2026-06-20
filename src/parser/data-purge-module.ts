@@ -1,4 +1,4 @@
-import { CommentAssociation } from "../configuration/comment-types";
+import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
 import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespan";
@@ -24,6 +24,17 @@ export class DataPurgeModule extends BaseModule {
     return true;
   }
 
+  private _isCurrentIssueAssignee(login?: string) {
+    if (!login || !("issue" in this.context.payload)) {
+      return false;
+    }
+    return this.context.payload.issue.assignees?.some((assignee) => assignee?.login === login) ?? false;
+  }
+
+  private _shouldKeepAssignedIssueComment(comment: CommentType) {
+    return Boolean(comment.commentType & CommentKind.ISSUE) && !this._isCurrentIssueAssignee(comment.user?.login);
+  }
+
   async _shouldSkipComment(comment: Awaited<ReturnType<IssueActivity["getAllComments"]>>[0]) {
     if ("isMinimized" in comment && comment.isMinimized) {
       this.context.logger.debug("Skipping hidden comment", { comment });
@@ -40,6 +51,9 @@ export class DataPurgeModule extends BaseModule {
         this._configuration.skipCommentsWhileAssigned === "exact"
       )
     ) {
+      if (this._shouldKeepAssignedIssueComment(comment)) {
+        return false;
+      }
       this.context.logger.debug("Skipping comment during assignment", {
         body: comment.body?.replace(/(.{100})..+/, "$1…"),
         url: comment.html_url,
