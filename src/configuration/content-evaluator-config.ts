@@ -1,6 +1,24 @@
 import { Static, Type } from "@sinclair/typebox";
 import { commentType } from "./formatting-evaluator-config";
 
+export const defaultEvaluationDimensions = [
+  {
+    name: "specification-relevance",
+    weight: 0.5,
+    prompt: "Rank from 0 to 1 how directly each comment helps solve the issue specification.",
+  },
+  {
+    name: "contributor-assistance",
+    weight: 0.25,
+    prompt: "Rank from 0 to 1 how helpful each comment is for answering contributor questions or unblocking work.",
+  },
+  {
+    name: "research-insight",
+    weight: 0.25,
+    prompt: "Rank from 0 to 1 how useful each comment is for adding research, context, or project insight.",
+  },
+];
+
 const reasoningEffortType = Type.Union(
   [
     Type.Literal("none"),
@@ -37,8 +55,32 @@ export function openAiType() {
   );
 }
 
+const evaluationDimensionType = Type.Object({
+  name: Type.String({
+    minLength: 1,
+    description: "Stable name for this evaluation dimension.",
+    examples: ["specification-relevance"],
+  }),
+  weight: Type.Number({
+    minimum: 0,
+    description: "Relative weight applied to this dimension when calculating the final relevance score.",
+    examples: [0.5, 1],
+  }),
+  prompt: Type.String({
+    minLength: 1,
+    description: "Instruction used when evaluating this dimension.",
+    examples: ["Rank from 0 to 1 how directly each comment helps solve the issue specification."],
+  }),
+});
+
 export const contentEvaluatorConfigurationType = Type.Object({
   openAi: openAiType(),
+  evaluationDimensions: Type.Array(evaluationDimensionType, {
+    minItems: 1,
+    default: defaultEvaluationDimensions,
+    description:
+      "Separate evaluation dimensions used to score comments. Each dimension is evaluated independently and then combined by weight.",
+  }),
   /**
    * Percentage (0.0-1.0) of reward to give to the original author when
    * "Originally posted by @username in URL" is detected
