@@ -2,6 +2,7 @@ import { Value } from "@sinclair/typebox/value";
 import {
   ContentEvaluatorConfiguration,
   contentEvaluatorConfigurationType,
+  defaultEvaluationDimensions,
 } from "../src/configuration/content-evaluator-config";
 
 type PartialContentEvaluatorConfiguration = Omit<Partial<ContentEvaluatorConfiguration>, "openAi"> & {
@@ -52,5 +53,6 @@ describe("ContentEvaluatorConfiguration Validation", () => {
     const decodedConfig = Value.Decode(contentEvaluatorConfigurationType, defaultedConfig);
     expect(decodedConfig.openAi.tokenCountLimit).toBe(124000);
     expect(decodedConfig.openAi.maxRetries).toBe(10);
+    expect(decodedConfig.evaluationDimensions).toEqual(defaultEvaluationDimensions);
   });
 });
