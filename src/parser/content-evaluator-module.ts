@@ -8,7 +8,7 @@ import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../co
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
-import { checkLlmRetryableState, retry } from "../helpers/retry";
+import { checkLlmRetryableState, getOpenRouterModelTokenLimits, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -38,6 +38,7 @@ export class ContentEvaluatorModule extends BaseModule {
   readonly _configuration: ContentEvaluatorConfiguration | null = this.context.config.incentives.contentEvaluator;
   private readonly _fixedRelevances: { [k: string]: number } = {};
   private _tokenLimit: number = 0;
+  _completionTokenLimit: number = 16384;
   private readonly _originalAuthorWeight: number = 0.5;
   private _basePriority: number = 1;
 
@@ -76,10 +77,7 @@ export class ContentEvaluatorModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!this._configuration?.openAi.tokenCountLimit) {
-      throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
-    }
-    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
+    this._tokenLimit = await this._resolveTokenLimit();
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
@@ -118,6 +116,39 @@ export class ContentEvaluatorModule extends BaseModule {
       await this._handleRewardsForOriginalAuthor(data.self.body, result);
     }
     return result;
+  }
+
+  async _resolveTokenLimit() {
+    if (!this._configuration?.openAi.tokenCountLimit) {
+      throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
+    }
+
+    const fallbackTokenLimit = this._configuration.openAi.tokenCountLimit;
+    const model = this._configuration.openAi.model?.trim();
+    if (!model) {
+      return fallbackTokenLimit;
+    }
+
+    try {
+      const modelTokenLimits = await retry(() => getOpenRouterModelTokenLimits(model), {
+        maxRetries: this._configuration.openAi.maxRetries ?? 5,
+        isErrorRetryable: checkLlmRetryableState,
+        onError: (err) => {
+          this.context.logger.warn("Failed to fetch the configured model token limit.", { model, err });
+        },
+      });
+
+      if (!modelTokenLimits) {
+        this.context.logger.warn("Failed to resolve the configured model token limit, using fallback.", { model });
+        return fallbackTokenLimit;
+      }
+
+      this._completionTokenLimit = modelTokenLimits.maxCompletionTokens;
+      return modelTokenLimits.contextLength;
+    } catch (err) {
+      this.context.logger.warn("Failed to resolve the configured model token limit, using fallback.", { model, err });
+      return fallbackTokenLimit;
+    }
   }
 
   /*
@@ -278,7 +309,7 @@ export class ContentEvaluatorModule extends BaseModule {
   /**
    * Will try to predict the maximum of tokens expected, to a maximum of totalTokenLimit.
    */
-  _calculateMaxTokens(prompt: string, totalTokenLimit: number = 16384) {
+  _calculateMaxTokens(prompt: string, totalTokenLimit: number = this._completionTokenLimit) {
     const tokenizer = encodingForModel("gpt-4o");
     const inputTokens = tokenizer.encode(prompt).length * 2; // Safety margin
     return Math.min(inputTokens, totalTokenLimit);
@@ -542,8 +573,10 @@ export class ContentEvaluatorModule extends BaseModule {
 
   async _submitPrompt(prompt: string, maxTokens: number): Promise<Relevances> {
     try {
+      const model = this._configuration?.openAi.model?.trim();
       const res = await callLlm(
         {
+          ...(model ? { model } : {}),
           response_format: { type: "json_object" },
           messages: [{ role: "system", content: prompt }],
           reasoning_effort: this._configuration?.openAi.reasoningEffort,
