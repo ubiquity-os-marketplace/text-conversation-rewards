@@ -20,6 +20,12 @@ const reasoningEffortType = Type.Union(
 export function openAiType() {
   return Type.Object(
     {
+      model: Type.Optional(
+        Type.String({
+          description: "OpenRouter model ID used for content evaluation and model token limit lookup.",
+          examples: ["openai/gpt-4o-mini"],
+        })
+      ),
       tokenCountLimit: Type.Integer({
         default: 124000,
         description:
