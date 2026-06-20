@@ -628,6 +628,8 @@ export class ContentEvaluatorModule extends BaseModule {
         - Relation to the issue description
         - Connection to other comments
         - Contribution to issue resolution
+        - Treat meta commentary about the reward or relevance evaluator as not task-relevant by itself
+        - Comments about scoring quality, saving the conversation as a test case, or improving this evaluator should score 0.0 unless it includes a concrete proposal for the issue itself
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
