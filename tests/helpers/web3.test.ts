@@ -55,6 +55,23 @@ describe("web3.ts", () => {
     expect(tokenBalance).toEqual(BigNumber.from("1000"));
   }, 120000);
 
+  it("Should explain when a token contract is missing on the selected network", async () => {
+    const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
+    const missingTokenContract = {
+      address: tokenAddress,
+      symbol: jest.fn().mockRejectedValue(Object.assign(new Error("call revert exception"), { code: "CALL_EXCEPTION" })),
+      provider: mockProvider,
+    };
+    const wrapper = new Erc20Wrapper(missingTokenContract as unknown as ethers.Contract, {
+      networkId: 1,
+      tokenAddress,
+    });
+
+    await expect(wrapper.getSymbol()).rejects.toThrow(
+      `This token \`${tokenAddress}\` was not found on network ID \`1\`.`
+    );
+  }, 120000);
+
   it("Should return correct wallet address", async () => {
     const evmWallet = await getEvmWallet(
       "100958e64966448354216e91d4d4b9418c3fa0cb0a21b935535ced1df8145a0e",
