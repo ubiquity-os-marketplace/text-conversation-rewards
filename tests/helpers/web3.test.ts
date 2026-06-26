@@ -13,8 +13,14 @@ import {
 } from "../../src/helpers/web3";
 
 class MockProvider extends ethers.providers.BaseProvider {
+  contractCode = "0x1234";
+
   async getNetwork(): Promise<ethers.providers.Network> {
     return this.network;
+  }
+
+  async getCode(): Promise<string> {
+    return this.contractCode;
   }
 }
 
@@ -57,6 +63,7 @@ describe("web3.ts", () => {
 
   it("Should explain when a token contract is missing on the selected network", async () => {
     const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
+    mockProvider.contractCode = "0x";
     const missingTokenContract = {
       address: tokenAddress,
       symbol: jest.fn().mockRejectedValue(Object.assign(new Error("call revert exception"), { code: "CALL_EXCEPTION" })),
@@ -70,6 +77,35 @@ describe("web3.ts", () => {
     await expect(wrapper.getSymbol()).rejects.toThrow(
       `This token \`${tokenAddress}\` was not found on network ID \`1\`.`
     );
+  }, 120000);
+
+  it("Should explain missing token contracts using provider metadata when context is absent", async () => {
+    const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
+    mockProvider.contractCode = "0x";
+    const missingTokenContract = {
+      address: tokenAddress,
+      symbol: jest.fn().mockRejectedValue(Object.assign(new Error("call revert exception"), { code: "CALL_EXCEPTION" })),
+      provider: mockProvider,
+    };
+    const wrapper = new Erc20Wrapper(missingTokenContract as unknown as ethers.Contract);
+
+    await expect(wrapper.getSymbol()).rejects.toThrow(
+      `This token \`${tokenAddress}\` was not found on network ID \`100\`.`
+    );
+  }, 120000);
+
+  it("Should preserve call exceptions from existing token contracts", async () => {
+    const tokenAddress = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
+    const callException = Object.assign(new Error("symbol reverted"), { code: "CALL_EXCEPTION" });
+    mockProvider.contractCode = "0x1234";
+    const existingTokenContract = {
+      address: tokenAddress,
+      symbol: jest.fn().mockRejectedValue(callException),
+      provider: mockProvider,
+    };
+    const wrapper = new Erc20Wrapper(existingTokenContract as unknown as ethers.Contract);
+
+    await expect(wrapper.getSymbol()).rejects.toBe(callException);
   }, 120000);
 
   it("Should return correct wallet address", async () => {

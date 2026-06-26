@@ -70,8 +70,12 @@ export class Erc20Wrapper {
     if (this._context.networkId !== undefined) {
       return this._context.networkId;
     }
-    const network = await this._contract.provider.getNetwork();
-    return network.chainId;
+    try {
+      const network = await this._contract.provider.getNetwork();
+      return network.chainId;
+    } catch {
+      return "unknown";
+    }
   }
 
   /**
@@ -86,6 +90,10 @@ export class Erc20Wrapper {
         throw e;
       }
       const tokenAddress = this._context.tokenAddress ?? this._contract.address;
+      const contractCode = await this._contract.provider.getCode(tokenAddress);
+      if (contractCode !== "0x") {
+        throw e;
+      }
       const networkId = await this._getNetworkId();
       throw new Error(`This token \`${tokenAddress}\` was not found on network ID \`${networkId}\`.`);
     }
