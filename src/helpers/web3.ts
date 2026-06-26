@@ -12,6 +12,10 @@ export interface BatchTransferPermit {
   signature: string;
   transfers: { to: string; requestedAmount: BigNumberish }[];
 }
+export interface Erc20ContractContext {
+  networkId?: number;
+  tokenAddress?: string;
+}
 // Required ERC20 ABI functions
 export const ERC20_ABI = [
   "function symbol() view returns (string)",
@@ -48,14 +52,43 @@ export async function getEvmWallet(privateKey: string, provider: ethers.provider
 }
 
 export class Erc20Wrapper {
-  constructor(private _contract: Contract) {}
+  constructor(
+    private _contract: Contract,
+    private _context: Erc20ContractContext = {}
+  ) {}
+
+  private _isContractCallException(error: unknown) {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as { code?: unknown }).code === "CALL_EXCEPTION"
+    );
+  }
+
+  private async _getNetworkId() {
+    if (this._context.networkId !== undefined) {
+      return this._context.networkId;
+    }
+    const network = await this._contract.provider.getNetwork();
+    return network.chainId;
+  }
 
   /**
    * Returns ERC20 token symbol
    * @returns ERC20 token symbol
    */
   async getSymbol() {
-    return await this._contract.symbol();
+    try {
+      return await this._contract.symbol();
+    } catch (e) {
+      if (!this._isContractCallException(e)) {
+        throw e;
+      }
+      const tokenAddress = this._context.tokenAddress ?? this._contract.address;
+      const networkId = await this._getNetworkId();
+      throw new Error(`This token \`${tokenAddress}\` was not found on network ID \`${networkId}\`.`);
+    }
   }
 
   /**
