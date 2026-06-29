@@ -449,6 +449,20 @@ describe("payment-module.ts", () => {
       expect(payoutMode).toEqual("permit");
     });
 
+    it("Should return `null` when the latest payout marker is `transfer` and the issue was not reopened after it", async () => {
+      ctx.config.incentives.payment = { automaticTransferMode: true };
+      const paymentModule = new PaymentModule(ctx);
+
+      const payoutMode = await paymentModule._getPayoutMode({
+        comments: [
+          { body: `...${PAYOUT_MODE_PERMIT}...`, user: { type: "Bot" }, created_at: "2026-01-01T00:00:00Z" },
+          { body: `...${PAYOUT_MODE_TRANSFER}....`, user: { type: "Bot" }, created_at: "2026-01-02T00:00:00Z" },
+        ],
+        events: [],
+      } as unknown as IssueActivity);
+      expect(payoutMode).toEqual(null);
+    });
+
     it("Should return `permit` if the `payoutMode` was already set to `permit` or `autoTransferMode` is set to `false`", async () => {
       ctx.config.incentives.payment = { automaticTransferMode: false };
       const paymentModule = new PaymentModule(ctx);

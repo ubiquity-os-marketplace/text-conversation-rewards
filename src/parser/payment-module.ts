@@ -358,17 +358,26 @@ export class PaymentModule extends BaseModule {
       .filter((ts) => Number.isFinite(ts))
       .sort((a, b) => b - a)[0];
 
-    for (const comment of data.comments) {
-      if (comment.body && comment.user?.type === "Bot") {
-        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) {
-          const commentTimestamp = comment.created_at ? new Date(comment.created_at).getTime() : Number.NaN;
-          if (Number.isFinite(lastReopenedAt) && Number.isFinite(commentTimestamp) && lastReopenedAt > commentTimestamp) {
-            // Reopened after a previous transfer: allow permit mode so differential updates can be persisted safely.
-            return "permit";
-          }
-          return null;
-        } else if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
-      }
+    const payoutModeComments = data.comments
+      .filter((comment) => comment.body && comment.user?.type === "Bot")
+      .map((comment) => ({
+        comment,
+        timestamp: comment.created_at ? new Date(comment.created_at).getTime() : Number.NaN,
+      }))
+      .filter(
+        ({ comment, timestamp }) =>
+          Number.isFinite(timestamp) && /"payoutMode":\s*"(transfer|permit)"/.test(comment.body ?? "")
+      )
+      .sort((a, b) => b.timestamp - a.timestamp);
+
+    for (const { comment, timestamp } of payoutModeComments) {
+      if (/"payoutMode":\s*"transfer"/.test(comment.body ?? "")) {
+        if (Number.isFinite(lastReopenedAt) && lastReopenedAt > timestamp) {
+          // Reopened after a previous transfer: allow permit mode so differential updates can be persisted safely.
+          return "permit";
+        }
+        return null;
+      } else if (/"payoutMode":\s*"permit"/.test(comment.body ?? "")) return "permit";
     }
     return this._autoTransferMode ? "transfer" : "permit";
   }
