@@ -21,6 +21,7 @@ import { BigNumber, ethers, utils } from "ethers";
 import type { Database } from "../adapters/supabase/types/database";
 import { PaymentConfiguration, paymentConfigurationType } from "../configuration/payment-configuration";
 import { isAdmin, isCollaborative } from "../helpers/checkers";
+import { prefundWalletWithFaucet } from "../helpers/faucet";
 import { getUserRewardRole } from "../helpers/permissions";
 import { isGlobalRewardSettings, resolveRewardSettingsForRole, rewardConfigKey } from "../helpers/reward-settings";
 import {
@@ -307,6 +308,22 @@ export class PaymentModule extends BaseModule {
         result[username].permitUrl = `https://pay.ubq.fi?claim=${encodePermits(permits)}`;
         result[username].payoutMode = "permit";
         await this._savePermitsToDatabase(result[username], { issueUrl: payload.issueUrl, issueId }, permits);
+
+        if (reward.walletAddress) {
+          try {
+            await prefundWalletWithFaucet(reward.walletAddress);
+            this.context.logger.info("Requested faucet prefund for new permit recipient", {
+              username,
+              walletAddress: reward.walletAddress,
+            });
+          } catch (e) {
+            this.context.logger.warn("Failed to request faucet prefund", {
+              username,
+              walletAddress: reward.walletAddress,
+              e,
+            });
+          }
+        }
       }
     }
 
@@ -362,7 +379,9 @@ export class PaymentModule extends BaseModule {
   }
 
   _getNetworkExplorer(networkId: number): string {
-    const chain = chains.find((chain) => chain.chainId === networkId);
+    const chain = (chains as Array<{ chainId: number; explorers?: { url: string }[] }>).find(
+      (chain) => chain.chainId === networkId
+    );
     return chain?.explorers?.[0].url || "https://blockscan.com";
   }
 
