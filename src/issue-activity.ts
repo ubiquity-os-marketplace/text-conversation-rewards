@@ -198,6 +198,9 @@ export class IssueActivity {
     for (const value of Object.values(linkedPullRequest)) {
       if (Array.isArray(value)) {
         for (const review of value) {
+          if ("body" in review && isSlashCommandComment(review.body)) {
+            continue;
+          }
           this._addAnchorToUrl(review);
           comments.push({
             ...review,
