@@ -14,6 +14,7 @@ import {
   GitHubPullRequestReviewState,
 } from "./github-types";
 import { areLoginsEquivalent } from "./helpers/github";
+import { isSlashCommandComment } from "./helpers/comment-command";
 import { isPullRequestEvent } from "./helpers/type-assertions";
 import {
   getIssue,
@@ -247,18 +248,20 @@ export class IssueActivity {
         commentType: CommentKind | CommentAssociation;
         timestamp: string;
       }
-    > = this.comments.map((comment) => {
-      this._addAnchorToUrl(comment);
-      return {
-        ...comment,
-        timestamp: comment.created_at,
-        commentType: this._getTypeFromComment(
-          this.self?.pull_request ? CommentKind.PULL : CommentKind.ISSUE,
-          comment,
-          this.self
-        ),
-      };
-    });
+    > = this.comments
+      .filter((comment) => !isSlashCommandComment(comment.body))
+      .map((comment) => {
+        this._addAnchorToUrl(comment);
+        return {
+          ...comment,
+          timestamp: comment.created_at,
+          commentType: this._getTypeFromComment(
+            this.self?.pull_request ? CommentKind.PULL : CommentKind.ISSUE,
+            comment,
+            this.self
+          ),
+        };
+      });
     if (this.self) {
       const c: GitHubIssue = this.self;
       this._addAnchorToUrl(c);
