@@ -3,7 +3,7 @@ import {
   ReviewIncentivizerConfiguration,
   reviewIncentivizerConfigurationType,
 } from "../configuration/review-incentivizer-config";
-import { GitHubPullRequestReviewState } from "../github-types";
+import { GitHubPullRequestReviewComment, GitHubPullRequestReviewState } from "../github-types";
 import { getExcludedFiles, shouldExcludeFile } from "../helpers/excluded-files";
 import { PullRequestData } from "../helpers/pull-request-data";
 import { IssueActivity } from "../issue-activity";
@@ -57,6 +57,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             baseRef,
             headOwnerRepo ?? "",
             reviewsByUser,
+            linkedPullReviews.reviewComments,
             priority
           );
           reward.reviewRewards.push({ reviews: reviewDiffs, url: linkedPullReviews.self.html_url });
@@ -121,6 +122,7 @@ export class ReviewIncentivizerModule extends BaseModule {
     baseRef: string,
     headOwnerRepo: string,
     reviewsByUser: GitHubPullRequestReviewState[],
+    reviewComments: GitHubPullRequestReviewComment[] | null,
     priority: number
   ) {
     if (reviewsByUser.length == 0) {
@@ -139,11 +141,18 @@ export class ReviewIncentivizerModule extends BaseModule {
       throw this.context.logger.error("Could not fetch base commit for this pull request");
     }
     const excludedFilePatterns = await getExcludedFiles(this.context, baseOwner, baseRepo, baseRef);
-    for (const [i, currentReview] of reviewsByUser.entries()) {
+    let lastRewardedReviewCommitSha = firstCommitSha;
+    for (const currentReview of reviewsByUser) {
       if (!currentReview.commit_id) continue;
+      if (!this.isReviewEligibleForIncentives(currentReview, reviewComments)) {
+        this.context.logger.debug("Skipping review without body or inline comments", {
+          reviewId: currentReview.id,
+          state: currentReview.state,
+        });
+        continue;
+      }
 
-      const previousReview = reviewsByUser[i - 1];
-      const baseSha = previousReview?.commit_id ? previousReview.commit_id : firstCommitSha;
+      const baseSha = lastRewardedReviewCommitSha;
       const headSha = `${headOwnerRepo.replace("/", ":")}:${currentReview.commit_id}`;
 
       if (headSha && baseSha !== currentReview.commit_id) {
@@ -169,6 +178,7 @@ export class ReviewIncentivizerModule extends BaseModule {
             reward: ((reviewEffect.addition + reviewEffect.deletion) * priority) / this._baseRate,
             priority: priority,
           });
+          lastRewardedReviewCommitSha = currentReview.commit_id;
         } catch (e) {
           this.context.logger.error(`Failed to get diff between commits ${baseSha} and ${headSha}:`, { e });
         }
@@ -176,6 +186,17 @@ export class ReviewIncentivizerModule extends BaseModule {
     }
 
     return reviews;
+  }
+
+  private isReviewEligibleForIncentives(
+    review: GitHubPullRequestReviewState,
+    reviewComments: GitHubPullRequestReviewComment[] | null
+  ) {
+    const hasReviewBody = Boolean(review.body?.trim());
+    const hasInlineComment = reviewComments?.some(
+      (comment) => comment.pull_request_review_id === review.id && Boolean(comment.body?.trim())
+    );
+    return hasReviewBody || hasInlineComment;
   }
 
   get enabled(): boolean {
