@@ -7,6 +7,7 @@ import { server } from "./__mocks__/node";
 import cfg from "./__mocks__/results/valid-configuration.json";
 import { PullRequestData } from "../src/helpers/pull-request-data";
 import { ReviewIncentivizerModule } from "../src/parser/review-incentivizer-module";
+import { GitHubPullRequestReviewComment, GitHubPullRequestReviewState } from "../src/github-types";
 
 type MockGetContent = jest.Mock<
   (
@@ -34,6 +35,7 @@ beforeAll(() => server.listen());
 afterEach(() => {
   server.resetHandlers();
   mockGetContent.mockClear();
+  jest.restoreAllMocks();
 });
 afterAll(() => server.close());
 
@@ -72,6 +74,56 @@ describe("ReviewIncentivizerModule file exclusion", () => {
     );
     expect(result).toEqual({ addition: 100, deletion: 100 });
   });
+
+  it("should reward reviews with inline comments even when their body is empty", async () => {
+    mockPullRequestData();
+    mockGetContent.mockImplementation(mockNotFoundError);
+    const diffSpy = jest
+      .spyOn(reviewIncentivizer, "getReviewableDiff")
+      .mockResolvedValue({ addition: 10, deletion: 5 });
+
+    const result = await reviewIncentivizer.fetchReviewDiffRewards(
+      "owner",
+      "repo",
+      "main",
+      "fork/repo",
+      [mockReview({ id: 1, body: "", commitId: "commit-1" })],
+      [mockReviewComment(1)],
+      1
+    );
+
+    expect(result?.map((review) => review.reviewId)).toEqual([1]);
+    expect(diffSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("should skip empty approvals and keep the previous rewarded commit as the next diff base", async () => {
+    mockPullRequestData();
+    mockGetContent.mockImplementation(mockNotFoundError);
+    const diffSpy = jest
+      .spyOn(reviewIncentivizer, "getReviewableDiff")
+      .mockResolvedValue({ addition: 10, deletion: 5 });
+
+    const result = await reviewIncentivizer.fetchReviewDiffRewards(
+      "owner",
+      "repo",
+      "main",
+      "fork/repo",
+      [
+        mockReview({ id: 1, body: "Reviewed first commit", commitId: "commit-1" }),
+        mockReview({ id: 2, state: "APPROVED", body: "", commitId: "commit-2" }),
+        mockReview({ id: 3, body: "Reviewed follow-up commit", commitId: "commit-3" }),
+      ],
+      [],
+      1
+    );
+
+    expect(result?.map((review) => review.reviewId)).toEqual([1, 3]);
+    expect(diffSpy).toHaveBeenCalledTimes(2);
+    expect(diffSpy.mock.calls[0][2]).toBe("base");
+    expect(diffSpy.mock.calls[0][3]).toBe("fork:repo:commit-1");
+    expect(diffSpy.mock.calls[1][2]).toBe("commit-1");
+    expect(diffSpy.mock.calls[1][3]).toBe("fork:repo:commit-3");
+  });
 });
 
 function mockFileResponse(content: string): Promise<OctokitResponse<unknown>> {
@@ -87,6 +139,45 @@ function mockNotFoundError(): Promise<never> {
   const error = new Error("Not Found") as Error & { status?: number };
   error.status = 404;
   return Promise.reject(error);
+}
+
+function mockPullRequestData() {
+  jest.spyOn(PullRequestData.prototype, "fetchData").mockResolvedValue(undefined);
+  jest.spyOn(PullRequestData.prototype, "pullCommits", "get").mockReturnValue([
+    {
+      sha: "first-commit",
+      parentCount: 1,
+      parents: [{ sha: "base" }],
+    },
+  ] as never);
+}
+
+function mockReview({
+  id,
+  state = "COMMENTED",
+  body = "",
+  commitId,
+}: {
+  id: number;
+  state?: string;
+  body?: string;
+  commitId: string;
+}) {
+  return {
+    id,
+    state,
+    body,
+    commit_id: commitId,
+    pull_request_url: "https://api.github.com/repos/owner/repo/pulls/1",
+    user: { login: "reviewer" },
+  } as GitHubPullRequestReviewState;
+}
+
+function mockReviewComment(reviewId: number, body = "Inline review comment") {
+  return {
+    pull_request_review_id: reviewId,
+    body,
+  } as GitHubPullRequestReviewComment;
 }
 
 describe("getExcludedFiles tests", () => {
