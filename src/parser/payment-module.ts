@@ -49,6 +49,12 @@ interface Payload {
   issue: { node_id: string };
 }
 
+type PreviousRewards = Record<string, { total: number; payoutMode: PayoutMode }>;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 export interface Beneficiary {
   username: string;
   address: string;
@@ -114,17 +120,28 @@ export class PaymentModule extends BaseModule {
     }
 
     const payoutMode = await this._getPayoutMode(data);
-    if (payoutMode === null) {
+    const previousRewards = this._extractPreviousRewards(data);
+    const hasPreviousRewards = Object.keys(previousRewards).length > 0;
+    if (payoutMode === null && !hasPreviousRewards) {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
 
-    for (const group of tokenGroups) {
-      const groupResult = this._selectResultSubset(result, group.usernames);
-      await this._processTokenRewardGroup(data, groupResult, group.config, payoutMode);
-      this._removeTreasuryItem(result);
+    const payableResult = hasPreviousRewards ? this._computeDifferential(result, previousRewards) : result;
+    if (hasPreviousRewards && !Object.keys(payableResult).length) {
+      this.context.logger.info("No additional rewards to distribute for reopened issue.");
+      return payableResult;
     }
 
-    return result;
+    for (const group of tokenGroups) {
+      const groupResult = this._selectResultSubset(payableResult, group.usernames);
+      if (!Object.keys(groupResult).length) {
+        continue;
+      }
+      await this._processTokenRewardGroup(data, groupResult, group.config, payoutMode ?? "permit");
+      this._removeTreasuryItem(payableResult);
+    }
+
+    return payableResult;
   }
 
   private _selectResultSubset(result: Result, usernames: string[]): Result {
@@ -344,6 +361,118 @@ export class PaymentModule extends BaseModule {
     if (this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
       delete result[this.context.env.PERMIT_TREASURY_GITHUB_USERNAME];
     }
+  }
+
+  /**
+   * Extract previously emitted reward totals from bot comment metadata. This is
+   * used when an issue is reopened and closed again, so only newly-added reward
+   * amounts are distributed.
+   */
+  _extractPreviousRewards(data: Readonly<IssueActivity>): PreviousRewards {
+    const previousRewards: PreviousRewards = {};
+
+    for (const comment of data.comments) {
+      if (!comment.body || comment.user?.type !== "Bot") {
+        continue;
+      }
+      const commentPayoutMode = this._extractPayoutMode(comment.body);
+      for (const jsonValue of this._extractJsonValues(comment.body)) {
+        this._collectPreviousRewards(jsonValue, previousRewards, commentPayoutMode);
+      }
+    }
+
+    return previousRewards;
+  }
+
+  private _extractPayoutMode(body: string): PayoutMode | undefined {
+    if (/"payoutMode":\s*"transfer"/.exec(body)) {
+      return "transfer";
+    }
+    if (/"payoutMode":\s*"permit"/.exec(body)) {
+      return "permit";
+    }
+    return undefined;
+  }
+
+  private _extractJsonValues(body: string): unknown[] {
+    const values: unknown[] = [];
+    const blocks = body.match(/<!--[\s\S]*?-->/g) ?? [body];
+
+    for (const block of blocks) {
+      const matches = block.match(/\{[\s\S]*\}/g) ?? [];
+      for (const candidate of matches) {
+        try {
+          values.push(JSON.parse(candidate));
+        } catch {
+          // Ignore non-JSON metadata blocks.
+        }
+      }
+    }
+
+    return values;
+  }
+
+  private _collectPreviousRewards(value: unknown, previousRewards: PreviousRewards, payoutMode?: PayoutMode) {
+    if (!isRecord(value)) {
+      return;
+    }
+
+    for (const [username, userData] of Object.entries(value)) {
+      if (!isRecord(userData)) {
+        continue;
+      }
+
+      if (typeof userData.total === "number") {
+        previousRewards[username] = {
+          total: userData.total,
+          payoutMode: this._normalizePayoutMode(userData.payoutMode) ?? payoutMode ?? "permit",
+        };
+        continue;
+      }
+
+      this._collectPreviousRewards(userData, previousRewards, payoutMode);
+    }
+  }
+
+  private _normalizePayoutMode(value: unknown): PayoutMode | undefined {
+    return value === "transfer" || value === "permit" ? value : undefined;
+  }
+
+  /**
+   * Return only positive reward differences. New beneficiaries receive their
+   * full new amount; unchanged/decreased beneficiaries are omitted.
+   */
+  _computeDifferential(result: Result, previousRewards: PreviousRewards): Result {
+    const differential: Result = {};
+
+    for (const [username, reward] of Object.entries(result)) {
+      const previous = previousRewards[username];
+      if (!previous) {
+        differential[username] = reward;
+        continue;
+      }
+
+      const difference = new Decimal(reward.total).minus(previous.total).toNumber();
+      if (difference <= 0) {
+        this.context.logger.info(
+          `Skipping ${username}: previous reward ${previous.total}, new reward ${reward.total}, no positive difference.`
+        );
+        continue;
+      }
+
+      differential[username] = {
+        ...reward,
+        total: difference,
+        task: reward.task
+          ? {
+              ...reward.task,
+              reward: Math.min(reward.task.reward, difference),
+            }
+          : undefined,
+      };
+    }
+
+    return differential;
   }
 
   /* This method returns the transfer mode based on the following conditions:

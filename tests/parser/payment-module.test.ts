@@ -749,3 +749,71 @@ describe("payment-module.ts", () => {
     });
   });
 });
+
+describe("differential reward distribution for reopened issues", () => {
+  type DifferentialPaymentModule = {
+    _extractPreviousRewards(
+      data: Readonly<IssueActivity>
+    ): Record<string, { total: number; payoutMode: "transfer" | "permit" }>;
+    _computeDifferential(
+      result: Result,
+      previousRewards: Record<string, { total: number; payoutMode: "transfer" | "permit" }>
+    ): Result;
+  };
+
+  function differentialPaymentModule() {
+    return new PaymentModule(ctx) as unknown as DifferentialPaymentModule;
+  }
+
+  it("extracts previous rewards from bot comment metadata", () => {
+    const paymentModule = differentialPaymentModule();
+    const activity = {
+      comments: [
+        {
+          user: { type: "Bot" },
+          body: '<!-- {"output":{"alice":{"total":100,"payoutMode":"transfer","userId":1},"bob":{"total":50,"userId":2}}} -->',
+        },
+        {
+          user: { type: "User" },
+          body: '<!-- {"output":{"mallory":{"total":999,"payoutMode":"transfer","userId":3}}} -->',
+        },
+      ],
+    } as unknown as IssueActivity;
+
+    expect(paymentModule._extractPreviousRewards(activity)).toEqual({
+      alice: { total: 100, payoutMode: "transfer" },
+      bob: { total: 50, payoutMode: "transfer" },
+    });
+  });
+
+  it("computes only positive reward differences", () => {
+    const paymentModule = differentialPaymentModule();
+    const result: Result = {
+      alice: {
+        total: 150,
+        task: { reward: 100, multiplier: 1, timestamp: DEFAULT_TIMESTAMP, url: DEFAULT_URL },
+        userId: 1,
+      },
+      bob: {
+        total: 50,
+        task: { reward: 50, multiplier: 1, timestamp: DEFAULT_TIMESTAMP, url: DEFAULT_URL },
+        userId: 2,
+      },
+      carol: {
+        total: 20,
+        task: { reward: 20, multiplier: 1, timestamp: DEFAULT_TIMESTAMP, url: DEFAULT_URL },
+        userId: 3,
+      },
+    };
+
+    const differential = paymentModule._computeDifferential(result, {
+      alice: { total: 100, payoutMode: "transfer" },
+      bob: { total: 50, payoutMode: "permit" },
+    });
+
+    expect(differential.alice.total).toBe(50);
+    expect(differential.alice.task?.reward).toBe(50);
+    expect(differential.bob).toBeUndefined();
+    expect(differential.carol.total).toBe(20);
+  });
+});
