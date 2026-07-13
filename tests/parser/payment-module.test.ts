@@ -782,7 +782,24 @@ describe("differential reward distribution for reopened issues", () => {
 
     expect(paymentModule._extractPreviousRewards(activity)).toEqual({
       alice: { total: 100, payoutMode: "transfer" },
-      bob: { total: 50, payoutMode: "transfer" },
+      bob: { total: 50, payoutMode: "permit" },
+    });
+  });
+
+  it("uses an explicit distribution-level payout mode without inheriting unrelated user modes", () => {
+    const paymentModule = differentialPaymentModule();
+    const activity = {
+      comments: [
+        {
+          user: { type: "Bot" },
+          body: '<!-- {"output":{"alice":{"total":100,"payoutMode":"transfer","userId":1},"bob":{"total":50,"userId":2}},"payoutMode":"permit"} -->',
+        },
+      ],
+    } as unknown as IssueActivity;
+
+    expect(paymentModule._extractPreviousRewards(activity)).toEqual({
+      alice: { total: 100, payoutMode: "transfer" },
+      bob: { total: 50, payoutMode: "permit" },
     });
   });
 

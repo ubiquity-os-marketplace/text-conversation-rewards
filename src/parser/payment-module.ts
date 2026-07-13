@@ -375,23 +375,12 @@ export class PaymentModule extends BaseModule {
       if (!comment.body || comment.user?.type !== "Bot") {
         continue;
       }
-      const commentPayoutMode = this._extractPayoutMode(comment.body);
       for (const jsonValue of this._extractJsonValues(comment.body)) {
-        this._collectPreviousRewards(jsonValue, previousRewards, commentPayoutMode);
+        this._collectPreviousRewards(jsonValue, previousRewards);
       }
     }
 
     return previousRewards;
-  }
-
-  private _extractPayoutMode(body: string): PayoutMode | undefined {
-    if (/"payoutMode":\s*"transfer"/.exec(body)) {
-      return "transfer";
-    }
-    if (/"payoutMode":\s*"permit"/.exec(body)) {
-      return "permit";
-    }
-    return undefined;
   }
 
   private _extractJsonValues(body: string): unknown[] {
@@ -417,6 +406,8 @@ export class PaymentModule extends BaseModule {
       return;
     }
 
+    const distributionPayoutMode = this._normalizePayoutMode(value.payoutMode) ?? payoutMode;
+
     for (const [username, userData] of Object.entries(value)) {
       if (!isRecord(userData)) {
         continue;
@@ -425,12 +416,12 @@ export class PaymentModule extends BaseModule {
       if (typeof userData.total === "number") {
         previousRewards[username] = {
           total: userData.total,
-          payoutMode: this._normalizePayoutMode(userData.payoutMode) ?? payoutMode ?? "permit",
+          payoutMode: this._normalizePayoutMode(userData.payoutMode) ?? distributionPayoutMode ?? "permit",
         };
         continue;
       }
 
-      this._collectPreviousRewards(userData, previousRewards, payoutMode);
+      this._collectPreviousRewards(userData, previousRewards, distributionPayoutMode);
     }
   }
 
