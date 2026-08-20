@@ -8,7 +8,7 @@ import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../co
 import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
-import { checkLlmRetryableState, retry } from "../helpers/retry";
+import { checkLlmRetryableState, getOpenRouterModelTokenLimits, retry } from "../helpers/retry";
 import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
@@ -76,10 +76,16 @@ export class ContentEvaluatorModule extends BaseModule {
   }
 
   async transform(data: Readonly<IssueActivity>, result: Result) {
-    if (!this._configuration?.openAi.tokenCountLimit) {
-      throw this.context.logger.fatal("Token count limit is missing, comments cannot be evaluated.");
+    if (this._configuration?.openAi.tokenCountLimit) {
+      this._tokenLimit = this._configuration.openAi.tokenCountLimit;
+    } else {
+      const model = this._configuration?.openAi.model || "anthropic/claude-3.5-sonnet";
+      const tokenLimits = await getOpenRouterModelTokenLimits(model);
+      if (!tokenLimits?.contextLength) {
+        throw this.context.logger.fatal(`Token count limit is missing and could not be determined for model: ${model}`);
+      }
+      this._tokenLimit = tokenLimits.contextLength;
     }
-    this._tokenLimit = this._configuration.openAi.tokenCountLimit;
     this.context.logger.info(`Using token limit: ${this._tokenLimit}`);
 
     const promises: Promise<GithubCommentScore[]>[] = [];
@@ -544,6 +550,7 @@ export class ContentEvaluatorModule extends BaseModule {
     try {
       const res = await callLlm(
         {
+          model: this._configuration?.openAi.model,
           response_format: { type: "json_object" },
           messages: [{ role: "system", content: prompt }],
           reasoning_effort: this._configuration?.openAi.reasoningEffort,
