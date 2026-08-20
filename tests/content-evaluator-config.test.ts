@@ -32,6 +32,7 @@ describe("ContentEvaluatorConfiguration Validation", () => {
       openAi: {
         maxRetries: 3,
         tokenCountLimit: 100,
+        model: "anthropic/claude-3.5-sonnet",
       },
       originalAuthorWeight: 0.5,
     };
@@ -50,7 +51,21 @@ describe("ContentEvaluatorConfiguration Validation", () => {
 
     const defaultedConfig = Value.Default(contentEvaluatorConfigurationType, config);
     const decodedConfig = Value.Decode(contentEvaluatorConfigurationType, defaultedConfig);
-    expect(decodedConfig.openAi.tokenCountLimit).toBe(124000);
+    expect(decodedConfig.openAi.model).toBe("anthropic/claude-3.5-sonnet");
+    expect(decodedConfig.openAi.maxRetries).toBe(10);
+  });
+
+  it("should allow custom model in openAi config", () => {
+    const config: PartialContentEvaluatorConfiguration = {
+      openAi: {
+        model: "deepseek/deepseek-chat",
+      },
+      originalAuthorWeight: 0.5,
+    };
+
+    const defaultedConfig = Value.Default(contentEvaluatorConfigurationType, config);
+    const decodedConfig = Value.Decode(contentEvaluatorConfigurationType, defaultedConfig);
+    expect(decodedConfig.openAi.model).toBe("deepseek/deepseek-chat");
     expect(decodedConfig.openAi.maxRetries).toBe(10);
   });
 });
