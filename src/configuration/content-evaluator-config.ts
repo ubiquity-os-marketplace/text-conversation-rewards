@@ -20,12 +20,20 @@ const reasoningEffortType = Type.Union(
 export function openAiType() {
   return Type.Object(
     {
-      tokenCountLimit: Type.Integer({
-        default: 124000,
-        description:
-          "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation.",
-        examples: [124000],
-      }),
+      model: Type.Optional(
+        Type.String({
+          default: "anthropic/claude-3.5-sonnet",
+          description: "Model to use for content evaluation",
+          examples: ["anthropic/claude-3.5-sonnet"],
+        })
+      ),
+      tokenCountLimit: Type.Optional(
+        Type.Integer({
+          description:
+            "Token count limit used when truncating prompt content before evaluation. If the content goes beyond the token limit, it will get truncated during evaluation. If not specified, OpenRouter API will be used to determine the token limits.",
+          examples: [124000],
+        })
+      ),
       maxRetries: Type.Number({
         default: 10,
         description: "Maximum number of retries to make",
