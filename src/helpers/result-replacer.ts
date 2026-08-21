@@ -1,35 +1,40 @@
 import { commentEnum } from "../configuration/comment-types";
 
 export function commentTypeReplacer(key: string, value: string | number) {
-  // Changes "commentType" to be human-readable
-  if (key === "commentType" && typeof value === "number") {
-    const typeNames: string[] = [];
-    const types = Object.values(commentEnum) as number[];
-    types.reverse().forEach((typeValue) => {
-      if (value & typeValue) {
-        typeNames.push(commentEnum[typeValue]);
-      }
-    });
-    return typeNames.join("_");
-  }
-  return value;
+	// Changes "commentType" to be human-readable
+	if (key === "commentType" && typeof value === "number") {
+		const typeNames: string[] = [];
+		const types = Object.values(commentEnum) as number[];
+		types.reverse().forEach((typeValue) => {
+			if (value & typeValue) {
+				typeNames.push(commentEnum[typeValue]);
+			}
+		});
+		return typeNames.join("_");
+	}
+	return value;
 }
 
-export function removeKeyFromObject<T extends Record<string, unknown>>(obj: T, keyToRemove: string): T {
-  if (Array.isArray(obj)) {
-    return obj.map((item) => removeKeyFromObject(item, keyToRemove)) as unknown as T;
-  }
-  if (obj !== null && typeof obj === "object") {
-    const newObj = {} as Record<string, unknown>;
+export function removeKeyFromObject<T extends Record<string, unknown>>(
+	obj: T,
+	keyToRemove: string,
+): T {
+	if (Array.isArray(obj)) {
+		return obj.map((item) =>
+			removeKeyFromObject(item, keyToRemove),
+		) as unknown as T;
+	}
+	if (obj !== null && typeof obj === "object") {
+		const newObj = {} as Record<string, unknown>;
 
-    Object.keys(obj).forEach((key) => {
-      if (key !== keyToRemove) {
-        newObj[key] = removeKeyFromObject(obj[key] as T, keyToRemove);
-      }
-    });
+		Object.keys(obj).forEach((key) => {
+			if (key !== keyToRemove) {
+				newObj[key] = removeKeyFromObject(obj[key] as T, keyToRemove);
+			}
+		});
 
-    return newObj as T;
-  }
+		return newObj as T;
+	}
 
-  return obj;
+	return obj;
 }

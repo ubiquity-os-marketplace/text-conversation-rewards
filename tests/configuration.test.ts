@@ -5,27 +5,30 @@ import { FormattingEvaluatorModule } from "../src/parser/formatting-evaluator-mo
 import { ContextPlugin, pluginSettingsSchema } from "../src/types/plugin-input";
 
 describe("Configuration Tests", () => {
-  it("Formatting evaluator should parse the enums properly", () => {
-    const config = Value.Default(pluginSettingsSchema, {
-      incentives: {
-        formattingEvaluator: Value.Default(formattingEvaluatorConfigurationType, {}),
-      },
-    });
-    const formattingEvaluator = new FormattingEvaluatorModule({
-      config,
-    } as unknown as ContextPlugin);
+	it("Formatting evaluator should parse the enums properly", () => {
+		const config = Value.Default(pluginSettingsSchema, {
+			incentives: {
+				formattingEvaluator: Value.Default(
+					formattingEvaluatorConfigurationType,
+					{},
+				),
+			},
+		});
+		const formattingEvaluator = new FormattingEvaluatorModule({
+			config,
+		} as unknown as ContextPlugin);
 
-    expect(Object.keys(formattingEvaluator["_multipliers"])).toEqual([
-      "5",
-      "6",
-      "9",
-      "10",
-      "17",
-      "18",
-      "33",
-      "34",
-      "129",
-      "130",
-    ]);
-  });
+		expect(Object.keys(formattingEvaluator["_multipliers"])).toEqual([
+			"5",
+			"6",
+			"9",
+			"10",
+			"17",
+			"18",
+			"33",
+			"34",
+			"129",
+			"130",
+		]);
+	});
 });

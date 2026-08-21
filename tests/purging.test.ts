@@ -1,4 +1,12 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
+import {
+	afterAll,
+	afterEach,
+	beforeAll,
+	beforeEach,
+	describe,
+	it,
+	jest,
+} from "@jest/globals";
 import "./helpers/permit-mock";
 import { drop } from "@mswjs/data";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
@@ -19,76 +27,76 @@ import { IssueActivity } from "../src/issue-activity";
 const issueUrl = "https://github.com/Meniole/conversation-rewards/issues/13";
 
 jest
-  .spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
-  .mockImplementation((specification, userId, comments) => {
-    return Promise.resolve(
-      (() => {
-        const relevance: { [k: string]: number } = {};
-        comments.forEach((comment) => {
-          relevance[`${comment.id}`] = 0.8;
-        });
-        return relevance;
-      })()
-    );
-  });
+	.spyOn(ContentEvaluatorModule.prototype, "_evaluateComments")
+	.mockImplementation((specification, userId, comments) => {
+		return Promise.resolve(
+			(() => {
+				const relevance: { [k: string]: number } = {};
+				comments.forEach((comment) => {
+					relevance[`${comment.id}`] = 0.8;
+				});
+				return relevance;
+			})(),
+		);
+	});
 
 jest.mock("@actions/github", () => ({
-  context: {
-    runId: "1",
-    payload: {
-      repository: {
-        html_url: "https://github.com/ubiquity-os/conversation-rewards",
-      },
-    },
-  },
+	context: {
+		runId: "1",
+		payload: {
+			repository: {
+				html_url: "https://github.com/ubiquity-os/conversation-rewards",
+			},
+		},
+	},
 }));
 
 jest.mock("../src/data-collection/collect-linked-pulls", () => ({
-  collectLinkedPulls: jest.fn(() => []),
+	collectLinkedPulls: jest.fn(() => []),
 }));
 
 const ctx = {
-  eventName: "issues.closed",
-  payload: {
-    issue: {
-      html_url: issueUrl,
-      number: 13,
-      state_reason: "completed",
-      assignees: [],
-    },
-    repository: {
-      name: "conversation-rewards",
-      owner: {
-        login: "ubiquity-os",
-        id: 76412717,
-      },
-    },
-  },
-  config: cfg,
-  logger: new Logs("debug"),
-  octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
-  env: {
-    SUPABASE_URL: "http://localhost:8080",
-    SUPABASE_KEY: "1234",
-  },
-  commentHandler: {
-    postComment: jest.fn(),
-  },
+	eventName: "issues.closed",
+	payload: {
+		issue: {
+			html_url: issueUrl,
+			number: 13,
+			state_reason: "completed",
+			assignees: [],
+		},
+		repository: {
+			name: "conversation-rewards",
+			owner: {
+				login: "ubiquity-os",
+				id: 76412717,
+			},
+		},
+	},
+	config: cfg,
+	logger: new Logs("debug"),
+	octokit: new Octokit({ auth: process.env.GITHUB_TOKEN }),
+	env: {
+		SUPABASE_URL: "http://localhost:8080",
+		SUPABASE_KEY: "1234",
+	},
+	commentHandler: {
+		postComment: jest.fn(),
+	},
 } as unknown as ContextPlugin;
 
 jest.mock("../src/helpers/get-comment-details", () => ({
-  getMinimizedCommentStatus: jest.fn((comments: GitHubIssueComment[]) => {
-    for (let i = 0; i < comments.length; i++) {
-      const comment = comments[i];
-      comment.isMinimized = i === 0;
-    }
-  }),
+	getMinimizedCommentStatus: jest.fn((comments: GitHubIssueComment[]) => {
+		for (let i = 0; i < comments.length; i++) {
+			const comment = comments[i];
+			comment.isMinimized = i === 0;
+		}
+	}),
 }));
 
 jest.mock("@supabase/supabase-js", () => {
-  return {
-    createClient: jest.fn(() => ({})),
-  };
+	return {
+		createClient: jest.fn(() => ({})),
+	};
 });
 
 beforeAll(() => server.listen());
@@ -96,30 +104,33 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("Purging tests", () => {
-  const issue = parseGitHubUrl(issueUrl);
-  let activity: IssueActivity;
+	const issue = parseGitHubUrl(issueUrl);
+	let activity: IssueActivity;
 
-  beforeEach(async () => {
-    drop(db);
-    for (const table of Object.keys(dbSeed)) {
-      const tableName = table as keyof typeof dbSeed;
-      for (const row of dbSeed[tableName]) {
-        db[tableName].create(row);
-      }
-    }
-    const { IssueActivity } = await import("../src/issue-activity");
-    activity = new IssueActivity(ctx, issue);
-    await activity.init();
-  });
+	beforeEach(async () => {
+		drop(db);
+		for (const table of Object.keys(dbSeed)) {
+			const tableName = table as keyof typeof dbSeed;
+			for (const row of dbSeed[tableName]) {
+				db[tableName].create(row);
+			}
+		}
+		const { IssueActivity } = await import("../src/issue-activity");
+		activity = new IssueActivity(ctx, issue);
+		await activity.init();
+	});
 
-  it("Should purge collapsed comments", async () => {
-    const { Processor } = await import("../src/parser/processor");
+	it("Should purge collapsed comments", async () => {
+		const { Processor } = await import("../src/parser/processor");
 
-    const processor = new Processor(ctx);
-    // @ts-expect-error only for testing
-    processor["_transformers"] = [new UserExtractorModule(ctx), new DataPurgeModule(ctx)];
-    await processor.run(activity);
-    const result = JSON.parse(processor.dump());
-    expect(result).toEqual(hiddenCommentPurged);
-  });
+		const processor = new Processor(ctx);
+		// @ts-expect-error only for testing
+		processor["_transformers"] = [
+			new UserExtractorModule(ctx),
+			new DataPurgeModule(ctx),
+		];
+		await processor.run(activity);
+		const result = JSON.parse(processor.dump());
+		expect(result).toEqual(hiddenCommentPurged);
+	});
 });

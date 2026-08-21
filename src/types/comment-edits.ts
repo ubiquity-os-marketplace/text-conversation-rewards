@@ -1,20 +1,20 @@
 export type UserContentEdits = {
-  nodes: {
-    createdAt: string;
-    editedAt: string;
-    diff: string;
-    editor: {
-      login: string;
-    };
-  }[];
+	nodes: {
+		createdAt: string;
+		editedAt: string;
+		diff: string;
+		editor: {
+			login: string;
+		};
+	}[];
 };
 
 export type IssueEdits = {
-  repository: {
-    issue: {
-      userContentEdits: UserContentEdits;
-    };
-  };
+	repository: {
+		issue: {
+			userContentEdits: UserContentEdits;
+		};
+	};
 };
 
 export const QUERY_ISSUE_EDITS = /* GraphQL */ `

@@ -1,13 +1,13 @@
 import { ClosedByPullRequestsReferences } from "../data-collection/collect-linked-pulls";
 
 export type PullRequestClosingIssue = {
-  repository: {
-    pullRequest: {
-      closingIssuesReferences: {
-        edges: ClosedByPullRequestsReferences[];
-      };
-    };
-  };
+	repository: {
+		pullRequest: {
+			closingIssuesReferences: {
+				edges: ClosedByPullRequestsReferences[];
+			};
+		};
+	};
 };
 
 export const LINKED_PULL_REQUESTS = /* GraphQL */ `

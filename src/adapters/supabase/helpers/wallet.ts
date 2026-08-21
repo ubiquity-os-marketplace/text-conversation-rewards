@@ -4,18 +4,25 @@ import { Database } from "../types/database";
 import { Super } from "./supabase";
 
 export class Wallet extends Super {
-  constructor(supabase: SupabaseClient<Database>, context: ContextPlugin) {
-    super(supabase, context);
-  }
+	constructor(supabase: SupabaseClient<Database>, context: ContextPlugin) {
+		super(supabase, context);
+	}
 
-  async getWalletByUserId(userId: number) {
-    const { data, error } = await this.supabase.from("users").select("wallets(*)").eq("id", userId).maybeSingle();
-    if (error) {
-      this.context.logger.error("Failed to get wallet", { userId, err: error });
-      throw error;
-    }
+	async getWalletByUserId(userId: number) {
+		const { data, error } = await this.supabase
+			.from("users")
+			.select("wallets(*)")
+			.eq("id", userId)
+			.maybeSingle();
+		if (error) {
+			this.context.logger.error("Failed to get wallet", { userId, err: error });
+			throw error;
+		}
 
-    this.context.logger.ok("Successfully fetched wallet", { userId, address: data?.wallets?.address });
-    return data?.wallets?.address ?? null;
-  }
+		this.context.logger.ok("Successfully fetched wallet", {
+			userId,
+			address: data?.wallets?.address,
+		});
+		return data?.wallets?.address ?? null;
+	}
 }

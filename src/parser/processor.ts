@@ -21,89 +21,102 @@ import { ExternalContentProcessor } from "./external-content-module";
 type IssueAssignee = NonNullable<GitHubIssue["assignees"]>[number];
 
 export class Processor {
-  protected readonly _transformers: Module[] = [];
-  protected _result: Result = {};
-  protected readonly _context: ContextPlugin;
-  protected readonly _configuration;
+	protected readonly _transformers: Module[] = [];
+	protected _result: Result = {};
+	protected readonly _context: ContextPlugin;
+	protected readonly _configuration;
 
-  constructor(
-    context: ContextPlugin,
-    modulesToAdd: Module[] = [
-      new UserExtractorModule(context),
-      new DataPurgeModule(context),
-      new ExternalContentProcessor(context),
-      new FormattingEvaluatorModule(context),
-      new ContentEvaluatorModule(context),
-      new ReviewIncentivizerModule(context),
-      new EventIncentivesModule(context),
-      new SimplificationIncentivizerModule(context),
-      new PaymentModule(context),
-      new GithubCommentModule(context),
-    ]
-  ) {
-    this._transformers.push(...modulesToAdd);
-    this._context = context;
-    this._configuration = this._context.config.incentives;
-  }
+	constructor(
+		context: ContextPlugin,
+		modulesToAdd: Module[] = [
+			new UserExtractorModule(context),
+			new DataPurgeModule(context),
+			new ExternalContentProcessor(context),
+			new FormattingEvaluatorModule(context),
+			new ContentEvaluatorModule(context),
+			new ReviewIncentivizerModule(context),
+			new EventIncentivesModule(context),
+			new SimplificationIncentivizerModule(context),
+			new PaymentModule(context),
+			new GithubCommentModule(context),
+		],
+	) {
+		this._transformers.push(...modulesToAdd);
+		this._context = context;
+		this._configuration = this._context.config.incentives;
+	}
 
-  add(transformer: Module) {
-    this._transformers.push(transformer);
-    return this;
-  }
+	add(transformer: Module) {
+		this._transformers.push(transformer);
+		return this;
+	}
 
-  async _getRewardsLimit(issue: GitHubIssue | null) {
-    if (!this._configuration.limitRewards) {
-      return Infinity;
-    }
-    const priceTagReward = await getTaskReward(this._context, issue);
-    return priceTagReward ?? Infinity;
-  }
+	async _getRewardsLimit(issue: GitHubIssue | null) {
+		if (!this._configuration.limitRewards) {
+			return Infinity;
+		}
+		const priceTagReward = await getTaskReward(this._context, issue);
+		return priceTagReward ?? Infinity;
+	}
 
-  async run(data: Readonly<IssueActivity>) {
-    const rewardLimit = await this._getRewardsLimit(data.self);
+	async run(data: Readonly<IssueActivity>) {
+		const rewardLimit = await this._getRewardsLimit(data.self);
 
-    for (const transformer of this._transformers) {
-      if (transformer.enabled) {
-        this._result = await transformer.transform(data, this._result);
-      }
-      // Aggregate total result
-      for (const username of Object.keys(this._result)) {
-        if (data.self?.assignees?.map((assignee: IssueAssignee) => assignee.login).includes(username)) {
-          this._result[username].total = this._sumRewards(this._result[username], rewardLimit);
-        } else {
-          this._result[username].total = Math.min(this._sumRewards(this._result[username], rewardLimit), rewardLimit);
-        }
-      }
-    }
-    return this._result;
-  }
+		for (const transformer of this._transformers) {
+			if (transformer.enabled) {
+				this._result = await transformer.transform(data, this._result);
+			}
+			// Aggregate total result
+			for (const username of Object.keys(this._result)) {
+				if (
+					data.self?.assignees
+						?.map((assignee: IssueAssignee) => assignee.login)
+						.includes(username)
+				) {
+					this._result[username].total = this._sumRewards(
+						this._result[username],
+						rewardLimit,
+					);
+				} else {
+					this._result[username].total = Math.min(
+						this._sumRewards(this._result[username], rewardLimit),
+						rewardLimit,
+					);
+				}
+			}
+		}
+		return this._result;
+	}
 
-  dump() {
-    const { file } = this._configuration;
-    const result = JSON.stringify(this._result, commentTypeReplacer, 2);
-    if (!file) {
-      this._context.logger.verbose(result);
-    } else {
-      fs.writeFileSync(file, result);
-    }
-    return result;
-  }
+	dump() {
+		const { file } = this._configuration;
+		const result = JSON.stringify(this._result, commentTypeReplacer, 2);
+		if (!file) {
+			this._context.logger.verbose(result);
+		} else {
+			fs.writeFileSync(file, result);
+		}
+		return result;
+	}
 
-  _sumRewards(obj: Record<string, unknown>, taskRewardLimit = Infinity) {
-    let totalReward = new Decimal(0);
-    if (!obj) {
-      return 0;
-    }
-    for (const [key, value] of Object.entries(obj)) {
-      if (key === "reward" && typeof value === "number") {
-        totalReward = totalReward.add(Math.min(value, taskRewardLimit));
-      } else if (typeof value === "object") {
-        totalReward = totalReward.add(
-          Math.min(this._sumRewards(value as Record<string, unknown>, taskRewardLimit), taskRewardLimit)
-        );
-      }
-    }
+	_sumRewards(obj: Record<string, unknown>, taskRewardLimit = Infinity) {
+		let totalReward = new Decimal(0);
+		if (!obj) {
+			return 0;
+		}
+		for (const [key, value] of Object.entries(obj)) {
+			if (key === "reward" && typeof value === "number") {
+				totalReward = totalReward.add(Math.min(value, taskRewardLimit));
+			} else if (typeof value === "object") {
+				totalReward = totalReward.add(
+					Math.min(
+						this._sumRewards(value as Record<string, unknown>, taskRewardLimit),
+						taskRewardLimit,
+					),
+				);
+			}
+		}
 
-    return totalReward.toNumber();
-  }
+		return totalReward.toNumber();
+	}
 }

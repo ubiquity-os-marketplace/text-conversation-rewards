@@ -88,443 +88,738 @@ import pullsCommentsGet from "./routes/pulls-comments-get.json";
 import pullsGet from "./routes/pulls-get.json";
 import pullsReviewsGet from "./routes/pulls-reviews-get.json";
 
-const issueCommentReactionsById: Record<string, { content: string; user: { login: string } }[]> = {
-  "2036516869": [{ content: "eyes", user: { login: "0x4007" } }],
-  "2053332029": [{ content: "eyes", user: { login: "0x4007" } }],
-  "2055783331": [{ content: "+1", user: { login: "whilefoo" } }],
+const issueCommentReactionsById: Record<
+	string,
+	{ content: string; user: { login: string } }[]
+> = {
+	"2036516869": [{ content: "eyes", user: { login: "0x4007" } }],
+	"2053332029": [{ content: "eyes", user: { login: "0x4007" } }],
+	"2055783331": [{ content: "+1", user: { login: "whilefoo" } }],
 };
 
-const pullReviewCommentReactionsById: Record<string, { content: string; user: { login: string } }[]> = {
-  "1570133378": [{ content: "+1", user: { login: "0x4007" } }],
-  "1570591425": [{ content: "rocket", user: { login: "gentlementlegen" } }],
-  "1573413974": [{ content: "eyes", user: { login: "gentlementlegen" } }],
-  "1573733603": [{ content: "+1", user: { login: "gentlementlegen" } }],
-  "1574702577": [{ content: "+1", user: { login: "gentlementlegen" } }],
-  "1575659438": [{ content: "eyes", user: { login: "gentlementlegen" } }],
-  "1574427305": [{ content: "+1", user: { login: "gentlementlegen" } }],
-  "1578040543": [{ content: "+1", user: { login: "gentlementlegen" } }],
-  "1579556333": [{ content: "+1", user: { login: "gentlementlegen" } }],
+const pullReviewCommentReactionsById: Record<
+	string,
+	{ content: string; user: { login: string } }[]
+> = {
+	"1570133378": [{ content: "+1", user: { login: "0x4007" } }],
+	"1570591425": [{ content: "rocket", user: { login: "gentlementlegen" } }],
+	"1573413974": [{ content: "eyes", user: { login: "gentlementlegen" } }],
+	"1573733603": [{ content: "+1", user: { login: "gentlementlegen" } }],
+	"1574702577": [{ content: "+1", user: { login: "gentlementlegen" } }],
+	"1575659438": [{ content: "eyes", user: { login: "gentlementlegen" } }],
+	"1574427305": [{ content: "+1", user: { login: "gentlementlegen" } }],
+	"1578040543": [{ content: "+1", user: { login: "gentlementlegen" } }],
+	"1579556333": [{ content: "+1", user: { login: "gentlementlegen" } }],
 };
 
 /**
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
-  http.get("https://123-not-valid-url.com/", () => {
-    return HttpResponse.error();
-  }),
-  http.post("https://api.github.com/graphql", async (args) => {
-    // Check if this is a request for issue edits
-    const body = await args.request.text();
-    if (body.includes("IssueEdits") && body.includes("userContentEdits")) {
-      return HttpResponse.json({ data: issue100Edits });
-    } else if (body.includes("collectLinkedIssues")) {
-      return HttpResponse.json({
-        data: {
-          repository: {
-            pullRequest: {
-              closingIssuesReferences: {
-                edges: [
-                  {
-                    node: {
-                      author: { login: "0x4007" },
-                      repository: { name: "conversation-rewards" },
-                      labels: {
-                        nodes: [{ name: "Time: <1 Hour" }, { name: "Priority: 3 (High)" }, { name: "Price: 150 USD" }],
-                      },
-                    },
-                  },
-                ],
-                pageInfo: {
-                  hasNextPage: false,
-                  endCursor: "Y",
-                },
-              },
-            },
-          },
-        },
-      });
-    }
-    return HttpResponse.json(gqlPullCommits);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5", () => {
-    return HttpResponse.json(issue5Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/events", () => {
-    return HttpResponse.json(issue5EventsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/comments", () => {
-    return HttpResponse.json(issue5CommentsGet);
-  }),
-  http.get(
-    "https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/:comment_id/reactions",
-    ({ params }) => {
-      return HttpResponse.json(issueCommentReactionsById[params.comment_id.toString()] ?? []);
-    }
-  ),
-  http.get(
-    "https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/:comment_id/reactions",
-    ({ params }) => {
-      return HttpResponse.json(pullReviewCommentReactionsById[params.comment_id.toString()] ?? []);
-    }
-  ),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/comments", () => {
-    return HttpResponse.json(issue12CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12", () => {
-    return HttpResponse.json(issue12Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/events", () => {
-    return HttpResponse.json(issue12EventsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/timeline", () => {
-    return HttpResponse.json(issue12TimelineGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/1/timeline", () => {
-    return HttpResponse.json(issue1TimelineGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/commits/:sha", ({ params }) => {
-    const sha = params.sha.toString().toLowerCase();
-    if (sha === "e7b555da82bf378d8b97478b24e43614d03eb81f") return HttpResponse.json(commitE7b555da82bf378d8b97478b24e43614d03eb81fGet);
-    if (sha === "7e71e303ed86c0a64310e273fc3d868abc5c591f") return HttpResponse.json(commit7e71e303ed86c0a64310e273fc3d868abc5c591fGet);
-    if (sha === "8dea21d6eb08cbe6c0e80ec8744ab511090e003c") return HttpResponse.json(commit8dea21d6eb08cbe6c0e80ec8744ab511090e003cGet);
-    if (sha === "df2c34f172b9e4eb3cfd1a20dde7fcb142102053") return HttpResponse.json(commitDf2c34f172b9e4eb3cfd1a20dde7fcb142102053Get);
-    if (sha === "c9897e2cdb010848e77f6fd6eb45a09f4a639a6b") return HttpResponse.json(commitC9897e2cdb010848e77f6fd6eb45a09f4a639a6bGet);
-    if (sha === "29ce3c3860361f088f632cba7e12af695f093412") return HttpResponse.json(commit29ce3c3860361f088f632cba7e12af695f093412Get);
-    if (sha === "d29427ae2e5a253f3ac7a57979886e8dcab8a9ad") return HttpResponse.json(commitD29427ae2e5a253f3ac7a57979886e8dcab8a9adGet);
-    if (sha === "96f41042c16dbc14bde0ceaf7673384b3d1d7465") return HttpResponse.json(commit96f41042c16dbc14bde0ceaf7673384b3d1d7465Get);
-    if (sha === "43b1912bde2a1689b5fe5b0f443593d3c7de6f92") return HttpResponse.json(commit43b1912bde2a1689b5fe5b0f443593d3c7de6f92Get);
-    if (sha === "1f9b05032f3edb8492567f009860e4f277bc3ffa") return HttpResponse.json(commit1f9b05032f3edb8492567f009860e4f277bc3ffaGet);
-    if (sha === "3bab31a7bc48d868176e982c6dbb0087fdf275f4") return HttpResponse.json(commit3bab31a7bc48d868176e982c6dbb0087fdf275f4Get);
-    if (sha === "03fac6c8ec1585e26c78e01e653c8554297e8f47") return HttpResponse.json(commit03fac6c8ec1585e26c78e01e653c8554297e8f47Get);
-    if (sha === "119c633bb499a97dfd272d9a3a836d1417f604bb") return HttpResponse.json(commit119c633bb499a97dfd272d9a3a836d1417f604bbGet);
-    if (sha === "24c748dc2cdf4cd94f81540167da2e6fd09aa5e2") return HttpResponse.json(commit24c748dc2cdf4cd94f81540167da2e6fd09aa5e2Get);
-    if (sha === "5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5") return HttpResponse.json(commit5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5Get);
-    if (sha === "6567feb96e652df68887744b0dab2a52ddedfaf2") return HttpResponse.json(commit6567feb96e652df68887744b0dab2a52ddedfaf2Get);
-    if (sha === "559c13c9a7d548519a6434e1b8393fd0d5c8f3db") return HttpResponse.json(commit559c13c9a7d548519a6434e1b8393fd0d5c8f3dbGet);
-    if (sha === "abbcf3365cf8401033442120b4639d5b2bdcec67") return HttpResponse.json(commitAbbcf3365cf8401033442120b4639d5b2bdcec67Get);
-    if (sha === "02bf99457fdf61fd889fd31d674f72ec63b528f3") return HttpResponse.json(commit02bf99457fdf61fd889fd31d674f72ec63b528f3Get);
-    if (sha === "5bf432f61b035fee843b7c98ca767574bf0cb298") return HttpResponse.json(commit5bf432f61b035fee843b7c98ca767574bf0cb298Get);
-    if (sha === "3bab2b8fe8d648facc3f6274bbad60841f59db6a") return HttpResponse.json(commit3bab2b8fe8d648facc3f6274bbad60841f59db6aGet);
-    if (sha === "e61436b97e425d2cd6f9696cda279a14c5e471cc") return HttpResponse.json(commitE61436b97e425d2cd6f9696cda279a14c5e471ccGet);
-    if (sha === "73c650ffb68ba521c73b717dd66eba639abfba70") return HttpResponse.json(commit73c650ffb68ba521c73b717dd66eba639abfba70Get);
-    if (sha === "a22cec2655aa355cb50cb69c3938a9bb94860777") return HttpResponse.json(commitA22cec2655aa355cb50cb69c3938a9bb94860777Get);
-    if (sha === "a12318e0a42de7481154b8162170e4a644199fc2") return HttpResponse.json(commitA12318e0a42de7481154b8162170e4a644199fc2Get);
-    return HttpResponse.json(
-      {
-        error: "Missing MSW fixture for commit",
-        sha,
-      },
-      { status: 500 }
-    );
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/timeline", () => {
-    return HttpResponse.json(issue5TimelineGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/reactions", () => {
-    return HttpResponse.json(issue5ReactionsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/:commentId/reactions", ({ params }) => {
-    const commentId = params.commentId.toString();
-    if (commentId === "2036516869") return HttpResponse.json(issueComment2036516869ReactionsGet);
-    if (commentId === "2053332029") return HttpResponse.json(issueComment2053332029ReactionsGet);
-    if (commentId === "2055783331") return HttpResponse.json(issueComment2055783331ReactionsGet);
-    return HttpResponse.json(
-      {
-        error: "Missing MSW fixture for issue comment reactions",
-        commentId,
-      },
-      { status: 500 }
-    );
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/:commentId/reactions", ({ params }) => {
-    const commentId = params.commentId.toString();
-    if (commentId === "1570133378") return HttpResponse.json(pullComment1570133378ReactionsGet);
-    if (commentId === "1570591425") return HttpResponse.json(pullComment1570591425ReactionsGet);
-    if (commentId === "1573413974") return HttpResponse.json(pullComment1573413974ReactionsGet);
-    if (commentId === "1573733603") return HttpResponse.json(pullComment1573733603ReactionsGet);
-    if (commentId === "1574427305") return HttpResponse.json(pullComment1574427305ReactionsGet);
-    if (commentId === "1574702577") return HttpResponse.json(pullComment1574702577ReactionsGet);
-    if (commentId === "1575659438") return HttpResponse.json(pullComment1575659438ReactionsGet);
-    if (commentId === "1578040543") return HttpResponse.json(pullComment1578040543ReactionsGet);
-    if (commentId === "1579556333") return HttpResponse.json(pullComment1579556333ReactionsGet);
-    return HttpResponse.json(
-      {
-        error: "Missing MSW fixture for pull comment reactions",
-        commentId,
-      },
-      { status: 500 }
-    );
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71", () => {
-    return HttpResponse.json(issue71Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/events", () => {
-    return HttpResponse.json(issue71EventsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/comments", () => {
-    return HttpResponse.json(issue71CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/timeline", () => {
-    return HttpResponse.json(issue71TimelineGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12", () => {
-    return HttpResponse.json(pull12Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/files", () => {
-    return HttpResponse.json(pull12FilesGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/reviews", () => {
-    return HttpResponse.json(pull12ReviewsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/comments", () => {
-    return HttpResponse.json(pull12CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13", () => {
-    return HttpResponse.json(issue13Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22", () => {
-    return HttpResponse.json(issue22Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69", () => {
-    return HttpResponse.json(issue69Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100", () => {
-    return HttpResponse.json(issue100Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/events", () => {
-    return HttpResponse.json(issue100EventsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/comments", () => {
-    return HttpResponse.json(issue100CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/timeline", () => {
-    return HttpResponse.json(issue100TimelineGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives", () => {
-    return HttpResponse.json(issue22Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/events", ({ params: { page } }) => {
-    return HttpResponse.json(!page ? issueEventsGet : issueEvents2Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/events", () => {
-    return HttpResponse.json(issue69EventsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/comments", () => {
-    return HttpResponse.json(issue22CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13/events", () => {
-    return HttpResponse.json(issue13EventsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/comments", () => {
-    return HttpResponse.json(issue69CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/25/comments", () => {
-    return HttpResponse.json(issue25CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/Meniole/conversation-rewards/issues/13/comments", () => {
-    return HttpResponse.json(issue13CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/timeline", () => {
-    return HttpResponse.json(issueTimelineGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/timeline", () => {
-    return HttpResponse.json(issue69TimelineGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25", () => {
-    return HttpResponse.json(pullsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25/reviews", () => {
-    return HttpResponse.json(pullsReviewsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25/comments", () => {
-    return HttpResponse.json(pullsCommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70", () => {
-    return HttpResponse.json(pulls70Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70/reviews", () => {
-    return HttpResponse.json(pullsReviewsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70/comments", () => {
-    return HttpResponse.json([]);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/70/comments", () => {
-    return HttpResponse.json(issue70CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71", () => {
-    return HttpResponse.json(pull71Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/reviews", () => {
-    return HttpResponse.json(pullsReviewsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/comments", () => {
-    return HttpResponse.json([]);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71/comments", () => {
-    return HttpResponse.json(issue71WorkUbqFiCommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101", () => {
-    return HttpResponse.json(pull101Get);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/reviews", () => {
-    return HttpResponse.json(pull101ReviewsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/comments", () => {
-    return HttpResponse.json(pull101CommentsGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/issues/101/comments", () => {
-    return HttpResponse.json(issue101CommentsGet);
-  }),
-  http.get("https://api.github.com/users/:login", ({ params: { login } }) => {
-    const user = db.users.findFirst({
-      where: {
-        login: {
-          equals: login.toString(),
-        },
-      },
-    });
-    if (!user) {
-      return HttpResponse.json("[mock] User was not found", { status: 404 });
-    }
-    return HttpResponse.json(user);
-  }),
-  http.get("https://api.github.com/orgs/:org/memberships/:username", ({ params }) => {
-    const { username } = params;
+	http.get("https://123-not-valid-url.com/", () => {
+		return HttpResponse.error();
+	}),
+	http.post("https://api.github.com/graphql", async (args) => {
+		// Check if this is a request for issue edits
+		const body = await args.request.text();
+		if (body.includes("IssueEdits") && body.includes("userContentEdits")) {
+			return HttpResponse.json({ data: issue100Edits });
+		} else if (body.includes("collectLinkedIssues")) {
+			return HttpResponse.json({
+				data: {
+					repository: {
+						pullRequest: {
+							closingIssuesReferences: {
+								edges: [
+									{
+										node: {
+											author: { login: "0x4007" },
+											repository: { name: "conversation-rewards" },
+											labels: {
+												nodes: [
+													{ name: "Time: <1 Hour" },
+													{ name: "Priority: 3 (High)" },
+													{ name: "Price: 150 USD" },
+												],
+											},
+										},
+									},
+								],
+								pageInfo: {
+									hasNextPage: false,
+									endCursor: "Y",
+								},
+							},
+						},
+					},
+				},
+			});
+		}
+		return HttpResponse.json(gqlPullCommits);
+	}),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5",
+		() => {
+			return HttpResponse.json(issue5Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/events",
+		() => {
+			return HttpResponse.json(issue5EventsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/comments",
+		() => {
+			return HttpResponse.json(issue5CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/:comment_id/reactions",
+		({ params }) => {
+			return HttpResponse.json(
+				issueCommentReactionsById[params.comment_id.toString()] ?? [],
+			);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/:comment_id/reactions",
+		({ params }) => {
+			return HttpResponse.json(
+				pullReviewCommentReactionsById[params.comment_id.toString()] ?? [],
+			);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/comments",
+		() => {
+			return HttpResponse.json(issue12CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12",
+		() => {
+			return HttpResponse.json(issue12Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/events",
+		() => {
+			return HttpResponse.json(issue12EventsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/12/timeline",
+		() => {
+			return HttpResponse.json(issue12TimelineGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/1/timeline",
+		() => {
+			return HttpResponse.json(issue1TimelineGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/commits/:sha",
+		({ params }) => {
+			const sha = params.sha.toString().toLowerCase();
+			if (sha === "e7b555da82bf378d8b97478b24e43614d03eb81f")
+				return HttpResponse.json(
+					commitE7b555da82bf378d8b97478b24e43614d03eb81fGet,
+				);
+			if (sha === "7e71e303ed86c0a64310e273fc3d868abc5c591f")
+				return HttpResponse.json(
+					commit7e71e303ed86c0a64310e273fc3d868abc5c591fGet,
+				);
+			if (sha === "8dea21d6eb08cbe6c0e80ec8744ab511090e003c")
+				return HttpResponse.json(
+					commit8dea21d6eb08cbe6c0e80ec8744ab511090e003cGet,
+				);
+			if (sha === "df2c34f172b9e4eb3cfd1a20dde7fcb142102053")
+				return HttpResponse.json(
+					commitDf2c34f172b9e4eb3cfd1a20dde7fcb142102053Get,
+				);
+			if (sha === "c9897e2cdb010848e77f6fd6eb45a09f4a639a6b")
+				return HttpResponse.json(
+					commitC9897e2cdb010848e77f6fd6eb45a09f4a639a6bGet,
+				);
+			if (sha === "29ce3c3860361f088f632cba7e12af695f093412")
+				return HttpResponse.json(
+					commit29ce3c3860361f088f632cba7e12af695f093412Get,
+				);
+			if (sha === "d29427ae2e5a253f3ac7a57979886e8dcab8a9ad")
+				return HttpResponse.json(
+					commitD29427ae2e5a253f3ac7a57979886e8dcab8a9adGet,
+				);
+			if (sha === "96f41042c16dbc14bde0ceaf7673384b3d1d7465")
+				return HttpResponse.json(
+					commit96f41042c16dbc14bde0ceaf7673384b3d1d7465Get,
+				);
+			if (sha === "43b1912bde2a1689b5fe5b0f443593d3c7de6f92")
+				return HttpResponse.json(
+					commit43b1912bde2a1689b5fe5b0f443593d3c7de6f92Get,
+				);
+			if (sha === "1f9b05032f3edb8492567f009860e4f277bc3ffa")
+				return HttpResponse.json(
+					commit1f9b05032f3edb8492567f009860e4f277bc3ffaGet,
+				);
+			if (sha === "3bab31a7bc48d868176e982c6dbb0087fdf275f4")
+				return HttpResponse.json(
+					commit3bab31a7bc48d868176e982c6dbb0087fdf275f4Get,
+				);
+			if (sha === "03fac6c8ec1585e26c78e01e653c8554297e8f47")
+				return HttpResponse.json(
+					commit03fac6c8ec1585e26c78e01e653c8554297e8f47Get,
+				);
+			if (sha === "119c633bb499a97dfd272d9a3a836d1417f604bb")
+				return HttpResponse.json(
+					commit119c633bb499a97dfd272d9a3a836d1417f604bbGet,
+				);
+			if (sha === "24c748dc2cdf4cd94f81540167da2e6fd09aa5e2")
+				return HttpResponse.json(
+					commit24c748dc2cdf4cd94f81540167da2e6fd09aa5e2Get,
+				);
+			if (sha === "5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5")
+				return HttpResponse.json(
+					commit5eaa303b08424e07e834c95fc6ad12ebb0c7b4c5Get,
+				);
+			if (sha === "6567feb96e652df68887744b0dab2a52ddedfaf2")
+				return HttpResponse.json(
+					commit6567feb96e652df68887744b0dab2a52ddedfaf2Get,
+				);
+			if (sha === "559c13c9a7d548519a6434e1b8393fd0d5c8f3db")
+				return HttpResponse.json(
+					commit559c13c9a7d548519a6434e1b8393fd0d5c8f3dbGet,
+				);
+			if (sha === "abbcf3365cf8401033442120b4639d5b2bdcec67")
+				return HttpResponse.json(
+					commitAbbcf3365cf8401033442120b4639d5b2bdcec67Get,
+				);
+			if (sha === "02bf99457fdf61fd889fd31d674f72ec63b528f3")
+				return HttpResponse.json(
+					commit02bf99457fdf61fd889fd31d674f72ec63b528f3Get,
+				);
+			if (sha === "5bf432f61b035fee843b7c98ca767574bf0cb298")
+				return HttpResponse.json(
+					commit5bf432f61b035fee843b7c98ca767574bf0cb298Get,
+				);
+			if (sha === "3bab2b8fe8d648facc3f6274bbad60841f59db6a")
+				return HttpResponse.json(
+					commit3bab2b8fe8d648facc3f6274bbad60841f59db6aGet,
+				);
+			if (sha === "e61436b97e425d2cd6f9696cda279a14c5e471cc")
+				return HttpResponse.json(
+					commitE61436b97e425d2cd6f9696cda279a14c5e471ccGet,
+				);
+			if (sha === "73c650ffb68ba521c73b717dd66eba639abfba70")
+				return HttpResponse.json(
+					commit73c650ffb68ba521c73b717dd66eba639abfba70Get,
+				);
+			if (sha === "a22cec2655aa355cb50cb69c3938a9bb94860777")
+				return HttpResponse.json(
+					commitA22cec2655aa355cb50cb69c3938a9bb94860777Get,
+				);
+			if (sha === "a12318e0a42de7481154b8162170e4a644199fc2")
+				return HttpResponse.json(
+					commitA12318e0a42de7481154b8162170e4a644199fc2Get,
+				);
+			return HttpResponse.json(
+				{
+					error: "Missing MSW fixture for commit",
+					sha,
+				},
+				{ status: 500 },
+			);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/timeline",
+		() => {
+			return HttpResponse.json(issue5TimelineGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/5/reactions",
+		() => {
+			return HttpResponse.json(issue5ReactionsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/comments/:commentId/reactions",
+		({ params }) => {
+			const commentId = params.commentId.toString();
+			if (commentId === "2036516869")
+				return HttpResponse.json(issueComment2036516869ReactionsGet);
+			if (commentId === "2053332029")
+				return HttpResponse.json(issueComment2053332029ReactionsGet);
+			if (commentId === "2055783331")
+				return HttpResponse.json(issueComment2055783331ReactionsGet);
+			return HttpResponse.json(
+				{
+					error: "Missing MSW fixture for issue comment reactions",
+					commentId,
+				},
+				{ status: 500 },
+			);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/comments/:commentId/reactions",
+		({ params }) => {
+			const commentId = params.commentId.toString();
+			if (commentId === "1570133378")
+				return HttpResponse.json(pullComment1570133378ReactionsGet);
+			if (commentId === "1570591425")
+				return HttpResponse.json(pullComment1570591425ReactionsGet);
+			if (commentId === "1573413974")
+				return HttpResponse.json(pullComment1573413974ReactionsGet);
+			if (commentId === "1573733603")
+				return HttpResponse.json(pullComment1573733603ReactionsGet);
+			if (commentId === "1574427305")
+				return HttpResponse.json(pullComment1574427305ReactionsGet);
+			if (commentId === "1574702577")
+				return HttpResponse.json(pullComment1574702577ReactionsGet);
+			if (commentId === "1575659438")
+				return HttpResponse.json(pullComment1575659438ReactionsGet);
+			if (commentId === "1578040543")
+				return HttpResponse.json(pullComment1578040543ReactionsGet);
+			if (commentId === "1579556333")
+				return HttpResponse.json(pullComment1579556333ReactionsGet);
+			return HttpResponse.json(
+				{
+					error: "Missing MSW fixture for pull comment reactions",
+					commentId,
+				},
+				{ status: 500 },
+			);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71",
+		() => {
+			return HttpResponse.json(issue71Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/events",
+		() => {
+			return HttpResponse.json(issue71EventsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/comments",
+		() => {
+			return HttpResponse.json(issue71CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/issues/71/timeline",
+		() => {
+			return HttpResponse.json(issue71TimelineGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12",
+		() => {
+			return HttpResponse.json(pull12Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/files",
+		() => {
+			return HttpResponse.json(pull12FilesGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/reviews",
+		() => {
+			return HttpResponse.json(pull12ReviewsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/pulls/12/comments",
+		() => {
+			return HttpResponse.json(pull12CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/Meniole/conversation-rewards/issues/13",
+		() => {
+			return HttpResponse.json(issue13Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22",
+		() => {
+			return HttpResponse.json(issue22Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69",
+		() => {
+			return HttpResponse.json(issue69Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100",
+		() => {
+			return HttpResponse.json(issue100Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/events",
+		() => {
+			return HttpResponse.json(issue100EventsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/comments",
+		() => {
+			return HttpResponse.json(issue100CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/100/timeline",
+		() => {
+			return HttpResponse.json(issue100TimelineGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives",
+		() => {
+			return HttpResponse.json(issue22Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/events",
+		({ params: { page } }) => {
+			return HttpResponse.json(!page ? issueEventsGet : issueEvents2Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/events",
+		() => {
+			return HttpResponse.json(issue69EventsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/comments",
+		() => {
+			return HttpResponse.json(issue22CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/Meniole/conversation-rewards/issues/13/events",
+		() => {
+			return HttpResponse.json(issue13EventsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/comments",
+		() => {
+			return HttpResponse.json(issue69CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives/issues/25/comments",
+		() => {
+			return HttpResponse.json(issue25CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/Meniole/conversation-rewards/issues/13/comments",
+		() => {
+			return HttpResponse.json(issue13CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives/issues/22/timeline",
+		() => {
+			return HttpResponse.json(issueTimelineGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/69/timeline",
+		() => {
+			return HttpResponse.json(issue69TimelineGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25",
+		() => {
+			return HttpResponse.json(pullsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25/reviews",
+		() => {
+			return HttpResponse.json(pullsReviewsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/comment-incentives/pulls/25/comments",
+		() => {
+			return HttpResponse.json(pullsCommentsGet);
+		},
+	),
+	http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70", () => {
+		return HttpResponse.json(pulls70Get);
+	}),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70/reviews",
+		() => {
+			return HttpResponse.json(pullsReviewsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/70/comments",
+		() => {
+			return HttpResponse.json([]);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/70/comments",
+		() => {
+			return HttpResponse.json(issue70CommentsGet);
+		},
+	),
+	http.get("https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71", () => {
+		return HttpResponse.json(pull71Get);
+	}),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/reviews",
+		() => {
+			return HttpResponse.json(pullsReviewsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/71/comments",
+		() => {
+			return HttpResponse.json([]);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/71/comments",
+		() => {
+			return HttpResponse.json(issue71WorkUbqFiCommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101",
+		() => {
+			return HttpResponse.json(pull101Get);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/reviews",
+		() => {
+			return HttpResponse.json(pull101ReviewsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/pulls/101/comments",
+		() => {
+			return HttpResponse.json(pull101CommentsGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity/work.ubq.fi/issues/101/comments",
+		() => {
+			return HttpResponse.json(issue101CommentsGet);
+		},
+	),
+	http.get("https://api.github.com/users/:login", ({ params: { login } }) => {
+		const user = db.users.findFirst({
+			where: {
+				login: {
+					equals: login.toString(),
+				},
+			},
+		});
+		if (!user) {
+			return HttpResponse.json("[mock] User was not found", { status: 404 });
+		}
+		return HttpResponse.json(user);
+	}),
+	http.get(
+		"https://api.github.com/orgs/:org/memberships/:username",
+		({ params }) => {
+			const { username } = params;
 
-    if (username === "0x4007") {
-      return HttpResponse.json({
-        data: {
-          role: "admin",
-        },
-      });
-    } else if (username === "non-collaborator") {
-      return HttpResponse.json({}, { status: 404 });
-    }
-    return HttpResponse.json({
-      data: {
-        role: "member",
-      },
-    });
-  }),
-  http.post("https://api.github.com/app/installations/48381972/access_tokens", () => {
-    return HttpResponse.json({});
-  }),
-  http.get("https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/users", ({ request }) => {
-    const url = new URL(request.url);
-    const id = url.searchParams.get("id");
-    const userId = Number((id as string).match(/\d+/)?.[0]);
-    const user = db.users.findFirst({
-      where: {
-        id: {
-          equals: userId,
-        },
-      },
-    });
-    if (!user) {
-      return HttpResponse.json("User not found", { status: 404 });
-    }
-    return HttpResponse.json(user);
-  }),
-  http.get("https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/locations", ({ request }) => {
-    const url = new URL(request.url);
-    const issue = url.searchParams.get("issue_id");
-    const node = url.searchParams.get("node_url");
-    if (!issue) {
-      return HttpResponse.json(db.locations.findMany({}));
-    }
-    const issueId = Number((issue as string).match(/\d+/)?.[0]);
-    const nodeUrl = (node as string).match(/https.+/)?.[0];
-    const location = db.locations.findFirst({
-      where: {
-        node_url: {
-          equals: nodeUrl,
-        },
-        issue_id: {
-          equals: issueId,
-        },
-      },
-    });
-    if (!location) {
-      return HttpResponse.json("Location not found", { status: 404 });
-    }
-    return HttpResponse.json(location);
-  }),
-  http.post("https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/locations", async ({ request }) => {
-    const data = await request.json();
-    if (!data) {
-      return HttpResponse.error();
-    }
-    const createdLocation = db.locations.create(data as Record<string, string>);
-    return HttpResponse.json(createdLocation);
-  }),
-  http.post("https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/permits", async ({ request }) => {
-    const data = (await request.json()) as Record<string, string | number>;
-    if (!data) {
-      return HttpResponse.error();
-    }
-    data.id = db.permits.count() + 1;
-    const createdPermit = db.permits.create(data);
-    return HttpResponse.json(createdPermit);
-  }),
-  http.post("https://api.github.com/repos/:owner/:repo/issues/:id/comments", () => {
-    return HttpResponse.json({});
-  }),
-  http.get("https://api.github.com/repos/:owner/:repo/collaborators/:user/permission", () => {
-    return HttpResponse.json({
-      role_name: "admin",
-    });
-  }),
-  http.get("https://api.github.com/repos/:owner/:repo/compare/:basehead", () => {
-    return HttpResponse.json({
-      files: [
-        {
-          filename: "src/index.ts",
-          additions: 10,
-          deletions: 2,
-          status: "modified",
-        },
-        {
-          filename: "dist/generated.ts",
-          additions: 5,
-          deletions: 1,
-          status: "modified",
-        },
-      ],
-    });
-  }),
-  http.get("https://api.github.com/repos/:owner/:repo/commits/:ref", () => {
-    return HttpResponse.json({
-      files: [
-        {
-          filename: "src/index.ts",
-          additions: 10,
-          deletions: 2,
-          status: "modified",
-        },
-      ],
-      url: "https://api.github.com/repos/mock/commit",
-    });
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.gitattributes", () => {
-    return HttpResponse.json({
-      data: {
-        content: Buffer.from(
-          "dist/** linguist-generated\nbun.lockb linguist-generated\nbun.lock linguist-generated\ntest/__mocks__/ linguist-generated"
-        ).toString("base64"),
-      },
-    });
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.prettierignore", () => {
-    return HttpResponse.json(contentsPrettierignoreDevelopmentGet);
-  }),
-  http.get("https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/tsconfig.json", () => {
-    return HttpResponse.json(contentsTsconfigDevelopmentGet);
-  }),
-  http.get("https://api.github.com/repos/:owner/:repo/contents/:path", () => {
-    return HttpResponse.json({ message: "Not Found" }, { status: 404 });
-  }),
-  http.all("https://api.github.com/*", ({ request }) => {
-    return HttpResponse.json({ message: `Unhandled mock request: ${request.url}` }, { status: 404 });
-  }),
+			if (username === "0x4007") {
+				return HttpResponse.json({
+					data: {
+						role: "admin",
+					},
+				});
+			} else if (username === "non-collaborator") {
+				return HttpResponse.json({}, { status: 404 });
+			}
+			return HttpResponse.json({
+				data: {
+					role: "member",
+				},
+			});
+		},
+	),
+	http.post(
+		"https://api.github.com/app/installations/48381972/access_tokens",
+		() => {
+			return HttpResponse.json({});
+		},
+	),
+	http.get(
+		"https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/users",
+		({ request }) => {
+			const url = new URL(request.url);
+			const id = url.searchParams.get("id");
+			const userId = Number((id as string).match(/\d+/)?.[0]);
+			const user = db.users.findFirst({
+				where: {
+					id: {
+						equals: userId,
+					},
+				},
+			});
+			if (!user) {
+				return HttpResponse.json("User not found", { status: 404 });
+			}
+			return HttpResponse.json(user);
+		},
+	),
+	http.get(
+		"https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/locations",
+		({ request }) => {
+			const url = new URL(request.url);
+			const issue = url.searchParams.get("issue_id");
+			const node = url.searchParams.get("node_url");
+			if (!issue) {
+				return HttpResponse.json(db.locations.findMany({}));
+			}
+			const issueId = Number((issue as string).match(/\d+/)?.[0]);
+			const nodeUrl = (node as string).match(/https.+/)?.[0];
+			const location = db.locations.findFirst({
+				where: {
+					node_url: {
+						equals: nodeUrl,
+					},
+					issue_id: {
+						equals: issueId,
+					},
+				},
+			});
+			if (!location) {
+				return HttpResponse.json("Location not found", { status: 404 });
+			}
+			return HttpResponse.json(location);
+		},
+	),
+	http.post(
+		"https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/locations",
+		async ({ request }) => {
+			const data = await request.json();
+			if (!data) {
+				return HttpResponse.error();
+			}
+			const createdLocation = db.locations.create(
+				data as Record<string, string>,
+			);
+			return HttpResponse.json(createdLocation);
+		},
+	),
+	http.post(
+		"https://wfzpewmlyiozupulbuur.supabase.co/rest/v1/permits",
+		async ({ request }) => {
+			const data = (await request.json()) as Record<string, string | number>;
+			if (!data) {
+				return HttpResponse.error();
+			}
+			data.id = db.permits.count() + 1;
+			const createdPermit = db.permits.create(data);
+			return HttpResponse.json(createdPermit);
+		},
+	),
+	http.post(
+		"https://api.github.com/repos/:owner/:repo/issues/:id/comments",
+		() => {
+			return HttpResponse.json({});
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/:owner/:repo/collaborators/:user/permission",
+		() => {
+			return HttpResponse.json({
+				role_name: "admin",
+			});
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/:owner/:repo/compare/:basehead",
+		() => {
+			return HttpResponse.json({
+				files: [
+					{
+						filename: "src/index.ts",
+						additions: 10,
+						deletions: 2,
+						status: "modified",
+					},
+					{
+						filename: "dist/generated.ts",
+						additions: 5,
+						deletions: 1,
+						status: "modified",
+					},
+				],
+			});
+		},
+	),
+	http.get("https://api.github.com/repos/:owner/:repo/commits/:ref", () => {
+		return HttpResponse.json({
+			files: [
+				{
+					filename: "src/index.ts",
+					additions: 10,
+					deletions: 2,
+					status: "modified",
+				},
+			],
+			url: "https://api.github.com/repos/mock/commit",
+		});
+	}),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.gitattributes",
+		() => {
+			return HttpResponse.json({
+				data: {
+					content: Buffer.from(
+						"dist/** linguist-generated\nbun.lockb linguist-generated\nbun.lock linguist-generated\ntest/__mocks__/ linguist-generated",
+					).toString("base64"),
+				},
+			});
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/.prettierignore",
+		() => {
+			return HttpResponse.json(contentsPrettierignoreDevelopmentGet);
+		},
+	),
+	http.get(
+		"https://api.github.com/repos/ubiquity-os/conversation-rewards/contents/tsconfig.json",
+		() => {
+			return HttpResponse.json(contentsTsconfigDevelopmentGet);
+		},
+	),
+	http.get("https://api.github.com/repos/:owner/:repo/contents/:path", () => {
+		return HttpResponse.json({ message: "Not Found" }, { status: 404 });
+	}),
+	http.all("https://api.github.com/*", ({ request }) => {
+		return HttpResponse.json(
+			{ message: `Unhandled mock request: ${request.url}` },
+			{ status: 404 },
+		);
+	}),
 ];
