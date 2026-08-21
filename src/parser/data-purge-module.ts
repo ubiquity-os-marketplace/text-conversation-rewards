@@ -1,4 +1,4 @@
-import { CommentAssociation } from "../configuration/comment-types";
+import { CommentAssociation, CommentKind } from "../configuration/comment-types";
 import { DataPurgeConfiguration } from "../configuration/data-purge-config";
 import { GitHubPullRequestReviewComment } from "../github-types";
 import { getAssignmentPeriods, isCommentDuringAssignment, UserAssignments } from "../helpers/user-assigned-timespan";
@@ -15,6 +15,7 @@ type CommentType = Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
 export class DataPurgeModule extends BaseModule {
   readonly _configuration: DataPurgeConfiguration | null = this.context.config.incentives.dataPurge;
   _assignmentPeriods: UserAssignments = {};
+  _currentAssigneeLogins = new Set<string>();
 
   get enabled(): boolean {
     if (!this._configuration) {
@@ -33,6 +34,7 @@ export class DataPurgeModule extends BaseModule {
       this._configuration?.skipCommentsWhileAssigned &&
       this._configuration.skipCommentsWhileAssigned !== "none" &&
       comment.user?.login &&
+      this._shouldCheckAssignmentWindow(comment) &&
       !(comment.commentType & CommentAssociation.SPECIFICATION) &&
       isCommentDuringAssignment(
         comment,
@@ -47,6 +49,25 @@ export class DataPurgeModule extends BaseModule {
       return true;
     }
     return false;
+  }
+
+  private _shouldCheckAssignmentWindow(comment: CommentType) {
+    if (!comment.user?.login) {
+      return false;
+    }
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : null;
+    if (
+      !this._configuration?.skipCommentsWhileAssignedForCurrentAssigneeOnly ||
+      this.context.eventName !== "issues.closed" ||
+      !issue ||
+      !(comment.commentType & CommentKind.ISSUE)
+    ) {
+      return true;
+    }
+    if (issue.state_reason === "not_planned") {
+      return false;
+    }
+    return this._currentAssigneeLogins.has(comment.user.login);
   }
 
   private _cleanCommentBody(body: string): string {
@@ -109,6 +130,7 @@ export class DataPurgeModule extends BaseModule {
       "pull_request" in this.context.payload
         ? this.context.payload.pull_request.html_url
         : this.context.payload.issue.html_url;
+    this._currentAssigneeLogins = new Set((data.self?.assignees ?? []).map((assignee) => assignee.login));
     this._assignmentPeriods = await getAssignmentPeriods(this.context.octokit, parseGitHubUrl(htmlUrl));
     const allComments = await data.getAllComments(this.isPullRequest());
     for (const comment of allComments) {

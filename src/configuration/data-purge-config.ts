@@ -10,6 +10,12 @@ export const dataPurgeConfigurationType = Type.Object({
       "- 'none': Includes all comments, regardless of assignment status or timing.",
     examples: ["all", "exact", "none"],
   }),
+  skipCommentsWhileAssignedForCurrentAssigneeOnly: Type.Boolean({
+    default: false,
+    description:
+      "On issue-close events, applies `skipCommentsWhileAssigned` only to users who are still assigned when the issue closes. " +
+      "This allows previous assignees to keep issue-side research credit without re-including their pull-request work.",
+  }),
 });
 
 export type DataPurgeConfiguration = Static<typeof dataPurgeConfigurationType>;

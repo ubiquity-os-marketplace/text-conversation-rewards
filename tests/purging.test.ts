@@ -1,6 +1,7 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it, jest } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import "./helpers/permit-mock";
 import { drop } from "@mswjs/data";
+import { CommentAssociation, CommentKind } from "../src/configuration/comment-types";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { GitHubIssueComment } from "../src/github-types";
 import { ContentEvaluatorModule } from "../src/parser/content-evaluator-module";
@@ -121,5 +122,109 @@ describe("Purging tests", () => {
     await processor.run(activity);
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
+  });
+
+  it("keeps previous assignee issue comments only when the close-only toggle is enabled", async () => {
+    const previousAssigneeComment = {
+      id: 1,
+      body: "researched the spec and found constraints",
+      created_at: "2024-01-02T00:00:00Z",
+      html_url: `${issueUrl}#issuecomment-1`,
+      user: { login: "former-assignee", type: "User" },
+      commentType: CommentKind.ISSUE | CommentAssociation.CONTRIBUTOR,
+    } as Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
+    const currentAssigneeComment = {
+      id: 2,
+      body: "implemented and researched this while assigned",
+      created_at: "2024-01-02T00:00:00Z",
+      html_url: `${issueUrl}#issuecomment-2`,
+      user: { login: "current-assignee", type: "User" },
+      commentType: CommentKind.ISSUE | CommentAssociation.ASSIGNEE,
+    } as Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
+
+    const assignmentPeriods = {
+      "former-assignee": [{ assignedAt: "2024-01-01T00:00:00Z", unassignedAt: "2024-01-03T00:00:00Z" }],
+      "current-assignee": [{ assignedAt: "2024-01-01T00:00:00Z", unassignedAt: "2024-01-03T00:00:00Z" }],
+    };
+
+    const baseResult = {
+      "former-assignee": { total: 0, userId: 1 },
+      "current-assignee": { total: 0, userId: 2 },
+    };
+
+    const disabledModule = new DataPurgeModule(ctx);
+    disabledModule._assignmentPeriods = assignmentPeriods;
+    disabledModule._currentAssigneeLogins = new Set(["current-assignee"]);
+
+    expect(await disabledModule._shouldSkipComment(previousAssigneeComment)).toBe(true);
+    expect(await disabledModule._shouldSkipComment(currentAssigneeComment)).toBe(true);
+
+    const enabledCtx = {
+      ...ctx,
+      config: {
+        ...ctx.config,
+        incentives: {
+          ...ctx.config.incentives,
+          dataPurge: {
+            ...ctx.config.incentives.dataPurge,
+            skipCommentsWhileAssignedForCurrentAssigneeOnly: true,
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+    const enabledModule = new DataPurgeModule(enabledCtx);
+    enabledModule._assignmentPeriods = assignmentPeriods;
+    enabledModule._currentAssigneeLogins = new Set(["current-assignee"]);
+
+    expect(await enabledModule._shouldSkipComment(previousAssigneeComment)).toBe(false);
+    expect(await enabledModule._shouldSkipComment(currentAssigneeComment)).toBe(true);
+
+    const transformed = structuredClone(baseResult);
+    await enabledModule["_processComment"](previousAssigneeComment, transformed);
+    await enabledModule["_processComment"](currentAssigneeComment, transformed);
+
+    expect((transformed["former-assignee"] as { comments?: unknown[] }).comments).toHaveLength(1);
+    expect((transformed["current-assignee"] as { comments?: unknown[] }).comments).toBeUndefined();
+  });
+
+  it("does not skip current assignee issue comments on not planned closures when the toggle is enabled", async () => {
+    const comment = {
+      id: 3,
+      body: "researched this but it is not feasible",
+      created_at: "2024-01-02T00:00:00Z",
+      html_url: `${issueUrl}#issuecomment-3`,
+      user: { login: "current-assignee", type: "User" },
+      commentType: CommentKind.ISSUE | CommentAssociation.ASSIGNEE,
+    } as Awaited<ReturnType<IssueActivity["getAllComments"]>>[0];
+
+    const notPlannedCtx = {
+      ...ctx,
+      payload: {
+        ...ctx.payload,
+        issue: {
+          ...(ctx as any).payload.issue,
+          state_reason: "not_planned",
+          assignees: [{ id: 2, login: "current-assignee" }],
+        },
+      },
+      config: {
+        ...ctx.config,
+        incentives: {
+          ...ctx.config.incentives,
+          dataPurge: {
+            ...ctx.config.incentives.dataPurge,
+            skipCommentsWhileAssignedForCurrentAssigneeOnly: true,
+          },
+        },
+      },
+    } as unknown as ContextPlugin;
+
+    const module = new DataPurgeModule(notPlannedCtx);
+    module._assignmentPeriods = {
+      "current-assignee": [{ assignedAt: "2024-01-01T00:00:00Z", unassignedAt: "2024-01-03T00:00:00Z" }],
+    };
+    module._currentAssigneeLogins = new Set(["current-assignee"]);
+
+    expect(await module._shouldSkipComment(comment)).toBe(false);
   });
 });
