@@ -51,12 +51,18 @@ export class DataPurgeModule extends BaseModule {
 
   private _cleanCommentBody(body: string): string {
     const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
+    // this removes quoted lines first so quotes do not affect command detection
+    const withoutQuotes = body.replace(/^>.*$/gm, "");
+
+    // this strips multiline command content when a comment starts with a slash command so it is not evaluated as a comment
+    if (/^\s*\/[a-zA-Z0-9_-]+[\s\S]*$/.test(withoutQuotes)) {
+      return "";
+    }
+
     return (
-      body
-        // Remove quoted text
-        .replace(/^>.*$/gm, "")
-        // Remove commands such as /start
-        .replace(/^\/.+/g, "")
+      withoutQuotes
+        // this removes single-line commands from mixed comments so only conversation text remains
+        .replace(/^\/[a-zA-Z0-9_-]+.*(?:\r?\n)?/gm, "")
         // Remove HTML comments
         .replace(/<!--[\s\S]*?-->/g, "")
         // Remove the footnotes

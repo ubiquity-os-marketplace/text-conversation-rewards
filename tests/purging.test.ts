@@ -122,4 +122,29 @@ describe("Purging tests", () => {
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
   });
+
+  it("Should purge multiline slash command comments", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx);
+    // @ts-expect-error only for testing
+    const cleaned = dataPurgeModule["_cleanCommentBody"](
+      "/ask now write a sequence for every role/persona\n\nPersona Fit,,,,\n,,Role,Department"
+    );
+    expect(cleaned).toHaveLength(0);
+  });
+
+  it("Should remove embedded slash commands while preserving surrounding comment text", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx);
+    // @ts-expect-error only for testing
+    const cleaned = dataPurgeModule["_cleanCommentBody"]("This is a comment before.\n/start\nThis is a comment after.");
+    expect(cleaned).toBe("This is a comment before.\nThis is a comment after.");
+  });
+
+  it("Should purge multiline slash commands preceded by quoted text", () => {
+    const dataPurgeModule = new DataPurgeModule(ctx);
+    // @ts-expect-error only for testing
+    const cleaned = dataPurgeModule["_cleanCommentBody"](
+      "> quoted line\n/ask follow up question\nargument line 1\nargument line 2"
+    );
+    expect(cleaned).toHaveLength(0);
+  });
 });
