@@ -113,7 +113,25 @@ export class PaymentModule extends BaseModule {
       return result;
     }
 
-    const payoutMode = await this._getPayoutMode(data);
+    const issue = "issue" in this.context.payload ? this.context.payload.issue : this.context.payload.pull_request;
+    const issueUrl = issue?.html_url || "";
+    const issueId = Number(RegExp(/\d+$/).exec(issueUrl)?.[0]);
+
+    let isReopened = false;
+    if (issueId && issueUrl) {
+      const previousRewards = await this._getPreviousPermits(issueId, issueUrl);
+      if (previousRewards.size > 0) {
+        isReopened = true;
+        this.context.logger.info("Previous rewards detected for reopened issue, calculating differential rewards...");
+        const { hasDifferential } = this._applyDifferentialRewards(result, previousRewards);
+        if (!hasDifferential) {
+          this.context.logger.info("No positive reward difference found for any user on reopened issue, skipping distribution.");
+          return result;
+        }
+      }
+    }
+
+    const payoutMode = await this._getPayoutMode(data, isReopened);
     if (payoutMode === null) {
       throw this.context.logger.warn("Rewards can not be transferred twice.");
     }
@@ -351,14 +369,86 @@ export class PaymentModule extends BaseModule {
    - Permit: Applies if autoTransferMode is set to false or if rewards were previously generated using the permit method.
    - Transfer: Applies if autoTransferMode is set to true and no previous payout method has been used for the rewards.
   */
-  async _getPayoutMode(data: Readonly<IssueActivity>): Promise<PayoutMode | null> {
+  async _getPayoutMode(data: Readonly<IssueActivity>, isReopened = false): Promise<PayoutMode | null> {
     for (const comment of data.comments) {
       if (comment.body && comment.user?.type === "Bot") {
-        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) return null;
-        else if (/"payoutMode":\s*"permit"/.exec(comment.body)) return "permit";
+        if (/"payoutMode":\s*"transfer"/.exec(comment.body)) {
+          return isReopened ? (this._autoTransferMode ? "transfer" : "permit") : null;
+        } else if (/"payoutMode":\s*"permit"/.exec(comment.body)) {
+          return "permit";
+        }
       }
     }
     return this._autoTransferMode ? "transfer" : "permit";
+  }
+
+  async _getPreviousPermits(issueId: number, issueUrl: string): Promise<Map<number, Decimal>> {
+    const previousMap = new Map<number, Decimal>();
+    try {
+      if (!this.context.adapters?.supabase?.location) {
+        return previousMap;
+      }
+      const locationId = await this.context.adapters.supabase.location.getOrCreateIssueLocation({ issueId, issueUrl });
+      if (!locationId) {
+        return previousMap;
+      }
+
+      const { data: permits, error } = await this._supabase
+        .from("permits")
+        .select("beneficiary_id, amount")
+        .eq("location_id", locationId);
+
+      if (error || !permits) {
+        this.context.logger.warn("Could not fetch previous permits from database", { error });
+        return previousMap;
+      }
+
+      for (const permit of permits) {
+        if (permit.beneficiary_id && permit.amount) {
+          const current = previousMap.get(permit.beneficiary_id) ?? new Decimal(0);
+          previousMap.set(permit.beneficiary_id, current.plus(new Decimal(permit.amount)));
+        }
+      }
+    } catch (e) {
+      this.context.logger.warn("Error fetching previous permits for differential calculation", { e });
+    }
+    return previousMap;
+  }
+
+  _applyDifferentialRewards(
+    result: Result,
+    previousRewards: Map<number, Decimal>
+  ): { hasDifferential: boolean } {
+    let hasPositiveDifferential = false;
+
+    for (const [username, entry] of Object.entries(result)) {
+      if (username === this.context.env.PERMIT_TREASURY_GITHUB_USERNAME) {
+        continue;
+      }
+
+      const prevAmount = previousRewards.get(entry.userId) ?? new Decimal(0);
+      const newTotal = new Decimal(entry.total);
+      const diff = newTotal.minus(prevAmount);
+
+      entry.previousTotal = prevAmount.toNumber();
+
+      if (diff.gt(0)) {
+        entry.differential = diff.toNumber();
+        entry.total = diff.toNumber();
+        hasPositiveDifferential = true;
+        this.context.logger.info(
+          `User ${username} receives differential reward: ${diff.toNumber()} (Previous: ${prevAmount.toNumber()}, New: ${newTotal.toNumber()})`
+        );
+      } else {
+        entry.differential = 0;
+        entry.total = 0;
+        this.context.logger.info(
+          `User ${username} has no positive reward difference (Previous: ${prevAmount.toNumber()}, New: ${newTotal.toNumber()}), skipping.`
+        );
+      }
+    }
+
+    return { hasDifferential: hasPositiveDifferential };
   }
 
   _getNetworkExplorer(networkId: number): string {
@@ -487,7 +577,7 @@ export class PaymentModule extends BaseModule {
   async _getBeneficiaries(result: Result): Promise<Beneficiary[]> {
     return Object.entries(result)
       .map(([username, reward]) => {
-        if (!reward.walletAddress) {
+        if (!reward.walletAddress || reward.total <= 0) {
           return null;
         }
         return {

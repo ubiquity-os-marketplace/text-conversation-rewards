@@ -13,6 +13,8 @@ export interface Result {
   [k: string]: {
     comments?: GithubCommentScore[];
     total: number;
+    previousTotal?: number;
+    differential?: number;
     task?: {
       reward: number;
       multiplier: number;

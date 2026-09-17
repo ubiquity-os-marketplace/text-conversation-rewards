@@ -4,6 +4,7 @@ import { PermitReward, TokenType } from "@ubiquity-os/permit-generation";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { parseUnits } from "ethers/lib/utils";
+import Decimal from "decimal.js";
 import { CommentKind } from "../../src/configuration/comment-types";
 import { IssueActivity } from "../../src/issue-activity";
 import { ReviewIncentivizerModule } from "../../src/parser/review-incentivizer-module";
@@ -746,6 +747,120 @@ describe("payment-module.ts", () => {
       const logCallArgs = spyConsoleLog.mock.calls.map((call) => call[0]);
       expect(logCallArgs[0]).toMatch(/.*Invalid private key format/);
       spyConsoleLog.mockReset();
+    });
+  });
+
+  describe("Differential Reward Distribution for Reopened Issues (#301)", () => {
+    it("Should correctly calculate positive differences and update total", () => {
+      const paymentModule = new PaymentModule(ctx);
+      const result: Result = {
+        userA: {
+          userId: 101,
+          total: 100,
+          walletAddress: "0x101",
+        },
+        userB: {
+          userId: 102,
+          total: 80,
+          walletAddress: "0x102",
+        },
+      };
+
+      const previousRewards = new Map<number, Decimal>([
+        [101, new Decimal(60)], // userA previously received 60, new diff = 40
+        [102, new Decimal(30)], // userB previously received 30, new diff = 50
+      ]);
+
+      const { hasDifferential } = paymentModule._applyDifferentialRewards(result, previousRewards);
+
+      expect(hasDifferential).toBe(true);
+      expect(result.userA.total).toBe(40);
+      expect(result.userA.previousTotal).toBe(60);
+      expect(result.userA.differential).toBe(40);
+
+      expect(result.userB.total).toBe(50);
+      expect(result.userB.previousTotal).toBe(30);
+      expect(result.userB.differential).toBe(50);
+    });
+
+    it("Should skip beneficiaries with no change or decreased rewards", () => {
+      const paymentModule = new PaymentModule(ctx);
+      const result: Result = {
+        userUnchanged: {
+          userId: 201,
+          total: 50,
+          walletAddress: "0x201",
+        },
+        userDecreased: {
+          userId: 202,
+          total: 30,
+          walletAddress: "0x202",
+        },
+        userNew: {
+          userId: 203,
+          total: 70,
+          walletAddress: "0x203",
+        },
+      };
+
+      const previousRewards = new Map<number, Decimal>([
+        [201, new Decimal(50)], // unchanged, diff = 0
+        [202, new Decimal(40)], // decreased, diff = -10
+        [203, new Decimal(20)], // positive diff = 50
+      ]);
+
+      const { hasDifferential } = paymentModule._applyDifferentialRewards(result, previousRewards);
+
+      expect(hasDifferential).toBe(true);
+      expect(result.userUnchanged.total).toBe(0);
+      expect(result.userUnchanged.differential).toBe(0);
+
+      expect(result.userDecreased.total).toBe(0);
+      expect(result.userDecreased.differential).toBe(0);
+
+      expect(result.userNew.total).toBe(50);
+      expect(result.userNew.differential).toBe(50);
+    });
+
+    it("Should return hasDifferential=false if no user has positive differences", () => {
+      const paymentModule = new PaymentModule(ctx);
+      const result: Result = {
+        userA: {
+          userId: 301,
+          total: 50,
+          walletAddress: "0x301",
+        },
+      };
+
+      const previousRewards = new Map<number, Decimal>([
+        [301, new Decimal(50)], // diff = 0
+      ]);
+
+      const { hasDifferential } = paymentModule._applyDifferentialRewards(result, previousRewards);
+
+      expect(hasDifferential).toBe(false);
+      expect(result.userA.total).toBe(0);
+    });
+
+    it("_getBeneficiaries() should exclude beneficiaries with total <= 0", async () => {
+      const paymentModule = new PaymentModule(ctx);
+      const result: Result = {
+        eligibleUser: {
+          userId: 401,
+          total: 35,
+          walletAddress: "0x401",
+        },
+        skippedUser: {
+          userId: 402,
+          total: 0,
+          walletAddress: "0x402",
+        },
+      };
+
+      const beneficiaries = await paymentModule._getBeneficiaries(result);
+      expect(beneficiaries).toHaveLength(1);
+      expect(beneficiaries[0].username).toBe("eligibleUser");
+      expect(beneficiaries[0].amount).toBe(35);
     });
   });
 });
