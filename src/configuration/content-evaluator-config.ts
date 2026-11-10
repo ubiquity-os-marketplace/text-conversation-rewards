@@ -37,8 +37,45 @@ export function openAiType() {
   );
 }
 
+export const evaluationWeightsType = Type.Object(
+  {
+    relevance: Type.Number({
+      default: 0.4,
+      minimum: 0,
+      maximum: 1,
+      description: "Weight applied to how relevant comments are to solving the specification.",
+      examples: [0.4],
+    }),
+    helpfulness: Type.Number({
+      default: 0.3,
+      minimum: 0,
+      maximum: 1,
+      description: "Weight applied to how helpful comments are in answering contributor questions.",
+      examples: [0.3],
+    }),
+    research: Type.Number({
+      default: 0.3,
+      minimum: 0,
+      maximum: 1,
+      description: "Weight applied to how useful comments are for adding research and insights to the project.",
+      examples: [0.3],
+    }),
+  },
+  {
+    default: {
+      relevance: 0.4,
+      helpfulness: 0.3,
+      research: 0.3,
+    },
+    description: "Weights applied to each specialized comment evaluation prompt dimension.",
+  }
+);
+
+export type EvaluationWeights = Static<typeof evaluationWeightsType>;
+
 export const contentEvaluatorConfigurationType = Type.Object({
   openAi: openAiType(),
+  evaluationWeights: Type.Optional(evaluationWeightsType),
   /**
    * Percentage (0.0-1.0) of reward to give to the original author when
    * "Originally posted by @username in URL" is detected

@@ -5,7 +5,7 @@ import { LogReturn } from "@ubiquity-os/ubiquity-os-logger";
 import Decimal from "decimal.js";
 import { encodingForModel } from "js-tiktoken";
 import { CommentAssociation, commentEnum, CommentKind, CommentType } from "../configuration/comment-types";
-import { ContentEvaluatorConfiguration } from "../configuration/content-evaluator-config";
+import { ContentEvaluatorConfiguration, EvaluationWeights } from "../configuration/content-evaluator-config";
 import { extractFirstJsonObject } from "../helpers/extract-first-json-object";
 import { extractOriginalAuthor } from "../helpers/original-author";
 import { checkLlmRetryableState, retry } from "../helpers/retry";
@@ -13,6 +13,7 @@ import { IssueActivity } from "../issue-activity";
 import {
   AllComments,
   CommentToEvaluate,
+  EvaluationDimension,
   openAiRelevanceResponseSchema,
   PrCommentToEvaluate,
   Relevances,
@@ -324,11 +325,52 @@ export class ContentEvaluatorModule extends BaseModule {
     return result;
   }
 
+  private _getEvaluationWeights(): EvaluationWeights {
+    const configured = this._configuration?.evaluationWeights;
+    return {
+      relevance: Number.isFinite(configured?.relevance) ? Number(configured?.relevance) : 0.4,
+      helpfulness: Number.isFinite(configured?.helpfulness) ? Number(configured?.helpfulness) : 0.3,
+      research: Number.isFinite(configured?.research) ? Number(configured?.research) : 0.3,
+    };
+  }
+
+  _combineWeightedScores(
+    dimensionResults: Array<{ weight: number; scores: Relevances }>,
+    expectedCommentIds: number[]
+  ): Relevances {
+    const activeDimensions = dimensionResults.filter((entry) => entry.weight > 0);
+    if (!activeDimensions.length) {
+      return {};
+    }
+    const totalWeight = activeDimensions.reduce((acc, curr) => acc.add(curr.weight), new Decimal(0));
+    if (totalWeight.lte(0)) {
+      return {};
+    }
+
+    const combined: Relevances = {};
+    for (const commentId of expectedCommentIds) {
+      const key = String(commentId);
+      const hasAllDimensions = activeDimensions.every(
+        (entry) => Object.prototype.hasOwnProperty.call(entry.scores, key) && !Number.isNaN(entry.scores[key])
+      );
+      if (!hasAllDimensions) {
+        continue;
+      }
+      const weightedSum = activeDimensions.reduce(
+        (acc, entry) => acc.add(new Decimal(entry.scores[key]).mul(entry.weight)),
+        new Decimal(0)
+      );
+      combined[key] = weightedSum.div(totalWeight).toDecimalPlaces(3).toNumber();
+    }
+    return combined;
+  }
+
   async _splitPromptForIssueCommentEvaluation(
     specification: string,
     username: string,
     comments: CommentToEvaluate[],
-    allComments: AllComments
+    allComments: AllComments,
+    dimension: EvaluationDimension = "relevance"
   ) {
     const commentRelevances: Relevances = {};
     const evaluationCounts: Record<string, number> = {};
@@ -337,7 +379,13 @@ export class ContentEvaluatorModule extends BaseModule {
     let chunks = 0;
 
     for (let currentChunk = 2; currentChunk <= maxChunks; currentChunk++) {
-      const chunkTokenEstimates = this._getIssueChunkEstimates(specification, username, allComments, currentChunk);
+      const chunkTokenEstimates = this._getIssueChunkEstimates(
+        specification,
+        username,
+        allComments,
+        currentChunk,
+        dimension
+      );
       if (!chunkTokenEstimates.length) {
         continue;
       }
@@ -350,7 +398,7 @@ export class ContentEvaluatorModule extends BaseModule {
     }
 
     if (!chunks) {
-      const fallbackPrompt = this._generatePromptForComments(specification, username, allComments);
+      const fallbackPrompt = this._generatePromptForComments(specification, username, allComments, dimension);
       const dummyResponse = JSON.stringify(this._generateDummyResponse(comments), null, 2);
       const fallbackPromptTokens = this._calculateMaxTokens(fallbackPrompt, Infinity);
       const fallbackOutputTokens = this._calculateMaxTokens(dummyResponse);
@@ -372,7 +420,7 @@ export class ContentEvaluatorModule extends BaseModule {
       }
       const dummyResponse = JSON.stringify(this._generateDummyResponse(targetComments), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-      const promptForComments = this._generatePromptForComments(specification, username, commentSplit);
+      const promptForComments = this._generatePromptForComments(specification, username, commentSplit, dimension);
 
       for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
         const accumulated = commentRelevances[key] ?? 0;
@@ -393,7 +441,8 @@ export class ContentEvaluatorModule extends BaseModule {
     specification: string,
     username: string,
     allComments: AllComments,
-    chunks: number
+    chunks: number,
+    dimension: EvaluationDimension = "relevance"
   ): { promptTokens: number; outputTokens: number }[] {
     return this._splitArrayToChunks(allComments, chunks)
       .map((chunk) => {
@@ -401,7 +450,7 @@ export class ContentEvaluatorModule extends BaseModule {
           return null;
         }
         const promptTokens = this._calculateMaxTokens(
-          this._generatePromptForComments(specification, username, chunk),
+          this._generatePromptForComments(specification, username, chunk, dimension),
           Infinity
         );
         const dummyResponse = JSON.stringify(
@@ -415,7 +464,11 @@ export class ContentEvaluatorModule extends BaseModule {
       .filter((value): value is { promptTokens: number; outputTokens: number } => value !== null);
   }
 
-  async _splitPromptForPullRequestCommentEvaluation(specification: string | string[], comments: PrCommentToEvaluate[]) {
+  async _splitPromptForPullRequestCommentEvaluation(
+    specification: string | string[],
+    comments: PrCommentToEvaluate[],
+    dimension: EvaluationDimension = "relevance"
+  ) {
     const commentRelevances: Relevances = {};
 
     let chunks = 2;
@@ -424,7 +477,7 @@ export class ContentEvaluatorModule extends BaseModule {
         ...this._splitArrayToChunks(comments, chunks).map(
           (chunk) =>
             this._calculateMaxTokens(JSON.stringify(this._generateDummyResponse(chunk), null, 2)) +
-            this._calculateMaxTokens(this._generatePromptForPrComments(specification, chunk), Infinity)
+            this._calculateMaxTokens(this._generatePromptForPrComments(specification, chunk, dimension), Infinity)
         )
       ) > this._tokenLimit
     ) {
@@ -435,7 +488,7 @@ export class ContentEvaluatorModule extends BaseModule {
     for (const commentSplit of this._splitArrayToChunks(comments, chunks)) {
       const dummyResponse = JSON.stringify(this._generateDummyResponse(commentSplit), null, 2);
       const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-      const promptForComments = this._generatePromptForPrComments(specification, commentSplit);
+      const promptForComments = this._generatePromptForPrComments(specification, commentSplit, dimension);
 
       for (const [key, value] of Object.entries(await this._submitPrompt(promptForComments, maxOutputTokens))) {
         if (commentRelevances[key]) {
@@ -452,6 +505,60 @@ export class ContentEvaluatorModule extends BaseModule {
     return commentRelevances;
   }
 
+  private async _evaluateIssueDimension(
+    specification: string,
+    username: string,
+    userIssueComments: CommentToEvaluate[],
+    allComments: AllComments,
+    dimension: EvaluationDimension
+  ): Promise<Relevances> {
+    const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
+    const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
+    const promptForIssueComments = this._generatePromptForComments(specification, username, allComments, dimension);
+    if (this._calculateMaxTokens(promptForIssueComments, Infinity) + maxOutputTokens > this._tokenLimit) {
+      return this._splitPromptForIssueCommentEvaluation(
+        specification,
+        username,
+        userIssueComments,
+        allComments,
+        dimension
+      );
+    }
+    return this._submitPrompt(promptForIssueComments, maxOutputTokens);
+  }
+
+  private async _evaluatePrDimension(
+    prSpecifications: string | string[],
+    userPrComments: PrCommentToEvaluate[],
+    dimension: EvaluationDimension
+  ): Promise<Relevances> {
+    const dummyResponse = JSON.stringify(this._generateDummyResponse(userPrComments), null, 2);
+    const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
+    const promptForPrComments = this._generatePromptForPrComments(prSpecifications, userPrComments, dimension);
+    if (this._calculateMaxTokens(promptForPrComments, Infinity) + maxOutputTokens > this._tokenLimit) {
+      return this._splitPromptForPullRequestCommentEvaluation(prSpecifications, userPrComments, dimension);
+    }
+    return this._submitPrompt(promptForPrComments, maxOutputTokens);
+  }
+
+  private async _evaluateWeightedDimensions(
+    expectedCommentIds: number[],
+    evaluateDimension: (dimension: EvaluationDimension) => Promise<Relevances>
+  ): Promise<Relevances> {
+    const weights = this._getEvaluationWeights();
+    const dimensions: EvaluationDimension[] = ["relevance", "helpfulness", "research"];
+    const dimensionResults: Array<{ weight: number; scores: Relevances }> = [];
+
+    for (const dimension of dimensions) {
+      const weight = weights[dimension];
+      if (weight <= 0) continue;
+      const scores = await evaluateDimension(dimension);
+      dimensionResults.push({ weight, scores });
+    }
+
+    return this._combineWeightedScores(dimensionResults, expectedCommentIds);
+  }
+
   async _evaluateComments(
     specification: string,
     username: string,
@@ -463,35 +570,19 @@ export class ContentEvaluatorModule extends BaseModule {
     let prCommentRelevances: Relevances = {};
 
     if (userIssueComments.length && !this.isPullRequest()) {
-      const dummyResponse = JSON.stringify(this._generateDummyResponse(userIssueComments), null, 2);
-      const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-
-      const promptForIssueComments = this._generatePromptForComments(specification, username, allComments);
-      if (this._calculateMaxTokens(promptForIssueComments, Infinity) + maxOutputTokens > this._tokenLimit) {
-        commentRelevances = await this._splitPromptForIssueCommentEvaluation(
-          specification,
-          username,
-          userIssueComments,
-          allComments
-        );
-      } else {
-        commentRelevances = await this._submitPrompt(promptForIssueComments, maxOutputTokens);
-      }
+      commentRelevances = await this._evaluateWeightedDimensions(
+        userIssueComments.map((comment) => comment.id),
+        (dimension) => this._evaluateIssueDimension(specification, username, userIssueComments, allComments, dimension)
+      );
     }
 
     if (userPrComments.length && this.isPullRequest()) {
-      // Build PR specification context from all closing issues (fallback to provided specification if none)
       const closingIssueBodies = await this._getClosingIssueBodies();
       const prSpecifications: string | string[] = closingIssueBodies.length ? closingIssueBodies : specification;
-      const dummyResponse = JSON.stringify(this._generateDummyResponse(userPrComments), null, 2);
-      const maxOutputTokens = this._calculateMaxTokens(dummyResponse);
-
-      const promptForPrComments = this._generatePromptForPrComments(prSpecifications, userPrComments);
-      if (this._calculateMaxTokens(promptForPrComments, Infinity) + maxOutputTokens > this._tokenLimit) {
-        prCommentRelevances = await this._splitPromptForPullRequestCommentEvaluation(prSpecifications, userPrComments);
-      } else {
-        prCommentRelevances = await this._submitPrompt(promptForPrComments, maxOutputTokens);
-      }
+      prCommentRelevances = await this._evaluateWeightedDimensions(
+        userPrComments.map((comment) => comment.id),
+        (dimension) => this._evaluatePrDimension(prSpecifications, userPrComments, dimension)
+      );
     }
 
     if (
@@ -594,7 +685,69 @@ export class ContentEvaluatorModule extends BaseModule {
     }
   }
 
-  _generatePromptForComments(issue: string, username: string, allComments: AllComments) {
+  private _getDimensionPromptCriteria(dimension: EvaluationDimension): {
+    summary: string;
+    zeroDescription: string;
+    oneDescription: string;
+    considerations: string[];
+  } {
+    switch (dimension) {
+      case "helpfulness":
+        return {
+          summary: "Rank from 0 to 1 how helpful each comment is in helping and answering contributor questions.",
+          zeroDescription: "0: Unhelpful, dismissive, or unrelated to contributor questions",
+          oneDescription: "1: Directly answers contributor questions, unblocks contributors, or clarifies blockers",
+          considerations: [
+            "Clarity and accuracy in answering questions from other contributors",
+            "Constructive guidance that unblocks implementation or debugging",
+            "Responsiveness to confusion or edge-case questions in the conversation",
+          ],
+        };
+      case "research":
+        return {
+          summary: "Rank from 0 to 1 how useful each comment is for adding research and insights to the project.",
+          zeroDescription: "0: Adds no research, technical analysis, or actionable insights",
+          oneDescription:
+            "1: Provides valuable research, references, root-cause analysis, benchmarks, or architectural insights",
+          considerations: [
+            "Depth of technical investigation, root-cause discovery, or prior-art references",
+            "Useful links, documentation findings, reproduction steps, or edge-case analysis",
+            "Insights that improve long-term project understanding or design decisions",
+          ],
+        };
+      case "relevance":
+      default:
+        return {
+          summary: "Rank from 0 to 1 how relevant each comment is to solving the issue specification.",
+          zeroDescription: "0: Not related (e.g., spam or off-topic noise)",
+          oneDescription: "1: Highly relevant to solving the specification (e.g., solutions, bug reports)",
+          considerations: [
+            "Relation to the issue specification",
+            "Connection to other comments",
+            "Direct contribution to solving the issue",
+          ],
+        };
+    }
+  }
+
+  _generateRelevancePromptForComments(issue: string, username: string, allComments: AllComments) {
+    return this._generatePromptForComments(issue, username, allComments, "relevance");
+  }
+
+  _generateHelpfulnessPromptForComments(issue: string, username: string, allComments: AllComments) {
+    return this._generatePromptForComments(issue, username, allComments, "helpfulness");
+  }
+
+  _generateResearchPromptForComments(issue: string, username: string, allComments: AllComments) {
+    return this._generatePromptForComments(issue, username, allComments, "research");
+  }
+
+  _generatePromptForComments(
+    issue: string,
+    username: string,
+    allComments: AllComments,
+    dimension: EvaluationDimension = "relevance"
+  ) {
     if (!issue?.length) {
       throw new Error("Issue specification comment is missing or empty");
     }
@@ -607,11 +760,12 @@ export class ContentEvaluatorModule extends BaseModule {
       throw new Error(`No comments found for user ${username}`);
     }
     const targetCommentIds = targetComments.map((value) => value.id).join(", ");
+    const criteria = this._getDimensionPromptCriteria(dimension);
 
     return `
       CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
       
-      Evaluate the relevance of GitHub comments to an issue. Focus exclusively on the comments authored by ${username}. Provide a raw JSON object with those comment IDs and their relevance scores.
+      Evaluate GitHub comments on an issue for the "${dimension}" dimension. ${criteria.summary} Focus exclusively on the comments authored by ${username}. Provide a raw JSON object with those comment IDs and their scores.
 
       Issue: ${issue}
 
@@ -621,17 +775,15 @@ export class ContentEvaluatorModule extends BaseModule {
       Instructions:
       1. Read all comments carefully, considering their context and content.
       2. Identify every comment authored by ${username}. Their comment IDs are: ${targetCommentIds}.
-      3. Assign a relevance score from 0 to 1 for each identified comment:
-        - 0: Not related (e.g., spam)
-        - 1: Highly relevant (e.g., solutions, bug reports)
+      3. Assign a score from 0 to 1 for each identified comment:
+        - ${criteria.zeroDescription}
+        - ${criteria.oneDescription}
       4. Consider:
-        - Relation to the issue description
-        - Connection to other comments
-        - Contribution to issue resolution
+        - ${criteria.considerations.join("\n        - ")}
       5. Handle GitHub-flavored markdown:
         - Ignore text beginning with '>' as it references another comment
         - Distinguish between referenced text and the commenter's own words
-        - Only evaluate the relevance of the commenter's original content
+        - Only evaluate the commenter's original content
       6. Return only a JSON object mapping each comment ID authored by ${username} to its score, with the following structure: {"<comment_id_1>": <score>, "<comment_id_2>": <score>, ...}
       7. Do NOT wrap <score> in quotes. Each score must be a raw float (e.g., 0.85, not "0.85").
 
@@ -646,22 +798,27 @@ export class ContentEvaluatorModule extends BaseModule {
     `;
   }
 
-  _generatePromptForPrComments(specifications: string | string[], userComments: PrCommentToEvaluate[]) {
+  _generatePromptForPrComments(
+    specifications: string | string[],
+    userComments: PrCommentToEvaluate[],
+    dimension: EvaluationDimension = "relevance"
+  ) {
     const specsArray = Array.isArray(specifications) ? specifications : [specifications];
     if (!specsArray.length || specsArray.every((s) => !s || s.length === 0)) {
       throw new Error("Issue specification comment is missing or empty");
     }
     const payload = { specification: specsArray, comments: userComments };
+    const criteria = this._getDimensionPromptCriteria(dimension);
     return `CRITICAL REQUIREMENT: YOUR RESPONSE MUST BE RAW JSON ONLY - NO BACKTICKS, NO CODE BLOCKS, NO MARKDOWN.
 
-    Evaluate the value of a GitHub contributor's comments in a pull request.
+    Evaluate the value of a GitHub contributor's comments in a pull request for the "${dimension}" dimension.
+    ${criteria.summary}
     Context may include ONE OR MORE issue specifications. Treat the entire list as the set of problems this PR aims to solve.
-    Consider a comment valuable if it helps address ANY of the specifications and/or clearly improves code quality while staying aligned with them.
 
     Scoring rules (0.0 - 1.0 per comment):
-    - 1.0: Strongly advances a fix/feature tied to one or more specifications, or significantly improves correctness, safety, performance, or maintainability in direct relation to the specs.
-    - 0.5: Somewhat helpful or partially relevant; raises a valid concern or improvement but limited in scope/impact.
-    - 0.0: Not relevant, incorrect, or off-topic with respect to the specifications; noise.
+    - ${criteria.oneDescription}
+    - 0.5: Somewhat helpful or partially aligned with this evaluation dimension, but limited in scope/impact.
+    - ${criteria.zeroDescription}
 
     Additional notes:
     - Some comments are code-review entries and include a "diffHunk" representing the code context under review.

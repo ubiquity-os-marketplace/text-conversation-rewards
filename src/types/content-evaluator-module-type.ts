@@ -6,6 +6,8 @@ export type PrCommentToEvaluate = { id: number; comment: string; diffHunk?: stri
 
 export type AllComments = { id: number; comment: string; author: string }[];
 
+export type EvaluationDimension = "relevance" | "helpfulness" | "research";
+
 export const openAiRelevanceResponseSchema = Type.Record(
   Type.RegExp("^[0-9]+$"),
   Type.Number({ minimum: 0, maximum: 1 })
