@@ -122,4 +122,20 @@ describe("Purging tests", () => {
     const result = JSON.parse(processor.dump());
     expect(result).toEqual(hiddenCommentPurged);
   });
+
+  it("Should purge multiline slash commands and their content", () => {
+    const dataPurge = new DataPurgeModule(ctx);
+    function clean(s: string) {
+      return (dataPurge as unknown as { _cleanCommentBody(b: string): string })._cleanCommentBody(s);
+    }
+
+    expect(clean("/ask line 1\nline 2\nline 3")).toHaveLength(0);
+    expect(clean("/ask\nline 1\n\nline 2")).toHaveLength(0);
+    expect(clean("> quoted text\n\n/ask multiline question\nmore details")).toHaveLength(0);
+    expect(clean("<!-- hidden -->\n/start")).toHaveLength(0);
+    expect(clean("Valid feedback before command\n\n/ask question\nsecond line")).toBe("Valid feedback before command");
+    expect(clean("Check /src/parser/data-purge-module.ts for details")).toBe(
+      "Check /src/parser/data-purge-module.ts for details"
+    );
+  });
 });

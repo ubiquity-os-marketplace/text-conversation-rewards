@@ -53,12 +53,12 @@ export class DataPurgeModule extends BaseModule {
     const urlRegex = /(?<!]\(|["'=])(https?:\/\/[^\s<>"'\]]+)(?!\)|["'])/gi;
     return (
       body
-        // Remove quoted text
-        .replace(/^>.*$/gm, "")
-        // Remove commands such as /start
-        .replace(/^\/.+/g, "")
         // Remove HTML comments
         .replace(/<!--[\s\S]*?-->/g, "")
+        // Remove quoted text
+        .replace(/^>.*$/gm, "")
+        // Remove single-line and multiline slash commands such as /start or /ask
+        .replace(/^\s*\/[a-zA-Z][\w-]*(?:\s+[\s\S]*|$)/gm, "")
         // Remove the footnotes
         .replace(/^###### .*?\[\^\d+\^][\s\S]*$/gm, "")
         .replace(/^\[\^[\w-]+\^?]:.*$/gm, "")
